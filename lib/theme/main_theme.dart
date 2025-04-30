@@ -265,3 +265,109 @@ class MobileTexts {
     ),
   );
 }
+
+class DesktopTexts {
+  H h1 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 28.0,
+    letterSpacing: 0,
+    lineHeight: 36,
+  );
+
+  H h2 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 24.0,
+    letterSpacing: 0,
+    lineHeight: 30,
+  );
+
+  H h3 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 20.0,
+    letterSpacing: 0,
+    lineHeight: 24,
+  );
+
+  H h4 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 17.0,
+    letterSpacing: 0,
+    lineHeight: 24,
+  );
+
+  B1 b1 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 14.0,
+    letterSpacing: 0,
+    lineHeight: 24,
+    textStyleBold: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+
+  B1 b2 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 12.0,
+    letterSpacing: 0,
+    lineHeight: 21,
+    textStyleBold: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+
+  B1 b3 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 12.0,
+    letterSpacing: 0,
+    lineHeight: 18,
+    textStyleBold: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+
+  B1 b4 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 10.0,
+    letterSpacing: 0,
+    lineHeight: 15,
+    textStyleBold: TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+}
