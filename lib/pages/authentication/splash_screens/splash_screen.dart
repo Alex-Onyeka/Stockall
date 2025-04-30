@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stockitt/components/splash_screens/splash_screen_widget.dart';
-import 'package:stockitt/pages/authentication/auth_landing.dart';
+import 'package:stockitt/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockitt/theme/main_theme.dart';
 
 class SplashScreen extends StatefulWidget {

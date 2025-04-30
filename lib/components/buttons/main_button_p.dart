@@ -7,7 +7,9 @@ class MainButtonP extends StatelessWidget {
     required this.themeProvider,
     required this.action,
     required this.text,
+    required this.constraints,
   });
+  final BoxConstraints constraints;
 
   final String text;
   final Function()? action;
@@ -32,7 +34,7 @@ class MainButtonP extends StatelessWidget {
                   themeProvider.mobileTexts.b1.fontSize,
               fontWeight:
                   themeProvider
-                      .mobileTexts
+                      .returnPlatform(constraints, context)
                       .b1
                       .fontWeightRegular,
             ),
