@@ -13,6 +13,7 @@ ThemeData lightMode = ThemeData(
 class LightModeColor {
   final prColor300 = Color.fromRGBO(25, 43, 117, 1);
   final prColor200 = Color.fromRGBO(101, 113, 163, 1);
+  final prColor250 = Color.fromRGBO(47, 80, 219, 1);
   final prColor100 = Color.fromRGBO(149, 157, 192, 1);
   final prColor50 = Color.fromRGBO(245, 245, 255, 1);
   final prGradient = LinearGradient(
