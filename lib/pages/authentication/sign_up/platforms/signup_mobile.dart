@@ -123,7 +123,7 @@ class _SignupMobileState extends State<SignupMobile> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 50),
+                  SizedBox(height: 60),
                   Row(
                     spacing: 10,
                     mainAxisAlignment:
@@ -145,7 +145,7 @@ class _SignupMobileState extends State<SignupMobile> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Column(
                     spacing: 8,
                     children: [
