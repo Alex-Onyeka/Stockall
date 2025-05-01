@@ -62,7 +62,7 @@ class AuthLandingDesktop extends StatelessWidget {
                       mainAxisAlignment:
                           MainAxisAlignment.center,
                       children: [
-                        SizedBox(height: 30),
+                        SizedBox(height: 10),
                         Image.asset(
                           mainLogoIcon,
                           height: 50,

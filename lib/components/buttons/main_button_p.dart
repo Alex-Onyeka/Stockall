@@ -21,7 +21,9 @@ class MainButtonP extends StatelessWidget {
     return InkWell(
       onTap: action,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 18),
+        padding: EdgeInsets.symmetric(
+          vertical: constraints.maxWidth < 600 ? 18 : 15,
+        ),
         decoration: BoxDecoration(
           gradient: themeProvider.lightModeColor.prGradient,
           borderRadius: BorderRadius.circular(10),
@@ -31,7 +33,15 @@ class MainButtonP extends StatelessWidget {
             style: TextStyle(
               color: Colors.white,
               fontSize:
-                  themeProvider.mobileTexts.b1.fontSize,
+                  constraints.maxWidth < 600
+                      ? themeProvider
+                          .mobileTexts
+                          .b1
+                          .fontSize
+                      : themeProvider
+                          .mobileTexts
+                          .b2
+                          .fontSize,
               fontWeight:
                   themeProvider
                       .returnPlatform(constraints, context)
