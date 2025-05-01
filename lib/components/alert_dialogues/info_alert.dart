@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_polygon_clipper/flutter_polygon_clipper.dart';
+import 'package:stockitt/providers/theme_provider.dart';
+
+class InfoAlert extends StatelessWidget {
+  final String title;
+  final String message;
+  final ThemeProvider theme;
+  const InfoAlert({
+    super.key,
+    required this.theme,
+    required this.message,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      content: SizedBox(
+        width: BoxConstraints().maxWidth < 400 ? 350 : 500,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 10,
+            children: [
+              SizedBox(height: 10),
+              SizedBox(
+                height: 90,
+                width: 90,
+                child: FlutterClipPolygon(
+                  sides: 8,
+                  borderRadius: 10,
+                  rotate: 0.0,
+                  boxShadows: [
+                    PolygonBoxShadow(
+                      color: const Color.fromARGB(
+                        101,
+                        0,
+                        0,
+                        0,
+                      ),
+                      elevation: 1.0,
+                    ),
+                    PolygonBoxShadow(
+                      color: const Color.fromARGB(
+                        129,
+                        158,
+                        158,
+                        158,
+                      ),
+                      elevation: 3.0,
+                    ),
+                  ],
+                  child: Container(
+                    color:
+                        theme.lightModeColor.errorColor200,
+                    child: Center(
+                      child: Icon(
+                        color: Colors.white,
+                        size: 50,
+                        Icons.clear_rounded,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.h3.fontSize,
+                  fontWeight:
+                      theme.mobileTexts.h3.fontWeightBold,
+                ),
+                title,
+              ),
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b1.fontSize,
+                ),
+                message,
+              ),
+              SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(10),
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .errorColor200,
+                        ),
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                            color: Colors.white,
+                          ),
+                          'Cancel',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

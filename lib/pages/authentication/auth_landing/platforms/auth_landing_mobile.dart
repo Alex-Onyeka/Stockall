@@ -56,132 +56,137 @@ class AuthLandingMobile extends StatelessWidget {
                       horizontal: 40,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: Colors.white,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 50.0,
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              height: 0,
-                              color:
-                                  themeProvider
-                                      .lightModeColor
-                                      .shadesColorBlack,
-                              fontSize:
-                                  themeProvider
-                                      .returnPlatform(
-                                        constraints,
-                                        context,
-                                      )
-                                      .h1
-                                      .fontSize,
-                              fontWeight:
-                                  themeProvider
-                                      .returnPlatform(
-                                        constraints,
-                                        context,
-                                      )
-                                      .h1
-                                      .fontWeightBold,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Text(
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                height: 0,
+                                color:
+                                    themeProvider
+                                        .lightModeColor
+                                        .shadesColorBlack,
+                                fontSize:
+                                    themeProvider
+                                        .returnPlatform(
+                                          constraints,
+                                          context,
+                                        )
+                                        .h1
+                                        .fontSize,
+                                fontWeight:
+                                    themeProvider
+                                        .returnPlatform(
+                                          constraints,
+                                          context,
+                                        )
+                                        .h1
+                                        .fontWeightBold,
+                              ),
+                              'Welcome to Stockitt',
                             ),
-                            'Welcome to Stockitt',
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            textAlign: TextAlign.center,
-                            style:
-                                Provider.of<ThemeProvider>(
-                                      context,
-                                    )
-                                    .returnPlatform(
-                                      constraints,
-                                      context,
-                                    )
-                                    .b1
-                                    .textStyleNormal,
-                            'Lorem ipsum dolor sit amet, consectetur  adipiscing elit ut aliquam, purus sit  amet luctus v magna fringilla urna',
-                          ),
-                          SizedBox(height: 20),
-                          MainButtonP(
-                            constraints: constraints,
-                            action: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return SignUpPage();
-                                  },
+                            SizedBox(height: 20),
+                            Text(
+                              textAlign: TextAlign.center,
+                              style:
+                                  Provider.of<
+                                        ThemeProvider
+                                      >(context)
+                                      .returnPlatform(
+                                        constraints,
+                                        context,
+                                      )
+                                      .b1
+                                      .textStyleNormal,
+                              'Lorem ipsum dolor sit amet, consectetur  adipiscing elit ut aliquam, purus sit  amet luctus v magna fringilla urna',
+                            ),
+                            SizedBox(height: 20),
+                            MainButtonP(
+                              action: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SignUpPage();
+                                    },
+                                  ),
+                                );
+                              },
+                              text: 'Create an Account',
+                              themeProvider: themeProvider,
+                            ),
+                            SizedBox(height: 10),
+                            InkWell(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SplashScreen();
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(
+                                  bottom: 30,
                                 ),
-                              );
-                            },
-                            text: 'Create an Account',
-                            themeProvider: themeProvider,
-                          ),
-                          SizedBox(height: 10),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return SplashScreen();
-                                  },
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 14,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      10,
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 14,
                                     ),
-                                border: Border.all(
-                                  color:
-                                      themeProvider
-                                          .lightModeColor
-                                          .prColor300,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  style: TextStyle(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
+                                  border: Border.all(
                                     color:
                                         themeProvider
                                             .lightModeColor
                                             .prColor300,
-                                    fontSize:
-                                        themeProvider
-                                            .returnPlatform(
-                                              constraints,
-                                              context,
-                                            )
-                                            .b1
-                                            .fontSize,
-                                    fontWeight:
-                                        themeProvider
-                                            .returnPlatform(
-                                              constraints,
-                                              context,
-                                            )
-                                            .b1
-                                            .fontWeightRegular,
+                                    width: 1.5,
                                   ),
-                                  'Already Have an account? Login',
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    style: TextStyle(
+                                      color:
+                                          themeProvider
+                                              .lightModeColor
+                                              .prColor300,
+                                      fontSize:
+                                          themeProvider
+                                              .returnPlatform(
+                                                constraints,
+                                                context,
+                                              )
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          themeProvider
+                                              .returnPlatform(
+                                                constraints,
+                                                context,
+                                              )
+                                              .b1
+                                              .fontWeightRegular,
+                                    ),
+                                    'Already Have an account? Login',
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

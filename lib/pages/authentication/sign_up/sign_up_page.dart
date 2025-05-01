@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/pages/authentication/sign_up/platforms/signup_desktop.dart';
+import 'package:stockitt/pages/authentication/sign_up/platforms/signup_mobile.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -12,17 +14,22 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   TextEditingController emailController =
       TextEditingController();
-  TextEditingController phoneController =
+  TextEditingController confirmPasswordController =
       TextEditingController();
   TextEditingController passwordController =
       TextEditingController();
+  TextEditingController idController =
+      TextEditingController();
+
+  bool checked = false;
 
   @override
   void dispose() {
     super.dispose();
     emailController.dispose();
-    phoneController.dispose();
+    confirmPasswordController.dispose();
     passwordController.dispose();
+    idController.dispose();
   }
 
   @override
@@ -32,100 +39,48 @@ class _SignUpPageState extends State<SignUpPage> {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 35.0,
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 50),
-                Column(
-                  spacing: 8,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .shadesColorBlack,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontSize,
-                            fontWeight:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontWeightBold,
-                          ),
-                          'Get Started Now',
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          style:
-                              Provider.of<ThemeProvider>(
-                                    context,
-                                  )
-                                  .mobileTexts
-                                  .b1
-                                  .textStyleNormal,
-                          "Let's create you Account",
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Column(
-                  spacing: 10,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text('Enter Email'),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.email_outlined,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .prColor300,
-                            width: 1.0,
-                          ),
-                          borderRadius:
-                              BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .prColor300,
-                            width: 1.5,
-                          ),
-                          borderRadius:
-                              BorderRadius.circular(10),
-                        ),
-                      ),
-                      controller: emailController,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 500) {
+            return SignupMobile(
+              checked: checked,
+              onTap: () {
+                setState(() {
+                  checked = !checked;
+                });
+              },
+              onChanged: (value) {
+                setState(() {
+                  checked = value!;
+                });
+              },
+              confirmPasswordController:
+                  confirmPasswordController,
+              emailController: emailController,
+              passwordController: passwordController,
+              theme: theme,
+            );
+          } else {
+            return SignupDesktop(
+              theme: theme,
+              confirmPasswordController:
+                  confirmPasswordController,
+              emailController: emailController,
+              onChanged: (p0) {
+                setState(() {
+                  checked = p0!;
+                });
+              },
+              onTap: () {
+                setState(() {
+                  checked = !checked;
+                });
+              },
+              passwordController: passwordController,
+              checked: checked,
+            );
+          }
+        },
       ),
     );
   }

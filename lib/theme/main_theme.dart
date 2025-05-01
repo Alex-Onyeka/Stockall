@@ -99,7 +99,7 @@ class LightModeColor {
   //
   // ERROR COLORS
 
-  final errorColor200 = Color.fromRGBO(138, 0, 0, 1);
+  final errorColor200 = Color.fromRGBO(227, 20, 59, 1);
   final errorColor100 = Color.fromRGBO(219, 176, 176, 1);
   final errorColor50 = Color.fromRGBO(243, 230, 230, 1);
   //
@@ -266,11 +266,117 @@ class MobileTexts {
   );
 }
 
+class TabletTexts {
+  H h1 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 30.0,
+    letterSpacing: 0,
+    lineHeight: 36,
+  );
+
+  H h2 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 25.0,
+    letterSpacing: 0,
+    lineHeight: 30,
+  );
+
+  H h3 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 22.0,
+    letterSpacing: 0,
+    lineHeight: 24,
+  );
+
+  H h4 = H(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 19.0,
+    letterSpacing: 0,
+    lineHeight: 24,
+  );
+
+  B1 b1 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 16.0,
+    letterSpacing: 0,
+    lineHeight: 24,
+    textStyleBold: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+
+  B1 b2 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 14.0,
+    letterSpacing: 0,
+    lineHeight: 21,
+    textStyleBold: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+
+  B1 b3 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 12.0,
+    letterSpacing: 0,
+    lineHeight: 18,
+    textStyleBold: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+
+  B1 b4 = B1(
+    fontWeightBold: FontWeight.bold,
+    fontWeightRegular: FontWeight.normal,
+    fontSize: 10.0,
+    letterSpacing: 0,
+    lineHeight: 15,
+    textStyleBold: TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.bold,
+      color: LightModeColor().greyColor100,
+    ),
+    textStyleNormal: TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w500,
+      color: LightModeColor().greyColor100,
+    ),
+  );
+}
+
 class DesktopTexts {
   H h1 = H(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 28.0,
+    fontSize: 35.0,
     letterSpacing: 0,
     lineHeight: 36,
   );
@@ -302,16 +408,16 @@ class DesktopTexts {
   B1 b1 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 14.0,
+    fontSize: 16.0,
     letterSpacing: 0,
     lineHeight: 24,
     textStyleBold: TextStyle(
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -320,16 +426,16 @@ class DesktopTexts {
   B1 b2 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 12.0,
+    fontSize: 14.0,
     letterSpacing: 0,
     lineHeight: 21,
     textStyleBold: TextStyle(
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),

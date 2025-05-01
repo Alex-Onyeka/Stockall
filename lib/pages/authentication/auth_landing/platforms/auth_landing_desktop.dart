@@ -56,7 +56,7 @@ class AuthLandingDesktop extends StatelessWidget {
                       horizontal: 80,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: Colors.white,
                     ),
                     child: Column(
                       mainAxisAlignment:
@@ -118,7 +118,6 @@ class AuthLandingDesktop extends StatelessWidget {
                         ),
                         SizedBox(height: 20),
                         MainButtonP(
-                          constraints: constraints,
                           action: () {
                             Navigator.pushReplacement(
                               context,

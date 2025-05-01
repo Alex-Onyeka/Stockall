@@ -7,9 +7,7 @@ class MainButtonP extends StatelessWidget {
     required this.themeProvider,
     required this.action,
     required this.text,
-    required this.constraints,
   });
-  final BoxConstraints constraints;
 
   final String text;
   final Function()? action;
@@ -18,40 +16,49 @@ class MainButtonP extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: action,
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: constraints.maxWidth < 600 ? 18 : 15,
-        ),
-        decoration: BoxDecoration(
-          gradient: themeProvider.lightModeColor.prGradient,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            style: TextStyle(
-              color: Colors.white,
-              fontSize:
-                  constraints.maxWidth < 600
-                      ? themeProvider
-                          .mobileTexts
-                          .b1
-                          .fontSize
-                      : themeProvider
-                          .mobileTexts
-                          .b2
-                          .fontSize,
-              fontWeight:
-                  themeProvider
-                      .returnPlatform(constraints, context)
-                      .b1
-                      .fontWeightRegular,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return InkWell(
+          onTap: action,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical:
+                  constraints.maxWidth < 600 ? 18 : 15,
             ),
-            text,
+            decoration: BoxDecoration(
+              gradient:
+                  themeProvider.lightModeColor.prGradient,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize:
+                      constraints.maxWidth < 600
+                          ? themeProvider
+                              .mobileTexts
+                              .b1
+                              .fontSize
+                          : themeProvider
+                              .mobileTexts
+                              .b2
+                              .fontSize,
+                  fontWeight:
+                      themeProvider
+                          .returnPlatform(
+                            constraints,
+                            context,
+                          )
+                          .b1
+                          .fontWeightRegular,
+                ),
+                text,
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

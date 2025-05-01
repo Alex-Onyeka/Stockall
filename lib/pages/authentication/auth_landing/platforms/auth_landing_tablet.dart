@@ -108,7 +108,6 @@ class AuthLandingTablet extends StatelessWidget {
                           ),
                           SizedBox(height: 30),
                           MainButtonP(
-                            constraints: constraints,
                             action: () {
                               Navigator.pushReplacement(
                                 context,
