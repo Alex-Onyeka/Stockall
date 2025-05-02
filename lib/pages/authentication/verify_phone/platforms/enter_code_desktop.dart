@@ -6,7 +6,7 @@ import 'package:stockitt/providers/theme_provider.dart';
 
 class EnterCodeDesktop extends StatelessWidget {
   final ThemeProvider themeProvider;
-  final String number;
+  final String? number;
   const EnterCodeDesktop({
     super.key,
     required this.number,
@@ -177,7 +177,8 @@ class EnterCodeDesktop extends StatelessWidget {
                                                       .textStyleNormal,
                                             ),
                                             Text(
-                                              number,
+                                              number ??
+                                                  'Your Phone Number',
                                               textAlign:
                                                   TextAlign
                                                       .center,

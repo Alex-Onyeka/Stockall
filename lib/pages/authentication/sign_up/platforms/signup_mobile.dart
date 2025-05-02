@@ -6,6 +6,7 @@ import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/pages/authentication/components/check_agree.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
 import 'package:stockitt/pages/authentication/sign_up/signup_two.dart';
+import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class SignupMobile extends StatefulWidget {
@@ -111,59 +112,34 @@ class _SignupMobileState extends State<SignupMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 35.0,
-          ),
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(
-              context,
-            ).copyWith(scrollbars: false),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: 60),
-                  Row(
-                    spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 35.0,
+              ),
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(
+                  context,
+                ).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      Image.asset(mainLogoIcon, height: 20),
-                      Text(
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 25,
-                          fontWeight:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .h3
-                                  .fontWeightBold,
-                        ),
-                        'Stockitt',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Column(
-                    spacing: 8,
-                    children: [
+                      SizedBox(height: 60),
                       Row(
+                        spacing: 10,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
                         children: [
+                          Image.asset(
+                            mainLogoIcon,
+                            height: 20,
+                          ),
                           Text(
                             style: TextStyle(
-                              color:
-                                  widget
-                                      .theme
-                                      .lightModeColor
-                                      .shadesColorBlack,
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .h3
-                                      .fontSize,
+                              color: Colors.grey,
+                              fontSize: 25,
                               fontWeight:
                                   widget
                                       .theme
@@ -171,73 +147,131 @@ class _SignupMobileState extends State<SignupMobile> {
                                       .h3
                                       .fontWeightBold,
                             ),
-                            'Get Started Now',
+                            'Stockitt',
                           ),
                         ],
                       ),
-                      Row(
+                      SizedBox(height: 30),
+                      Column(
+                        spacing: 8,
                         children: [
-                          Text(
-                            style:
-                                Provider.of<ThemeProvider>(
-                                      context,
-                                    )
-                                    .mobileTexts
-                                    .b1
-                                    .textStyleNormal,
-                            "Let's create you Account",
+                          Row(
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .shadesColorBlack,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h3
+                                          .fontSize,
+                                  fontWeight:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h3
+                                          .fontWeightBold,
+                                ),
+                                'Get Started Now',
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                style:
+                                    Provider.of<
+                                          ThemeProvider
+                                        >(context)
+                                        .mobileTexts
+                                        .b1
+                                        .textStyleNormal,
+                                "Let's create you Account",
+                              ),
+                            ],
                           ),
                         ],
                       ),
+                      SizedBox(height: 30),
+                      EmailTextField(
+                        title: 'Set Email Address*',
+                        hint: 'Enter Email',
+                        isEmail: true,
+                        controller: widget.emailController,
+                        theme: widget.theme,
+                      ),
+                      SizedBox(height: 15),
+                      EmailTextField(
+                        title: 'Set Password*',
+                        hint: 'Enter Password',
+                        isEmail: false,
+                        controller:
+                            widget.passwordController,
+                        theme: widget.theme,
+                      ),
+                      SizedBox(height: 15),
+                      EmailTextField(
+                        title: 'Confirm Password*',
+                        hint: 'Confirm Password',
+                        isEmail: false,
+                        controller:
+                            widget
+                                .confirmPasswordController,
+                        theme: widget.theme,
+                      ),
+
+                      SizedBox(height: 20),
+                      CheckAgree(
+                        onChanged: widget.onChanged,
+                        checked: widget.checked,
+                        theme: widget.theme,
+                        onTap: widget.onTap,
+                      ),
+                      SizedBox(height: 20),
+                      MainButtonP(
+                        themeProvider: widget.theme,
+                        action: () {
+                          // checkInputs();
+
+                          Provider.of<CompProvider>(
+                            context,
+                            listen: false,
+                          ).successAction(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        SignupTwo(),
+                              ),
+                            );
+                          });
+                        },
+                        text: 'Create Account',
+                      ),
+                      SizedBox(height: 30),
                     ],
                   ),
-                  SizedBox(height: 30),
-                  EmailTextField(
-                    title: 'Set Email Address*',
-                    hint: 'Enter Email',
-                    isEmail: true,
-                    controller: widget.emailController,
-                    theme: widget.theme,
-                  ),
-                  SizedBox(height: 15),
-                  EmailTextField(
-                    title: 'Set Password*',
-                    hint: 'Enter Password',
-                    isEmail: false,
-                    controller: widget.passwordController,
-                    theme: widget.theme,
-                  ),
-                  SizedBox(height: 15),
-                  EmailTextField(
-                    title: 'Confirm Password*',
-                    hint: 'Confirm Password',
-                    isEmail: false,
-                    controller:
-                        widget.confirmPasswordController,
-                    theme: widget.theme,
-                  ),
-
-                  SizedBox(height: 20),
-                  CheckAgree(
-                    onChanged: widget.onChanged,
-                    checked: widget.checked,
-                    theme: widget.theme,
-                    onTap: widget.onTap,
-                  ),
-                  SizedBox(height: 20),
-                  MainButtonP(
-                    themeProvider: widget.theme,
-                    action: () {
-                      checkInputs();
-                    },
-                    text: 'Create Account',
-                  ),
-                  SizedBox(height: 30),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          Visibility(
+            visible:
+                Provider.of<CompProvider>(
+                  context,
+                ).isLoaderOn,
+            child: Provider.of<CompProvider>(
+              context,
+              listen: false,
+            ).showSuccess('Successful'),
+          ),
+        ],
       ),
     );
   }

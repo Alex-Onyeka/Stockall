@@ -174,7 +174,7 @@ class _LoginMobileState extends State<LoginMobile> {
                     theme: widget.theme,
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   MainButtonP(
                     themeProvider: widget.theme,
                     action: () {

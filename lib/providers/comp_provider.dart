@@ -6,6 +6,19 @@ import 'package:stockitt/providers/theme_provider.dart';
 class CompProvider extends ChangeNotifier {
   ThemeProvider themeProvider = ThemeProvider();
 
+  bool isLoaderOn = false;
+
+  void successAction(Function action) {
+    isLoaderOn = true;
+    notifyListeners();
+
+    Future.delayed(Duration(seconds: 3), () {
+      isLoaderOn = false;
+      notifyListeners();
+      action();
+    });
+  }
+
   Widget showLoader(String message) {
     return Container(
       color: const Color.fromARGB(245, 255, 255, 255),

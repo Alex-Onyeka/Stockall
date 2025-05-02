@@ -38,12 +38,13 @@ class _SplashDesktopState extends State<SplashDesktop> {
               child: Stack(
                 children: [
                   SizedBox(
+                    height: double.infinity,
                     width: double.infinity,
                     child: Image.asset(
                       widget.pages[widget
                           .currentPage!]['image'],
                       fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
+                      // alignment: Alignment.topCenter,
                     ),
                   ),
                   Container(
