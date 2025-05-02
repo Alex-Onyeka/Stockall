@@ -152,70 +152,78 @@ class Dashboard extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 20),
-                Container(
-                  padding: EdgeInsets.only(
-                    left: 25,
-                    top: 25,
-                    bottom: 25,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient:
-                        theme.lightModeColor.prGradient,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                Stack(
+                  alignment: Alignment(1, 00.5),
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: 25,
+                        top: 25,
+                        bottom: 25,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient:
+                            theme.lightModeColor.prGradient,
+                        borderRadius: BorderRadius.circular(
+                          20,
+                        ),
+                      ),
+                      child: Row(
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            'Today\'s Sale Revenue',
-                          ),
-                          Row(
+                          Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
                             children: [
                               Text(
                                 style: TextStyle(
                                   fontSize:
                                       theme
                                           .mobileTexts
-                                          .h3
+                                          .b3
                                           .fontSize,
                                   color: Colors.white,
                                   fontWeight:
-                                      FontWeight.bold,
+                                      FontWeight.w500,
                                 ),
-                                'N',
+                                'Today\'s Sale Revenue',
                               ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  color: Colors.white,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                '0,000',
+                              Row(
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .h3
+                                              .fontSize,
+                                      color: Colors.white,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'N',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .h4
+                                              .fontSize,
+                                      color: Colors.white,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    '0,000',
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ],
                       ),
-                      // Image.asset(cctvImage),
-                    ],
-                  ),
+                    ),
+                    Image.asset(cctvImage, height: 85),
+                  ],
                 ),
               ],
             ),

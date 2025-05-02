@@ -4,7 +4,7 @@ import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/authentication/sign_up/signup_two.dart';
+import 'package:stockitt/pages/dashboard/dashboard.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class LoginMobile extends StatefulWidget {
@@ -59,11 +59,11 @@ class _LoginMobileState extends State<LoginMobile> {
         },
       );
     } else {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) {
-            return SignupTwo();
+            return Dashboard();
           },
         ),
       );

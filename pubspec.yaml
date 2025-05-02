@@ -79,6 +79,7 @@ flutter:
     - assets/images/logos/
     - assets/svgs/
     - assets/images/main_images/
+    - assets/images/small_images/
   # - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
