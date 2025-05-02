@@ -11,3 +11,6 @@ const String appMockUp = 'assets/images/logos/App_Png.png';
 
 const String backGroundImage =
     'assets/images/main_images/sign_up_background.jpg';
+
+const String mainLoader =
+    'assets/animations/main_loader.json';
