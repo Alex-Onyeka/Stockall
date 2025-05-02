@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart';
+import 'package:stockitt/pages/authentication/verify_phone/enter_code.dart';
+import 'package:stockitt/pages/authentication/verify_phone/platforms/enter_code_mobile.dart';
 import 'package:stockitt/provider_class.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),
       ),
-      home: const SplashScreen(),
+      home: const EnterCode(number: '07036301628'),
     );
   }
 }

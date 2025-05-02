@@ -20,9 +20,9 @@ class CompProvider extends ChangeNotifier {
     notifyListeners();
 
     Future.delayed(Duration(seconds: 3), () {
+      action();
       isLoaderOn = false;
       notifyListeners();
-      action();
     });
   }
 

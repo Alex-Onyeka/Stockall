@@ -38,7 +38,7 @@ class _SignupTwoMobileState extends State<SignupTwoMobile> {
         },
       );
     } else {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) {

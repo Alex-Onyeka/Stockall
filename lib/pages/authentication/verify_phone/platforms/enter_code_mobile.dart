@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/pages/dashboard/dashboard.dart';
+import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class EnterCodeMobile extends StatelessWidget {
@@ -167,7 +170,21 @@ class EnterCodeMobile extends StatelessWidget {
                 SizedBox(height: 20),
                 MainButtonP(
                   themeProvider: themeProvider,
-                  action: () {},
+                  action: () {
+                    Provider.of<CompProvider>(
+                      context,
+                      listen: false,
+                    ).successAction(
+                      () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return Dashboard();
+                          },
+                        ),
+                      ),
+                    );
+                  },
                   text: 'Verify Phone',
                 ),
                 SizedBox(height: 15),
@@ -194,9 +211,15 @@ class EnterCodeMobile extends StatelessWidget {
               ],
             ),
           ),
-          // Provider.of<CompProvider>(
-          //   context,
-          // ).showSuccess('Registration Completed'),
+          Visibility(
+            visible:
+                Provider.of<CompProvider>(
+                  context,
+                ).isLoaderOn,
+            child: Provider.of<CompProvider>(
+              context,
+            ).showSuccess('Phone Number Verified'),
+          ),
         ],
       ),
     );
