@@ -8,6 +8,13 @@ class CompProvider extends ChangeNotifier {
 
   bool isLoaderOn = false;
 
+  bool newNotif = true;
+
+  void switchNotif() {
+    newNotif = !newNotif;
+    notifyListeners();
+  }
+
   void successAction(Function action) {
     isLoaderOn = true;
     notifyListeners();
