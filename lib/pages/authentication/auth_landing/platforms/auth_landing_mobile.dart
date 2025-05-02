@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/pages/authentication/login/login_page.dart';
 import 'package:stockitt/pages/authentication/sign_up/sign_up_page.dart';
-import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class AuthLandingMobile extends StatelessWidget {
@@ -125,11 +125,11 @@ class AuthLandingMobile extends StatelessWidget {
                             SizedBox(height: 10),
                             InkWell(
                               onTap: () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return SplashScreen();
+                                      return LoginPage();
                                     },
                                   ),
                                 );

@@ -14,3 +14,6 @@ const String backGroundImage =
 
 const String mainLoader =
     'assets/animations/main_loader.json';
+
+const String successAnim =
+    'assets/animations/check_animation.json';

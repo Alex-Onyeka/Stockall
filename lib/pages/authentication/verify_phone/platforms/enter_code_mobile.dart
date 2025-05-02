@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class EnterCodeMobile extends StatelessWidget {
@@ -196,7 +194,9 @@ class EnterCodeMobile extends StatelessWidget {
               ],
             ),
           ),
-          Provider.of<CompProvider>(context).loader,
+          // Provider.of<CompProvider>(
+          //   context,
+          // ).showSuccess('Registration Completed'),
         ],
       ),
     );
