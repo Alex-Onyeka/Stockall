@@ -42,7 +42,7 @@ class _SplashMobileState extends State<SplashMobile> {
                 subTitle:
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit ut , ',
                 lottie:
-                    'assets/animations/phone_verify.json',
+                    'assets/animations/cart_loader.json',
                 constraints: widget.constraints,
                 themeProvider: widget.themeProvider,
               ),

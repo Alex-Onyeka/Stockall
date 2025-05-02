@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
+import 'package:stockitt/pages/authentication/verify_phone/enter_code.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class VerifyPhone extends StatefulWidget {
-  const VerifyPhone({super.key});
+  final String number;
+  const VerifyPhone({super.key, required this.number});
 
   @override
   State<VerifyPhone> createState() => _VerifyPhoneState();
@@ -17,24 +19,54 @@ class _VerifyPhoneState extends State<VerifyPhone> {
       height: 40,
       width: 40,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40),
         color: Colors.pink,
+        shape: BoxShape.circle,
       ),
     ),
     Container(
       height: 30,
       width: 30,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: Colors.amber,
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Color.fromRGBO(253, 200, 48, 1),
+            Color.fromRGBO(243, 115, 53, 1),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+    ),
+    Container(
+      height: 20,
+      width: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: const Color.fromRGBO(82, 213, 186, 1),
       ),
     ),
     Container(
       height: 15,
       width: 15,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: const Color.fromARGB(255, 3, 53, 93),
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Color.fromRGBO(25, 43, 117, 1),
+            Color.fromRGBO(47, 80, 219, 1),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+    ),
+    Container(
+      height: 15,
+      width: 15,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.amber,
       ),
     ),
   ];
@@ -63,14 +95,30 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                   alignment: Alignment(-0.1, 1),
                   child: circles[2],
                 ),
+                Align(
+                  alignment: Alignment(-0.4, -1),
+                  child: circles[3],
+                ),
+                Align(
+                  alignment: Alignment(0.6, 0.8),
+                  child: circles[4],
+                ),
+
                 SizedBox(
                   width: double.infinity,
-                  child: SizedBox(
-                    height: 170,
-                    width: 100,
-                    child: Lottie.asset(
-                      'assets/animations/phone_verify.json',
-                      fit: BoxFit.contain,
+                  child: Container(
+                    padding: EdgeInsets.all(40),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey.shade100,
+                    ),
+                    child: SizedBox(
+                      height: 150,
+                      width: 100,
+                      child: Lottie.asset(
+                        'assets/animations/phone_verify.json',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -88,10 +136,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                   textAlign: TextAlign.center,
                   'We have sent a code to your Phone',
                   style: TextStyle(
-                    color:
-                        theme
-                            .lightModeColor
-                            .prColor300, // Needed for ShaderMask to apply the gradient
+                    color: theme.lightModeColor.prColor300,
                     fontSize: theme.mobileTexts.h2.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
@@ -106,7 +151,18 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                 SizedBox(height: 20),
                 MainButtonP(
                   themeProvider: theme,
-                  action: () {},
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return EnterCode(
+                            number: widget.number,
+                          );
+                        },
+                      ),
+                    );
+                  },
                   text: 'Proceed to Verify',
                 ),
               ],

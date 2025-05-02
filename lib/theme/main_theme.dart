@@ -16,6 +16,14 @@ class LightModeColor {
   final prColor250 = Color.fromRGBO(47, 80, 219, 1);
   final prColor100 = Color.fromRGBO(149, 157, 192, 1);
   final prColor50 = Color.fromRGBO(245, 245, 255, 1);
+  final prGradientColors = [
+    Color.fromRGBO(25, 43, 117, 1),
+    Color.fromRGBO(47, 80, 219, 1),
+  ];
+  final prGradientAlign = [
+    Alignment.topCenter,
+    Alignment.bottomCenter,
+  ];
   final prGradient = LinearGradient(
     colors: [
       Color.fromRGBO(25, 43, 117, 1),
@@ -34,6 +42,14 @@ class LightModeColor {
   final secColor200 = Color.fromRGBO(255, 165, 0, 1);
   final secColor100 = Color.fromRGBO(239, 124, 44, 1);
   final secColor50 = Color.fromRGBO(253, 242, 234, 1);
+  final secGradientColors = [
+    Color.fromRGBO(253, 200, 48, 1),
+    Color.fromRGBO(243, 115, 53, 1),
+  ];
+  final secGradientAlign = [
+    Alignment.topCenter,
+    Alignment.bottomCenter,
+  ];
   final secGradient = LinearGradient(
     colors: [
       Color.fromRGBO(253, 200, 48, 1),
