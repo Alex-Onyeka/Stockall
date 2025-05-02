@@ -8,3 +8,6 @@ const String mainLogo =
     'assets/images/logos/icon_white.png';
 
 const String appMockUp = 'assets/images/logos/App_Png.png';
+
+const String backGroundImage =
+    'assets/images/main_images/sign_up_background.jpg';

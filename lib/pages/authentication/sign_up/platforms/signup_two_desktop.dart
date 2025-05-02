@@ -62,9 +62,7 @@ class _SignupTwoDesktopState
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-              'assets/images/main_images/sign_up_background.jpg',
-            ),
+            image: AssetImage(backGroundImage),
             fit:
                 BoxFit
                     .cover, // Options: cover, contain, fill, fitWidth, fitHeight
