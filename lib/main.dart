@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart';
-import 'package:stockitt/pages/dashboard/dashboard.dart';
-import 'package:stockitt/provider_class.dart';
+import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/comp_provider.dart';
+import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 void main() async {
@@ -19,18 +18,22 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => ProviderClass(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => CompProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => NavProvider(),
+        ),
       ],
       child: MyApp(),
     ),
   );
+}
+
+ThemeProvider returnTheme(BuildContext context) {
+  return Provider.of<ThemeProvider>(context);
 }
 
 class MyApp extends StatelessWidget {
@@ -45,7 +48,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),
       ),
-      home: const Dashboard(),
+      home: const Home(),
     );
   }
 }

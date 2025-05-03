@@ -61,7 +61,10 @@ class MainInfoTab extends StatelessWidget {
                         theme.mobileTexts.b2.fontWeightBold,
                   ),
 
-                  title,
+                  MediaQuery.of(context).size.width < 384 &&
+                          title.length > 11
+                      ? '${title.substring(0, title.length - 5)}...'
+                      : title,
                 ),
               ],
             ),

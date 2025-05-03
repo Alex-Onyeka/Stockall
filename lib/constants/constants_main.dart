@@ -70,3 +70,6 @@ const String expensesIconSvg =
     'assets/svgs/expenses_icon.svg';
 
 const String reportIconSvg = 'assets/svgs/report_icon.svg';
+
+const String makeSalesIconSvg =
+    'assets/svgs/make_sales_button.svg';

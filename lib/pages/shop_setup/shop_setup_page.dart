@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
-import 'package:stockitt/pages/shop_setup/components/top_banner.dart';
+import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/pages/shop_setup/shop_setup_two.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/pages/shop_setup/components/text_field.dart';
@@ -35,10 +35,14 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                 child: Column(
                   children: [
                     TopBanner(
+                      bottomSpace: 50,
+                      topSpace: 40,
                       theme: theme,
                       subTitle:
                           'Create a Shop to get Started.',
                       title: 'Shop Setup',
+                      iconData:
+                          Icons.add_home_work_outlined,
                     ),
                     SizedBox(height: 30),
                     Padding(

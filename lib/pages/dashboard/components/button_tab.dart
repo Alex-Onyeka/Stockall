@@ -39,7 +39,7 @@ class ButtonTab extends StatelessWidget {
             BoxShadow(
               blurRadius: 10,
               color: const Color.fromARGB(10, 0, 0, 0),
-              spreadRadius: 10,
+              spreadRadius: 3,
             ),
           ],
         ),
@@ -47,12 +47,12 @@ class ButtonTab extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(icon, height: 10, width: 10),
+              SvgPicture.asset(icon, height: 23, width: 23),
               SizedBox(height: 10),
               Text(
                 style: TextStyle(
-                  color: Colors.red,
-                  fontSize: theme.mobileTexts.b2.fontSize,
+                  color: Colors.grey,
+                  fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.w600,
                 ),
                 title,
