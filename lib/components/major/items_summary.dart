@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/authentication/products/compnents/products_summary_tab.dart';
+import 'package:stockitt/pages/products/compnents/products_summary_tab.dart';
 
 class ItemsSummary extends StatefulWidget {
   final bool? onSearch;

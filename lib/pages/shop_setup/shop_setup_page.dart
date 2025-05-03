@@ -53,7 +53,6 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                         position: -1,
                         calcValue: 0.03,
                         theme: theme,
-                        constraints: constraints,
                         percent: '0%',
                         title: 'Your Progress',
                       ),

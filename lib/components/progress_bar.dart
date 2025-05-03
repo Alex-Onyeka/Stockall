@@ -6,11 +6,9 @@ class ProgressBar extends StatelessWidget {
   final double calcValue;
   final String title;
   final String percent;
-  final BoxConstraints constraints;
   const ProgressBar({
     super.key,
     required this.theme,
-    required this.constraints,
     required this.percent,
     required this.title,
     required this.calcValue,
@@ -60,7 +58,10 @@ class ProgressBar extends StatelessWidget {
                     Container(
                       height: 5,
                       width:
-                          constraints.maxWidth * calcValue,
+                          MediaQuery.of(
+                            context,
+                          ).size.width *
+                          calcValue,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(
                           Radius.circular(10),
@@ -91,7 +92,6 @@ class ProgressBar extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 5),
         ],
       ),
     );

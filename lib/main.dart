@@ -75,6 +75,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          elevation: 0,
+          toolbarHeight: 80,
+        ),
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),

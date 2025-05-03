@@ -49,7 +49,6 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                         position: 0.06,
                         calcValue: 0.35,
                         theme: theme,
-                        constraints: constraints,
                         percent: '50%',
                         title: 'Your Progress',
                       ),
