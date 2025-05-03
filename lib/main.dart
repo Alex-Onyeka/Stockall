@@ -36,6 +36,37 @@ ThemeProvider returnTheme(BuildContext context) {
   return Provider.of<ThemeProvider>(context);
 }
 
+Widget colorWidget(
+  Widget widget,
+  bool isPrimary,
+  BuildContext context,
+) {
+  return Builder(
+    builder: (context) {
+      final colors =
+          isPrimary
+              ? Provider.of<ThemeProvider>(
+                context,
+              ).lightModeColor.prGradientColors
+              : Provider.of<ThemeProvider>(
+                context,
+              ).lightModeColor.secGradientColors;
+
+      return ShaderMask(
+        shaderCallback: (bounds) {
+          return LinearGradient(
+            colors: colors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ).createShader(bounds);
+        },
+        blendMode: BlendMode.srcIn,
+        child: widget,
+      );
+    },
+  );
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

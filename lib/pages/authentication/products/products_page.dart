@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/items_summary.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -13,15 +14,7 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Provider.of<NavProvider>(
-  //     context,
-  //     listen: false,
-  //   ).navigate(1);
-  // }
-
+  bool isEmpty = true;
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -49,7 +42,7 @@ class _ProductsPageState extends State<ProductsPage> {
                       alignment: Alignment(0, 1),
                       child: ItemsSummary(
                         hintText: 'Search Product Name',
-                        mainTitle: 'Product Summary',
+                        mainTitle: 'Total Revenue',
                         firsRow: true,
                         searchAction: () {},
                         color1: Colors.green,
@@ -66,8 +59,23 @@ class _ProductsPageState extends State<ProductsPage> {
               ),
               Expanded(
                 child: SizedBox(
-                  child: SingleChildScrollView(
-                    child: Column(),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      if (isEmpty) {
+                        return EmptyWidgetDisplay(
+                          buttonText: 'Add Product',
+                          subText:
+                              'Click on the button below to start adding Products to your store.',
+                          title: 'You have no Products Yet',
+                          svg: productIconSvg,
+                          height: 35,
+                          action: () {},
+                          theme: theme,
+                        );
+                      } else {
+                        return Column();
+                      }
+                    },
                   ),
                 ),
               ),
