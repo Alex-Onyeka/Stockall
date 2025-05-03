@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/pages/dashboard/components/button_tab.dart';
+import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
+import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
@@ -152,77 +155,107 @@ class Dashboard extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 20),
-                Stack(
-                  alignment: Alignment(1, 00.5),
+                DashboardTotalSalesBanner(theme: theme),
+                SizedBox(height: 20),
+                Row(
+                  spacing: 10,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: EdgeInsets.only(
-                        left: 25,
-                        top: 25,
-                        bottom: 25,
+                    Expanded(
+                      child: MainInfoTab(
+                        theme: theme,
+                        icon: pulseIconSvg,
+                        number: '0.0',
+                        title: 'Total Revenue',
+                        action: () {},
                       ),
-                      decoration: BoxDecoration(
-                        gradient:
-                            theme.lightModeColor.prGradient,
-                        borderRadius: BorderRadius.circular(
-                          20,
+                    ),
+                    Expanded(
+                      child: MainInfoTab(
+                        theme: theme,
+                        icon: customersIconSvg,
+                        number: '10',
+                        title: 'Customers',
+                        action: () {},
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                            fontWeight:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontWeightBold,
+                          ),
+                          'Quick Actions',
                         ),
-                      ),
-                      child: Row(
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: Wrap(
+                        alignment: WrapAlignment.start,
+                        runAlignment: WrapAlignment.start,
+                        direction: Axis.horizontal,
+                        runSpacing: 15,
+                        spacing: 15,
+                        crossAxisAlignment:
+                            WrapCrossAlignment.center,
                         children: [
-                          Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  color: Colors.white,
-                                  fontWeight:
-                                      FontWeight.w500,
-                                ),
-                                'Today\'s Sale Revenue',
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .h3
-                                              .fontSize,
-                                      color: Colors.white,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'N',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .h4
-                                              .fontSize,
-                                      color: Colors.white,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    '0,000',
-                                  ),
-                                ],
-                              ),
-                            ],
+                          ButtonTab(
+                            theme: theme,
+                            icon: productIconSvg,
+                            title: 'Products',
+                            action: () {},
+                          ),
+                          ButtonTab(
+                            theme: theme,
+                            icon: salesIconSvg,
+                            title: 'Sales',
+                            action: () {},
+                          ),
+                          ButtonTab(
+                            theme: theme,
+                            icon: custBookIconSvg,
+                            title: 'Customers',
+                            action: () {},
+                          ),
+                          ButtonTab(
+                            theme: theme,
+                            icon: employeesIconSvg,
+                            title: 'Employees',
+                            action: () {},
+                          ),
+                          // ButtonTab(
+                          //   theme: theme,
+                          //   icon: expensesIconSvg,
+                          //   title: 'Expenses',
+                          //   action: () {},
+                          // ),
+                          ButtonTab(
+                            theme: theme,
+                            icon: reportIconSvg,
+                            title: 'Report',
+                            action: () {},
                           ),
                         ],
                       ),
                     ),
-                    Image.asset(cctvImage, height: 85),
                   ],
                 ),
               ],

@@ -18,12 +18,55 @@ const String profileIconImage =
 const String cctvImage =
     'assets/images/small_images/cctv.png';
 
+//
+//
+//
+//
+
+//
+//
+//
+//
+// J S O N
+
 const String mainLoader =
     'assets/animations/main_loader.json';
 
 const String successAnim =
     'assets/animations/check_animation.json';
 
+//
+//
+//
+//
+
+//
+//
+//
+//
+// S V G ' S
+
 const String checkIconSvg = 'assets/svgs/check_icon.svg';
 
 const String notifIconSvg = 'assets/svgs/notif_icon.svg';
+
+const String customersIconSvg =
+    'assets/svgs/customers_icon.svg';
+
+const String pulseIconSvg = 'assets/svgs/pulse_icon.svg';
+
+const String productIconSvg =
+    'assets/svgs/product_icon.svg';
+
+const String salesIconSvg = 'assets/svgs/sales_icon.svg';
+
+const String custBookIconSvg =
+    'assets/svgs/cust_book_icon.svg';
+
+const String employeesIconSvg =
+    'assets/svgs/employees_icon.svg';
+
+const String expensesIconSvg =
+    'assets/svgs/expenses_icon.svg';
+
+const String reportIconSvg = 'assets/svgs/report_icon.svg';
