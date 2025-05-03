@@ -38,6 +38,7 @@ class TopBanner extends StatelessWidget {
             horizontal: 40.0,
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: topSpace),
               Row(
