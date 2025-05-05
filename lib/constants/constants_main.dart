@@ -75,3 +75,9 @@ const String makeSalesIconSvg =
     'assets/svgs/make_sales_button.svg';
 
 const String nairaIconSvg = 'assets/svgs/naira_icon.svg';
+
+const String addIconSvg = 'assets/svgs/add_icon.svg';
+
+const String editIconSvg = 'assets/svgs/edit_icon.svg';
+
+const String deleteIconSvg = 'assets/svgs/delete_icon.svg';

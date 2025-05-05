@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
@@ -26,7 +27,45 @@ class AddProductMobile extends StatefulWidget {
 
 class _AddProductMobileState
     extends State<AddProductMobile> {
+  //
+  //
+  //
   bool isOpen = false;
+
+  void checkFields() {
+    if (widget.nameController.text.isEmpty ||
+        returnData(
+              context,
+              listen: false,
+            ).selectedCategory ==
+            null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Product Name and Product Category Must be set',
+            title: 'Empty Input',
+          );
+        },
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return AddProductTwo();
+          },
+        ),
+      );
+    }
+  }
+
+  //
+  //
+  //
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -114,11 +153,14 @@ class _AddProductMobileState
                         valueSet:
                             returnData(context).catValueSet,
                         onTap: () {
-                          unitsBottomSheet(context, () {
-                            setState(() {
-                              isOpen = false;
-                            });
-                          });
+                          categoriesBottomSheet(
+                            context,
+                            () {
+                              setState(() {
+                                isOpen = false;
+                              });
+                            },
+                          );
                           setState(() {
                             isOpen = !isOpen;
                           });
@@ -150,14 +192,7 @@ class _AddProductMobileState
               child: MainButtonP(
                 themeProvider: theme,
                 action: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return AddProductTwo();
-                      },
-                    ),
-                  );
+                  checkFields();
                 },
                 text: 'Save and Continue',
               ),

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -79,7 +80,7 @@ class CompProvider extends ChangeNotifier {
     );
   }
 
-  Widget showSuccess(String message) {
+  Widget showSuccess(String? message) {
     return Container(
       color: const Color.fromARGB(251, 255, 255, 255),
       child: Center(
@@ -102,8 +103,10 @@ class CompProvider extends ChangeNotifier {
                         horizontal: 50.0,
                       ),
                       child: Text(
+                        message ?? 'Success',
                         textAlign: TextAlign.center,
                         style: TextStyle(
+                          decoration: TextDecoration.none,
                           color:
                               themeProvider
                                   .lightModeColor
@@ -119,7 +122,6 @@ class CompProvider extends ChangeNotifier {
                                   .h2
                                   .fontWeightBold,
                         ),
-                        message,
                       ),
                     ),
                   ),

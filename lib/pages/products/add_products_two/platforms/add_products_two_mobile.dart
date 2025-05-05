@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
 import 'package:stockitt/components/text_fields/barcode_scanner.dart';
@@ -28,29 +29,77 @@ class AddProductsTwoMobile extends StatefulWidget {
 
 class _AddProductsTwoMobileState
     extends State<AddProductsTwoMobile> {
+  //
+  //
+  //
   bool barCodeSet = false;
 
   String? barcode;
 
   Future<void> scanCode() async {
-    String? res = await SimpleBarcodeScanner.scanBarcode(
-      context,
-      barcodeAppBar: const BarcodeAppBar(
-        appBarTitle: 'Test',
-        centerTitle: false,
-        enableBackButton: true,
-        backButtonIcon: Icon(Icons.arrow_back_ios),
-      ),
-      isShowFlashIcon: true,
-      delayMillis: 2000,
-      cameraFace: CameraFace.front,
-    );
-
-    setState(() {
-      barcode = res as String;
-      barCodeSet = true;
-    });
+    try {
+      String? res = await SimpleBarcodeScanner.scanBarcode(
+        context,
+        barcodeAppBar: const BarcodeAppBar(
+          appBarTitle: 'Test',
+          centerTitle: false,
+          enableBackButton: true,
+          backButtonIcon: Icon(Icons.arrow_back_ios),
+        ),
+        isShowFlashIcon: true,
+        delayMillis: 100,
+        cameraFace: CameraFace.back,
+      );
+      if (res == '-1') {
+        setState(() {
+          barcode = 'Barcode Scanning Cancelled';
+          barCodeSet = true;
+        });
+      } else {
+        setState(() {
+          barcode = res as String;
+          barCodeSet = true;
+        });
+      }
+    } catch (e) {
+      setState(() {});
+    }
   }
+
+  //
+  //
+  void checkFields() {
+    if (widget.costController.text.isEmpty ||
+        widget.sellingController.text.isEmpty ||
+        returnData(context, listen: false).selectedUnit ==
+            null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Product Cost Price, Selling Price and Product Unit Must be set',
+            title: 'Empty Input',
+          );
+        },
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return AddProductsThree();
+          },
+        ),
+      );
+    }
+  }
+  //
+  //
+  //
+  //
 
   bool isOpen = false;
   @override
@@ -147,14 +196,11 @@ class _AddProductsTwoMobileState
                               context,
                             ).unitValueSet,
                         onTap: () {
-                          categoriesBottomSheet(
-                            context,
-                            () {
-                              setState(() {
-                                isOpen = !isOpen;
-                              });
-                            },
-                          );
+                          unitsBottomSheet(context, () {
+                            setState(() {
+                              isOpen = !isOpen;
+                            });
+                          });
                           setState(() {
                             isOpen = !isOpen;
                           });
@@ -211,14 +257,7 @@ class _AddProductsTwoMobileState
               child: MainButtonP(
                 themeProvider: theme,
                 action: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return AddProductsThree();
-                      },
-                    ),
-                  );
+                  checkFields();
                 },
                 text: 'Save and Continue',
               ),

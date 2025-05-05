@@ -10,3 +10,8 @@ String formatLargeNumber(String numberString) {
   final formatter = NumberFormat('#,###');
   return formatter.format(number);
 }
+
+String formatLargeNumberDouble(num number) {
+  final formatter = NumberFormat('#,###');
+  return formatter.format(number);
+}

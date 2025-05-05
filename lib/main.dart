@@ -84,6 +84,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
+      routes: {'/': (context) => Home()},
+      //
+      //
+      //
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
@@ -99,7 +104,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),
       ),
-      home: const Home(),
+      // home: const Home(),
     );
   }
 }

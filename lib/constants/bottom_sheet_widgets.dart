@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/products/compnents/edit_product_tile.dart';
 import 'package:stockitt/providers/data_provider.dart';
 
-void categoriesBottomSheet(
+void unitsBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
@@ -24,6 +27,7 @@ void categoriesBottomSheet(
         minChildSize: 0.3,
         builder: (context, scrollController) {
           List<String> units = returnData(context).units;
+          units.sort();
 
           return Container(
             padding: const EdgeInsets.fromLTRB(
@@ -77,9 +81,15 @@ void categoriesBottomSheet(
                       ],
                     ),
                     IconButton(
-                      onPressed:
-                          () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.clear_rounded),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(
+                        returnData(context).unitValueSet
+                            ? Icons.check
+                            : Icons.clear_rounded,
+                      ),
                     ),
                   ],
                 ),
@@ -161,7 +171,7 @@ void categoriesBottomSheet(
 //
 // U N I T S  B O T T O M  S H E E T
 
-void unitsBottomSheet(
+void categoriesBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
@@ -183,6 +193,7 @@ void unitsBottomSheet(
         builder: (context, scrollController) {
           List<String> categories =
               returnData(context).categories;
+          categories.sort();
 
           return Container(
             padding: const EdgeInsets.fromLTRB(
@@ -236,9 +247,15 @@ void unitsBottomSheet(
                       ],
                     ),
                     IconButton(
-                      onPressed:
-                          () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.clear_rounded),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(
+                        returnData(context).catValueSet
+                            ? Icons.check
+                            : Icons.clear_rounded,
+                      ),
                     ),
                   ],
                 ),
@@ -341,6 +358,7 @@ void colorsBottomSheet(
         minChildSize: 0.3,
         builder: (context, scrollController) {
           List<String> colors = returnData(context).colors;
+          colors.sort();
 
           return Container(
             padding: const EdgeInsets.fromLTRB(
@@ -394,9 +412,15 @@ void colorsBottomSheet(
                       ],
                     ),
                     IconButton(
-                      onPressed:
-                          () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.clear_rounded),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(
+                        returnData(context).colorValueSet
+                            ? Icons.check
+                            : Icons.clear_rounded,
+                      ),
                     ),
                   ],
                 ),
@@ -503,6 +527,7 @@ void sizeTypeBottomSheet(
         minChildSize: 0.3,
         builder: (context, scrollController) {
           List<String> sizes = returnData(context).sizes;
+          sizes.sort();
 
           return Container(
             padding: const EdgeInsets.fromLTRB(
@@ -556,9 +581,15 @@ void sizeTypeBottomSheet(
                       ],
                     ),
                     IconButton(
-                      onPressed:
-                          () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.clear_rounded),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(
+                        returnData(context).sizeValueSet
+                            ? Icons.check
+                            : Icons.clear_rounded,
+                      ),
                     ),
                   ],
                 ),
@@ -631,5 +662,145 @@ void sizeTypeBottomSheet(
       );
     },
   );
+
+  action!();
+}
+
+//
+//
+//
+//
+// S I Z E  T Y P E   B O T T O M  S H E E T
+
+void editProductBottomSheet(
+  BuildContext context,
+  Function()? action,
+  TempProductClass product,
+) async {
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.4,
+        maxChildSize: 0.4,
+        minChildSize: 0.3,
+        builder: (context, scrollController) {
+          return Container(
+            color: Colors.white,
+            padding: const EdgeInsets.fromLTRB(
+              30,
+              15,
+              30,
+              45,
+            ),
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Action Menu',
+                          style: TextStyle(
+                            fontSize:
+                                returnTheme(
+                                  context,
+                                ).mobileTexts.b1.fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Select the action you want to Perform',
+                          style: TextStyle(
+                            fontSize:
+                                returnTheme(
+                                  context,
+                                ).mobileTexts.b2.fontSize,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(Icons.clear_rounded),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Column(
+                      spacing: 5,
+                      children: [
+                        ProductActionTile(
+                          svg: editIconSvg,
+                          text: 'Edit Product',
+                          action: () {},
+                        ),
+                        ProductActionTile(
+                          svg: addIconSvg,
+                          text: 'Add New Product',
+                          action: () {},
+                        ),
+                        ProductActionTile(
+                          svg: deleteIconSvg,
+                          text: 'Delete Product',
+                          action: () {
+                            returnData(
+                              context,
+                              listen: false,
+                            ).deleteProduct(product);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+
   action!();
 }
