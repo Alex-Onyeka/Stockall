@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 
 class ProductSummaryTab extends StatefulWidget {
@@ -23,17 +23,6 @@ class ProductSummaryTab extends StatefulWidget {
 
 class _ProductSummaryTabState
     extends State<ProductSummaryTab> {
-  String formatLargeNumber(String numberString) {
-    final number = int.tryParse(
-      numberString.replaceAll(',', ''),
-    );
-    if (number == null) return numberString;
-
-    // Format with commas
-    final formatter = NumberFormat('#,###');
-    return formatter.format(number);
-  }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);

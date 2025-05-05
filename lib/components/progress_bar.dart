@@ -22,7 +22,7 @@ class ProgressBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 30,
-        vertical: 15,
+        vertical: 12,
       ),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
@@ -52,7 +52,7 @@ class ProgressBar extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 25,
+                height: 30,
                 child: Stack(
                   children: [
                     Container(

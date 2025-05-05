@@ -73,3 +73,5 @@ const String reportIconSvg = 'assets/svgs/report_icon.svg';
 
 const String makeSalesIconSvg =
     'assets/svgs/make_sales_button.svg';
+
+const String nairaIconSvg = 'assets/svgs/naira_icon.svg';

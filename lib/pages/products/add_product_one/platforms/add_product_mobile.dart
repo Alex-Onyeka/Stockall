@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
+import 'package:stockitt/components/text_fields/main_dropdown.dart';
+import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_products_two/add_product_two.dart';
 
-class AddProductMobile extends StatelessWidget {
+class AddProductMobile extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController descController;
   final TextEditingController brandController;
@@ -17,6 +19,14 @@ class AddProductMobile extends StatelessWidget {
     required this.brandController,
   });
 
+  @override
+  State<AddProductMobile> createState() =>
+      _AddProductMobileState();
+}
+
+class _AddProductMobileState
+    extends State<AddProductMobile> {
+  bool isOpen = false;
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -81,7 +91,7 @@ class AddProductMobile extends StatelessWidget {
                         hint: 'Enter Product Name',
                         lines: 1,
                         title: 'Product Name',
-                        controller: nameController,
+                        controller: widget.nameController,
                       ),
                       SizedBox(height: 20),
                       GeneralTextField(
@@ -89,7 +99,7 @@ class AddProductMobile extends StatelessWidget {
                         hint: 'Enter Product Desription',
                         lines: 4,
                         title: 'Description (Optional)',
-                        controller: descController,
+                        controller: widget.descController,
                       ),
                       SizedBox(height: 20),
                       GeneralTextField(
@@ -97,7 +107,30 @@ class AddProductMobile extends StatelessWidget {
                         hint: 'Brand',
                         lines: 1,
                         title: 'Enter Brand (Optional)',
-                        controller: brandController,
+                        controller: widget.brandController,
+                      ),
+                      SizedBox(height: 20),
+                      MainDropdown(
+                        valueSet:
+                            returnData(context).catValueSet,
+                        onTap: () {
+                          unitsBottomSheet(context, () {
+                            setState(() {
+                              isOpen = false;
+                            });
+                          });
+                          setState(() {
+                            isOpen = !isOpen;
+                          });
+                        },
+                        isOpen: isOpen,
+                        title: 'Category',
+                        hint:
+                            returnData(
+                              context,
+                            ).selectedCategory ??
+                            'Select Product Category',
+                        theme: theme,
                       ),
                     ],
                   ),

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
-import 'package:stockitt/components/text_fields/general_textfield.dart';
+import 'package:stockitt/components/text_fields/barcode_scanner.dart';
 import 'package:stockitt/components/text_fields/main_dropdown.dart';
+import 'package:stockitt/components/text_fields/money_textfield.dart';
+import 'package:stockitt/constants/bottom_sheet_widgets.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/products/add_products_three/add_products_three.dart';
 
-class AddProductsTwoMobile extends StatelessWidget {
+class AddProductsTwoMobile extends StatefulWidget {
   final TextEditingController costController;
   final TextEditingController sellingController;
   final TextEditingController categoryController;
@@ -17,6 +21,38 @@ class AddProductsTwoMobile extends StatelessWidget {
     required this.categoryController,
   });
 
+  @override
+  State<AddProductsTwoMobile> createState() =>
+      _AddProductsTwoMobileState();
+}
+
+class _AddProductsTwoMobileState
+    extends State<AddProductsTwoMobile> {
+  bool barCodeSet = false;
+
+  String? barcode;
+
+  Future<void> scanCode() async {
+    String? res = await SimpleBarcodeScanner.scanBarcode(
+      context,
+      barcodeAppBar: const BarcodeAppBar(
+        appBarTitle: 'Test',
+        centerTitle: false,
+        enableBackButton: true,
+        backButtonIcon: Icon(Icons.arrow_back_ios),
+      ),
+      isShowFlashIcon: true,
+      delayMillis: 2000,
+      cameraFace: CameraFace.front,
+    );
+
+    setState(() {
+      barcode = res as String;
+      barCodeSet = true;
+    });
+  }
+
+  bool isOpen = false;
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -72,32 +108,89 @@ class AddProductsTwoMobile extends StatelessWidget {
                         theme: theme,
                         percent: '33.3%',
                         title: 'Your Progress',
-                        calcValue: 0.3,
-                        position: -1,
+                        calcValue: 0.25,
+                        position: -0.33,
                       ),
                       SizedBox(height: 20),
-                      GeneralTextField(
+                      BarcodeScanner(
+                        valueSet: barCodeSet,
+                        onTap: () {
+                          scanCode();
+                        },
+                        title: 'Product Barcode',
+                        hint:
+                            barcode ??
+                            'Click to Scan Product Barcode',
+                        theme: theme,
+                      ),
+                      SizedBox(height: 20),
+                      MoneyTextfield(
                         theme: theme,
                         hint:
-                            'N - Enter the actual Amount of the Item',
-                        lines: 1,
+                            'Enter the actual Amount of the Item',
                         title: 'Cost - Price',
-                        controller: costController,
+                        controller: widget.costController,
                       ),
                       SizedBox(height: 20),
-                      GeneralTextField(
+                      MoneyTextfield(
                         theme: theme,
                         hint:
-                            'N - Enter the Amount you wish to sell this Product',
-                        lines: 1,
+                            'Enter the Amount you wish to sell this Product',
                         title: 'Selling - Price',
-                        controller: sellingController,
+                        controller:
+                            widget.sellingController,
                       ),
                       SizedBox(height: 20),
                       MainDropdown(
-                        title: 'Category',
-                        hint: 'Select Product Category',
-                        lines: 1,
+                        valueSet:
+                            returnData(
+                              context,
+                            ).unitValueSet,
+                        onTap: () {
+                          categoriesBottomSheet(
+                            context,
+                            () {
+                              setState(() {
+                                isOpen = !isOpen;
+                              });
+                            },
+                          );
+                          setState(() {
+                            isOpen = !isOpen;
+                          });
+                        },
+                        isOpen: isOpen,
+                        title: 'Unit',
+                        hint:
+                            returnData(
+                              context,
+                            ).selectedUnit ??
+                            'Select Product Unit',
+                        theme: theme,
+                      ),
+                      SizedBox(height: 20),
+                      MainDropdown(
+                        valueSet:
+                            returnData(
+                              context,
+                            ).colorValueSet,
+                        onTap: () {
+                          colorsBottomSheet(context, () {
+                            setState(() {
+                              isOpen = !isOpen;
+                            });
+                          });
+                          setState(() {
+                            isOpen = !isOpen;
+                          });
+                        },
+                        isOpen: isOpen,
+                        title: 'Color (Optional)',
+                        hint:
+                            returnData(
+                              context,
+                            ).selectedColor ??
+                            'Select Product Color',
                         theme: theme,
                       ),
                     ],
@@ -117,7 +210,16 @@ class AddProductsTwoMobile extends StatelessWidget {
               ),
               child: MainButtonP(
                 themeProvider: theme,
-                action: () {},
+                action: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return AddProductsThree();
+                      },
+                    ),
+                  );
+                },
                 text: 'Save and Continue',
               ),
             ),
