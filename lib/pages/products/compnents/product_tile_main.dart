@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class ProductTileMain extends StatefulWidget {
@@ -47,7 +47,18 @@ class _ProductTileMainState extends State<ProductTileMain> {
           color: Colors.white,
           child: InkWell(
             radius: 10,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ProductDetailsPage(
+                      product: widget.product,
+                    );
+                  },
+                ),
+              );
+            },
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 15,

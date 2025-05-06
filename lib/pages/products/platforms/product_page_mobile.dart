@@ -11,6 +11,7 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
+import 'package:stockitt/pages/products/compnents/search_product_tile.dart';
 import 'package:stockitt/pages/products/total_products/total_products_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -363,75 +364,9 @@ class _ProductPageMobileState
                                                 searchController
                                                     .text,
                                               )[index];
-                                          return ListTile(
-                                            title: Row(
-                                              spacing: 10,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        14,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  product
-                                                      .name,
-                                                ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        14,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'N${formatLargeNumberDouble(product.sellingPrice)}',
-                                                ),
-                                              ],
-                                            ),
-                                            onTap: () {},
-                                            subtitle: Text(
-                                              [
-                                                if (product
-                                                        .color !=
-                                                    null)
-                                                  product
-                                                      .color,
-                                                if (product
-                                                        .sizeType !=
-                                                    null)
-                                                  product
-                                                      .sizeType,
-                                                if (product
-                                                        .size !=
-                                                    null)
-                                                  product
-                                                      .size,
-                                              ].join(
-                                                '  |  ',
-                                              ),
-                                              style: TextStyle(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor200,
-                                                fontSize:
-                                                    12,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-
-                                              // 'N${formatLargeNumberDouble(product.sellingPrice)}',
-                                            ),
-                                            trailing: Icon(
-                                              size: 20,
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade400,
-                                              Icons
-                                                  .arrow_forward_ios_rounded,
-                                            ),
+                                          return SearchProductTile(
+                                            product:
+                                                product,
                                           );
                                         },
                                       )

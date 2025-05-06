@@ -192,9 +192,40 @@ class DataProvider extends ChangeNotifier {
       costPrice: 1000,
       sellingPrice: 1500,
       discount: 5,
-      quantity: 50,
+      quantity: 4,
     ),
   ];
+  int currentSelect = 0;
+  void changeSelected(int number) {
+    currentSelect = number;
+    notifyListeners();
+  }
+
+  List<TempProductClass> filterProducts() {
+    switch (currentSelect) {
+      case 1:
+        // Return products where quantity is not zero
+        return products
+            .where((p) => p.quantity != 0)
+            .toList();
+      case 2:
+        // Return products where quantity is zero
+        return products
+            .where((p) => p.quantity == 0)
+            .toList();
+      case 3:
+        // Return products where quantity is less than or equal to 5, but not zero
+        return products
+            .where(
+              (p) => p.quantity <= 5 && p.quantity != 0,
+            )
+            .toList();
+      case 0:
+      default:
+        // Return all products
+        return products;
+    }
+  }
 
   List<TempProductClass> searchProductsName(String text) {
     List<TempProductClass> tempProducts =
@@ -356,12 +387,12 @@ class DataProvider extends ChangeNotifier {
     'Lites',
     'Lengths',
     'Kgs',
-    'Numbers',
+    'currentSelects',
     'Guages',
     'Lite',
     'Length',
     'Kg',
-    'Number',
+    'currentSelect',
     'Guage',
     'Others',
   ];

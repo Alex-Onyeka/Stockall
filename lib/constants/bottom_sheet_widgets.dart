@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/products/compnents/edit_product_tile.dart';
+import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
 
 void unitsBottomSheet(
@@ -689,8 +691,8 @@ void editProductBottomSheet(
     builder: (BuildContext context) {
       return DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.4,
-        maxChildSize: 0.4,
+        initialChildSize: 0.47,
+        maxChildSize: 0.47,
         minChildSize: 0.3,
         builder: (context, scrollController) {
           return Container(
@@ -772,7 +774,18 @@ void editProductBottomSheet(
                         ProductActionTile(
                           svg: editIconSvg,
                           text: 'View Product',
-                          action: () {},
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ProductDetailsPage(
+                                    product: product,
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
                         ProductActionTile(
                           svg: editIconSvg,
@@ -782,7 +795,16 @@ void editProductBottomSheet(
                         ProductActionTile(
                           svg: addIconSvg,
                           text: 'Add New Product',
-                          action: () {},
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return AddProduct();
+                                },
+                              ),
+                            );
+                          },
                         ),
                         ProductActionTile(
                           svg: deleteIconSvg,

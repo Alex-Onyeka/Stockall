@@ -7,7 +7,9 @@ import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
+import 'package:stockitt/pages/products/compnents/product_filter_button.dart';
 import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
+import 'package:stockitt/pages/products/compnents/search_product_tile.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
@@ -230,18 +232,44 @@ class _TotalProductsPageState
                                       ),
                                   child: SizedBox(
                                     width: double.infinity,
-                                    height: 40,
-                                    child: ListView(
+                                    // height: 40,
+                                    child: SingleChildScrollView(
+                                      clipBehavior:
+                                          Clip.hardEdge,
                                       scrollDirection:
                                           Axis.horizontal,
-                                      children: [
-                                        ProductsFilterButton(
-                                          action: () {},
-                                          title:
-                                              'All Products',
-                                          theme: theme,
-                                        ),
-                                      ],
+                                      child: Row(
+                                        spacing: 5,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          ProductsFilterButton(
+                                            number: 0,
+                                            title:
+                                                'All Products',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            number: 1,
+                                            title:
+                                                'In Stock',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            number: 2,
+                                            title:
+                                                'Low Stock',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            number: 3,
+                                            title:
+                                                'Out of Stock',
+                                            theme: theme,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -250,22 +278,17 @@ class _TotalProductsPageState
                                   child: ListView.builder(
                                     itemCount:
                                         returnData(context)
-                                            .searchProductsName(
-                                              searchController
-                                                  .text,
-                                            )
+                                            .filterProducts()
                                             .length,
                                     itemBuilder: (
                                       context,
                                       index,
                                     ) {
                                       List<TempProductClass>
-                                      products = returnData(
-                                        context,
-                                      ).searchProductsName(
-                                        searchController
-                                            .text,
-                                      );
+                                      products =
+                                          returnData(
+                                            context,
+                                          ).filterProducts();
 
                                       TempProductClass
                                       product =
@@ -419,71 +442,9 @@ class _TotalProductsPageState
                                                     searchController
                                                         .text,
                                                   )[index];
-                                              return ListTile(
-                                                title: Row(
-                                                  spacing:
-                                                      10,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      product
-                                                          .name,
-                                                    ),
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      'N${formatLargeNumberDouble(product.sellingPrice)}',
-                                                    ),
-                                                  ],
-                                                ),
-                                                onTap:
-                                                    () {},
-                                                subtitle: Text(
-                                                  [
-                                                    if (product.color !=
-                                                        null)
-                                                      product
-                                                          .color,
-                                                    if (product.sizeType !=
-                                                        null)
-                                                      product
-                                                          .sizeType,
-                                                    if (product.size !=
-                                                        null)
-                                                      product
-                                                          .size,
-                                                  ].join(
-                                                    '  |  ',
-                                                  ),
-                                                  style: TextStyle(
-                                                    color:
-                                                        theme.lightModeColor.secColor200,
-                                                    fontSize:
-                                                        12,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-
-                                                  // 'N${formatLargeNumberDouble(product.sellingPrice)}',
-                                                ),
-                                                trailing: Icon(
-                                                  size: 20,
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade400,
-                                                  Icons
-                                                      .arrow_forward_ios_rounded,
-                                                ),
+                                              return SearchProductTile(
+                                                product:
+                                                    product,
                                               );
                                             },
                                           )
@@ -577,50 +538,6 @@ class _TotalProductsPageState
                 ],
               ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProductsFilterButton extends StatelessWidget {
-  final String title;
-  final Function()? action;
-  const ProductsFilterButton({
-    super.key,
-    required this.theme,
-    required this.action,
-    required this.title,
-  });
-
-  final ThemeProvider theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        color: theme.lightModeColor.prColor300,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: InkWell(
-        radius: 15,
-        onTap: action,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 3,
-          ),
-
-          child: Center(
-            child: Text(
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-              title,
-            ),
-          ),
         ),
       ),
     );
