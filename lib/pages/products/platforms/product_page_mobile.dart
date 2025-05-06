@@ -56,12 +56,15 @@ class _ProductPageMobileState
                         }),
                     child: ItemsSummary(
                       hintText: 'Search Product Name',
-                      mainTitle: 'Total Revenue',
+                      mainTitle: 'Products Summary',
                       firsRow: true,
                       searchAction: () {},
                       color1: Colors.green,
                       title1: 'In Stock',
-                      value1: 9000,
+                      value1:
+                          returnData(
+                            context,
+                          ).totalStock().toInt(),
                       color2: Colors.amber,
                       title2: 'Out of Stock',
                       value2: 50,

@@ -36,9 +36,9 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     var theme = Provider.of<ThemeProvider>(context);
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap:
+          () =>
+              FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 500) {

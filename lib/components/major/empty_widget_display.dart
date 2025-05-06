@@ -65,34 +65,38 @@ class EmptyWidgetDisplay extends StatelessWidget {
             subText,
           ),
           SizedBox(height: 20),
-          InkWell(
-            onTap: action,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 30,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                gradient: theme.lightModeColor.prGradient,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                spacing: 10,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    color: Colors.white,
-                    Icons.add_rounded,
-                  ),
-                  Text(
-                    style: TextStyle(
+          Ink(
+            decoration: BoxDecoration(
+              gradient: theme.lightModeColor.prGradient,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: InkWell(
+              onTap: action,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 10,
+                ),
+
+                child: Row(
+                  spacing: 10,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Icon(
                       color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      Icons.add_rounded,
                     ),
-                    buttonText,
-                  ),
-                ],
+                    Text(
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      buttonText,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

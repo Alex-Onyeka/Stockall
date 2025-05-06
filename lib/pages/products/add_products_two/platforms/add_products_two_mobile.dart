@@ -60,6 +60,23 @@ class _AddProductsTwoMobileState
           barcode = res as String;
           barCodeSet = true;
         });
+        bool found = false;
+
+        for (var product
+            in returnData(
+              context,
+              listen: false,
+            ).products) {
+          if (product.barcode == barcode) {
+            print(product.name);
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          print('Product not found');
+        }
       }
     } catch (e) {
       setState(() {});
@@ -86,6 +103,24 @@ class _AddProductsTwoMobileState
         },
       );
     } else {
+      returnData(context, listen: false).barcode = barcode!;
+      returnData(
+        context,
+        listen: false,
+      ).costPrice = double.parse(
+        widget.costController.text.replaceAll(',', ''),
+      );
+      returnData(
+        context,
+        listen: false,
+      ).sellingPrice = double.parse(
+        widget.sellingController.text.replaceAll(',', ''),
+      );
+      returnData(context, listen: false).unit =
+          returnData(context, listen: false).selectedUnit!;
+      returnData(context, listen: false).color =
+          returnData(context, listen: false).selectedColor!;
+
       Navigator.push(
         context,
         MaterialPageRoute(

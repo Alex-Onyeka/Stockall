@@ -16,7 +16,10 @@ class _ProductsPageState extends State<ProductsPage> {
     var theme = returnTheme(context);
     return SafeArea(
       child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap:
+            () =>
+                FocusManager.instance.primaryFocus
+                    ?.unfocus(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth < 500) {

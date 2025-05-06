@@ -52,6 +52,17 @@ class _AddProductMobileState
         },
       );
     } else {
+      returnData(context, listen: false).name =
+          widget.nameController.text;
+      returnData(context, listen: false).desc =
+          widget.descController.text;
+      returnData(context, listen: false).brand =
+          widget.brandController.text;
+      returnData(context, listen: false).category =
+          returnData(
+            context,
+            listen: false,
+          ).selectedCategory!;
       Navigator.push(
         context,
         MaterialPageRoute(

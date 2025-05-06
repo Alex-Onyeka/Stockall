@@ -32,7 +32,7 @@ class MainInfoTab extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           // color: Colors.grey.shade100,
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: Colors.grey.shade500),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -55,7 +55,7 @@ class MainInfoTab extends StatelessWidget {
                 Text(
                   style: TextStyle(
                     color:
-                        theme.lightModeColor.greyColor100,
+                        theme.lightModeColor.greyColor200,
                     fontSize: theme.mobileTexts.b2.fontSize,
                     fontWeight:
                         theme.mobileTexts.b2.fontWeightBold,
@@ -76,7 +76,7 @@ class MainInfoTab extends StatelessWidget {
                   Text(
                     style: TextStyle(
                       color:
-                          theme.lightModeColor.greyColor100,
+                          theme.lightModeColor.greyColor200,
                       fontSize:
                           theme.mobileTexts.h4.fontSize,
                       fontWeight:
@@ -91,7 +91,7 @@ class MainInfoTab extends StatelessWidget {
               ),
             ),
             Divider(
-              color: Colors.grey.shade300,
+              color: Colors.grey.shade400,
               thickness: 1,
               height: 10,
             ),

@@ -2,6 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 
 class DataProvider extends ChangeNotifier {
+  String name = '';
+  String desc = '';
+  String brand = '';
+  String category = '';
+  String unit = '';
+  bool isRefundable = false;
+  String sizeType = '';
+  String size = '';
+  double costPrice = 15;
+  double quantity = 15;
+  double sellingPrice = 15;
+  double discount = 15;
+  String color = '';
+  String barcode = '';
+
   List<TempProductClass> products = [
     TempProductClass(
       name: 'Airpod Pro 2nd Gen',
@@ -151,7 +166,7 @@ class DataProvider extends ChangeNotifier {
       desc: 'Analog watch with leather strap',
       brand: 'Fossil',
       category: 'Watches',
-      barcode: '9234567890123',
+      barcode: '5060340392345',
       unit: 'pcs',
       isRefundable: true,
       color: 'Brown',
@@ -180,8 +195,37 @@ class DataProvider extends ChangeNotifier {
     ),
   ];
 
+  double totalStock() {
+    double totalNum = 0;
+    for (var product in products) {
+      totalNum += product.quantity;
+    }
+    return totalNum;
+  }
+
   void deleteProduct(TempProductClass product) {
     products.remove(product);
+    notifyListeners();
+  }
+
+  void addProduct(TempProductClass product) {
+    products.add(product);
+    notifyListeners();
+  }
+
+  void clearFields() {
+    isProductRefundable = false;
+    isRefundable = false;
+    selectedCategory = null;
+    selectedColor = null;
+    selectedSize = null;
+    selectedUnit = null;
+    inStock = false;
+    catValueSet = false;
+    isOpen = false;
+    unitValueSet = false;
+    colorValueSet = false;
+    sizeValueSet = false;
     notifyListeners();
   }
 
