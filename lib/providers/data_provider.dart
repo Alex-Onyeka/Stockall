@@ -25,6 +25,7 @@ class DataProvider extends ChangeNotifier {
       category: 'Gadgets',
       unit: 'Number',
       isRefundable: false,
+      barcode: ']C1CT:557C40DLLQ80S3',
       sizeType: 'Small Medium',
       size: '42',
       costPrice: 10000,
@@ -86,7 +87,7 @@ class DataProvider extends ChangeNotifier {
       desc: '200-page ruled notebook',
       brand: 'Cambridge',
       category: 'Stationery',
-      barcode: '4234567890123',
+      barcode: ']C1CT:557C40DLLQ80S3',
       unit: 'pcs',
       isRefundable: false,
       color: null,
@@ -102,7 +103,7 @@ class DataProvider extends ChangeNotifier {
       desc: null,
       brand: 'IKEA',
       category: 'Kitchenware',
-      barcode: '5234567890123',
+      barcode: ']C1CT:557C40DLLQ80S3',
       unit: 'pcs',
       isRefundable: true,
       color: 'White',
@@ -127,7 +128,7 @@ class DataProvider extends ChangeNotifier {
       costPrice: 10000,
       sellingPrice: 15000,
       discount: 10,
-      quantity: 25,
+      quantity: 0,
     ),
     TempProductClass(
       name: 'LED Bulb',
@@ -150,7 +151,7 @@ class DataProvider extends ChangeNotifier {
       desc: 'Anti-dandruff shampoo 250ml',
       brand: 'Head & Shoulders',
       category: 'Personal Care',
-      barcode: '8234567890123',
+      barcode: ']C1CT:557C40DLLQ80S3',
       unit: 'bottle',
       isRefundable: false,
       color: null,
@@ -195,10 +196,47 @@ class DataProvider extends ChangeNotifier {
     ),
   ];
 
-  double totalStock() {
-    double totalNum = 0;
+  List<TempProductClass> searchProductsName(String text) {
+    List<TempProductClass> tempProducts =
+        products
+            .where(
+              (product) => product.name
+                  .toLowerCase()
+                  .contains(text.toLowerCase()),
+            )
+            .toList();
+
+    return tempProducts;
+  }
+
+  List<TempProductClass> searchProductsBarcode(
+    String text,
+  ) {
+    return products
+        .where(
+          (product) =>
+              product.barcode != null &&
+              product.barcode!.contains(text),
+        )
+        .toList();
+  }
+
+  int totalInStock() {
+    int totalNum = 0;
     for (var product in products) {
-      totalNum += product.quantity;
+      if (product.quantity != 0) {
+        totalNum += 1;
+      }
+    }
+    return totalNum;
+  }
+
+  int totalOutOfStock() {
+    int totalNum = 0;
+    for (var product in products) {
+      if (product.quantity == 0) {
+        totalNum += 1;
+      }
     }
     return totalNum;
   }

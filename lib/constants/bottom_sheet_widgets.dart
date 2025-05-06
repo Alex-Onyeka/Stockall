@@ -771,6 +771,11 @@ void editProductBottomSheet(
                       children: [
                         ProductActionTile(
                           svg: editIconSvg,
+                          text: 'View Product',
+                          action: () {},
+                        ),
+                        ProductActionTile(
+                          svg: editIconSvg,
                           text: 'Edit Product',
                           action: () {},
                         ),

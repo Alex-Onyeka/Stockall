@@ -6,7 +6,7 @@ import 'package:stockitt/components/text_fields/barcode_scanner.dart';
 import 'package:stockitt/components/text_fields/main_dropdown.dart';
 import 'package:stockitt/components/text_fields/money_textfield.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_products_three/add_products_three.dart';
 
@@ -35,53 +35,6 @@ class _AddProductsTwoMobileState
   bool barCodeSet = false;
 
   String? barcode;
-
-  Future<void> scanCode() async {
-    try {
-      String? res = await SimpleBarcodeScanner.scanBarcode(
-        context,
-        barcodeAppBar: const BarcodeAppBar(
-          appBarTitle: 'Test',
-          centerTitle: false,
-          enableBackButton: true,
-          backButtonIcon: Icon(Icons.arrow_back_ios),
-        ),
-        isShowFlashIcon: true,
-        delayMillis: 100,
-        cameraFace: CameraFace.back,
-      );
-      if (res == '-1') {
-        setState(() {
-          barcode = 'Barcode Scanning Cancelled';
-          barCodeSet = true;
-        });
-      } else {
-        setState(() {
-          barcode = res as String;
-          barCodeSet = true;
-        });
-        bool found = false;
-
-        for (var product
-            in returnData(
-              context,
-              listen: false,
-            ).products) {
-          if (product.barcode == barcode) {
-            print(product.name);
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          print('Product not found');
-        }
-      }
-    } catch (e) {
-      setState(() {});
-    }
-  }
 
   //
   //
@@ -198,8 +151,15 @@ class _AddProductsTwoMobileState
                       SizedBox(height: 20),
                       BarcodeScanner(
                         valueSet: barCodeSet,
-                        onTap: () {
-                          scanCode();
+                        onTap: () async {
+                          String info = await scanCode(
+                            context,
+                            'failed',
+                          );
+                          setState(() {
+                            barcode = info;
+                            barCodeSet = true;
+                          });
                         },
                         title: 'Product Barcode',
                         hint:

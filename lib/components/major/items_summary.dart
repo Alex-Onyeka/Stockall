@@ -3,6 +3,8 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/compnents/products_summary_tab.dart';
 
 class ItemsSummary extends StatefulWidget {
+  final TextEditingController searchController;
+  final Function(String)? searchAction;
   final bool? onSearch;
   final String mainTitle;
   final String hintText;
@@ -20,13 +22,15 @@ class ItemsSummary extends StatefulWidget {
   final Color? color2;
   final Color? color3;
   final Color? color4;
-  final Function()? searchAction;
+  final Function()? scanAction;
   final bool? isMoney1;
   final bool? isMoney2;
   final bool? isMoney3;
   final bool? isMoney4;
 
   const ItemsSummary({
+    required this.searchController,
+    required this.searchAction,
     super.key,
     required this.secondRow,
     required this.title1,
@@ -42,7 +46,7 @@ class ItemsSummary extends StatefulWidget {
     this.color3,
     this.color4,
     required this.firsRow,
-    required this.searchAction,
+    required this.scanAction,
     required this.hintText,
     required this.mainTitle,
     this.isMoney1,
@@ -114,6 +118,10 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           ).size.width -
                           ((returnDouble() * 2) + 40),
                       child: TextFormField(
+                        controller: widget.searchController,
+                        textInputAction:
+                            TextInputAction.search,
+                        onChanged: widget.searchAction,
                         onTap: () {
                           setState(() {
                             isFocus = true;
@@ -128,7 +136,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           fillColor: Colors.white,
                           filled: isFocus,
                           suffixIcon: IconButton(
-                            onPressed: widget.searchAction,
+                            onPressed: widget.scanAction,
                             icon: Icon(
                               color:
                                   isFocus
@@ -138,7 +146,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                       : Colors
                                           .grey
                                           .shade600,
-                              Icons.send_outlined,
+                              Icons.qr_code_scanner,
                             ),
                           ),
                           contentPadding:
