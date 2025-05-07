@@ -204,25 +204,21 @@ class DataProvider extends ChangeNotifier {
   List<TempProductClass> filterProducts() {
     switch (currentSelect) {
       case 1:
-        // Return products where quantity is not zero
         return products
             .where((p) => p.quantity != 0)
             .toList();
       case 2:
-        // Return products where quantity is zero
         return products
             .where(
               (p) => p.quantity <= 10 && p.quantity != 0,
             )
             .toList();
       case 3:
-        // Return products where quantity is less than or equal to 5, but not zero
         return products
             .where((p) => p.quantity == 0)
             .toList();
       case 0:
       default:
-        // Return all products
         return products;
     }
   }

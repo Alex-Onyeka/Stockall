@@ -792,6 +792,7 @@ void editProductBottomSheet(
                           svg: editIconSvg,
                           text: 'Edit Product',
                           action: () {
+                            Navigator.of(context).pop();
                             Navigator.push(
                               context,
                               MaterialPageRoute(

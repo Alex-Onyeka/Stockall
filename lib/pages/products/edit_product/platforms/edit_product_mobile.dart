@@ -102,6 +102,15 @@ class _EditProductMobileState
   //
 
   bool isOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    barcode = widget.product.barcode;
+    barCodeSet =
+        widget.product.barcode != null ? true : false;
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
