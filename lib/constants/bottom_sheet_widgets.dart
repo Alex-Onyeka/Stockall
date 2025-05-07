@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/buttons/small_button_main.dart';
 import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
-import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
@@ -902,6 +902,13 @@ class _CustomBottomPanelState
               SizedBox(
                 width: 450,
                 child: NumberTextfield(
+                  onChanged: (value) {
+                    setState(() {
+                      cartItem.quantity = double.parse(
+                        value,
+                      );
+                    });
+                  },
                   title: 'Enter Product Quantity',
                   hint: 'Quantity',
                   controller: quantityController,
@@ -932,10 +939,30 @@ class _CustomBottomPanelState
                             theme.mobileTexts.h4.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      'N${formatLargeNumberDouble(cartItem.totalCost())}',
+                      'N${cartItem.totalCost()}',
                     ),
                   ],
                 ),
+              ),
+              SmallButtonMain(
+                theme: theme,
+                action: () {
+                  returnSalesProvider(
+                    context,
+                    listen: false,
+                  ).cartItems.add(cartItem);
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Product Added To Cart',
+                      ),
+                    ),
+                  );
+                },
+                buttonText: 'Add To Cart',
               ),
             ],
           ),
