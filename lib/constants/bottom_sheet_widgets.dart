@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/text_fields/text_field_barcode.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/products/compnents/edit_product_tile.dart';
+import 'package:stockitt/pages/products/compnents/product_tile_cart_search.dart';
+import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
 import 'package:stockitt/pages/products/edit_product/edit_products_page.dart';
 import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
@@ -728,7 +732,7 @@ void editProductBottomSheet(
                           CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Action Menu',
+                          'Add Products to Cart',
                           style: TextStyle(
                             fontSize:
                                 returnTheme(
@@ -843,4 +847,240 @@ void editProductBottomSheet(
   );
 
   action!();
+}
+
+//
+//
+//
+//
+// S I Z E  T Y P E   B O T T O M  S H E E T
+
+class CustomBottomPanel extends StatefulWidget {
+  final TextEditingController searchController;
+  final VoidCallback close;
+  const CustomBottomPanel({
+    super.key,
+    required this.searchController,
+    required this.close,
+  });
+
+  @override
+  State<CustomBottomPanel> createState() =>
+      _CustomBottomPanelState();
+}
+
+class _CustomBottomPanelState
+    extends State<CustomBottomPanel> {
+  List productResults = [];
+  String scanResult = '';
+  String? searchResult;
+  void clear() {
+    searchResult = null;
+    scanResult = '';
+    productResults.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Material(
+      color: Colors.transparent,
+      // elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: Ink(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(55, 0, 0, 0),
+                blurRadius: 5,
+              ),
+            ],
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          child: Container(
+            height:
+                MediaQuery.of(context).size.height * 0.9,
+
+            padding: const EdgeInsets.fromLTRB(
+              15,
+              15,
+              15,
+              45,
+            ),
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        15,
+                      ),
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Action Menu',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b1.fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Search For products to Add to Cart',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b2.fontSize,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          widget.close();
+                          clear();
+                        },
+                        icon: Icon(Icons.clear_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  child: TextFieldBarcode(
+                    searchController:
+                        widget.searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == '') {
+                          searchResult = null;
+                        } else {
+                          searchResult =
+                              value.toLowerCase();
+                        }
+                      });
+                    },
+                    onPressedScan: () async {
+                      String result = await scanCode(
+                        context,
+                        'Failed',
+                      );
+                      widget.searchController.text = result;
+                      setState(() {
+                        scanResult = result;
+                        productResults.addAll(
+                          returnData(
+                            context,
+                            listen: false,
+                          ).searchProductsBarcode(result),
+                        );
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      var products = productResults;
+                      if (products.isEmpty &&
+                          searchResult == null) {
+                        return Center(
+                          child: Text('Empty List'),
+                        );
+                      } else {
+                        if (productResults.isNotEmpty) {
+                          return ListView.builder(
+                            padding: EdgeInsets.only(
+                              top: 10,
+                            ),
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              final product =
+                                  products[index];
+                              return ProductTileMain(
+                                theme: theme,
+                                product: product,
+                              );
+                            },
+                          );
+                        } else {
+                          return ListView.builder(
+                            padding: EdgeInsets.only(
+                              top: 10,
+                            ),
+                            itemCount:
+                                returnData(context)
+                                    .searchProductsName(
+                                      widget
+                                          .searchController
+                                          .text,
+                                    )
+                                    .length,
+                            itemBuilder: (context, index) {
+                              final product =
+                                  returnData(
+                                    context,
+                                  ).searchProductsName(
+                                    widget
+                                        .searchController
+                                        .text,
+                                  )[index];
+                              return ProductTileCartSearch(
+                                action: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          'Enter Product Quantity',
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                theme: theme,
+                                product: product,
+                              );
+                            },
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

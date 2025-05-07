@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
+import 'package:stockitt/components/text_fields/text_field_barcode.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
@@ -39,7 +40,26 @@ class _TotalProductsPageState
   bool isFocus = false;
   TextEditingController searchController =
       TextEditingController();
+
   bool listEmpty = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      if (!context.mounted) return;
+
+      final uiProvider = returnData(context, listen: false);
+
+      if (!uiProvider.isFloatingButtonVisible) {
+        uiProvider.showFloatingActionButton();
+      } else {
+        uiProvider.hideFloatingActionButtonWithDelay();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -72,6 +92,10 @@ class _TotalProductsPageState
                   setState(() {
                     listEmpty = !listEmpty;
                   });
+                  // returnData(
+                  //   context,
+                  //   listen: false,
+                  // ).hideFloatingActionButtonWithDelay();
                 },
                 child: Text(
                   style: TextStyle(
@@ -110,96 +134,31 @@ class _TotalProductsPageState
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30.0,
                   ),
-                  child: TextFormField(
-                    controller: searchController,
+                  child: TextFieldBarcode(
+                    searchController: searchController,
+
                     onChanged: (value) {
                       setState(() {
                         searchResult = value;
                       });
                     },
-                    onTap: () {
+
+                    onPressedScan: () async {
+                      String result = await scanCode(
+                        context,
+                        'Scan Failed',
+                      );
                       setState(() {
-                        isFocus = true;
+                        searchController.text = result;
+                      });
+                      if (!context.mounted) return;
+                      setState(() {
+                        productsResult = returnData(
+                          context,
+                          listen: false,
+                        ).searchProductsBarcode(result);
                       });
                     },
-                    onTapOutside: (p0) {
-                      setState(() {
-                        isFocus = false;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: isFocus,
-                      suffixIcon: IconButton(
-                        onPressed: () async {
-                          String result = await scanCode(
-                            context,
-                            'Scan Failed',
-                          );
-                          setState(() {
-                            searchController.text = result;
-                          });
-                          if (!context.mounted) return;
-                          setState(() {
-                            productsResult = returnData(
-                              context,
-                              listen: false,
-                            ).searchProductsBarcode(result);
-                          });
-                        },
-                        icon: Icon(
-                          color:
-                              isFocus
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor100
-                                  : Colors.grey.shade600,
-                          Icons.qr_code_scanner,
-                        ),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      prefixIcon: Icon(
-                        size: 25,
-                        color:
-                            isFocus
-                                ? theme
-                                    .lightModeColor
-                                    .secColor100
-                                : Colors.grey,
-                        Icons.search_rounded,
-                      ),
-                      hintText:
-                          'Search Name or Scan Barcode',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          30,
-                        ),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade500,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          30,
-                        ),
-                        borderSide: BorderSide(
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .prColor300,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
                 Expanded(

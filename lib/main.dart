@@ -4,6 +4,7 @@ import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
+import 'package:stockitt/providers/sales_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 void main() async {
@@ -20,6 +21,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SalesProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => CompProvider(),
@@ -45,6 +49,16 @@ DataProvider returnData(
   bool listen = true,
 }) {
   return Provider.of<DataProvider>(context, listen: listen);
+}
+
+SalesProvider returnSalesProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<SalesProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 Widget colorWidget(

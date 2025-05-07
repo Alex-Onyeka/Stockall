@@ -10,6 +10,7 @@ class TopNavBar extends StatelessWidget {
   final String title;
   final String subText;
   final ThemeProvider theme;
+  final Function()? openSideBar;
 
   const TopNavBar({
     super.key,
@@ -17,6 +18,7 @@ class TopNavBar extends StatelessWidget {
     required this.title,
     required this.subText,
     required this.theme,
+    required this.openSideBar,
   });
 
   @override
@@ -41,8 +43,14 @@ class TopNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            spacing: 10,
+            spacing: 5,
             children: [
+              Icon(
+                color: Colors.grey.shade700,
+                size: 28,
+                Icons.menu_rounded,
+              ),
+              SizedBox(width: 10),
               Container(
                 height: 40,
                 width: 40,

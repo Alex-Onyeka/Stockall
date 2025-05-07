@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/pages/dashboard/components/nav_button.dart';
+import 'package:stockitt/pages/sales/make_sales/make_sales_page.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 
 class MainBottomNav extends StatelessWidget {
@@ -67,7 +68,16 @@ class MainBottomNav extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return MakeSalesPage();
+                },
+              ),
+            );
+          },
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,

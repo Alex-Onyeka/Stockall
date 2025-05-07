@@ -500,4 +500,30 @@ class DataProvider extends ChangeNotifier {
   //
   //
   //
+
+  //
+  //
+  //
+
+  //
+  //
+  //
+  //
+  //
+  //
+  // F L O A T I N G   A C T I O N   B U T T O N
+
+  bool isFloatingButtonVisible = true;
+
+  void hideFloatingActionButtonWithDelay() {
+    Future.delayed(Duration(seconds: 5), () {
+      isFloatingButtonVisible = false;
+      notifyListeners();
+    });
+  }
+
+  void showFloatingActionButton() {
+    isFloatingButtonVisible = true;
+    notifyListeners();
+  }
 }

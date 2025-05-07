@@ -8,20 +8,27 @@ import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
 
 class DashboardMobile extends StatelessWidget {
-  const DashboardMobile({super.key});
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(),
       body: Column(
         children: [
           TopNavBar(
+            openSideBar: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
             theme: theme,
             notifNumber: 2,
             subText: 'No 12 Wuse, Abuja, Nigeria',
             title: 'Alex Shop',
           ),
+
           Expanded(
             child: SingleChildScrollView(
               child: SizedBox(

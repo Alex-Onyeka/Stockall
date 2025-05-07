@@ -17,6 +17,7 @@ class DashboardDesktop extends StatelessWidget {
       body: Column(
         children: [
           TopNavBar(
+            openSideBar: () {},
             theme: theme,
             notifNumber: 2,
             subText: 'No 12 Wuse, Abuja, Nigeria',

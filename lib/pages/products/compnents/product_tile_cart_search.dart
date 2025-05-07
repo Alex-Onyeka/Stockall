@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
-class ProductTileMain extends StatefulWidget {
+class ProductTileCartSearch extends StatefulWidget {
   final TempProductClass product;
-  const ProductTileMain({
+  final Function()? action;
+  // final Funcion()? action;
+  const ProductTileCartSearch({
     super.key,
     required this.theme,
     required this.product,
+    required this.action,
   });
 
   final ThemeProvider theme;
 
   @override
-  State<ProductTileMain> createState() =>
-      _ProductTileMainState();
+  State<ProductTileCartSearch> createState() =>
+      _ProductTileCartSearchState();
 }
 
-class _ProductTileMainState extends State<ProductTileMain> {
+class _ProductTileCartSearchState
+    extends State<ProductTileCartSearch> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,18 +49,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
           color: Colors.white,
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ProductDetailsPage(
-                      product: widget.product,
-                    );
-                  },
-                ),
-              );
-            },
+            onTap: widget.action,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 15,
@@ -157,16 +148,8 @@ class _ProductTileMainState extends State<ProductTileMain> {
                               ],
                             ),
                             IconButton(
-                              onPressed: () {
-                                editProductBottomSheet(
-                                  context,
-                                  () {},
-                                  widget.product,
-                                );
-                              },
-                              icon: Icon(
-                                Icons.more_vert_rounded,
-                              ),
+                              onPressed: () {},
+                              icon: Icon(Icons.add),
                             ),
                           ],
                         ),

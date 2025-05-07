@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/components/text_fields/text_field_barcode.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/compnents/products_summary_tab.dart';
 
@@ -117,79 +118,11 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                             context,
                           ).size.width -
                           ((returnDouble() * 2) + 40),
-                      child: TextFormField(
-                        controller: widget.searchController,
-                        textInputAction:
-                            TextInputAction.search,
+                      child: TextFieldBarcode(
+                        searchController:
+                            widget.searchController,
                         onChanged: widget.searchAction,
-                        onTap: () {
-                          setState(() {
-                            isFocus = true;
-                          });
-                        },
-                        onTapOutside: (p0) {
-                          setState(() {
-                            isFocus = false;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: isFocus,
-                          suffixIcon: IconButton(
-                            onPressed: widget.scanAction,
-                            icon: Icon(
-                              color:
-                                  isFocus
-                                      ? theme
-                                          .lightModeColor
-                                          .secColor100
-                                      : Colors
-                                          .grey
-                                          .shade600,
-                              Icons.qr_code_scanner,
-                            ),
-                          ),
-                          contentPadding:
-                              EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                          prefixIcon: Icon(
-                            size: 25,
-                            color:
-                                isFocus
-                                    ? theme
-                                        .lightModeColor
-                                        .secColor100
-                                    : Colors.grey,
-                            Icons.search_rounded,
-                          ),
-                          hintText: widget.hintText,
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(30),
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade500,
-                              width: 1,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(30),
-                            borderSide: BorderSide(
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .prColor300,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
+                        onPressedScan: widget.scanAction,
                       ),
                     ),
                   ),
