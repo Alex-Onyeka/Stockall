@@ -56,7 +56,8 @@ class _AddProductsTwoMobileState
         },
       );
     } else {
-      returnData(context, listen: false).barcode = barcode!;
+      returnData(context, listen: false).barcode =
+          barcode ?? '';
       returnData(
         context,
         listen: false,
@@ -72,7 +73,11 @@ class _AddProductsTwoMobileState
       returnData(context, listen: false).unit =
           returnData(context, listen: false).selectedUnit!;
       returnData(context, listen: false).color =
-          returnData(context, listen: false).selectedColor!;
+          returnData(
+            context,
+            listen: false,
+          ).selectedColor ??
+          '';
 
       Navigator.push(
         context,

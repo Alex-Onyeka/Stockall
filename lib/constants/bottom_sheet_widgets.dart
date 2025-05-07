@@ -5,6 +5,7 @@ import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/products/compnents/edit_product_tile.dart';
+import 'package:stockitt/pages/products/edit_product/edit_products_page.dart';
 import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
 
@@ -790,7 +791,18 @@ void editProductBottomSheet(
                         ProductActionTile(
                           svg: editIconSvg,
                           text: 'Edit Product',
-                          action: () {},
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return EditProductsPage(
+                                    product: product,
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
                         ProductActionTile(
                           svg: addIconSvg,

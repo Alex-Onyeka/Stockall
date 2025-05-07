@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -83,7 +84,23 @@ class _TotalProductsPageState
             ],
           ),
         ),
-        // bottomNavigationBar: MainBottomNav(),
+        floatingActionButton: FloatingActionButtonMain(
+          action: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AddProduct();
+                },
+              ),
+            );
+          },
+          color: theme.lightModeColor.secColor100,
+          text: 'Add Products',
+          theme: theme,
+        ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.endFloat,
         body: Stack(
           children: [
             Column(

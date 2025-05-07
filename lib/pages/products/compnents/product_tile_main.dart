@@ -46,7 +46,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
           elevation: 0,
           color: Colors.white,
           child: InkWell(
-            radius: 10,
+            borderRadius: BorderRadius.circular(10),
             onTap: () {
               Navigator.push(
                 context,
@@ -241,13 +241,29 @@ class _ProductTileMainState extends State<ProductTileMain> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
-                                      widget
-                                                  .product
-                                                  .quantity !=
-                                              0
+                                      widget.product.quantity !=
+                                                  0 &&
+                                              widget
+                                                      .product
+                                                      .quantity >
+                                                  10
                                           ? Colors
                                               .grey
                                               .shade100
+                                          : widget
+                                                      .product
+                                                      .quantity !=
+                                                  0 &&
+                                              widget
+                                                      .product
+                                                      .quantity <=
+                                                  10
+                                          ? const Color.fromARGB(
+                                            255,
+                                            255,
+                                            249,
+                                            227,
+                                          )
                                           : const Color.fromARGB(
                                             255,
                                             255,
@@ -256,13 +272,27 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                           ),
                                   border: Border.all(
                                     color:
-                                        widget
-                                                    .product
-                                                    .quantity !=
-                                                0
+                                        widget.product.quantity !=
+                                                    0 &&
+                                                widget
+                                                        .product
+                                                        .quantity >
+                                                    10
                                             ? Colors
                                                 .grey
                                                 .shade700
+                                            : widget.product.quantity !=
+                                                    0 &&
+                                                widget
+                                                        .product
+                                                        .quantity <=
+                                                    10
+                                            ? const Color.fromARGB(
+                                              255,
+                                              255,
+                                              229,
+                                              62,
+                                            )
                                             : const Color.fromARGB(
                                               255,
                                               255,
@@ -288,10 +318,22 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                           FontWeight.bold,
                                       color:
                                           widget.product.quantity !=
-                                                  0
+                                                      0 &&
+                                                  widget.product.quantity >
+                                                      10
                                               ? Colors
                                                   .grey
                                                   .shade700
+                                              : widget.product.quantity !=
+                                                      0 &&
+                                                  widget.product.quantity <=
+                                                      10
+                                              ? const Color.fromARGB(
+                                                255,
+                                                132,
+                                                115,
+                                                1,
+                                              )
                                               : const Color.fromARGB(
                                                 255,
                                                 255,
