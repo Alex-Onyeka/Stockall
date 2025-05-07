@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
@@ -12,6 +15,7 @@ import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
 import 'package:stockitt/pages/products/edit_product/edit_products_page.dart';
 import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
+import 'package:stockitt/providers/theme_provider.dart';
 
 void unitsBottomSheet(
   BuildContext context,
@@ -732,7 +736,7 @@ void editProductBottomSheet(
                           CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Add Products to Cart',
+                          'Action Menu',
                           style: TextStyle(
                             fontSize:
                                 returnTheme(
@@ -853,7 +857,7 @@ void editProductBottomSheet(
 //
 //
 //
-// S I Z E  T Y P E   B O T T O M  S H E E T
+// C A R T   B O T T O M  S H E E T
 
 class CustomBottomPanel extends StatefulWidget {
   final TextEditingController searchController;
@@ -871,6 +875,77 @@ class CustomBottomPanel extends StatefulWidget {
 
 class _CustomBottomPanelState
     extends State<CustomBottomPanel> {
+  //
+  //
+  //
+  void selectProduct(
+    ThemeProvider theme,
+    TempCartItem cartItem,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+
+          title: Text(
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: theme.mobileTexts.h4.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            'Enter Product Quantity',
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 450,
+                child: NumberTextfield(
+                  title: 'Enter Product Quantity',
+                  hint: 'Quantity',
+                  controller: quantityController,
+                  theme: theme,
+                ),
+              ),
+              SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 20,
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'Total Price',
+                    ),
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.h4.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'N${formatLargeNumberDouble(cartItem.totalCost())}',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  TextEditingController quantityController =
+      TextEditingController();
   List productResults = [];
   String scanResult = '';
   String? searchResult;
@@ -926,7 +1001,7 @@ class _CustomBottomPanelState
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 15.0,
@@ -940,7 +1015,7 @@ class _CustomBottomPanelState
                             CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Action Menu',
+                            'Add Products to Cart',
                             style: TextStyle(
                               fontSize:
                                   returnTheme(
@@ -1055,15 +1130,22 @@ class _CustomBottomPanelState
                                   )[index];
                               return ProductTileCartSearch(
                                 action: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text(
-                                          'Enter Product Quantity',
-                                        ),
-                                      );
-                                    },
+                                  selectProduct(
+                                    theme,
+                                    TempCartItem(
+                                      item: product,
+                                      quantity:
+                                          double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )
+                                                .trim(),
+                                          ) ??
+                                          0.0,
+                                    ),
                                   );
                                 },
                                 theme: theme,
