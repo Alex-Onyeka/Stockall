@@ -147,110 +147,124 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                // fontWeight: FontWeight.bold,
+                  Visibility(
+                    visible:
+                        returnSalesProvider(
+                          context,
+                        ).cartItems.isNotEmpty,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                      ),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  // fontWeight: FontWeight.bold,
+                                ),
+                                'Subtotal',
                               ),
-                              'Subtotal',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                // fontWeight: FontWeight.bold,
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  // fontWeight: FontWeight.bold,
+                                ),
+                                'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
                               ),
-                              'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                // fontWeight: FontWeight.bold,
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  // fontWeight: FontWeight.bold,
+                                ),
+                                'Discount',
                               ),
-                              'Discount',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                // fontWeight: FontWeight.bold,
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  // fontWeight: FontWeight.bold,
+                                ),
+                                'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
                               ),
-                              'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Total',
                               ),
-                              'Total',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
                               ),
-                              'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
-                  MainButtonP(
-                    themeProvider: theme,
-                    action: () {},
-                    text: 'Check Out',
+                  Visibility(
+                    visible:
+                        returnSalesProvider(
+                          context,
+                        ).cartItems.isNotEmpty,
+                    child: MainButtonP(
+                      themeProvider: theme,
+                      action: () {},
+                      text: 'Check Out',
+                    ),
                   ),
                   SizedBox(height: 20),
                 ],

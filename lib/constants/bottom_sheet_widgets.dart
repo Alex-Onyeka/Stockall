@@ -11,7 +11,6 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/products/compnents/edit_product_tile.dart';
 import 'package:stockitt/pages/products/compnents/product_tile_cart_search.dart';
-import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
 import 'package:stockitt/pages/products/edit_product/edit_products_page.dart';
 import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
@@ -1127,7 +1126,26 @@ class _CustomBottomPanelState
                             itemBuilder: (context, index) {
                               final product =
                                   products[index];
-                              return ProductTileMain(
+                              return ProductTileCartSearch(
+                                action: () {
+                                  selectProduct(
+                                    theme,
+                                    TempCartItem(
+                                      item: product,
+                                      quantity:
+                                          double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )
+                                                .trim(),
+                                          ) ??
+                                          0.0,
+                                    ),
+                                  );
+                                },
                                 theme: theme,
                                 product: product,
                               );

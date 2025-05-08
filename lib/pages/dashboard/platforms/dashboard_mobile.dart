@@ -6,6 +6,7 @@ import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
+import 'package:stockitt/pages/products/products_page.dart';
 
 class DashboardMobile extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -109,7 +110,16 @@ class DashboardMobile extends StatelessWidget {
                                   theme: theme,
                                   icon: productIconSvg,
                                   title: 'Products',
-                                  action: () {},
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ProductsPage();
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                                 ButtonTab(
                                   theme: theme,
