@@ -68,6 +68,9 @@ class _AddProductsThreeMobileState
 
       returnData(context, listen: false).addProduct(
         TempProductClass(
+          id: int.parse(
+            "${DateTime.now().second} ${DateTime.now().minute}",
+          ),
           barcode:
               returnData(context, listen: false).barcode,
           brand: returnData(context, listen: false).brand,

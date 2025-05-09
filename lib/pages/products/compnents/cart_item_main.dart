@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/constants/calculations.dart';
+import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class CartItemMain extends StatefulWidget {
   final TempCartItem cartItem;
+  final Function()? editAction;
+  final Function()? deleteCartItem;
   const CartItemMain({
     super.key,
     required this.theme,
     required this.cartItem,
+    required this.editAction,
+    required this.deleteCartItem,
   });
 
   final ThemeProvider theme;
@@ -20,6 +27,7 @@ class CartItemMain extends StatefulWidget {
 class _CartItemMainState extends State<CartItemMain> {
   @override
   Widget build(BuildContext context) {
+    var theme = returnTheme(context);
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: Container(
@@ -51,8 +59,8 @@ class _CartItemMainState extends State<CartItemMain> {
             child: Row(
               children: [
                 Container(
-                  height: 60,
-                  width: 60,
+                  height: 50,
+                  width: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: Colors.grey.shade200,
@@ -143,7 +151,8 @@ class _CartItemMainState extends State<CartItemMain> {
                             ],
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed:
+                                widget.deleteCartItem,
                             icon: Icon(
                               Icons.delete_outline,
                             ),
@@ -157,10 +166,45 @@ class _CartItemMainState extends State<CartItemMain> {
                           Row(
                             spacing: 5,
                             children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
+                                ),
+                                'N${widget.cartItem.item.discount == null ? formatLargeNumberDouble(widget.cartItem.totalCost()) : formatLargeNumberDouble((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100))))}',
+                              ),
                               Visibility(
-                                visible: true,
+                                visible:
+                                    widget
+                                        .cartItem
+                                        .item
+                                        .discount !=
+                                    null,
+                                child: Text('/'),
+                              ),
+                              Visibility(
+                                visible:
+                                    widget
+                                        .cartItem
+                                        .item
+                                        .discount !=
+                                    null,
                                 child: Text(
                                   style: TextStyle(
+                                    decoration:
+                                        TextDecoration
+                                            .lineThrough,
                                     fontSize:
                                         widget
                                             .theme
@@ -169,16 +213,68 @@ class _CartItemMainState extends State<CartItemMain> {
                                             .fontSize,
                                     fontWeight:
                                         FontWeight.bold,
-                                    color:
-                                        widget
-                                            .theme
-                                            .lightModeColor
-                                            .prColor300,
+                                    color: Colors.grey,
                                   ),
                                   'N${formatLargeNumberDouble(widget.cartItem.totalCost())}',
                                 ),
                               ),
                             ],
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                color: Colors.grey.shade100,
+                              ),
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                onTap: widget.editAction,
+                                child: Container(
+                                  height: 30,
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+
+                                  child: Row(
+                                    spacing: 10,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          style: TextStyle(
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                            fontSize: 18,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          widget
+                                              .cartItem
+                                              .quantity
+                                              .toStringAsFixed(
+                                                0,
+                                              ),
+                                        ),
+                                      ),
+                                      SvgPicture.asset(
+                                        height: 16,
+                                        editIconSvg,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),

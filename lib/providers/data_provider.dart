@@ -19,6 +19,7 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> products = [
     TempProductClass(
+      id: 1,
       name: 'Airpod Pro 2nd Gen',
       desc: 'A very Nice Product',
       brand: 'Gucci',
@@ -35,6 +36,7 @@ class DataProvider extends ChangeNotifier {
       color: 'Red',
     ),
     TempProductClass(
+      id: 2,
       name: 'Red T-Shirt',
       desc: 'Comfortable cotton t-shirt',
       brand: 'H&M',
@@ -51,6 +53,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 20,
     ),
     TempProductClass(
+      id: 3,
       name: 'Bluetooth Speaker',
       desc: 'Portable wireless speaker',
       brand: 'JBL',
@@ -67,6 +70,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 15,
     ),
     TempProductClass(
+      id: 4,
       name: 'Running Shoes',
       desc: 'Lightweight shoes for running',
       brand: 'Nike',
@@ -83,6 +87,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 10,
     ),
     TempProductClass(
+      id: 5,
       name: 'Notebook',
       desc: '200-page ruled notebook',
       brand: 'Cambridge',
@@ -99,6 +104,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 100,
     ),
     TempProductClass(
+      id: 6,
       name: 'Coffee Mug',
       desc: null,
       brand: 'IKEA',
@@ -115,6 +121,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 30,
     ),
     TempProductClass(
+      id: 7,
       name: 'Laptop Bag',
       desc: 'Water-resistant laptop backpack',
       brand: 'Samsonite',
@@ -131,6 +138,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 0,
     ),
     TempProductClass(
+      id: 8,
       name: 'LED Bulb',
       desc: '9W LED energy-saving bulb',
       brand: 'Philips',
@@ -147,6 +155,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 200,
     ),
     TempProductClass(
+      id: 9,
       name: 'Shampoo',
       desc: 'Anti-dandruff shampoo 250ml',
       brand: 'Head & Shoulders',
@@ -163,6 +172,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 60,
     ),
     TempProductClass(
+      id: 9,
       name: 'Wrist Watch',
       desc: 'Analog watch with leather strap',
       brand: 'Fossil',
@@ -179,6 +189,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 8,
     ),
     TempProductClass(
+      id: 10,
       name: 'Face Mask Pack',
       desc: 'Pack of 50 disposable masks',
       brand: null,

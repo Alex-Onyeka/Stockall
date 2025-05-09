@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/small_button_main.dart';
+import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockitt/components/text_fields/general_textfield.dart';
 import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
@@ -880,98 +884,203 @@ class _CustomBottomPanelState
   void selectProduct(
     ThemeProvider theme,
     TempCartItem cartItem,
+    Function() closeAction,
   ) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-
-          title: Text(
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: theme.mobileTexts.h4.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-            'Enter Product Quantity',
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 450,
-                child: NumberTextfield(
-                  onChanged: (value) {
-                    setState(() {
-                      cartItem.quantity = double.parse(
-                        value,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text(
+                'Enter Product Quantity',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.h4.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 450,
+                    child: NumberTextfield(
+                      onChanged: (value) {
+                        setState(() {
+                          cartItem.quantity =
+                              double.tryParse(value) ?? 0;
+                          qqty = int.parse(value);
+                        });
+                      },
+                      title: 'Enter Product Quantity',
+                      hint: 'Quantity',
+                      controller: quantityController,
+                      theme: theme,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                      color: Colors.grey.shade100,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                          ),
+                          'Total',
+                        ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                            fontWeight:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontWeightBold,
+                          ),
+                          formatLargeNumberDouble(
+                            qqty *
+                                (cartItem
+                                        .item
+                                        .sellingPrice -
+                                    returnSalesProvider(
+                                      context,
+                                      listen: false,
+                                    ).discountCheck(
+                                      cartItem.item,
+                                    )),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      spacing: 15,
+                      children: [
+                        Ink(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color: Colors.grey.shade100,
+                          ),
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            onTap: () {
+                              setState(() {
+                                if (qqty > 1) qqty--;
+                                quantityController.text =
+                                    qqty.toString();
+                              });
+                            },
+                            child: SizedBox(
+                              height: 30,
+                              width: 50,
+                              child: Icon(Icons.remove),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          qqty.toString(),
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .h4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Ink(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color: Colors.grey.shade100,
+                          ),
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            onTap: () {
+                              setState(() {
+                                qqty++;
+                                quantityController.text =
+                                    qqty.toString();
+                              });
+                            },
+                            child: SizedBox(
+                              height: 30,
+                              width: 50,
+                              child: Center(
+                                child: Icon(Icons.add),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  SmallButtonMain(
+                    theme: theme,
+                    action: () {
+                      cartItem.quantity = qqty.toDouble();
+                      String result = returnSalesProvider(
+                        context,
+                        listen: false,
+                      ).addItemToCart(cartItem);
+                      Navigator.of(context).pop();
+                      closeAction();
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(
+                        SnackBar(content: Text(result)),
                       );
-                    });
-                  },
-                  title: 'Enter Product Quantity',
-                  hint: 'Quantity',
-                  controller: quantityController,
-                  theme: theme,
-                ),
+                    },
+                    buttonText: 'Add To Cart',
+                  ),
+                ],
               ),
-              SizedBox(height: 5),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 20,
-                ),
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'Total Price',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'N${cartItem.totalCost()}',
-                    ),
-                  ],
-                ),
-              ),
-              SmallButtonMain(
-                theme: theme,
-                action: () {
-                  returnSalesProvider(
-                    context,
-                    listen: false,
-                  ).cartItems.add(cartItem);
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Product Added To Cart',
-                      ),
-                    ),
-                  );
-                },
-                buttonText: 'Add To Cart',
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
-    );
+    ).then((value) {
+      qqty = 1;
+      quantityController.text = '1';
+    });
   }
 
   TextEditingController quantityController =
-      TextEditingController();
+      TextEditingController(text: '1');
+  int qqty = 1;
   List productResults = [];
   String scanResult = '';
   String? searchResult;
@@ -1144,6 +1253,7 @@ class _CustomBottomPanelState
                                           ) ??
                                           0.0,
                                     ),
+                                    widget.close,
                                   );
                                 },
                                 theme: theme,
@@ -1191,6 +1301,7 @@ class _CustomBottomPanelState
                                           ) ??
                                           0.0,
                                     ),
+                                    widget.close,
                                   );
                                 },
                                 theme: theme,
@@ -1210,4 +1321,604 @@ class _CustomBottomPanelState
       ),
     );
   }
+}
+
+//
+//
+//
+//
+// E D I T   C A R T   I T E M   B O T T O M  S H E E T
+
+void editCartItemBottomSheet(
+  BuildContext context,
+  Function()? updateAction,
+  TempCartItem cartItem,
+  TextEditingController numberController,
+) async {
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      numberController.text = cartItem.quantity.toString();
+      return StatefulBuilder(
+        builder: (context, setState) {
+          double qqty =
+              double.tryParse(numberController.text) ??
+              cartItem.quantity.toDouble();
+          return DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.9,
+            maxChildSize: 0.9,
+            minChildSize: 0.3,
+            builder: (context, scrollController) {
+              var theme = returnTheme(context);
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(
+                  30,
+                  15,
+                  30,
+                  45,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        height: 4,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Edit Number',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Enter Item Number to Update',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            FocusScope.of(
+                              context,
+                            ).unfocus();
+                          },
+                          icon: Icon(Icons.clear_rounded),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          spacing: 5,
+                          children: [
+                            EditCartTextField(
+                              title: 'Enter Number',
+                              hint: 'Start Typing',
+                              controller: numberController,
+                              theme: theme,
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              spacing: 15,
+                              children: [
+                                Material(
+                                  color: Colors.transparent,
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                    ),
+                                    child: InkWell(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      onTap: () {
+                                        setState(() {
+                                          if (qqty > 1) {
+                                            qqty--;
+                                          }
+
+                                          numberController
+                                                  .text =
+                                              qqty.toString();
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: Icon(
+                                          Icons.remove,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  qqty.toString(),
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .h4
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                    ),
+                                    child: InkWell(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      onTap: () {
+                                        setState(() {
+                                          qqty++;
+                                          numberController
+                                                  .text =
+                                              qqty.toString();
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.add,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            MainButtonP(
+                              themeProvider: theme,
+                              action: updateAction,
+                              text: 'Update Quantity',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+}
+
+//
+//
+//
+
+//
+//
+//
+//
+// C U S T O M E R   S E A R C H     B O T T O M  S H E E T
+
+class CustomerSearchBottomSheet extends StatefulWidget {
+  final TextEditingController searchController;
+  final VoidCallback close;
+  const CustomerSearchBottomSheet({
+    super.key,
+    required this.searchController,
+    required this.close,
+  });
+
+  @override
+  State<CustomerSearchBottomSheet> createState() =>
+      _CustomerSearchBottomSheetState();
+}
+
+class _CustomerSearchBottomSheetState
+    extends State<CustomerSearchBottomSheet> {
+  //
+  //
+  //
+
+  List customerResults = [];
+
+  String? searchResult;
+  void clear() {
+    searchResult = null;
+    customerResults.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Material(
+      color: Colors.transparent,
+      // elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: Ink(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(55, 0, 0, 0),
+                blurRadius: 5,
+              ),
+            ],
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          child: Container(
+            height:
+                MediaQuery.of(context).size.height * 0.9,
+
+            padding: const EdgeInsets.fromLTRB(
+              15,
+              15,
+              15,
+              45,
+            ),
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        15,
+                      ),
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Add A Customer',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b1.fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Search For Your Customers to Add to Sale',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b2.fontSize,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          widget.close();
+                          clear();
+                        },
+                        icon: Icon(Icons.clear_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  child: GeneralTextField(
+                    hint: "Enter Customers' Name",
+                    lines: 1,
+                    theme: theme,
+                    title: 'Add Customer (Optional)',
+                    controller: widget.searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == '') {
+                          searchResult = null;
+                        } else {
+                          searchResult =
+                              value.toLowerCase();
+                        }
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      var customers = customerResults;
+                      if (customers.isEmpty &&
+                          searchResult == null) {
+                        return Center(
+                          child: Text('Empty List'),
+                        );
+                      } else {
+                        return ListView.builder(
+                          padding: EdgeInsets.only(top: 10),
+                          itemCount:
+                              returnData(context)
+                                  .searchProductsName(
+                                    widget
+                                        .searchController
+                                        .text,
+                                  )
+                                  .length,
+                          itemBuilder: (context, index) {
+                            final product =
+                                returnData(
+                                  context,
+                                ).searchProductsName(
+                                  widget
+                                      .searchController
+                                      .text,
+                                )[index];
+                            return ProductTileCartSearch(
+                              action: () {},
+                              theme: theme,
+                              product: product,
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+//
+//
+//
+//
+
+// A D D   N E W   C U S T O M E R   B O T T O M
+
+void selectProduct(
+  ThemeProvider theme,
+  TempCartItem cartItem,
+  Function() closeAction,
+  BuildContext context,
+) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text(
+              'Enter Product Quantity',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: theme.mobileTexts.h4.fontSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // SizedBox(
+                //   width: 450,
+                //   child: NumberTextfield(
+                //     onChanged: (value) {
+                //       setState(() {
+
+                //       });
+                //     },
+                //     title: 'Enter Product Quantity',
+                //     hint: 'Quantity',
+                //     controller: quantityController,
+                //     theme: theme,
+                //   ),
+                // ),
+                SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade100,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                        ),
+                        'Total',
+                      ),
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                          fontWeight:
+                              theme
+                                  .mobileTexts
+                                  .b1
+                                  .fontWeightBold,
+                        ),
+                        'THis',
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    spacing: 15,
+                    children: [
+                      Ink(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade100,
+                        ),
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          onTap: () {},
+                          child: SizedBox(
+                            height: 30,
+                            width: 50,
+                            child: Icon(Icons.remove),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        ' qqty.toString(),',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.h4.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Ink(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade100,
+                        ),
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          onTap: () {},
+                          child: SizedBox(
+                            height: 30,
+                            width: 50,
+                            child: Center(
+                              child: Icon(Icons.add),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                SmallButtonMain(
+                  theme: theme,
+                  action: () {
+                    String result = returnSalesProvider(
+                      context,
+                      listen: false,
+                    ).addItemToCart(cartItem);
+                    Navigator.of(context).pop();
+                    closeAction();
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(
+                      SnackBar(content: Text(result)),
+                    );
+                  },
+                  buttonText: 'Add To Cart',
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
 }

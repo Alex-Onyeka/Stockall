@@ -5,6 +5,7 @@ class GeneralTextField extends StatelessWidget {
   final String title;
   final String hint;
   final TextEditingController controller;
+  final Function(String)? onChanged;
   final int lines;
   final ThemeProvider theme;
 
@@ -15,6 +16,7 @@ class GeneralTextField extends StatelessWidget {
     required this.controller,
     required this.lines,
     required this.theme,
+    this.onChanged,
   });
 
   @override
@@ -28,6 +30,7 @@ class GeneralTextField extends StatelessWidget {
           title,
         ),
         TextFormField(
+          onChanged: onChanged,
           maxLines: lines,
           keyboardType: TextInputType.text,
           textCapitalization: TextCapitalization.words,

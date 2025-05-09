@@ -3,10 +3,13 @@ import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
+import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/calculations.dart';
+import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/compnents/cart_item_main.dart';
+import 'package:stockitt/pages/sales/make_sales/page2/make_sales_two.dart';
 
 class MakeSalesMobile extends StatefulWidget {
   final TextEditingController searchController;
@@ -21,22 +24,31 @@ class MakeSalesMobile extends StatefulWidget {
 }
 
 class _MakeSalesMobileState extends State<MakeSalesMobile> {
-  double calcTotal(List<TempCartItem> items) {
-    double tempTotal = 0;
-    for (var item in items) {
-      tempTotal += item.totalCost();
-    }
-    return tempTotal;
-  }
+  TextEditingController numberController =
+      TextEditingController();
 
   bool showBottomPanel = false;
-  TextEditingController searchController =
-      TextEditingController();
 
   List<TempProductClass> productsResult = [];
   String? searchResult;
   bool isFocus = false;
   bool listEmpty = true;
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      // ignore: use_build_context_synchronously
+      final uiProvider = returnData(context, listen: false);
+
+      if (!uiProvider.isFloatingButtonVisible) {
+        uiProvider.showFloatingActionButton();
+      } else {
+        uiProvider.hideFloatingActionButtonWithDelay();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -116,12 +128,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).cartItems;
 
                               if (items.isEmpty) {
-                                return SizedBox(
-                                  child: Center(
-                                    child: Text(
-                                      'Empty List',
-                                    ),
-                                  ),
+                                return EmptyWidgetDisplay(
+                                  title: 'Cart List Empty',
+                                  subText:
+                                      'Start Adding Items to Cart To make Sales',
+                                  buttonText: 'Add Item',
+                                  svg: productIconSvg,
+                                  theme: theme,
+                                  height: 40,
+                                  action: () {
+                                    setState(() {
+                                      showBottomPanel =
+                                          true;
+                                    });
+                                  },
                                 );
                               } else {
                                 return ListView.builder(
@@ -134,6 +154,36 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     index,
                                   ) {
                                     return CartItemMain(
+                                      deleteCartItem: () {
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).removeItemFromCart(
+                                          items[index],
+                                        );
+                                      },
+                                      editAction: () {
+                                        editCartItemBottomSheet(
+                                          context,
+                                          () {
+                                            returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).editCartItemQuantity(
+                                              items[index],
+                                              double.parse(
+                                                numberController
+                                                    .text,
+                                              ),
+                                            );
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                          },
+                                          items[index],
+                                          numberController,
+                                        );
+                                      },
                                       theme: theme,
                                       cartItem:
                                           items[index],
@@ -184,7 +234,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           .fontSize,
                                   // fontWeight: FontWeight.bold,
                                 ),
-                                'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
+                                'N${formatLargeNumberDouble(returnSalesProvider(context).calcTotalMain(returnSalesProvider(context).cartItems))}',
                               ),
                             ],
                           ),
@@ -214,7 +264,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           .fontSize,
                                   // fontWeight: FontWeight.bold,
                                 ),
-                                'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
+                                '- N${formatLargeNumberDouble(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
                               ),
                             ],
                           ),
@@ -246,7 +296,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                'N${formatLargeNumberDouble(calcTotal(returnSalesProvider(context).cartItems))}',
+                                'N${formatLargeNumberDouble(returnSalesProvider(context).calcFinalTotalMain(returnSalesProvider(context).cartItems))}',
                               ),
                             ],
                           ),
@@ -262,7 +312,16 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         ).cartItems.isNotEmpty,
                     child: MainButtonP(
                       themeProvider: theme,
-                      action: () {},
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return MakeSalesTwo();
+                            },
+                          ),
+                        );
+                      },
                       text: 'Check Out',
                     ),
                   ),
@@ -273,11 +332,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             Visibility(
               visible: showBottomPanel,
               child: CustomBottomPanel(
-                searchController: searchController,
+                searchController: widget.searchController,
                 close: () {
                   setState(() {
                     showBottomPanel = false;
-                    searchController.clear();
+                    widget.searchController.clear();
                   });
                 },
               ),

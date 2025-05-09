@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/pages/dashboard/components/nav_button.dart';
-import 'package:stockitt/pages/sales/make_sales/make_sales_page.dart';
+import 'package:stockitt/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 
 class MainBottomNav extends StatelessWidget {

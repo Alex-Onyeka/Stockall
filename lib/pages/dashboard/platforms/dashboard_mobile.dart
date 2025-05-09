@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/dashboard/components/button_tab.dart';
@@ -6,7 +7,7 @@ import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
-import 'package:stockitt/pages/products/products_page.dart';
+import 'package:stockitt/providers/nav_provider.dart';
 
 class DashboardMobile extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -111,14 +112,12 @@ class DashboardMobile extends StatelessWidget {
                                   icon: productIconSvg,
                                   title: 'Products',
                                   action: () {
-                                    Navigator.push(
+                                    Provider.of<
+                                      NavProvider
+                                    >(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ProductsPage();
-                                        },
-                                      ),
-                                    );
+                                      listen: false,
+                                    ).navigate(1);
                                   },
                                 ),
                                 ButtonTab(

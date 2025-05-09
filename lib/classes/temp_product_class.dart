@@ -1,4 +1,5 @@
 class TempProductClass {
+  int id;
   final String name;
   final String? desc;
   final String? brand;
@@ -15,6 +16,7 @@ class TempProductClass {
   final double quantity;
 
   TempProductClass({
+    required this.id,
     required this.name,
     this.desc,
     this.brand,
