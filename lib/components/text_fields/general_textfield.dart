@@ -4,6 +4,7 @@ import 'package:stockitt/providers/theme_provider.dart';
 class GeneralTextField extends StatelessWidget {
   final String title;
   final String hint;
+  final bool? isEmail;
   final TextEditingController controller;
   final Function(String)? onChanged;
   final int lines;
@@ -17,6 +18,7 @@ class GeneralTextField extends StatelessWidget {
     required this.lines,
     required this.theme,
     this.onChanged,
+    this.isEmail,
   });
 
   @override
@@ -30,22 +32,46 @@ class GeneralTextField extends StatelessWidget {
           title,
         ),
         TextFormField(
+          style: TextStyle(fontWeight: FontWeight.bold),
           onChanged: onChanged,
           maxLines: lines,
-          keyboardType: TextInputType.text,
-          textCapitalization: TextCapitalization.words,
-          autocorrect: true,
-          enableSuggestions: true,
+          keyboardType:
+              isEmail != null
+                  ? TextInputType.text
+                  : TextInputType.emailAddress,
+          textCapitalization:
+              isEmail != null
+                  ? TextCapitalization.words
+                  : TextCapitalization.none,
+          autocorrect: isEmail != null ? true : false,
+          enableSuggestions: isEmail != null ? true : false,
           decoration: InputDecoration(
+            labelText: hint,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade500,
+              fontSize: 14,
+            ),
+            floatingLabelStyle: TextStyle(
+              fontWeight:
+                  FontWeight.w600, // top-of-field style
+              color:
+                  theme
+                      .lightModeColor
+                      .prColor300, // any color you like
+              fontSize: 13,
+              letterSpacing: 0.5,
+            ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 15,
             ),
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: Colors.grey.shade500,
-              fontSize: 14,
-            ),
+            // hintText: hint,
+            // hintStyle: TextStyle(
+            //   color: Colors.grey.shade500,
+            //   fontSize: 14,
+            //   fontWeight: FontWeight.normal,
+            // ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,

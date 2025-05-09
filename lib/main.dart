@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/comp_provider.dart';
+import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
@@ -34,6 +35,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => DataProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => CustomersProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -49,6 +53,30 @@ DataProvider returnData(
   bool listen = true,
 }) {
   return Provider.of<DataProvider>(context, listen: listen);
+}
+
+CustomersProvider returnCustomers(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<CustomersProvider>(
+    context,
+    listen: listen,
+  );
+}
+
+NavProvider returnNavProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<NavProvider>(context, listen: listen);
+}
+
+CompProvider returnCompProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<CompProvider>(context, listen: listen);
 }
 
 SalesProvider returnSalesProvider(

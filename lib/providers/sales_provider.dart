@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/data_provider.dart';
 
 class SalesProvider extends ChangeNotifier {
@@ -108,6 +109,11 @@ class SalesProvider extends ChangeNotifier {
         .toList();
   }
 
+  void resetPaymentMethod() {
+    currentPayment = 0;
+    notifyListeners();
+  }
+
   int currentPayment = 0;
   List<Map<String, dynamic>> paymentMethods = [
     {
@@ -130,5 +136,24 @@ class SalesProvider extends ChangeNotifier {
   void changeMethod(int index) {
     currentPayment = index;
     notifyListeners();
+  }
+
+  void checkOut(BuildContext context) {
+    resetPaymentMethod();
+    clearCart();
+    returnCustomers(
+      context,
+      listen: false,
+    ).clearSelectedCustomer();
+    returnNavProvider(context, listen: false).navigate(0);
+    returnCompProvider(
+      context,
+      listen: false,
+    ).successAction(
+      () => Navigator.popUntil(
+        context,
+        ModalRoute.withName('/'),
+      ),
+    );
   }
 }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/payment_type_button.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockitt/components/text_fields/general_textfield.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
 
 class MakeSalesMobileTwo extends StatelessWidget {
   final TextEditingController searchController;
@@ -22,245 +22,426 @@ class MakeSalesMobileTwo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 60,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Padding(
-            padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 10,
-            ),
-            child: Icon(Icons.arrow_back_ios_new_rounded),
-          ),
-        ),
-        centerTitle: true,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              style: TextStyle(
-                fontSize: theme.mobileTexts.h4.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-              'Select Payment Method',
-            ),
-          ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20.0,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    GeneralTextField(
-                      title: 'Add Customer (Optional)',
-                      controller: bankController,
-                      hint: 'Enter Customer Name',
-                      lines: 1,
-                      theme: theme,
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          'Select Payment Method',
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-                    PaymentTypeButton(index: 0),
-                    PaymentTypeButton(index: 1),
-                    PaymentTypeButton(index: 2),
-                    SizedBox(height: 20),
-                    Visibility(
-                      visible:
-                          returnSalesProvider(
-                            context,
-                          ).currentPayment ==
-                          2,
-                      child: SizedBox(
-                        // width: 300,
-                        // height: 200,
-                        child: Row(
-                          spacing: 10,
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: EditCartTextField(
-                                title: 'Cash',
-                                hint: 'Cash Amount',
-                                controller: cashController,
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: EditCartTextField(
-                                title: 'Bank',
-                                hint: 'Bank Amount',
-                                controller: bankController,
-                                theme: theme,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 60,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 10,
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
                 ),
               ),
             ),
-            Material(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Visibility(
-                    visible:
-                        returnSalesProvider(
-                          context,
-                        ).cartItems.isNotEmpty,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  // fontWeight: FontWeight.bold,
-                                ),
-                                'Subtotal',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  // fontWeight: FontWeight.bold,
-                                ),
-                                'N${formatLargeNumberDouble(returnSalesProvider(context).calcTotalMain(returnSalesProvider(context).cartItems))}',
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  // fontWeight: FontWeight.bold,
-                                ),
-                                'Discount',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  // fontWeight: FontWeight.bold,
-                                ),
-                                '- N${formatLargeNumberDouble(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Total',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'N${formatLargeNumberDouble(returnSalesProvider(context).calcFinalTotalMain(returnSalesProvider(context).cartItems))}',
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+            centerTitle: true,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.h4.fontSize,
+                    fontWeight: FontWeight.bold,
                   ),
-                  SizedBox(height: 20),
-                  Visibility(
-                    visible:
-                        returnSalesProvider(
-                          context,
-                        ).cartItems.isNotEmpty,
-                    child: MainButtonP(
-                      themeProvider: theme,
-                      action: () {},
-                      text: 'Check Out',
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
+                  'Select Payment Method',
+                ),
+              ],
             ),
-          ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+            ),
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        Builder(
+                          builder: (context) {
+                            if (returnCustomers(
+                                  context,
+                                ).selectedCustomerId ==
+                                '') {
+                              return Material(
+                                color: Colors.transparent,
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    border: Border.all(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade400,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return CustomerList(
+                                              isSales: true,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.only(
+                                            left: 20,
+                                            right: 15,
+                                            bottom: 12,
+                                            top: 12,
+                                          ),
+
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              color:
+                                                  Colors
+                                                      .grey,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Select Customer (Optional)',
+                                          ),
+                                          Icon(
+                                            color:
+                                                Colors.grey,
+                                            size: 20,
+                                            Icons
+                                                .arrow_forward_ios_rounded,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 5,
+                                    ),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
+                                  color:
+                                      Colors.grey.shade200,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Row(
+                                      spacing: 10,
+                                      children: [
+                                        Icon(Icons.person),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                              ),
+                                              'Selected Customer:',
+                                            ),
+                                            SizedBox(
+                                              height: 2,
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              returnCustomers(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .returnCustomerById(
+                                                    int.parse(
+                                                      returnCustomers(
+                                                        context,
+                                                      ).selectedCustomerId,
+                                                    ),
+                                                  )
+                                                  .name,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        returnCustomers(
+                                          context,
+                                          listen: false,
+                                        ).clearSelectedCustomer();
+                                      },
+                                      icon: Icon(
+                                        Icons.clear,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Select Payment Method',
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        PaymentTypeButton(index: 0),
+                        PaymentTypeButton(index: 1),
+                        PaymentTypeButton(index: 2),
+                        SizedBox(height: 20),
+                        Visibility(
+                          visible:
+                              returnSalesProvider(
+                                context,
+                              ).currentPayment ==
+                              2,
+                          child: SizedBox(
+                            // width: 300,
+                            // height: 200,
+                            child: Row(
+                              spacing: 10,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: EditCartTextField(
+                                    title: 'Cash',
+                                    hint: 'Cash Amount',
+                                    controller:
+                                        cashController,
+                                    theme: theme,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: EditCartTextField(
+                                    title: 'Bank',
+                                    hint: 'Bank Amount',
+                                    controller:
+                                        bankController,
+                                    theme: theme,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Material(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      Visibility(
+                        visible:
+                            returnSalesProvider(
+                              context,
+                            ).cartItems.isNotEmpty,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(height: 15),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                    'Subtotal',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                    'N${formatLargeNumberDouble(returnSalesProvider(context).calcTotalMain(returnSalesProvider(context).cartItems))}',
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                    'Discount',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                    '- N${formatLargeNumberDouble(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .h4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Total',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .h4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'N${formatLargeNumberDouble(returnSalesProvider(context).calcFinalTotalMain(returnSalesProvider(context).cartItems))}',
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Visibility(
+                        visible:
+                            returnSalesProvider(
+                              context,
+                            ).cartItems.isNotEmpty,
+                        child: MainButtonP(
+                          themeProvider: theme,
+                          action: () {
+                            returnSalesProvider(
+                              context,
+                              listen: false,
+                            ).checkOut(context);
+                          },
+                          text: 'Check Out',
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+        Visibility(
+          visible: returnCompProvider(context).isLoaderOn,
+          child: returnCompProvider(
+            context,
+          ).showSuccess('Sales Successful'),
+        ),
+      ],
     );
   }
 }

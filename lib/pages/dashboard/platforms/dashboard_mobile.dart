@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
 import 'package:stockitt/pages/dashboard/components/button_tab.dart';
 import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
@@ -130,7 +131,16 @@ class DashboardMobile extends StatelessWidget {
                                   theme: theme,
                                   icon: custBookIconSvg,
                                   title: 'Customers',
-                                  action: () {},
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return CustomerList();
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                                 ButtonTab(
                                   theme: theme,
