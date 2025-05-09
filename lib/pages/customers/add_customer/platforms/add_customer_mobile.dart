@@ -228,31 +228,67 @@ class _AddCustomerMobileState
                 MainButtonP(
                   themeProvider: theme,
                   action: () {
-                    returnCustomers(
+                    returnValidate(
                       context,
                       listen: false,
-                    ).addCustomer(
-                      TempCustomersClass(
-                        id:
-                            returnCustomers(
-                              context,
-                              listen: false,
-                            ).customers.length +
-                            1,
-                        name: widget.nameController.text,
-                        email: widget.emailController.text,
-                        phone: widget.phoneController.text,
-                        address:
-                            widget.addressController.text,
-                        city: widget.cityController.text,
-                        state: widget.stateController.text,
+                    ).checkInputs(
+                      conditionsThree: false,
+                      conditionsFour: false,
+                      conditionsSecond: returnValidate(
+                        listen: false,
+                        context,
+                      ).isValidEmail(
+                        widget.emailController.text,
                       ),
-                    );
-                    returnCompProvider(
-                      context,
-                      listen: false,
-                    ).successAction(
-                      () => Navigator.of(context).pop(),
+                      conditionsFirst:
+                          widget
+                              .nameController
+                              .text
+                              .isEmpty ||
+                          widget
+                              .phoneController
+                              .text
+                              .isEmpty ||
+                          widget
+                              .emailController
+                              .text
+                              .isEmpty,
+                      context: context,
+                      action: () {
+                        returnCustomers(
+                          context,
+                          listen: false,
+                        ).addCustomer(
+                          TempCustomersClass(
+                            id:
+                                returnCustomers(
+                                  context,
+                                  listen: false,
+                                ).customers.length +
+                                1,
+                            name:
+                                widget.nameController.text,
+                            email:
+                                widget.emailController.text,
+                            phone:
+                                widget.phoneController.text,
+                            address:
+                                widget
+                                    .addressController
+                                    .text,
+                            city:
+                                widget.cityController.text,
+                            state:
+                                widget.stateController.text,
+                          ),
+                        );
+                        returnCompProvider(
+                          context,
+                          listen: false,
+                        ).successAction(
+                          () => Navigator.of(context).pop(),
+                        );
+                      },
                     );
                   },
                   text: 'Add Customer',

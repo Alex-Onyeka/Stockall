@@ -7,6 +7,7 @@ import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/providers/validate_input_provider.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -38,9 +39,22 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => CustomersProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ValidateInputProvider(),
+        ),
       ],
       child: MyApp(),
     ),
+  );
+}
+
+ValidateInputProvider returnValidate(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ValidateInputProvider>(
+    context,
+    listen: listen,
   );
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
@@ -25,7 +26,7 @@ class CustomerListMobile extends StatefulWidget {
 
 class _CustomerListMobileState
     extends State<CustomerListMobile> {
-  CustomersProvider customersProvider = CustomersProvider();
+  // CustomersProvider customersProvider = CustomersProvider();
   @override
   void initState() {
     super.initState();
@@ -45,6 +46,8 @@ class _CustomerListMobileState
   String searchResult = '';
   @override
   Widget build(BuildContext context) {
+    final customersProvider =
+        Provider.of<CustomersProvider>(context);
     var theme = returnTheme(context);
     return Scaffold(
       floatingActionButton: FloatingActionButtonMain(
@@ -94,174 +97,182 @@ class _CustomerListMobileState
           ],
         ),
       ),
-      body: Builder(
-        builder: (context) {
-          if (customersProvider.customers.isEmpty) {
-            return EmptyWidgetDisplay(
-              title: 'Empty Customer List',
-              subText:
-                  'Your Have not Created Any Customer.',
-              buttonText: 'Create Customer',
-              svg: productIconSvg,
-              theme: theme,
-              height: 35,
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 30.0,
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 10),
-                  GeneralTextfieldOnly(
-                    hint: 'Search Customer Name',
-                    controller: widget.searchController,
-                    lines: 1,
-                    theme: theme,
-                    onChanged: (value) {
-                      setState(() {
-                        searchResult = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 15),
-                  Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        if (searchResult != '') {
-                          return Builder(
-                            builder: (context) {
-                              if (customersProvider
-                                  .searchCustomers(
-                                    widget
-                                        .searchController
-                                        .text,
-                                  )
-                                  .isNotEmpty) {
-                                return ListView.builder(
-                                  itemCount:
-                                      customersProvider
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 20.0),
+        child: Builder(
+          builder: (context) {
+            if (customersProvider.customers.isEmpty) {
+              return EmptyWidgetDisplay(
+                title: 'Empty Customer List',
+                subText:
+                    'Your Have not Created Any Customer.',
+                buttonText: 'Create Customer',
+                svg: productIconSvg,
+                theme: theme,
+                height: 35,
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30.0,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 10),
+                    GeneralTextfieldOnly(
+                      hint: 'Search Customer Name',
+                      controller: widget.searchController,
+                      lines: 1,
+                      theme: theme,
+                      onChanged: (value) {
+                        setState(() {
+                          searchResult = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    Expanded(
+                      child: Builder(
+                        builder: (context) {
+                          if (searchResult != '') {
+                            return Builder(
+                              builder: (context) {
+                                if (customersProvider
+                                    .searchCustomers(
+                                      widget
+                                          .searchController
+                                          .text,
+                                    )
+                                    .isNotEmpty) {
+                                  return ListView.builder(
+                                    itemCount:
+                                        customersProvider
+                                            .searchCustomers(
+                                              widget
+                                                  .searchController
+                                                  .text,
+                                            )
+                                            .length,
+                                    itemBuilder: (
+                                      context,
+                                      index,
+                                    ) {
+                                      List<
+                                        TempCustomersClass
+                                      >
+                                      customers = customersProvider
                                           .searchCustomers(
                                             widget
                                                 .searchController
                                                 .text,
-                                          )
-                                          .length,
-                                  itemBuilder: (
-                                    context,
-                                    index,
-                                  ) {
-                                    List<TempCustomersClass>
-                                    customers = customersProvider
-                                        .searchCustomers(
-                                          widget
-                                              .searchController
-                                              .text,
-                                        );
-                                    TempCustomersClass
-                                    customer =
-                                        customers[index];
-
-                                    return CustomersMainTile(
-                                      action: () {
-                                        if (widget
-                                                .isSales !=
-                                            null) {
-                                          returnCustomers(
-                                            context,
-                                            listen: false,
-                                          ).selectCustomer(
-                                            customer.id,
                                           );
-                                          Navigator.of(
-                                            context,
-                                          ).pop(context);
-                                        } else {
-                                          return;
-                                        }
-                                      },
-                                      theme: theme,
-                                      customer: customer,
-                                      isSales:
-                                          widget.isSales,
-                                    );
-                                  },
-                                );
-                              } else {
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b1
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          'Returned 0 Customers',
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          );
-                        } else {
-                          return ListView.builder(
-                            itemCount:
-                                customersProvider
-                                    .customers
-                                    .length,
-                            itemBuilder: (context, index) {
-                              List<TempCustomersClass>
-                              customers =
-                                  customersProvider
-                                      .getSortedCustomers();
-                              TempCustomersClass customer =
-                                  customers[index];
+                                      TempCustomersClass
+                                      customer =
+                                          customers[index];
 
-                              return CustomersMainTile(
-                                action: () {
-                                  if (widget.isSales !=
-                                      null) {
-                                    returnCustomers(
-                                      context,
-                                      listen: false,
-                                    ).selectCustomer(
-                                      customer.id,
-                                    );
-                                    Navigator.of(
-                                      context,
-                                    ).pop(context);
-                                  } else {
-                                    return;
-                                  }
-                                },
-                                theme: theme,
-                                customer: customer,
-                                isSales: widget.isSales,
-                              );
-                            },
-                          );
-                        }
-                      },
+                                      return CustomersMainTile(
+                                        action: () {
+                                          if (widget
+                                                  .isSales !=
+                                              null) {
+                                            returnCustomers(
+                                              context,
+                                              listen: false,
+                                            ).selectCustomer(
+                                              customer.id,
+                                            );
+                                            Navigator.of(
+                                              context,
+                                            ).pop(context);
+                                          } else {
+                                            return;
+                                          }
+                                        },
+                                        theme: theme,
+                                        customer: customer,
+                                        isSales:
+                                            widget.isSales,
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Returned 0 Customers',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
+                            );
+                          } else {
+                            return ListView.builder(
+                              itemCount:
+                                  customersProvider
+                                      .customers
+                                      .length,
+                              itemBuilder: (
+                                context,
+                                index,
+                              ) {
+                                List<TempCustomersClass>
+                                customers =
+                                    customersProvider
+                                        .getSortedCustomers();
+                                TempCustomersClass
+                                customer = customers[index];
+
+                                return CustomersMainTile(
+                                  action: () {
+                                    if (widget.isSales !=
+                                        null) {
+                                      returnCustomers(
+                                        context,
+                                        listen: false,
+                                      ).selectCustomer(
+                                        customer.id,
+                                      );
+                                      Navigator.of(
+                                        context,
+                                      ).pop(context);
+                                    } else {
+                                      return;
+                                    }
+                                  },
+                                  theme: theme,
+                                  customer: customer,
+                                  isSales: widget.isSales,
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
+                  ],
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }

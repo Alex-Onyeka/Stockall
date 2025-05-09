@@ -26,15 +26,6 @@ class FloatingActionButtonMain extends StatelessWidget {
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         child: Ink(
-          padding: EdgeInsets.only(
-            right: 15,
-            left:
-                returnData(context).isFloatingButtonVisible
-                    ? 20
-                    : 15,
-            top: 8,
-            bottom: 8,
-          ),
           decoration: BoxDecoration(
             border: Border.all(color: color, width: 1),
             boxShadow: [
@@ -49,7 +40,18 @@ class FloatingActionButtonMain extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(15),
             onTap: action,
-            child: SizedBox(
+            child: Container(
+              padding: EdgeInsets.only(
+                right: 15,
+                left:
+                    returnData(
+                          context,
+                        ).isFloatingButtonVisible
+                        ? 20
+                        : 15,
+                top: 8,
+                bottom: 8,
+              ),
               child: Row(
                 spacing:
                     returnData(

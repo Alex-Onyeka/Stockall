@@ -36,15 +36,15 @@ class GeneralTextField extends StatelessWidget {
           onChanged: onChanged,
           maxLines: lines,
           keyboardType:
-              isEmail != null
+              isEmail == null
                   ? TextInputType.text
                   : TextInputType.emailAddress,
           textCapitalization:
-              isEmail != null
+              isEmail == null
                   ? TextCapitalization.words
                   : TextCapitalization.none,
-          autocorrect: isEmail != null ? true : false,
-          enableSuggestions: isEmail != null ? true : false,
+          autocorrect: isEmail == null ? true : false,
+          enableSuggestions: isEmail == null ? true : false,
           decoration: InputDecoration(
             labelText: hint,
             labelStyle: TextStyle(
