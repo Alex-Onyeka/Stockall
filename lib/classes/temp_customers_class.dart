@@ -1,13 +1,17 @@
 class TempCustomersClass {
   final int id;
-  final String name;
-  final String email;
-  final String phone;
-  final String? address;
-  final String? city;
-  final String? state;
+  final String dateAdded;
+  final String shopId;
+  String? country;
+  String name;
+  String email;
+  String phone;
+  String? address;
+  String? city;
+  String? state;
 
   TempCustomersClass({
+    this.country,
     required this.id,
     required this.name,
     required this.email,
@@ -15,5 +19,7 @@ class TempCustomersClass {
     required this.address,
     required this.city,
     required this.state,
+    required this.dateAdded,
+    required this.shopId,
   });
 }

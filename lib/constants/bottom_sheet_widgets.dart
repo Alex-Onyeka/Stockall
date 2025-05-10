@@ -1092,6 +1092,9 @@ class _CustomBottomPanelState
 
   @override
   Widget build(BuildContext context) {
+    var shop = returnShopProvider(
+      context,
+    ).returnShop(userId());
     var theme = returnTheme(context);
     return Material(
       color: Colors.transparent,
@@ -1210,7 +1213,10 @@ class _CustomBottomPanelState
                           returnData(
                             context,
                             listen: false,
-                          ).searchProductsBarcode(result),
+                          ).searchProductsBarcode(
+                            result,
+                            shop,
+                          ),
                         );
                       });
                     },
@@ -1272,6 +1278,7 @@ class _CustomBottomPanelState
                                       widget
                                           .searchController
                                           .text,
+                                      shop,
                                     )
                                     .length,
                             itemBuilder: (context, index) {
@@ -1282,6 +1289,7 @@ class _CustomBottomPanelState
                                     widget
                                         .searchController
                                         .text,
+                                    shop,
                                   )[index];
                               return ProductTileCartSearch(
                                 action: () {
@@ -1598,6 +1606,9 @@ class _CustomerSearchBottomSheetState
 
   @override
   Widget build(BuildContext context) {
+    var shop = returnShopProvider(
+      context,
+    ).returnShop(userId());
     var theme = returnTheme(context);
     return Material(
       color: Colors.transparent,
@@ -1727,6 +1738,7 @@ class _CustomerSearchBottomSheetState
                                     widget
                                         .searchController
                                         .text,
+                                    shop,
                                   )
                                   .length,
                           itemBuilder: (context, index) {
@@ -1737,6 +1749,7 @@ class _CustomerSearchBottomSheetState
                                   widget
                                       .searchController
                                       .text,
+                                  shop,
                                 )[index];
                             return ProductTileCartSearch(
                               action: () {},

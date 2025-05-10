@@ -81,7 +81,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
       margin: EdgeInsets.symmetric(horizontal: 20),
       padding: EdgeInsets.all(returnDouble()),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
         color: const Color.fromARGB(255, 244, 244, 244),
         boxShadow: [
           BoxShadow(

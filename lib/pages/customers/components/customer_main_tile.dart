@@ -47,19 +47,34 @@ class CustomersMainTile extends StatelessWidget {
                     spacing: 10,
                     children: [
                       Container(
+                        height: 40,
+                        width: 40,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
+                          shape: BoxShape.circle,
                           color: Colors.grey.shade100,
-                          borderRadius:
-                              BorderRadius.circular(5),
+                          // borderRadius:
+                          //     BorderRadius.circular(5),
                         ),
-                        child: Icon(
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .prColor300,
-                          Icons.person,
+                        child: Center(
+                          child: Text(
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              height: 1,
+                              color: Colors.black,
+                            ),
+                            customer.name.characters.first
+                                .toUpperCase(),
+                          ),
                         ),
+                        // Icon(
+                        //   color:
+                        //       theme
+                        //           .lightModeColor
+                        //           .prColor300,
+                        //   Icons.person,
+                        // ),
                       ),
                       Column(
                         crossAxisAlignment:

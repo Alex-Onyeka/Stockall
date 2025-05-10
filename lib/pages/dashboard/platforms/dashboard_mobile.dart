@@ -14,8 +14,16 @@ class DashboardMobile extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
 
+  DashboardMobile({super.key});
+
   @override
   Widget build(BuildContext context) {
+    var currentUser = returnUserProvider(
+      context,
+    ).currentUser('user_001');
+    var shop = returnShopProvider(
+      context,
+    ).returnShop(currentUser.userId);
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -28,8 +36,8 @@ class DashboardMobile extends StatelessWidget {
             },
             theme: theme,
             notifNumber: 2,
-            subText: 'No 12 Wuse, Abuja, Nigeria',
-            title: 'Alex Shop',
+            subText: shop.shopAddress ?? shop.email,
+            title: shop.name,
           ),
 
           Expanded(

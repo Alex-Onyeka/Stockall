@@ -47,21 +47,17 @@ class _TotalProductsPageState
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      if (!context.mounted) return;
-
-      final uiProvider = returnData(context, listen: false);
-
-      if (!uiProvider.isFloatingButtonVisible) {
-        uiProvider.showFloatingActionButton();
-      } else {
-        uiProvider.hideFloatingActionButtonWithDelay();
-      }
-    });
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    var shop = returnShopProvider(
+      context,
+    ).returnShop(userId());
     var theme = returnTheme(context);
     return GestureDetector(
       onTap:
@@ -156,7 +152,10 @@ class _TotalProductsPageState
                         productsResult = returnData(
                           context,
                           listen: false,
-                        ).searchProductsBarcode(result);
+                        ).searchProductsBarcode(
+                          result,
+                          shop,
+                        );
                       });
                     },
                   ),
@@ -344,7 +343,7 @@ class _TotalProductsPageState
                                                   .h4
                                                   .fontSize,
                                         ),
-                                        'Found ${Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text).isEmpty ? Provider.of<DataProvider>(context).searchProductsName(searchController.text).length : Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text).length} Items',
+                                        'Found ${Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text, shop).isEmpty ? Provider.of<DataProvider>(context).searchProductsName(searchController.text, shop).length : Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text, shop).length} Items',
                                       ),
                                       Padding(
                                         padding:
@@ -402,6 +401,7 @@ class _TotalProductsPageState
                                                     .searchProductsName(
                                                       searchController
                                                           .text,
+                                                      shop,
                                                     )
                                                     .length,
                                             itemBuilder: (
@@ -417,6 +417,7 @@ class _TotalProductsPageState
                                                   ).searchProductsName(
                                                     searchController
                                                         .text,
+                                                    shop,
                                                   )[index];
                                               return SearchProductTile(
                                                 product:

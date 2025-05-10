@@ -1,19 +1,20 @@
 class TempProductClass {
   int id;
   final String name;
-  final String? desc;
-  final String? brand;
-  final String category;
+  final int shopId;
+  String? desc;
+  String? brand;
+  String category;
   final String? barcode;
-  final String unit;
-  final bool isRefundable;
-  final String? color;
-  final String? sizeType;
-  final String? size;
-  final double costPrice;
-  final double sellingPrice;
-  final double? discount;
-  final double quantity;
+  String unit;
+  bool isRefundable;
+  String? color;
+  String? sizeType;
+  String? size;
+  double costPrice;
+  double sellingPrice;
+  double? discount;
+  double quantity;
 
   TempProductClass({
     required this.id,
@@ -31,5 +32,6 @@ class TempProductClass {
     required this.sellingPrice,
     this.discount,
     required this.quantity,
+    required this.shopId,
   });
 }

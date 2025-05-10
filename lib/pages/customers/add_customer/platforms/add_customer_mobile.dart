@@ -6,6 +6,7 @@ import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
 import 'package:stockitt/main.dart';
 
 class AddCustomerMobile extends StatefulWidget {
+  final TempCustomersClass? customer;
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController phoneController;
@@ -23,6 +24,7 @@ class AddCustomerMobile extends StatefulWidget {
     required this.countryController,
     required this.cityController,
     required this.stateController,
+    this.customer,
   });
 
   @override
@@ -40,6 +42,37 @@ class _AddCustomerMobileState
 
   //
   //
+  @override
+  void initState() {
+    super.initState();
+    if (widget.customer == null) {
+      return;
+    } else {
+      setState(() {
+        isExtra = true;
+      });
+      widget.nameController.text = widget.customer!.name;
+      widget.emailController.text = widget.customer!.email;
+      widget.phoneController.text = widget.customer!.phone;
+      if (widget.customer!.address != null) {
+        widget.addressController.text =
+            widget.customer!.address!;
+      }
+      if (widget.customer!.country != null) {
+        widget.countryController.text =
+            widget.customer!.country!;
+      }
+
+      if (widget.customer!.city != null) {
+        widget.cityController.text = widget.customer!.city!;
+      }
+      if (widget.customer!.state != null) {
+        widget.stateController.text =
+            widget.customer!.state!;
+      }
+    }
+  }
+
   //
   @override
   Widget build(BuildContext context) {
@@ -73,7 +106,9 @@ class _AddCustomerMobileState
                     fontSize: theme.mobileTexts.h4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  'Add New Customer',
+                  widget.customer != null
+                      ? 'Edit Customer Info'
+                      : 'Add New Customer',
                 ),
               ],
             ),
@@ -255,33 +290,97 @@ class _AddCustomerMobileState
                               .isEmpty,
                       context: context,
                       action: () {
-                        returnCustomers(
-                          context,
-                          listen: false,
-                        ).addCustomer(
-                          TempCustomersClass(
-                            id:
-                                returnCustomers(
-                                  context,
-                                  listen: false,
-                                ).customers.length +
-                                1,
-                            name:
-                                widget.nameController.text,
-                            email:
-                                widget.emailController.text,
-                            phone:
-                                widget.phoneController.text,
-                            address:
-                                widget
-                                    .addressController
-                                    .text,
-                            city:
-                                widget.cityController.text,
-                            state:
-                                widget.stateController.text,
-                          ),
-                        );
+                        if (widget.customer == null) {
+                          returnCustomers(
+                            context,
+                            listen: false,
+                          ).addCustomer(
+                            TempCustomersClass(
+                              shopId: '1',
+                              country:
+                                  widget
+                                      .countryController
+                                      .text,
+                              dateAdded:
+                                  DateTime.now()
+                                      .toIso8601String(),
+                              id:
+                                  returnCustomers(
+                                    context,
+                                    listen: false,
+                                  ).customers.length +
+                                  1,
+                              name:
+                                  widget
+                                      .nameController
+                                      .text,
+                              email:
+                                  widget
+                                      .emailController
+                                      .text,
+                              phone:
+                                  widget
+                                      .phoneController
+                                      .text,
+                              address:
+                                  widget
+                                      .addressController
+                                      .text,
+                              city:
+                                  widget
+                                      .cityController
+                                      .text,
+                              state:
+                                  widget
+                                      .stateController
+                                      .text,
+                            ),
+                          );
+                        } else {
+                          returnCustomers(
+                            context,
+                            listen: false,
+                          ).updateCustomer(
+                            mainCustomer: widget.customer!,
+                            setterCustomer:
+                                TempCustomersClass(
+                                  shopId: '1',
+                                  id:
+                                      returnCustomers(
+                                        context,
+                                        listen: false,
+                                      ).getId(),
+                                  name:
+                                      widget
+                                          .nameController
+                                          .text,
+                                  email:
+                                      widget
+                                          .emailController
+                                          .text,
+                                  phone:
+                                      widget
+                                          .phoneController
+                                          .text,
+                                  address:
+                                      widget
+                                          .addressController
+                                          .text,
+                                  city:
+                                      widget
+                                          .cityController
+                                          .text,
+                                  state:
+                                      widget
+                                          .stateController
+                                          .text,
+                                  dateAdded:
+                                      widget
+                                          .customer!
+                                          .dateAdded,
+                                ),
+                          );
+                        }
                         returnCompProvider(
                           context,
                           listen: false,
@@ -291,7 +390,10 @@ class _AddCustomerMobileState
                       },
                     );
                   },
-                  text: 'Add Customer',
+                  text:
+                      widget.customer != null
+                          ? 'Update Details'
+                          : 'Add Customer',
                 ),
               ],
             ),
@@ -302,7 +404,11 @@ class _AddCustomerMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showSuccess('Customer Added Successfully'),
+          ).showSuccess(
+            widget.customer != null
+                ? 'Customer Updated Successfully'
+                : 'Customer Added Successfully',
+          ),
         ),
       ],
     );

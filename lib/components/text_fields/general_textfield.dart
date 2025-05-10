@@ -48,8 +48,8 @@ class GeneralTextField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: hint,
             labelStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade500,
+              fontWeight: FontWeight.normal,
+              color: Colors.grey.shade400,
               fontSize: 14,
             ),
             floatingLabelStyle: TextStyle(
@@ -77,14 +77,14 @@ class GeneralTextField extends StatelessWidget {
                 color: Colors.grey,
                 width: 1.5,
               ),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(10),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: theme.lightModeColor.prColor300,
                 width: 1.8,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
           ),
           controller: controller,

@@ -4,6 +4,8 @@ import 'package:stockitt/classes/temp_customers_class.dart';
 class CustomersProvider extends ChangeNotifier {
   List<TempCustomersClass> customers = [
     TempCustomersClass(
+      shopId: '1',
+      dateAdded: 'May, 5, 2025',
       id: 1,
       name: 'John Doe',
       email: 'john@example.com',
@@ -11,8 +13,11 @@ class CustomersProvider extends ChangeNotifier {
       address: '12 Adeola Street',
       city: 'Lagos',
       state: 'Lagos',
+      country: 'Nigeria',
     ),
     TempCustomersClass(
+      shopId: '2',
+      dateAdded: 'May, 5, 2025',
       id: 2,
       name: 'Jane Smith',
       email: 'jane@example.com',
@@ -20,8 +25,11 @@ class CustomersProvider extends ChangeNotifier {
       address: '45 Unity Road',
       city: 'Abuja',
       state: 'FCT',
+      country: 'Nigeria',
     ),
     TempCustomersClass(
+      shopId: '2',
+      dateAdded: 'May, 5, 2025',
       id: 3,
       name: 'Emeka Obi',
       email: 'emeka@example.com',
@@ -29,8 +37,11 @@ class CustomersProvider extends ChangeNotifier {
       address: '10 Nnamdi Avenue',
       city: 'Enugu',
       state: 'Enugu',
+      country: 'Nigeria',
     ),
     TempCustomersClass(
+      shopId: '1',
+      dateAdded: 'May, 5, 2025',
       id: 4,
       name: 'Aisha Bello',
       email: 'aisha@example.com',
@@ -38,8 +49,12 @@ class CustomersProvider extends ChangeNotifier {
       address: '23 Wuse Zone 4',
       city: 'Abuja',
       state: 'FCT',
+      country: 'Nigeria',
     ),
     TempCustomersClass(
+      shopId: '1',
+      country: 'Nigeria',
+      dateAdded: 'May, 5, 2025',
       id: 5,
       name: 'David Okoro',
       email: 'david@example.com',
@@ -49,6 +64,10 @@ class CustomersProvider extends ChangeNotifier {
       state: 'Rivers',
     ),
   ];
+
+  int getId() {
+    return customers.length + 1;
+  }
 
   List<TempCustomersClass> getSortedCustomers() {
     customers.sort(
@@ -61,6 +80,20 @@ class CustomersProvider extends ChangeNotifier {
 
   void addCustomer(TempCustomersClass customer) {
     customers.add(customer);
+    notifyListeners();
+  }
+
+  void updateCustomer({
+    required TempCustomersClass mainCustomer,
+    required TempCustomersClass setterCustomer,
+  }) {
+    mainCustomer.address = setterCustomer.address;
+    mainCustomer.city = setterCustomer.city;
+    mainCustomer.country = setterCustomer.country;
+    mainCustomer.email = setterCustomer.email;
+    mainCustomer.name = setterCustomer.name;
+    mainCustomer.phone = setterCustomer.phone;
+    mainCustomer.state = setterCustomer.state;
     notifyListeners();
   }
 

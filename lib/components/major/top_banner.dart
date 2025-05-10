@@ -5,6 +5,7 @@ import 'package:stockitt/providers/theme_provider.dart';
 
 class TopBanner extends StatelessWidget {
   final ThemeProvider theme;
+  final bool? isMain;
   final String title;
   final String subTitle;
   final double topSpace;
@@ -20,6 +21,7 @@ class TopBanner extends StatelessWidget {
     required this.topSpace,
     this.iconSvg,
     this.iconData,
+    this.isMain,
   });
 
   @override
@@ -33,43 +35,83 @@ class TopBanner extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40.0,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: topSpace),
-              Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: topSpace),
+            Padding(
+              padding:
+                  isMain != null
+                      ? const EdgeInsets.only(right: 40.0)
+                      : const EdgeInsets.only(
+                        right: 40.0,
+                        left: 40,
+                      ),
+              child: Row(
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    spacing: 5,
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize:
-                              theme.mobileTexts.h3.fontSize,
-                          fontWeight:
-                              theme
-                                  .mobileTexts
-                                  .h3
-                                  .fontWeightBold,
+                      Visibility(
+                        visible:
+                            isMain != null ? true : false,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              child: Icon(
+                                Icons
+                                    .arrow_back_ios_new_rounded,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                        title,
                       ),
-                      Text(
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                        ),
-                        subTitle,
+                      Column(
+                        spacing: 5,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontSize,
+                              fontWeight:
+                                  theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontWeightBold,
+                            ),
+                            title,
+                          ),
+                          Text(
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                            ),
+                            subTitle,
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -92,9 +134,9 @@ class TopBanner extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: bottomSpace),
-            ],
-          ),
+            ),
+            SizedBox(height: bottomSpace),
+          ],
         ),
       ),
     );

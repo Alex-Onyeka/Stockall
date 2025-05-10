@@ -32,16 +32,10 @@ class _CustomerListMobileState
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      // ignore: use_build_context_synchronously
-      final uiProvider = returnData(context, listen: false);
-
-      if (!uiProvider.isFloatingButtonVisible) {
-        uiProvider.showFloatingActionButton();
-      } else {
-        uiProvider.hideFloatingActionButtonWithDelay();
-      }
-    });
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
   }
 
   String searchResult = '';
@@ -193,8 +187,8 @@ class _CustomerListMobileState
                                                   context,
                                                 ) {
                                                   return CustomerPage(
-                                                    customer:
-                                                        customer,
+                                                    customerId:
+                                                        customer.id,
                                                   );
                                                 },
                                               ),
@@ -274,8 +268,9 @@ class _CustomerListMobileState
                                             context,
                                           ) {
                                             return CustomerPage(
-                                              customer:
-                                                  customer,
+                                              customerId:
+                                                  customer
+                                                      .id,
                                             );
                                           },
                                         ),

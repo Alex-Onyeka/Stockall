@@ -48,6 +48,9 @@ class _ProductPageMobileState
   bool listEmpty = false;
   @override
   Widget build(BuildContext context) {
+    var shop = returnShopProvider(
+      context,
+    ).returnShop(userId());
     var theme = returnTheme(context);
     return Scaffold(
       bottomNavigationBar: MainBottomNav(),
@@ -110,6 +113,7 @@ class _ProductPageMobileState
                                 listen: false,
                               ).searchProductsBarcode(
                                 result,
+                                shop,
                               );
                             });
                           },
@@ -241,6 +245,7 @@ class _ProductPageMobileState
                                           .searchProductsName(
                                             searchController
                                                 .text,
+                                            shop,
                                           )
                                           .length,
                                   itemBuilder: (
@@ -252,6 +257,7 @@ class _ProductPageMobileState
                                       context,
                                     ).searchProductsName(
                                       searchController.text,
+                                      shop,
                                     );
 
                                     TempProductClass
@@ -348,6 +354,7 @@ class _ProductPageMobileState
                                                 .searchProductsName(
                                                   searchController
                                                       .text,
+                                                  shop,
                                                 )
                                                 .length,
                                         itemBuilder: (
@@ -363,6 +370,7 @@ class _ProductPageMobileState
                                               ).searchProductsName(
                                                 searchController
                                                     .text,
+                                                shop,
                                               )[index];
                                           return SearchProductTile(
                                             product:

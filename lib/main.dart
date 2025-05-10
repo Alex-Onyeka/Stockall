@@ -6,7 +6,9 @@ import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
+import 'package:stockitt/providers/shop_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/providers/user_provider.dart';
 import 'package:stockitt/providers/validate_input_provider.dart';
 
 void main() async {
@@ -42,10 +44,34 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => ValidateInputProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ShopProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        ),
       ],
       child: MyApp(),
     ),
   );
+}
+
+String userId() {
+  return 'user_001';
+}
+
+UserProvider returnUserProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<UserProvider>(context, listen: listen);
+}
+
+ShopProvider returnShopProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ShopProvider>(context, listen: listen);
 }
 
 ValidateInputProvider returnValidate(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/pages/customers/add_customer/platforms/add_customer_mobile.dart';
 
 class AddCustomer extends StatefulWidget {
-  const AddCustomer({super.key});
+  final TempCustomersClass? customer;
+  const AddCustomer({super.key, this.customer});
 
   @override
   State<AddCustomer> createState() => _AddCustomerState();
@@ -40,6 +42,7 @@ class _AddCustomerState extends State<AddCustomer> {
               cityController: cityController,
               countryController: countryController,
               stateController: stateController,
+              customer: widget.customer,
             );
           } else if (constraints.maxWidth > 500 &&
               constraints.maxWidth < 1000) {

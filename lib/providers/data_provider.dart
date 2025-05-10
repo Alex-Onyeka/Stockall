@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/classes/temp_shop_class.dart';
 
 class DataProvider extends ChangeNotifier {
   String name = '';
@@ -19,6 +20,7 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> products = [
     TempProductClass(
+      shopId: 1,
       id: 1,
       name: 'Airpod Pro 2nd Gen',
       desc: 'A very Nice Product',
@@ -36,6 +38,7 @@ class DataProvider extends ChangeNotifier {
       color: 'Red',
     ),
     TempProductClass(
+      shopId: 2,
       id: 2,
       name: 'Red T-Shirt',
       desc: 'Comfortable cotton t-shirt',
@@ -53,6 +56,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 20,
     ),
     TempProductClass(
+      shopId: 3,
       id: 3,
       name: 'Bluetooth Speaker',
       desc: 'Portable wireless speaker',
@@ -70,6 +74,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 15,
     ),
     TempProductClass(
+      shopId: 1,
       id: 4,
       name: 'Running Shoes',
       desc: 'Lightweight shoes for running',
@@ -87,6 +92,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 10,
     ),
     TempProductClass(
+      shopId: 1,
       id: 5,
       name: 'Notebook',
       desc: '200-page ruled notebook',
@@ -104,6 +110,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 100,
     ),
     TempProductClass(
+      shopId: 2,
       id: 6,
       name: 'Coffee Mug',
       desc: null,
@@ -121,6 +128,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 30,
     ),
     TempProductClass(
+      shopId: 3,
       id: 7,
       name: 'Laptop Bag',
       desc: 'Water-resistant laptop backpack',
@@ -138,6 +146,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 0,
     ),
     TempProductClass(
+      shopId: 2,
       id: 8,
       name: 'LED Bulb',
       desc: '9W LED energy-saving bulb',
@@ -155,6 +164,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 200,
     ),
     TempProductClass(
+      shopId: 3,
       id: 9,
       name: 'Shampoo',
       desc: 'Anti-dandruff shampoo 250ml',
@@ -172,6 +182,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 60,
     ),
     TempProductClass(
+      shopId: 2,
       id: 9,
       name: 'Wrist Watch',
       desc: 'Analog watch with leather strap',
@@ -189,6 +200,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 8,
     ),
     TempProductClass(
+      shopId: 3,
       id: 10,
       name: 'Face Mask Pack',
       desc: 'Pack of 50 disposable masks',
@@ -234,13 +246,18 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  List<TempProductClass> searchProductsName(String text) {
+  List<TempProductClass> searchProductsName(
+    String text,
+    TempShopClass shop,
+  ) {
     List<TempProductClass> tempProducts =
         products
             .where(
-              (product) => product.name
-                  .toLowerCase()
-                  .contains(text.toLowerCase()),
+              (product) =>
+                  product.name.toLowerCase().contains(
+                    text.toLowerCase(),
+                  ) &&
+                  product.shopId == shop.shopId,
             )
             .toList();
 
@@ -249,12 +266,14 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> searchProductsBarcode(
     String text,
+    TempShopClass shop,
   ) {
     return products
         .where(
           (product) =>
               product.barcode != null &&
-              product.barcode!.contains(text),
+              product.barcode!.contains(text) &&
+              product.shopId == shop.shopId,
         )
         .toList();
   }
@@ -536,5 +555,20 @@ class DataProvider extends ChangeNotifier {
   void showFloatingActionButton() {
     isFloatingButtonVisible = true;
     notifyListeners();
+  }
+
+  void toggleFloatingAction(BuildContext context) {
+    Future.microtask(() {
+      if (!context.mounted) return;
+
+      // final uiProvider = returnData(context, listen: false);
+
+      if (!isFloatingButtonVisible) {
+        showFloatingActionButton();
+        hideFloatingActionButtonWithDelay();
+      } else {
+        hideFloatingActionButtonWithDelay();
+      }
+    });
   }
 }

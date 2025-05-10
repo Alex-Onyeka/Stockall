@@ -45,19 +45,26 @@ class TopNavBar extends StatelessWidget {
           Row(
             spacing: 5,
             children: [
-              Icon(
-                color: Colors.grey.shade700,
-                size: 28,
-                Icons.menu_rounded,
-              ),
-              SizedBox(width: 10),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+              InkWell(
+                onTap: openSideBar,
+                child: Row(
+                  children: [
+                    Icon(
+                      color: Colors.grey.shade700,
+                      size: 28,
+                      Icons.menu_rounded,
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image.asset(profileIconImage),
+                    ),
+                  ],
                 ),
-                child: Image.asset(profileIconImage),
               ),
               Column(
                 spacing: 3,

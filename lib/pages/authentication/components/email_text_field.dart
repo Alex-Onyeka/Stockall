@@ -78,7 +78,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
                     widget.theme.lightModeColor.prColor200,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(10),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -86,7 +86,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
                     widget.theme.lightModeColor.prColor300,
                 width: 1.5,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
           ),
           controller: widget.controller,

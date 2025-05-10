@@ -133,4 +133,15 @@ class CompProvider extends ChangeNotifier {
       ),
     );
   }
+
+  //
+  //
+  //
+  // T A B  B A R  W I D G E T
+  int activeTab = 0;
+
+  void swtichTab(int index) {
+    activeTab = index;
+    notifyListeners();
+  }
 }

@@ -68,6 +68,15 @@ class _AddProductsThreeMobileState
 
       returnData(context, listen: false).addProduct(
         TempProductClass(
+          shopId:
+              returnShopProvider(context, listen: false)
+                  .returnShop(
+                    returnUserProvider(
+                      context,
+                      listen: false,
+                    ).currentUser(userId()).userId,
+                  )
+                  .shopId,
           id: int.parse(
             "${DateTime.now().second} ${DateTime.now().minute}",
           ),

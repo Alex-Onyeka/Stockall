@@ -37,16 +37,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      // ignore: use_build_context_synchronously
-      final uiProvider = returnData(context, listen: false);
-
-      if (!uiProvider.isFloatingButtonVisible) {
-        uiProvider.showFloatingActionButton();
-      } else {
-        uiProvider.hideFloatingActionButtonWithDelay();
-      }
-    });
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
   }
 
   @override
