@@ -27,7 +27,6 @@ class CustomerListMobile extends StatefulWidget {
 
 class _CustomerListMobileState
     extends State<CustomerListMobile> {
-  // CustomersProvider customersProvider = CustomersProvider();
   @override
   void initState() {
     super.initState();
@@ -137,6 +136,7 @@ class _CustomerListMobileState
                                       widget
                                           .searchController
                                           .text,
+                                      context,
                                     )
                                     .isNotEmpty) {
                                   return ListView.builder(
@@ -146,6 +146,7 @@ class _CustomerListMobileState
                                               widget
                                                   .searchController
                                                   .text,
+                                              context,
                                             )
                                             .length,
                                     itemBuilder: (
@@ -160,6 +161,7 @@ class _CustomerListMobileState
                                             widget
                                                 .searchController
                                                 .text,
+                                            context,
                                           );
                                       TempCustomersClass
                                       customer =
@@ -234,7 +236,9 @@ class _CustomerListMobileState
                             return ListView.builder(
                               itemCount:
                                   customersProvider
-                                      .customers
+                                      .getOwnCustomer(
+                                        context,
+                                      )
                                       .length,
                               itemBuilder: (
                                 context,
@@ -243,7 +247,9 @@ class _CustomerListMobileState
                                 List<TempCustomersClass>
                                 customers =
                                     customersProvider
-                                        .getSortedCustomers();
+                                        .getSortedCustomers(
+                                          context,
+                                        );
                                 TempCustomersClass
                                 customer = customers[index];
 

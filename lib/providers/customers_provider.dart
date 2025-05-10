@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
+import 'package:stockitt/main.dart';
 
 class CustomersProvider extends ChangeNotifier {
   List<TempCustomersClass> customers = [
     TempCustomersClass(
-      shopId: '1',
+      shopId: 1,
       dateAdded: 'May, 5, 2025',
       id: 1,
       name: 'John Doe',
@@ -16,7 +17,7 @@ class CustomersProvider extends ChangeNotifier {
       country: 'Nigeria',
     ),
     TempCustomersClass(
-      shopId: '2',
+      shopId: 2,
       dateAdded: 'May, 5, 2025',
       id: 2,
       name: 'Jane Smith',
@@ -28,7 +29,7 @@ class CustomersProvider extends ChangeNotifier {
       country: 'Nigeria',
     ),
     TempCustomersClass(
-      shopId: '2',
+      shopId: 2,
       dateAdded: 'May, 5, 2025',
       id: 3,
       name: 'Emeka Obi',
@@ -40,7 +41,7 @@ class CustomersProvider extends ChangeNotifier {
       country: 'Nigeria',
     ),
     TempCustomersClass(
-      shopId: '1',
+      shopId: 1,
       dateAdded: 'May, 5, 2025',
       id: 4,
       name: 'Aisha Bello',
@@ -52,7 +53,7 @@ class CustomersProvider extends ChangeNotifier {
       country: 'Nigeria',
     ),
     TempCustomersClass(
-      shopId: '1',
+      shopId: 1,
       country: 'Nigeria',
       dateAdded: 'May, 5, 2025',
       id: 5,
@@ -65,17 +66,32 @@ class CustomersProvider extends ChangeNotifier {
     ),
   ];
 
+  List<TempCustomersClass> getOwnCustomer(
+    BuildContext context,
+  ) {
+    return customers
+        .where(
+          (customer) =>
+              customer.shopId ==
+              currentShop(context).shopId,
+        )
+        .toList();
+  }
+
   int getId() {
     return customers.length + 1;
   }
 
-  List<TempCustomersClass> getSortedCustomers() {
-    customers.sort(
+  List<TempCustomersClass> getSortedCustomers(
+    BuildContext context,
+  ) {
+    final ownCustomers = getOwnCustomer(context);
+    ownCustomers.sort(
       (a, b) => a.name.toLowerCase().compareTo(
         b.name.toLowerCase(),
       ),
     );
-    return customers;
+    return ownCustomers;
   }
 
   void addCustomer(TempCustomersClass customer) {
@@ -109,15 +125,21 @@ class CustomersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  TempCustomersClass returnCustomerById(int id) {
-    return customers.firstWhere(
-      (element) => element.id == id,
-    );
+  TempCustomersClass returnCustomerById(
+    int id,
+    BuildContext context,
+  ) {
+    return getOwnCustomer(
+      context,
+    ).firstWhere((element) => element.id == id);
   }
 
-  List<TempCustomersClass> searchCustomers(String name) {
+  List<TempCustomersClass> searchCustomers(
+    String name,
+    BuildContext context,
+  ) {
     List<TempCustomersClass> tempCustomer =
-        getSortedCustomers()
+        getSortedCustomers(context)
             .where(
               (customer) => customer.name
                   .toLowerCase()

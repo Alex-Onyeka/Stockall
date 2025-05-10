@@ -296,7 +296,10 @@ class _AddCustomerMobileState
                             listen: false,
                           ).addCustomer(
                             TempCustomersClass(
-                              shopId: '1',
+                              shopId:
+                                  currentShop(
+                                    context,
+                                  ).shopId,
                               country:
                                   widget
                                       .countryController
@@ -344,7 +347,10 @@ class _AddCustomerMobileState
                             mainCustomer: widget.customer!,
                             setterCustomer:
                                 TempCustomersClass(
-                                  shopId: '1',
+                                  shopId:
+                                      currentShop(
+                                        context,
+                                      ).shopId,
                                   id:
                                       returnCustomers(
                                         context,

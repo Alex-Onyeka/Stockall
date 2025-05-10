@@ -1,7 +1,7 @@
 class TempCustomersClass {
   final int id;
   final String dateAdded;
-  final String shopId;
+  final int shopId;
   String? country;
   String name;
   String email;

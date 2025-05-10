@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/main.dart';
 
 class DataProvider extends ChangeNotifier {
   String name = '';
@@ -218,46 +218,69 @@ class DataProvider extends ChangeNotifier {
       quantity: 4,
     ),
   ];
+
   int currentSelect = 0;
   void changeSelected(int number) {
     currentSelect = number;
     notifyListeners();
   }
 
-  List<TempProductClass> filterProducts() {
+  List<TempProductClass> sortProductsByName(
+    List<TempProductClass> products,
+  ) {
+    products.sort(
+      (a, b) => a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      ),
+    );
+    return products;
+  }
+
+  List<TempProductClass> returnOwnProducts(
+    BuildContext context,
+  ) {
+    return sortProductsByName(products)
+        .where(
+          (element) =>
+              element.shopId == currentShop(context).shopId,
+        )
+        .toList();
+  }
+
+  List<TempProductClass> filterProducts(
+    BuildContext context,
+  ) {
     switch (currentSelect) {
       case 1:
-        return products
-            .where((p) => p.quantity != 0)
-            .toList();
+        return returnOwnProducts(
+          context,
+        ).where((p) => p.quantity != 0).toList();
       case 2:
-        return products
+        return returnOwnProducts(context)
             .where(
               (p) => p.quantity <= 10 && p.quantity != 0,
             )
             .toList();
       case 3:
-        return products
-            .where((p) => p.quantity == 0)
-            .toList();
+        return returnOwnProducts(
+          context,
+        ).where((p) => p.quantity == 0).toList();
       case 0:
       default:
-        return products;
+        return returnOwnProducts(context);
     }
   }
 
   List<TempProductClass> searchProductsName(
     String text,
-    TempShopClass shop,
+    BuildContext context,
   ) {
     List<TempProductClass> tempProducts =
-        products
+        returnOwnProducts(context)
             .where(
-              (product) =>
-                  product.name.toLowerCase().contains(
-                    text.toLowerCase(),
-                  ) &&
-                  product.shopId == shop.shopId,
+              (product) => product.name
+                  .toLowerCase()
+                  .contains(text.toLowerCase()),
             )
             .toList();
 
@@ -266,21 +289,20 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> searchProductsBarcode(
     String text,
-    TempShopClass shop,
+    BuildContext context,
   ) {
-    return products
+    return returnOwnProducts(context)
         .where(
           (product) =>
               product.barcode != null &&
-              product.barcode!.contains(text) &&
-              product.shopId == shop.shopId,
+              product.barcode!.contains(text),
         )
         .toList();
   }
 
-  int totalInStock() {
+  int totalInStock(BuildContext context) {
     int totalNum = 0;
-    for (var product in products) {
+    for (var product in returnOwnProducts(context)) {
       if (product.quantity != 0) {
         totalNum += 1;
       }
@@ -288,9 +310,9 @@ class DataProvider extends ChangeNotifier {
     return totalNum;
   }
 
-  int totalOutOfStock() {
+  int totalOutOfStock(BuildContext context) {
     int totalNum = 0;
-    for (var product in products) {
+    for (var product in returnOwnProducts(context)) {
       if (product.quantity == 0) {
         totalNum += 1;
       }

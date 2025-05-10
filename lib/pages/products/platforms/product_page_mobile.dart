@@ -48,9 +48,6 @@ class _ProductPageMobileState
   bool listEmpty = false;
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(
-      context,
-    ).returnShop(userId());
     var theme = returnTheme(context);
     return Scaffold(
       bottomNavigationBar: MainBottomNav(),
@@ -113,22 +110,20 @@ class _ProductPageMobileState
                                 listen: false,
                               ).searchProductsBarcode(
                                 result,
-                                shop,
+                                context,
                               );
                             });
                           },
                           color1: Colors.green,
                           title1: 'In Stock',
-                          value1:
-                              returnData(
-                                context,
-                              ).totalInStock(),
+                          value1: returnData(
+                            context,
+                          ).totalInStock(context),
                           color2: Colors.amber,
                           title2: 'Out of Stock',
-                          value2:
-                              returnData(
-                                context,
-                              ).totalOutOfStock(),
+                          value2: returnData(
+                            context,
+                          ).totalOutOfStock(context),
                           secondRow: false,
                         ),
                       ),
@@ -245,7 +240,7 @@ class _ProductPageMobileState
                                           .searchProductsName(
                                             searchController
                                                 .text,
-                                            shop,
+                                            context,
                                           )
                                           .length,
                                   itemBuilder: (
@@ -257,7 +252,7 @@ class _ProductPageMobileState
                                       context,
                                     ).searchProductsName(
                                       searchController.text,
-                                      shop,
+                                      context,
                                     );
 
                                     TempProductClass
@@ -354,7 +349,7 @@ class _ProductPageMobileState
                                                 .searchProductsName(
                                                   searchController
                                                       .text,
-                                                  shop,
+                                                  context,
                                                 )
                                                 .length,
                                         itemBuilder: (
@@ -370,7 +365,7 @@ class _ProductPageMobileState
                                               ).searchProductsName(
                                                 searchController
                                                     .text,
-                                                shop,
+                                                context,
                                               )[index];
                                           return SearchProductTile(
                                             product:

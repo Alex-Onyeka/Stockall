@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
@@ -58,6 +59,11 @@ void main() async {
 
 String userId() {
   return 'user_001';
+}
+
+TempShopClass currentShop(BuildContext context) {
+  return returnShopProvider(context, listen: false).shops
+      .firstWhere((element) => element.userId == userId());
 }
 
 UserProvider returnUserProvider(

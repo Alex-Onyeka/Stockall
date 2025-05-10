@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
+import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -55,9 +56,6 @@ class _TotalProductsPageState
 
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(
-      context,
-    ).returnShop(userId());
     var theme = returnTheme(context);
     return GestureDetector(
       onTap:
@@ -154,7 +152,7 @@ class _TotalProductsPageState
                           listen: false,
                         ).searchProductsBarcode(
                           result,
-                          shop,
+                          context,
                         );
                       });
                     },
@@ -250,29 +248,71 @@ class _TotalProductsPageState
                                 ),
                                 SizedBox(height: 10),
                                 Expanded(
-                                  child: ListView.builder(
-                                    itemCount:
-                                        returnData(context)
-                                            .filterProducts()
-                                            .length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      List<TempProductClass>
-                                      products =
-                                          returnData(
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (returnData(
                                             context,
-                                          ).filterProducts();
+                                          )
+                                          .filterProducts(
+                                            context,
+                                          )
+                                          .isNotEmpty) {
+                                        return ListView.builder(
+                                          itemCount:
+                                              returnData(
+                                                    context,
+                                                  )
+                                                  .filterProducts(
+                                                    context,
+                                                  )
+                                                  .length,
+                                          itemBuilder: (
+                                            context,
+                                            index,
+                                          ) {
+                                            List<
+                                              TempProductClass
+                                            >
+                                            products =
+                                                returnData(
+                                                  context,
+                                                ).filterProducts(
+                                                  context,
+                                                );
 
-                                      TempProductClass
-                                      product =
-                                          products[index];
+                                            TempProductClass
+                                            product =
+                                                products[index];
 
-                                      return ProductTileMain(
-                                        theme: theme,
-                                        product: product,
-                                      );
+                                            return ProductTileMain(
+                                              theme: theme,
+                                              product:
+                                                  product,
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                bottom:
+                                                    30.0,
+                                              ),
+                                          child: EmptyWidgetDisplayOnly(
+                                            title:
+                                                'Empty List',
+                                            subText:
+                                                'You Don\'t have any product under this category',
+                                            buttonText:
+                                                'Add Products',
+                                            icon:
+                                                Icons
+                                                    .dangerous_outlined,
+                                            theme: theme,
+                                            height: 40,
+                                          ),
+                                        );
+                                      }
                                     },
                                   ),
                                 ),
@@ -343,7 +383,7 @@ class _TotalProductsPageState
                                                   .h4
                                                   .fontSize,
                                         ),
-                                        'Found ${Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text, shop).isEmpty ? Provider.of<DataProvider>(context).searchProductsName(searchController.text, shop).length : Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text, shop).length} Items',
+                                        'Found ${Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text, context).isEmpty ? Provider.of<DataProvider>(context).searchProductsName(searchController.text, context).length : Provider.of<DataProvider>(context).searchProductsBarcode(searchController.text, context).length} Items',
                                       ),
                                       Padding(
                                         padding:
@@ -401,7 +441,7 @@ class _TotalProductsPageState
                                                     .searchProductsName(
                                                       searchController
                                                           .text,
-                                                      shop,
+                                                      context,
                                                     )
                                                     .length,
                                             itemBuilder: (
@@ -417,7 +457,7 @@ class _TotalProductsPageState
                                                   ).searchProductsName(
                                                     searchController
                                                         .text,
-                                                    shop,
+                                                    context,
                                                   )[index];
                                               return SearchProductTile(
                                                 product:

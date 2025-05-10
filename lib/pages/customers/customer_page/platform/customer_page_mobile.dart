@@ -20,7 +20,7 @@ class CustomerPageMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     var customer = returnCustomers(
       context,
-    ).returnCustomerById(customerId);
+    ).returnCustomerById(customerId, context);
     var theme = returnTheme(context);
     return SafeArea(
       child: Scaffold(
@@ -109,21 +109,33 @@ class DetailsPageContainer extends StatelessWidget {
                     crossAxisAlignment:
                         CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize:
-                              theme.mobileTexts.b1.fontSize,
+                      SizedBox(
+                        width: 160,
+                        child: Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                          ),
+                          customer.name,
                         ),
-                        customer.name,
                       ),
-                      Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                      SizedBox(
+                        width: 160,
+                        child: Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                          ),
+                          customer.email,
                         ),
-                        customer.email,
                       ),
                     ],
                   ),
@@ -287,111 +299,145 @@ class CustomerDetailsContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 420,
+      child: SingleChildScrollView(
+        child: Column(
           children: [
-            Expanded(
-              flex: 6,
-              child: TabBarUserInfoSection(
-                mainText: customer.name,
-                text: 'Name',
-              ),
+            Row(
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: TabBarUserInfoSection(
+                    mainText: customer.name,
+                    text: 'Name',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText: customer.dateAdded,
+                    text: 'Date Added',
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              flex: 3,
-              child: TabBarUserInfoSection(
-                mainText: customer.dateAdded,
-                text: 'Date Added',
-              ),
+            SizedBox(height: 30),
+            Row(
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: TabBarUserInfoSection(
+                    mainText: customer.email,
+                    text: 'Email',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText: customer.phone,
+                    text: 'Phone Number',
+                  ),
+                ),
+              ],
             ),
+            SizedBox(height: 40),
+            Row(
+              spacing: 15,
+              children: [
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b2.fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  'OTHER DETAILS:',
+                ),
+              ],
+            ),
+            SizedBox(height: 5),
+            Divider(),
+            SizedBox(height: 10),
+            Row(
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        (customer.country != null &&
+                                customer.country!
+                                    .trim()
+                                    .isNotEmpty)
+                            ? customer.country!
+                            : 'Not Set',
+
+                    text: 'Country',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        (customer.state != null &&
+                                customer.state!
+                                    .trim()
+                                    .isNotEmpty)
+                            ? customer.state!
+                            : 'Not Set',
+
+                    text: 'State',
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
+            Row(
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        (customer.address != null &&
+                                customer.address!
+                                    .trim()
+                                    .isNotEmpty)
+                            ? customer.address!
+                            : 'Not Set',
+
+                    text: 'Address',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        (customer.city != null &&
+                                customer.city!
+                                    .trim()
+                                    .isNotEmpty)
+                            ? customer.city!
+                            : 'Not Set',
+
+                    text: 'City',
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
           ],
         ),
-        SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 6,
-              child: TabBarUserInfoSection(
-                mainText: customer.email,
-                text: 'Email',
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: TabBarUserInfoSection(
-                mainText: customer.phone,
-                text: 'Phone Number',
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 40),
-        Row(
-          children: [
-            Text(
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b2.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-              'OTHER DETAILS:',
-            ),
-          ],
-        ),
-        SizedBox(height: 5),
-        Divider(),
-        SizedBox(height: 10),
-        Visibility(
-          visible: true,
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 6,
-                child: TabBarUserInfoSection(
-                  mainText: customer.country ?? 'Not Set',
-                  text: 'Country',
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: TabBarUserInfoSection(
-                  mainText: customer.state ?? 'Not Set',
-                  text: 'State',
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 30),
-        Visibility(
-          visible: true,
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 6,
-                child: TabBarUserInfoSection(
-                  mainText: customer.address ?? 'Not Set',
-                  text: 'Address',
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: TabBarUserInfoSection(
-                  mainText: customer.city ?? 'Not Set',
-                  text: 'City',
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 30),
-      ],
+      ),
     );
   }
 }
