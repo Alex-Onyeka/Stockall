@@ -8,6 +8,7 @@ import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/add_customer/add_customer.dart';
 import 'package:stockitt/pages/customers/components/customer_main_tile.dart';
+import 'package:stockitt/pages/customers/customer_page/customer_page.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 
 class CustomerListMobile extends StatefulWidget {
@@ -185,7 +186,19 @@ class _CustomerListMobileState
                                               context,
                                             ).pop(context);
                                           } else {
-                                            return;
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return CustomerPage(
+                                                    customer:
+                                                        customer,
+                                                  );
+                                                },
+                                              ),
+                                            );
                                           }
                                         },
                                         theme: theme,
@@ -254,7 +267,19 @@ class _CustomerListMobileState
                                         context,
                                       ).pop(context);
                                     } else {
-                                      return;
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return CustomerPage(
+                                              customer:
+                                                  customer,
+                                            );
+                                          },
+                                        ),
+                                      );
                                     }
                                   },
                                   theme: theme,
