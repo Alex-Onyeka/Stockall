@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/classes/temp_main_receipt.dart';
+import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/payment_type_button.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
@@ -423,7 +425,64 @@ class MakeSalesMobileTwo extends StatelessWidget {
                             returnSalesProvider(
                               context,
                               listen: false,
-                            ).checkOut(context);
+                            ).checkOut(
+                              context: context,
+                              mainReceipt: TempMainReceipt(
+                                id:
+                                    (returnReceiptProvider(
+                                                  context,
+                                                )
+                                                .mainReceipts
+                                                .length +
+                                            1)
+                                        .toString(),
+                                createdAt: DateTime.now(),
+                              ),
+                              productRecord: TempProductSaleRecord(
+                                productRecordId:
+                                    returnReceiptProvider(
+                                          context,
+                                        )
+                                        .productSaleRecords
+                                        .length +
+                                    1,
+                                createdAt: DateTime.now(),
+                                productId:
+                                    returnSalesProvider(
+                                          context,
+                                        )
+                                        .cartItems
+                                        .first
+                                        .item
+                                        .id,
+                                shopId:
+                                    returnShopProvider(
+                                          context,
+                                        )
+                                        .returnShop(
+                                          userId(),
+                                        )
+                                        .shopId,
+                                staffId: '1',
+                                staffName: 'staffName',
+                                recepitId:
+                                    returnReceiptProvider(
+                                      context,
+                                    ).mainReceipts.length,
+                                quantity:
+                                    returnSalesProvider(
+                                          context,
+                                        )
+                                        .cartItems
+                                        .first
+                                        .quantity,
+                                revenue:
+                                    returnSalesProvider(
+                                          context,
+                                        ).cartItems.first
+                                        .totalCost(),
+                              ),
+                            );
                           },
                           text: 'Check Out',
                         ),

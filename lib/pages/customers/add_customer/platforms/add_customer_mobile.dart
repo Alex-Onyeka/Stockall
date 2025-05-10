@@ -304,9 +304,7 @@ class _AddCustomerMobileState
                                   widget
                                       .countryController
                                       .text,
-                              dateAdded:
-                                  DateTime.now()
-                                      .toIso8601String(),
+                              dateAdded: DateTime.now(),
                               id:
                                   returnCustomers(
                                     context,

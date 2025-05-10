@@ -1,6 +1,6 @@
 class TempCustomersClass {
   final int id;
-  final String dateAdded;
+  final DateTime dateAdded;
   final int shopId;
   String? country;
   String name;

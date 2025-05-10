@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
+import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/data_provider.dart';
 
@@ -138,7 +140,27 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void checkOut(BuildContext context) {
+  void createSales(
+    BuildContext context,
+    TempMainReceipt mainReceipt,
+    TempProductSaleRecord productRecord,
+  ) {
+    returnReceiptProvider(
+      context,
+    ).createMainReceipt(mainReceipt);
+
+    returnReceiptProvider(
+      context,
+    ).createProductSalesRecord(productRecord);
+    notifyListeners();
+  }
+
+  void checkOut({
+    required BuildContext context,
+    required TempMainReceipt mainReceipt,
+    required TempProductSaleRecord productRecord,
+  }) {
+    createSales(context, mainReceipt, productRecord);
     resetPaymentMethod();
     clearCart();
     returnCustomers(

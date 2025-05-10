@@ -1082,7 +1082,7 @@ class _CustomBottomPanelState
       TextEditingController(text: '1');
   int qqty = 1;
   List productResults = [];
-  String scanResult = '';
+  String? scanResult;
   String? searchResult;
   void clear() {
     searchResult = null;
@@ -1190,6 +1190,8 @@ class _CustomBottomPanelState
                         widget.searchController,
                     onChanged: (value) {
                       setState(() {
+                        scanResult = null;
+                        productResults.clear();
                         if (value == '') {
                           searchResult = null;
                         } else {
@@ -1199,6 +1201,8 @@ class _CustomBottomPanelState
                       });
                     },
                     onPressedScan: () async {
+                      productResults.clear();
+                      searchResult = null;
                       String result = await scanCode(
                         context,
                         'Failed',
@@ -1224,9 +1228,71 @@ class _CustomBottomPanelState
                     builder: (context) {
                       var products = productResults;
                       if (products.isEmpty &&
-                          searchResult == null) {
-                        return Center(
-                          child: Text('Empty List'),
+                          scanResult != null) {
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                            top: 20.0,
+                            left: 30,
+                          ),
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Product Not Registered In Your Stock',
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      } else if (returnData(context)
+                              .searchProductsName(
+                                widget
+                                    .searchController
+                                    .text,
+                                context,
+                              )
+                              .isEmpty &&
+                          searchResult != null) {
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                            top: 20.0,
+                            left: 30,
+                          ),
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Found 0 Product(s)',
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         );
                       } else {
                         if (productResults.isNotEmpty) {

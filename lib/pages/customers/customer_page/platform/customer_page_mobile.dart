@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/major/top_banner.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/add_customer/add_customer.dart';
@@ -319,7 +320,9 @@ class CustomerDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: TabBarUserInfoSection(
-                    mainText: customer.dateAdded,
+                    mainText: formatDateTime(
+                      customer.dateAdded,
+                    ),
                     text: 'Date Added',
                   ),
                 ),

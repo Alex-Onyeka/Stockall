@@ -183,7 +183,7 @@ class DataProvider extends ChangeNotifier {
     ),
     TempProductClass(
       shopId: 2,
-      id: 9,
+      id: 10,
       name: 'Wrist Watch',
       desc: 'Analog watch with leather strap',
       brand: 'Fossil',

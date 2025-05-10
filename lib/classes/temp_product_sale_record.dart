@@ -8,7 +8,7 @@ class TempProductSaleRecord {
   final String staffName;
   final int recepitId;
   final double quantity;
-  final int revenue;
+  final double revenue;
 
   TempProductSaleRecord({
     required this.productRecordId,

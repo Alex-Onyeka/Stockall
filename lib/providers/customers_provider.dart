@@ -6,7 +6,7 @@ class CustomersProvider extends ChangeNotifier {
   List<TempCustomersClass> customers = [
     TempCustomersClass(
       shopId: 1,
-      dateAdded: 'May, 5, 2025',
+      dateAdded: DateTime(2025, 8, 6),
       id: 1,
       name: 'John Doe',
       email: 'john@example.com',
@@ -18,7 +18,7 @@ class CustomersProvider extends ChangeNotifier {
     ),
     TempCustomersClass(
       shopId: 2,
-      dateAdded: 'May, 5, 2025',
+      dateAdded: DateTime(2025, 5, 5),
       id: 2,
       name: 'Jane Smith',
       email: 'jane@example.com',
@@ -30,7 +30,7 @@ class CustomersProvider extends ChangeNotifier {
     ),
     TempCustomersClass(
       shopId: 2,
-      dateAdded: 'May, 5, 2025',
+      dateAdded: DateTime(2025, 5, 6),
       id: 3,
       name: 'Emeka Obi',
       email: 'emeka@example.com',
@@ -42,7 +42,7 @@ class CustomersProvider extends ChangeNotifier {
     ),
     TempCustomersClass(
       shopId: 1,
-      dateAdded: 'May, 5, 2025',
+      dateAdded: DateTime(2025, 6, 6),
       id: 4,
       name: 'Aisha Bello',
       email: 'aisha@example.com',
@@ -55,7 +55,7 @@ class CustomersProvider extends ChangeNotifier {
     TempCustomersClass(
       shopId: 1,
       country: 'Nigeria',
-      dateAdded: 'May, 5, 2025',
+      dateAdded: DateTime(2025, 5, 7),
       id: 5,
       name: 'David Okoro',
       email: 'david@example.com',

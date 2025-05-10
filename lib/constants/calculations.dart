@@ -15,3 +15,7 @@ String formatLargeNumberDouble(num number) {
   final formatter = NumberFormat('#,###');
   return formatter.format(number);
 }
+
+String formatDateTime(DateTime date) {
+  return DateFormat('MMM d, yyyy').format(date);
+}
