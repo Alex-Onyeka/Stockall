@@ -1,5 +1,5 @@
 class TempMainReceipt {
-  final String id;
+  final int id;
   final String? barcode;
   final DateTime createdAt;
   final int? shopId;

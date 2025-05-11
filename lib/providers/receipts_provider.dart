@@ -46,12 +46,13 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> getOwnProductSalesRecord(
     BuildContext context,
   ) {
-    return productSaleRecords
+    return returnProductSalesRecordsByDate(context)
         .where(
           (record) =>
               record.shopId ==
               returnShopProvider(
                 context,
+                listen: false,
               ).returnShop(userId()).shopId,
         )
         .toList();
@@ -60,16 +61,45 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord>
   returnProductSalesRecordsByDate(BuildContext context) {
     final sortedList =
-        getOwnProductSalesRecord(context).toList()..sort(
+        productSaleRecords.toList()..sort(
           (a, b) => b.createdAt.compareTo(a.createdAt),
         );
     return sortedList;
   }
 
-  void createProductSalesRecord(
-    TempProductSaleRecord productRecord,
+  List<TempProductSaleRecord> getProductRecordsByReceiptId(
+    int receiptId,
+    BuildContext context,
   ) {
-    productSaleRecords.add(productRecord);
+    return getOwnProductSalesRecord(context)
+        .where((product) => product.recepitId == receiptId)
+        .toList();
+  }
+
+  void createProductSalesRecord(
+    BuildContext context,
+    int newReceiptId,
+  ) {
+    for (var item
+        in returnSalesProvider(
+          context,
+          listen: false,
+        ).cartItems) {
+      productSaleRecords.add(
+        TempProductSaleRecord(
+          productRecordId: productSaleRecords.length + 1,
+          createdAt: DateTime.now(),
+          productId: item.item.id,
+          shopId: item.item.shopId,
+          staffId: 'staffId',
+          staffName: 'staffName',
+          recepitId: newReceiptId,
+          quantity: item.quantity,
+          revenue: item.totalCost(),
+        ),
+      );
+    }
+
     notifyListeners();
   }
 
@@ -81,7 +111,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   List<TempMainReceipt> mainReceipts = [
     TempMainReceipt(
-      id: 'r001',
+      id: 1,
       barcode: 'B12345',
       createdAt: DateTime(2025, 5, 5, 9, 30),
       shopId: 1,
@@ -90,7 +120,7 @@ class ReceiptsProvider extends ChangeNotifier {
       customerId: 2,
     ),
     TempMainReceipt(
-      id: 'r002',
+      id: 2,
       barcode: 'B12346',
       createdAt: DateTime(2025, 5, 7, 14, 0),
       shopId: 2,
@@ -99,7 +129,7 @@ class ReceiptsProvider extends ChangeNotifier {
       customerId: 3,
     ),
     TempMainReceipt(
-      id: 'r003',
+      id: 3,
       barcode: 'B12347',
       createdAt: DateTime(2025, 5, 6, 11, 15),
       shopId: 1,
@@ -118,6 +148,7 @@ class ReceiptsProvider extends ChangeNotifier {
               receipt.shopId ==
               returnShopProvider(
                 context,
+                listen: false,
               ).returnShop(userId()).shopId,
         )
         .toList();
@@ -133,8 +164,68 @@ class ReceiptsProvider extends ChangeNotifier {
     return sortedList;
   }
 
-  void createMainReceipt(TempMainReceipt mainReceipt) {
-    mainReceipts.add(mainReceipt);
+  int createMainReceipt(TempMainReceipt mainReceipt) {
+    final newId = mainReceipts.length + 1;
+    mainReceipts.add(
+      TempMainReceipt(
+        id: newId,
+        createdAt: DateTime.now(),
+        barcode: mainReceipt.barcode,
+        customerId: mainReceipt.customerId,
+        shopId: mainReceipt.shopId,
+        staffId: mainReceipt.staffId,
+        staffName: mainReceipt.staffName,
+      ),
+    );
     notifyListeners();
+    return newId;
+  }
+
+  double getTotalRevenue(
+    BuildContext context,
+    TempMainReceipt mainReceipt,
+  ) {
+    double tempRev = 0;
+    var beans =
+        getOwnProductSalesRecord(context)
+            .where(
+              (bean) => bean.recepitId == mainReceipt.id,
+            )
+            .toList();
+
+    for (var bean in beans) {
+      tempRev += bean.revenue;
+    }
+    return tempRev;
+  }
+
+  double getTotalDiscountMainReceipt(
+    TempMainReceipt mainReceipt,
+    BuildContext context,
+  ) {
+    double tempTotal = 0;
+    var productRecords =
+        getOwnProductSalesRecord(context)
+            .where(
+              (test) => test.recepitId == mainReceipt.id,
+            )
+            .toList();
+
+    for (var productRecord in productRecords) {
+      var product = returnData(context, listen: false)
+          .returnOwnProducts(context)
+          .firstWhere(
+            (test) => test.id == productRecord.productId,
+          );
+
+      if (product.discount != null) {
+        tempTotal +=
+            product.sellingPrice *
+            (product.discount! / 100) *
+            productRecord.quantity;
+      }
+    }
+
+    return tempTotal;
   }
 }

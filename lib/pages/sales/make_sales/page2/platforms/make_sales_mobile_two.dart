@@ -429,19 +429,18 @@ class MakeSalesMobileTwo extends StatelessWidget {
                               context: context,
                               mainReceipt: TempMainReceipt(
                                 id:
-                                    (returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .mainReceipts
-                                                .length +
-                                            1)
-                                        .toString(),
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).mainReceipts.length +
+                                    1,
                                 createdAt: DateTime.now(),
                               ),
                               productRecord: TempProductSaleRecord(
                                 productRecordId:
                                     returnReceiptProvider(
                                           context,
+                                          listen: false,
                                         )
                                         .productSaleRecords
                                         .length +
@@ -450,6 +449,7 @@ class MakeSalesMobileTwo extends StatelessWidget {
                                 productId:
                                     returnSalesProvider(
                                           context,
+                                          listen: false,
                                         )
                                         .cartItems
                                         .first
@@ -458,6 +458,7 @@ class MakeSalesMobileTwo extends StatelessWidget {
                                 shopId:
                                     returnShopProvider(
                                           context,
+                                          listen: false,
                                         )
                                         .returnShop(
                                           userId(),
@@ -468,10 +469,12 @@ class MakeSalesMobileTwo extends StatelessWidget {
                                 recepitId:
                                     returnReceiptProvider(
                                       context,
+                                      listen: false,
                                     ).mainReceipts.length,
                                 quantity:
                                     returnSalesProvider(
                                           context,
+                                          listen: false,
                                         )
                                         .cartItems
                                         .first
@@ -479,6 +482,7 @@ class MakeSalesMobileTwo extends StatelessWidget {
                                 revenue:
                                     returnSalesProvider(
                                           context,
+                                          listen: false,
                                         ).cartItems.first
                                         .totalCost(),
                               ),

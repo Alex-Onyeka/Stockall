@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
 
 class SalesProvider extends ChangeNotifier {
@@ -145,13 +147,15 @@ class SalesProvider extends ChangeNotifier {
     TempMainReceipt mainReceipt,
     TempProductSaleRecord productRecord,
   ) {
-    returnReceiptProvider(
+    var newId = returnReceiptProvider(
       context,
+      listen: false,
     ).createMainReceipt(mainReceipt);
 
     returnReceiptProvider(
       context,
-    ).createProductSalesRecord(productRecord);
+      listen: false,
+    ).createProductSalesRecord(context, newId);
     notifyListeners();
   }
 
@@ -171,11 +175,15 @@ class SalesProvider extends ChangeNotifier {
     returnCompProvider(
       context,
       listen: false,
-    ).successAction(
-      () => Navigator.popUntil(
+    ).successAction(() {
+      Navigator.push(
         context,
-        ModalRoute.withName('/'),
-      ),
-    );
+        MaterialPageRoute(
+          builder: (context) {
+            return ReceiptPage(mainReceipt: mainReceipt);
+          },
+        ),
+      );
+    });
   }
 }

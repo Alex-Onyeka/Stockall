@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/pages/home/home.dart';
+import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
+import 'package:stockitt/providers/receipts_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
 import 'package:stockitt/providers/shop_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -51,6 +53,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => UserProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ReceiptsProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -59,6 +64,16 @@ void main() async {
 
 String userId() {
   return 'user_001';
+}
+
+ReceiptsProvider returnReceiptProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ReceiptsProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 TempShopClass currentShop(BuildContext context) {
@@ -174,6 +189,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {'/': (context) => Home()},
+      // home: ReceiptPage(),
       //
       //
       //
