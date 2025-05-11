@@ -41,16 +41,23 @@ class ReceiptPageMobile extends StatelessWidget {
                       title: 'Receipt',
                       theme: theme,
                       bottomSpace: 200,
-                      topSpace: 40,
+                      topSpace: 20,
                     ),
                   ),
                   Positioned(
-                    top: 90,
-                    child: ReceiptDetailsContainer(
-                      shop: shop,
-                      user: user,
-                      mainReceipt: mainReceipt,
-                      theme: theme,
+                    top: 70,
+                    child: SizedBox(
+                      height:
+                          MediaQuery.of(
+                            context,
+                          ).size.height -
+                          50,
+                      child: ReceiptDetailsContainer(
+                        shop: shop,
+                        user: user,
+                        mainReceipt: mainReceipt,
+                        theme: theme,
+                      ),
                     ),
                   ),
                 ],
@@ -63,7 +70,7 @@ class ReceiptPageMobile extends StatelessWidget {
   }
 }
 
-class ReceiptDetailsContainer extends StatelessWidget {
+class ReceiptDetailsContainer extends StatefulWidget {
   final TempShopClass shop;
   final TempMainReceipt mainReceipt;
   final TempUserClass user;
@@ -77,338 +84,661 @@ class ReceiptDetailsContainer extends StatelessWidget {
   });
 
   @override
+  State<ReceiptDetailsContainer> createState() =>
+      _ReceiptDetailsContainerState();
+}
+
+class _ReceiptDetailsContainerState
+    extends State<ReceiptDetailsContainer> {
+  // final ScrollController _scrollController =
+  //     ScrollController();
+  // @override
+  // void dispose() {
+  //   _scrollController
+  //       .dispose(); // Always dispose controllers
+  //   super.dispose();
+  // }
+  String? customerName;
+  @override
   Widget build(BuildContext context) {
+    if (widget.mainReceipt.customerId != null) {
+      setState(() {
+        customerName =
+            returnCustomers(context, listen: false)
+                .getOwnCustomer(context)
+                .firstWhere(
+                  (customer) =>
+                      customer.id ==
+                      widget.mainReceipt.customerId,
+                )
+                .name;
+      });
+    }
     var productRecords = returnReceiptProvider(
       context,
       // listen: false,
-    ).getProductRecordsByReceiptId(mainReceipt.id, context);
-    return Container(
-      width: MediaQuery.of(context).size.width - 40,
-      padding: EdgeInsets.all(25),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(32, 0, 0, 0),
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          SizedBox(height: 5),
-          Image.asset(mainLogoIcon, height: 40),
-          SizedBox(height: 15),
-          Column(
-            spacing: 8,
-            children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.h4.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                shop.name,
-              ),
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b2.fontSize,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade700,
-                ),
-                shop.email,
-              ),
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b2.fontSize,
-                ),
-                shop.shopAddress ?? 'Address Not Set',
+    ).getProductRecordsByReceiptId(
+      widget.mainReceipt.id,
+      context,
+    );
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width - 40,
+          height: MediaQuery.of(context).size.height - 180,
+          padding: EdgeInsets.all(25),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(32, 0, 0, 0),
+                blurRadius: 5,
               ),
             ],
           ),
-          SizedBox(height: 20),
-          Row(
-            spacing: 10,
-            children: [
-              Expanded(
-                flex: 5,
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'Casheir',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      mainReceipt.staffName,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'Customer Name',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      'Alex Onyeka',
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 25),
-          Row(
-            children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b1.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                'Product Record',
-              ),
-            ],
-          ),
-          SizedBox(
+          child: SizedBox(
             height:
-                MediaQuery.of(context).size.height - 550,
-            child: ListView.builder(
-              itemCount: productRecords.length,
-              itemBuilder: (context, index) {
-                var productRecord = productRecords[index];
-                var product = returnData(
-                      context,
-                      listen: false,
-                    )
-                    .returnOwnProducts(context)
-                    .firstWhere(
-                      (element) =>
-                          element.id ==
-                          productRecord.productId,
-                    );
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8.0,
+                MediaQuery.of(context).size.height - 200,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 5),
+                        Image.asset(
+                          mainLogoIcon,
+                          height: 40,
+                        ),
+                        SizedBox(height: 15),
+                        Column(
+                          spacing: 8,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .h4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              widget.shop.name,
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700,
+                              ),
+                              widget.shop.email,
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                              ),
+                              widget.shop.shopAddress ??
+                                  'Address Not Set',
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Casheir',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                    widget
+                                        .mainReceipt
+                                        .staffName,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              flex: 4,
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Customer Name',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                    customerName ??
+                                        'Not Saved',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Payment Method',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                    widget
+                                        .mainReceipt
+                                        .paymentMethod,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              flex: 4,
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Amount(s)',
+                                  ),
+                                  Column(
+                                    children: [
+                                      Visibility(
+                                        visible:
+                                            widget
+                                                    .mainReceipt
+                                                    .paymentMethod ==
+                                                'Split' ||
+                                            widget
+                                                    .mainReceipt
+                                                    .paymentMethod ==
+                                                'Cash',
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              'Cash:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatLargeNumberDoubleWidgetDecimal(
+                                                widget
+                                                    .mainReceipt
+                                                    .cashAlt,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            widget
+                                                    .mainReceipt
+                                                    .paymentMethod ==
+                                                'Split' ||
+                                            widget
+                                                    .mainReceipt
+                                                    .paymentMethod ==
+                                                'Bank',
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              'Bank:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatLargeNumberDoubleWidgetDecimal(
+                                                widget
+                                                    .mainReceipt
+                                                    .bank,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Divider(),
+                        Row(
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Product Record',
+                            ),
+                          ],
+                        ),
+                        ListView.builder(
+                          physics:
+                              NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: productRecords.length,
+                          itemBuilder: (context, index) {
+                            var productRecord =
+                                productRecords[index];
+                            var product = returnData(
+                                  context,
+                                  listen: false,
+                                )
+                                .returnOwnProducts(context)
+                                .firstWhere(
+                                  (record) =>
+                                      record.id ==
+                                      productRecord
+                                          .productId,
+                                );
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                  ),
+                              child: SizedBox(
+                                child: Row(
+                                  spacing: 10,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      flex: 6,
+                                      child: Column(
+                                        spacing: 3,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
+                                            ),
+                                            product.name,
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            'Qty: ${productRecord.quantity.toStringAsFixed(0)} Item(s)',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'N${formatLargeNumberDouble(productRecord.revenue)}',
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                productRecord
+                                                    .discount !=
+                                                null,
+                                            child: Text(
+                                              style: TextStyle(
+                                                decoration:
+                                                    TextDecoration
+                                                        .lineThrough,
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              'N${formatLargeNumberDouble(productRecord.originalCost!)}',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  child: SizedBox(
-                    child: Row(
-                      spacing: 10,
+                ),
+                SizedBox(height: 5),
+                Divider(),
+                Column(
+                  children: [
+                    Row(
                       mainAxisAlignment:
                           MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           flex: 6,
-                          child: Column(
-                            spacing: 3,
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                ),
-                                product.name,
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                ),
-                                'Qty: ${productRecord.quantity.toStringAsFixed(0)} Item(s)',
-                              ),
-                            ],
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            'Subtotal',
                           ),
                         ),
+
                         Expanded(
                           flex: 3,
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'N${product.discount != null ? formatLargeNumberDouble(productRecord.revenue * (1 - (product.discount! / 100))) : formatLargeNumberDouble(productRecord.revenue)}',
-                              ),
-                              Visibility(
-                                visible:
-                                    product.discount !=
-                                    null,
-                                child: Text(
-                                  style: TextStyle(
-                                    decoration:
-                                        TextDecoration
-                                            .lineThrough,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.normal,
-                                  ),
-                                  'N${formatLargeNumberDouble(productRecord.revenue)}',
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'N${formatLargeNumberDouble(returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, widget.mainReceipt))}',
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    SizedBox(height: 0),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 6,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            'Discount',
+                          ),
+                        ),
+
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'N${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(widget.mainReceipt, context) - returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, widget.mainReceipt))}',
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 0),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 6,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            'Total',
+                          ),
+                        ),
+
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'N${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(widget.mainReceipt, context))}',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10,
+          children: [
+            BottomActionButton(
+              text: 'Finish',
+              color: Colors.grey.shade600,
+              iconSize: 25,
+              theme: widget.theme,
+              icon: Icons.home_outlined,
+              action: () {
+                Navigator.popUntil(
+                  context,
+                  ModalRoute.withName('/'),
                 );
               },
             ),
-          ),
-          SizedBox(height: 5),
-          Divider(),
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 6,
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b1.fontSize,
-                  ),
-                  'Subtotal',
-                ),
-              ),
-
-              Expanded(
-                flex: 3,
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'N${formatLargeNumberDouble(returnReceiptProvider(context, listen: false).getTotalRevenue(context, mainReceipt))}',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 5),
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 6,
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b1.fontSize,
-                  ),
-                  'Discount',
-                ),
-              ),
-
-              Expanded(
-                flex: 3,
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'N${formatLargeNumberDouble(returnReceiptProvider(context, listen: false).getTotalDiscountMainReceipt(mainReceipt, context))}',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 5),
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 6,
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b1.fontSize,
-                  ),
-                  'Total',
-                ),
-              ),
-
-              Expanded(
-                flex: 3,
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b1.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'N${formatLargeNumberDouble(returnReceiptProvider(context, listen: false).getTotalRevenue(context, mainReceipt) - returnReceiptProvider(context, listen: false).getTotalDiscountMainReceipt(mainReceipt, context))}',
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-              BottomActionButton(
-                text: 'Finish',
-                color: Colors.grey,
-                iconSize: 23,
-                theme: theme,
-                icon: Icons.clear,
-                action: () {
-                  Navigator.popUntil(
-                    context,
-                    ModalRoute.withName('/'),
-                  );
-                },
-              ),
-              BottomActionButton(
-                text: 'Print',
-                color: Colors.grey,
-                iconSize: 23,
-                theme: theme,
-                icon: Icons.print_outlined,
-              ),
-            ],
-          ),
-        ],
-      ),
+            BottomActionButton(
+              text: 'Print',
+              color: Colors.grey.shade600,
+              iconSize: 23,
+              theme: widget.theme,
+              icon: Icons.print_outlined,
+              action: () {},
+            ),
+            BottomActionButton(
+              text: 'Download',
+              color: Colors.grey.shade600,
+              iconSize: 23,
+              theme: widget.theme,
+              icon: Icons.download_outlined,
+              action: () {},
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

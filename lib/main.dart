@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/pages/home/home.dart';
-import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';

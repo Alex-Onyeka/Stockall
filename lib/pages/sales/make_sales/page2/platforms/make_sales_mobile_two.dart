@@ -41,7 +41,7 @@ class _MakeSalesMobileTwoState
     widget.cashController.text =
         widget.totalAmount.toString();
 
-    widget.bankController.text = '0.0';
+    widget.bankController.text = '0';
   }
 
   @override
@@ -566,22 +566,68 @@ class _MakeSalesMobileTwoState
                               context,
                               listen: false,
                             ).checkOut(
+                              customerId: int.tryParse(
+                                returnCustomers(
+                                  context,
+                                  listen: false,
+                                ).selectedCustomerId,
+                              ),
                               context: context,
                               mainReceipt: TempMainReceipt(
                                 bank:
-                                    double.tryParse(
-                                      widget
-                                          .bankController
-                                          .text,
-                                    ) ??
-                                    0,
+                                    returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).returnPaymentMethod() ==
+                                            'Split'
+                                        ? double.tryParse(
+                                              widget
+                                                  .bankController
+                                                  .text,
+                                            ) ??
+                                            0
+                                        : returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).returnPaymentMethod() ==
+                                            'Bank'
+                                        ? returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).calcFinalTotalMain(
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cartItems,
+                                        )
+                                        : 0,
                                 cashAlt:
-                                    double.tryParse(
-                                      widget
-                                          .cashController
-                                          .text,
-                                    ) ??
-                                    0,
+                                    returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).returnPaymentMethod() ==
+                                            'Split'
+                                        ? double.tryParse(
+                                              widget
+                                                  .cashController
+                                                  .text,
+                                            ) ??
+                                            0
+                                        : returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).returnPaymentMethod() ==
+                                            'Bank'
+                                        ? 0
+                                        : returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).calcFinalTotalMain(
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cartItems,
+                                        ),
                                 paymentMethod:
                                     returnSalesProvider(
                                       context,
@@ -621,6 +667,32 @@ class _MakeSalesMobileTwoState
                                 createdAt: DateTime.now(),
                               ),
                               productRecord: TempProductSaleRecord(
+                                discount:
+                                    returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        )
+                                        .cartItems
+                                        .first
+                                        .discount,
+                                customerId: int.tryParse(
+                                  returnCustomers(
+                                    context,
+                                    listen: false,
+                                  ).selectedCustomerId,
+                                ),
+                                originalCost:
+                                    returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).cartItems.first
+                                        .totalCost(),
+                                discountedAmount:
+                                    returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).cartItems.first
+                                        .discountCost(),
                                 productRecordId:
                                     returnReceiptProvider(
                                           context,
@@ -668,7 +740,7 @@ class _MakeSalesMobileTwoState
                                           context,
                                           listen: false,
                                         ).cartItems.first
-                                        .totalCost(),
+                                        .revenue(),
                               ),
                             );
                           },

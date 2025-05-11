@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/add_customer/add_customer.dart';
-import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
+import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class CustomerPageMobile extends StatelessWidget {
@@ -219,29 +219,49 @@ class DetailsPageContainer extends StatelessWidget {
                       ).activeTab ==
                       1,
                   child: SizedBox(
-                    height: 400,
-                    width: 400,
-                    child: ListView(
-                      children: [
-                        ProductTileMain(
-                          theme: theme,
-                          product: TempProductClass(
-                            shopId: 2,
-                            id:
-                                returnData(
-                                  context,
-                                ).products.length +
-                                1,
-                            name: 'Beans',
-                            category: 'Food',
-                            unit: 'Kg',
-                            isRefundable: false,
-                            costPrice: 20000,
-                            sellingPrice: 25000,
-                            quantity: 10,
-                          ),
-                        ),
-                      ],
+                    height:
+                        MediaQuery.of(context).size.height -
+                        420,
+                    // width:
+                    //     MediaQuery.of(context).size.width -
+                    //     20,
+                    child: Builder(
+                      builder: (context) {
+                        List<TempMainReceipt> receipts =
+                            returnReceiptProvider(context)
+                                .returnOwnReceipts(context)
+                                .where(
+                                  (receipt) =>
+                                      receipt.customerId ==
+                                      customer.id,
+                                )
+                                .toList();
+                        if (returnReceiptProvider(context)
+                            .returnOwnReceipts(context)
+                            .where(
+                              (test) =>
+                                  test.customerId ==
+                                  customer.id,
+                            )
+                            .isEmpty) {
+                          return Center(
+                            child: Text('Empty'),
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: receipts.length,
+                            itemBuilder: (context, index) {
+                              TempMainReceipt receipt =
+                                  receipts[index];
+
+                              return ReceiptTileMain(
+                                theme: theme,
+                                mainReceipt: receipt,
+                              );
+                            },
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),

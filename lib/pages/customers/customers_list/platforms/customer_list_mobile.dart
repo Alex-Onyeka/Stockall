@@ -267,6 +267,10 @@ class _CustomerListMobileState
                                         context,
                                       ).pop(context);
                                     } else {
+                                      returnCompProvider(
+                                        context,
+                                        listen: false,
+                                      ).swtichTab(0);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(

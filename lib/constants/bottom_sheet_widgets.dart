@@ -1374,6 +1374,9 @@ class _CustomBottomPanelState
                                     selectProduct(
                                       theme,
                                       TempCartItem(
+                                        discount:
+                                            product
+                                                .discount,
                                         item: product,
                                         quantity:
                                             double.tryParse(
@@ -1444,6 +1447,9 @@ class _CustomBottomPanelState
                                     selectProduct(
                                       theme,
                                       TempCartItem(
+                                        discount:
+                                            product
+                                                .discount,
                                         item: product,
                                         quantity:
                                             double.tryParse(
@@ -1711,7 +1717,7 @@ void editCartItemBottomSheet(
                                             5,
                                           ),
                                       onTap: () {
-                                        if (qqty >
+                                        if (qqty >=
                                             productQuantity) {
                                           showDialog(
                                             context:

@@ -7,8 +7,11 @@ class TempProductSaleRecord {
   final int? customerId;
   final String staffName;
   final int recepitId;
+  final double? discount;
   final double quantity;
   final double revenue;
+  final double? discountedAmount;
+  final double? originalCost;
 
   TempProductSaleRecord({
     required this.productRecordId,
@@ -21,5 +24,8 @@ class TempProductSaleRecord {
     required this.recepitId,
     required this.quantity,
     required this.revenue,
+    required this.discountedAmount,
+    required this.originalCost,
+    required this.discount,
   });
 }

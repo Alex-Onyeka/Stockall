@@ -16,6 +16,11 @@ String formatLargeNumberDouble(num number) {
   return formatter.format(number);
 }
 
+String formatLargeNumberDoubleWidgetDecimal(num number) {
+  final formatter = NumberFormat('#,##0.0');
+  return formatter.format(number);
+}
+
 String formatDateTime(DateTime date) {
   return DateFormat('MMM d, yyyy').format(date);
 }

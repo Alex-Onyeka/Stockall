@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
@@ -159,6 +158,7 @@ class SalesProvider extends ChangeNotifier {
     BuildContext context,
     TempMainReceipt mainReceipt,
     TempProductSaleRecord productRecord,
+    int? customerId,
   ) {
     var newId = returnReceiptProvider(
       context,
@@ -168,7 +168,7 @@ class SalesProvider extends ChangeNotifier {
     returnReceiptProvider(
       context,
       listen: false,
-    ).createProductSalesRecord(context, newId);
+    ).createProductSalesRecord(context, newId, customerId);
     notifyListeners();
   }
 
@@ -193,8 +193,14 @@ class SalesProvider extends ChangeNotifier {
     required BuildContext context,
     required TempMainReceipt mainReceipt,
     required TempProductSaleRecord productRecord,
+    required int? customerId,
   }) {
-    createSales(context, mainReceipt, productRecord);
+    createSales(
+      context,
+      mainReceipt,
+      productRecord,
+      customerId,
+    );
     updateProductQuantities(context);
     resetPaymentMethod();
     clearCart();

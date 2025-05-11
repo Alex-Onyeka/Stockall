@@ -6,6 +6,9 @@ import 'package:stockitt/main.dart';
 class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> productSaleRecords = [
     TempProductSaleRecord(
+      discount: 10,
+      discountedAmount: 3000,
+      originalCost: 5000,
       productRecordId: 1,
       createdAt: DateTime(2025, 5, 1, 10, 30),
       productId: 1,
@@ -18,6 +21,9 @@ class ReceiptsProvider extends ChangeNotifier {
       revenue: 4500.0,
     ),
     TempProductSaleRecord(
+      discount: 10,
+      discountedAmount: 2100,
+      originalCost: 4000,
       productRecordId: 2,
       createdAt: DateTime(2025, 5, 3, 14, 15),
       productId: 2,
@@ -30,6 +36,9 @@ class ReceiptsProvider extends ChangeNotifier {
       revenue: 3000.0,
     ),
     TempProductSaleRecord(
+      discount: 10,
+      discountedAmount: 5000,
+      originalCost: 2500,
       productRecordId: 3,
       createdAt: DateTime(2025, 5, 5, 9, 0),
       productId: 3,
@@ -79,6 +88,7 @@ class ReceiptsProvider extends ChangeNotifier {
   void createProductSalesRecord(
     BuildContext context,
     int newReceiptId,
+    int? customerId,
   ) {
     for (var item
         in returnSalesProvider(
@@ -87,6 +97,10 @@ class ReceiptsProvider extends ChangeNotifier {
         ).cartItems) {
       productSaleRecords.add(
         TempProductSaleRecord(
+          discount: item.discount,
+          originalCost: item.totalCost(),
+          customerId: customerId,
+          discountedAmount: item.discountCost(),
           productRecordId: productSaleRecords.length + 1,
           createdAt: DateTime.now(),
           productId: item.item.id,
@@ -95,7 +109,7 @@ class ReceiptsProvider extends ChangeNotifier {
           staffName: 'staffName',
           recepitId: newReceiptId,
           quantity: item.quantity,
-          revenue: item.totalCost(),
+          revenue: item.revenue(),
         ),
       );
     }
@@ -117,7 +131,7 @@ class ReceiptsProvider extends ChangeNotifier {
       shopId: 1,
       staffId: 's001',
       staffName: 'Alice Johnson',
-      customerId: 2,
+      customerId: 1,
       bank: 0,
       cashAlt: 20000,
       paymentMethod: 'Cash',
@@ -135,7 +149,7 @@ class ReceiptsProvider extends ChangeNotifier {
       paymentMethod: 'Bank',
     ),
     TempMainReceipt(
-      id: 3,
+      id: 1,
       barcode: 'B12347',
       createdAt: DateTime(2025, 5, 6, 11, 15),
       shopId: 1,
@@ -193,7 +207,7 @@ class ReceiptsProvider extends ChangeNotifier {
     return newId;
   }
 
-  double getTotalRevenue(
+  double getSubTotalRevenueForReceipt(
     BuildContext context,
     TempMainReceipt mainReceipt,
   ) {
@@ -206,12 +220,12 @@ class ReceiptsProvider extends ChangeNotifier {
             .toList();
 
     for (var bean in beans) {
-      tempRev += bean.revenue;
+      tempRev += bean.originalCost!;
     }
     return tempRev;
   }
 
-  double getTotalDiscountMainReceipt(
+  double getTotalMainRevenueReceipt(
     TempMainReceipt mainReceipt,
     BuildContext context,
   ) {
@@ -224,18 +238,7 @@ class ReceiptsProvider extends ChangeNotifier {
             .toList();
 
     for (var productRecord in productRecords) {
-      var product = returnData(context, listen: false)
-          .returnOwnProducts(context)
-          .firstWhere(
-            (test) => test.id == productRecord.productId,
-          );
-
-      if (product.discount != null) {
-        tempTotal +=
-            product.sellingPrice *
-            (product.discount! / 100) *
-            productRecord.quantity;
-      }
+      tempTotal += productRecord.revenue;
     }
 
     return tempTotal;

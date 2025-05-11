@@ -148,7 +148,7 @@ class _ProductTileCartSearchState
                               ],
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: widget.action,
                               icon: Icon(Icons.add),
                             ),
                           ],

@@ -106,7 +106,7 @@ class DataProvider extends ChangeNotifier {
       size: null,
       costPrice: 500,
       sellingPrice: 800,
-      discount: 0,
+      discount: 5,
       quantity: 100,
     ),
     TempProductClass(
