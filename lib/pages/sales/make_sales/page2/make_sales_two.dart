@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/pages/sales/make_sales/page2/platforms/make_sales_mobile_two.dart';
 
 class MakeSalesTwo extends StatefulWidget {
-  const MakeSalesTwo({super.key});
+  final double totalAmount;
+  const MakeSalesTwo({
+    super.key,
+    required this.totalAmount,
+  });
 
   @override
   State<MakeSalesTwo> createState() =>
@@ -21,11 +25,14 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: FocusManager.instance.primaryFocus?.unfocus,
+      onTap:
+          () =>
+              FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return MakeSalesMobileTwo(
+              totalAmount: widget.totalAmount,
               customerController: customerController,
               bankController: bankController,
               cashController: cashController,

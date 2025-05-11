@@ -6,6 +6,7 @@ class EditCartTextField extends StatefulWidget {
   final String hint;
   final TextEditingController controller;
   final ThemeProvider theme;
+  final Function(String)? onChanged;
 
   const EditCartTextField({
     super.key,
@@ -13,6 +14,7 @@ class EditCartTextField extends StatefulWidget {
     required this.hint,
     required this.controller,
     required this.theme,
+    this.onChanged,
   });
 
   @override
@@ -39,12 +41,15 @@ class _EditCartTextFieldState
         ),
         SizedBox(height: 10),
         TextFormField(
+          onChanged: widget.onChanged,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade700,
           ),
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.numberWithOptions(
+            decimal: true,
+          ),
           autocorrect: false,
           enableSuggestions: false,
           decoration: InputDecoration(

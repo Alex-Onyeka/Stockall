@@ -262,7 +262,7 @@ class _CartItemMainState extends State<CartItemMain> {
                                               .cartItem
                                               .quantity
                                               .toStringAsFixed(
-                                                0,
+                                                1,
                                               ),
                                         ),
                                       ),

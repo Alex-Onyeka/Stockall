@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/small_button_main.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
-import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -906,14 +906,44 @@ class _CustomBottomPanelState
                 children: [
                   SizedBox(
                     width: 450,
-                    child: NumberTextfield(
+                    child: EditCartTextField(
                       onChanged: (value) {
+                        double entered =
+                            double.tryParse(value) ?? 0;
+                        if (entered >
+                            cartItem.item.quantity) {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => InfoAlert(
+                                  title:
+                                      "Quantity Limit Reached",
+                                  message:
+                                      "Only ${cartItem.item.quantity} available in stock.",
+                                  theme: theme,
+                                ),
+                          );
+
+                          Future.delayed(
+                            Duration(milliseconds: 300),
+                            () {
+                              setState(() {
+                                qqty = 1;
+                                quantityController.text =
+                                    '1';
+                                cartItem.quantity = 1;
+                              });
+                            },
+                          );
+                          return;
+                        }
+
                         setState(() {
-                          cartItem.quantity =
-                              double.tryParse(value) ?? 0;
-                          qqty = int.parse(value);
+                          qqty = entered;
+                          cartItem.quantity = qqty;
                         });
                       },
+
                       title: 'Enter Product Quantity',
                       hint: 'Quantity',
                       controller: quantityController,
@@ -1029,12 +1059,28 @@ class _CustomBottomPanelState
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap: () {
+                              if (qqty >=
+                                  cartItem.item.quantity) {
+                                showDialog(
+                                  context: context,
+                                  builder:
+                                      (_) => InfoAlert(
+                                        title:
+                                            "Quantity Limit Reached",
+                                        message:
+                                            "Only ${cartItem.item.quantity} available in stock.",
+                                        theme: theme,
+                                      ),
+                                );
+                                return;
+                              }
                               setState(() {
                                 qqty++;
                                 quantityController.text =
                                     qqty.toString();
                               });
                             },
+
                             child: SizedBox(
                               height: 30,
                               width: 50,
@@ -1080,7 +1126,7 @@ class _CustomBottomPanelState
 
   TextEditingController quantityController =
       TextEditingController(text: '1');
-  int qqty = 1;
+  double qqty = 1;
   List productResults = [];
   String? scanResult;
   String? searchResult;
@@ -1306,24 +1352,44 @@ class _CustomBottomPanelState
                                   products[index];
                               return ProductTileCartSearch(
                                 action: () {
-                                  selectProduct(
-                                    theme,
-                                    TempCartItem(
-                                      item: product,
-                                      quantity:
-                                          double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                )
-                                                .trim(),
-                                          ) ??
-                                          0.0,
-                                    ),
-                                    widget.close,
-                                  );
+                                  if (product.quantity ==
+                                      0) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        var theme =
+                                            Provider.of<
+                                              ThemeProvider
+                                            >(context);
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Product Quantity is Zero, there this product cannot be sold',
+                                          title:
+                                              'Product Out of Stock',
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    selectProduct(
+                                      theme,
+                                      TempCartItem(
+                                        item: product,
+                                        quantity:
+                                            double.tryParse(
+                                              quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  )
+                                                  .trim(),
+                                            ) ??
+                                            0.0,
+                                      ),
+                                      widget.close,
+                                    );
+                                  }
                                 },
                                 theme: theme,
                                 product: product,
@@ -1356,24 +1422,44 @@ class _CustomBottomPanelState
                                   )[index];
                               return ProductTileCartSearch(
                                 action: () {
-                                  selectProduct(
-                                    theme,
-                                    TempCartItem(
-                                      item: product,
-                                      quantity:
-                                          double.tryParse(
-                                            quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                )
-                                                .trim(),
-                                          ) ??
-                                          0.0,
-                                    ),
-                                    widget.close,
-                                  );
+                                  if (product.quantity ==
+                                      0) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        var theme =
+                                            Provider.of<
+                                              ThemeProvider
+                                            >(context);
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Product Quantity is Zero, there this product cannot be sold',
+                                          title:
+                                              'Product out of Stock',
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    selectProduct(
+                                      theme,
+                                      TempCartItem(
+                                        item: product,
+                                        quantity:
+                                            double.tryParse(
+                                              quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  )
+                                                  .trim(),
+                                            ) ??
+                                            0.0,
+                                      ),
+                                      widget.close,
+                                    );
+                                  }
                                 },
                                 theme: theme,
                                 product: product,
@@ -1401,11 +1487,14 @@ class _CustomBottomPanelState
 // E D I T   C A R T   I T E M   B O T T O M  S H E E T
 
 void editCartItemBottomSheet(
+  double productQuantity,
   BuildContext context,
   Function()? updateAction,
   TempCartItem cartItem,
   TextEditingController numberController,
 ) async {
+  numberController.text = cartItem.quantity.toString();
+  double qqty = cartItem.quantity.toDouble();
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -1416,12 +1505,12 @@ void editCartItemBottomSheet(
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext context) {
-      numberController.text = cartItem.quantity.toString();
       return StatefulBuilder(
         builder: (context, setState) {
-          double qqty =
-              double.tryParse(numberController.text) ??
-              cartItem.quantity.toDouble();
+          // double currentValue = 0;
+          // double qqty =
+          //     double.tryParse(numberController.text) ??
+          //     cartItem.quantity.toDouble();
           return DraggableScrollableSheet(
             expand: false,
             initialChildSize: 0.9,
@@ -1510,6 +1599,41 @@ void editCartItemBottomSheet(
                               hint: 'Start Typing',
                               controller: numberController,
                               theme: theme,
+                              onChanged: (value) {
+                                final parsedValue =
+                                    double.tryParse(
+                                      value,
+                                    ) ??
+                                    0;
+                                if (parsedValue >
+                                    productQuantity) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      var theme =
+                                          Provider.of<
+                                            ThemeProvider
+                                          >(context);
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Total product quantity can\'t be exceeded',
+                                        title:
+                                            'Quantity Exceeded',
+                                      );
+                                    },
+                                  );
+                                  // Optionally reset to max or previous value
+                                  setState(() {
+                                    numberController.text =
+                                        qqty.toString();
+                                  });
+                                } else {
+                                  setState(() {
+                                    qqty = parsedValue;
+                                  });
+                                }
+                              },
                             ),
                             SizedBox(height: 20),
                             Row(
@@ -1587,12 +1711,38 @@ void editCartItemBottomSheet(
                                             5,
                                           ),
                                       onTap: () {
-                                        setState(() {
-                                          qqty++;
-                                          numberController
-                                                  .text =
-                                              qqty.toString();
-                                        });
+                                        if (qqty >
+                                            productQuantity) {
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              var theme =
+                                                  Provider.of<
+                                                    ThemeProvider
+                                                  >(
+                                                    context,
+                                                  );
+                                              return InfoAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'Total product quantity can\'t be exceeded',
+                                                title:
+                                                    'Quantity Exceeded',
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          setState(() {
+                                            qqty++;
+                                            numberController
+                                                    .text =
+                                                qqty.toString();
+                                          });
+                                        }
                                       },
                                       child: SizedBox(
                                         height: 30,

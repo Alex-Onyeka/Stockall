@@ -118,6 +118,9 @@ class ReceiptsProvider extends ChangeNotifier {
       staffId: 's001',
       staffName: 'Alice Johnson',
       customerId: 2,
+      bank: 0,
+      cashAlt: 20000,
+      paymentMethod: 'Cash',
     ),
     TempMainReceipt(
       id: 2,
@@ -127,6 +130,9 @@ class ReceiptsProvider extends ChangeNotifier {
       staffId: 's002',
       staffName: 'Bob Smith',
       customerId: 3,
+      bank: 40000,
+      cashAlt: 0,
+      paymentMethod: 'Bank',
     ),
     TempMainReceipt(
       id: 3,
@@ -136,6 +142,9 @@ class ReceiptsProvider extends ChangeNotifier {
       staffId: 's001',
       staffName: 'Alice Johnson',
       customerId: 1,
+      bank: 2500,
+      cashAlt: 3000,
+      paymentMethod: 'Split',
     ),
   ];
 
@@ -175,6 +184,9 @@ class ReceiptsProvider extends ChangeNotifier {
         shopId: mainReceipt.shopId,
         staffId: mainReceipt.staffId,
         staffName: mainReceipt.staffName,
+        bank: mainReceipt.bank,
+        cashAlt: mainReceipt.cashAlt,
+        paymentMethod: mainReceipt.paymentMethod,
       ),
     );
     notifyListeners();

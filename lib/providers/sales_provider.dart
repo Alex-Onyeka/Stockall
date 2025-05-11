@@ -142,6 +142,19 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String returnPaymentMethod() {
+    switch (currentPayment) {
+      case 0:
+        return 'Cash';
+      case 1:
+        return 'Bank';
+      case 2:
+        return 'Split';
+      default:
+        return 'Cash';
+    }
+  }
+
   void createSales(
     BuildContext context,
     TempMainReceipt mainReceipt,
@@ -159,12 +172,30 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateProductQuantities(BuildContext context) {
+    final productList = returnData(
+      context,
+      listen: false,
+    ).returnOwnProducts(context);
+
+    for (var item in cartItems) {
+      final actualProduct = productList.firstWhere(
+        (product) => product.id == item.item.id,
+      );
+
+      actualProduct.quantity -= item.quantity;
+    }
+
+    notifyListeners();
+  }
+
   void checkOut({
     required BuildContext context,
     required TempMainReceipt mainReceipt,
     required TempProductSaleRecord productRecord,
   }) {
     createSales(context, mainReceipt, productRecord);
+    updateProductQuantities(context);
     resetPaymentMethod();
     clearCart();
     returnCustomers(

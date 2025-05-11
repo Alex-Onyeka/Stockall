@@ -158,6 +158,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       },
                                       editAction: () {
                                         editCartItemBottomSheet(
+                                          items[index]
+                                              .item
+                                              .quantity,
                                           context,
                                           () {
                                             returnSalesProvider(
@@ -311,7 +314,16 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return MakeSalesTwo();
+                              return MakeSalesTwo(
+                                totalAmount:
+                                    returnSalesProvider(
+                                      context,
+                                    ).calcFinalTotalMain(
+                                      returnSalesProvider(
+                                        context,
+                                      ).cartItems,
+                                    ),
+                              );
                             },
                           ),
                         );

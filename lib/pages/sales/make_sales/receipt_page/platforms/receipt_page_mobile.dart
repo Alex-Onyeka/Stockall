@@ -150,7 +150,7 @@ class ReceiptDetailsContainer extends StatelessWidget {
                             theme.mobileTexts.b2.fontSize,
                         fontWeight: FontWeight.normal,
                       ),
-                      mainReceipt.staffName ?? 'Staff Name',
+                      mainReceipt.staffName,
                     ),
                   ],
                 ),

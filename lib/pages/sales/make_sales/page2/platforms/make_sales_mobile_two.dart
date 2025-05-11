@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/payment_type_button.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
+import 'package:stockitt/providers/theme_provider.dart';
 
-class MakeSalesMobileTwo extends StatelessWidget {
+class MakeSalesMobileTwo extends StatefulWidget {
+  final double totalAmount;
   final TextEditingController searchController;
   final TextEditingController cashController;
   final TextEditingController bankController;
@@ -19,7 +23,26 @@ class MakeSalesMobileTwo extends StatelessWidget {
     required this.bankController,
     required this.cashController,
     required this.customerController,
+    required this.totalAmount,
   });
+
+  @override
+  State<MakeSalesMobileTwo> createState() =>
+      _MakeSalesMobileTwoState();
+}
+
+class _MakeSalesMobileTwoState
+    extends State<MakeSalesMobileTwo> {
+  bool isUpdating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.cashController.text =
+        widget.totalAmount.toString();
+
+    widget.bankController.text = '0.0';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,8 +302,67 @@ class MakeSalesMobileTwo extends StatelessWidget {
                                     title: 'Cash',
                                     hint: 'Cash Amount',
                                     controller:
-                                        cashController,
+                                        widget
+                                            .cashController,
                                     theme: theme,
+                                    onChanged: (value) {
+                                      if (isUpdating)
+                                        // ignore: curly_braces_in_flow_control_structures
+                                        return;
+                                      isUpdating = true;
+
+                                      double cash =
+                                          double.tryParse(
+                                            value,
+                                          ) ??
+                                          0;
+                                      if (cash >
+                                          widget
+                                              .totalAmount) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            var theme =
+                                                Provider.of<
+                                                  ThemeProvider
+                                                >(context);
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Cash cannot exceed total amount.',
+                                              title:
+                                                  'Overpayment',
+                                            );
+                                          },
+                                        );
+                                        // Reset to max allowed
+                                        widget
+                                            .cashController
+                                            .text = widget
+                                            .totalAmount
+                                            .toStringAsFixed(
+                                              2,
+                                            );
+                                        widget
+                                            .bankController
+                                            .text = '0.00';
+                                      } else {
+                                        double bank =
+                                            widget
+                                                .totalAmount -
+                                            cash;
+                                        widget
+                                            .bankController
+                                            .text = bank
+                                            .toStringAsFixed(
+                                              2,
+                                            );
+                                      }
+
+                                      isUpdating = false;
+                                    },
                                   ),
                                 ),
                                 Expanded(
@@ -288,8 +370,66 @@ class MakeSalesMobileTwo extends StatelessWidget {
                                     title: 'Bank',
                                     hint: 'Bank Amount',
                                     controller:
-                                        bankController,
+                                        widget
+                                            .bankController,
                                     theme: theme,
+                                    onChanged: (value) {
+                                      if (isUpdating)
+                                        // ignore: curly_braces_in_flow_control_structures
+                                        return;
+                                      isUpdating = true;
+
+                                      double bank =
+                                          double.tryParse(
+                                            value,
+                                          ) ??
+                                          0;
+                                      if (bank >
+                                          widget
+                                              .totalAmount) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            var theme =
+                                                Provider.of<
+                                                  ThemeProvider
+                                                >(context);
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Bank cannot exceed total amount.',
+                                              title:
+                                                  'Overpayment',
+                                            );
+                                          },
+                                        );
+                                        widget
+                                            .bankController
+                                            .text = widget
+                                            .totalAmount
+                                            .toStringAsFixed(
+                                              2,
+                                            );
+                                        widget
+                                            .cashController
+                                            .text = '0.00';
+                                      } else {
+                                        double cash =
+                                            widget
+                                                .totalAmount -
+                                            bank;
+                                        widget
+                                            .cashController
+                                            .text = cash
+                                            .toStringAsFixed(
+                                              2,
+                                            );
+                                      }
+
+                                      isUpdating = false;
+                                    },
                                   ),
                                 ),
                               ],
@@ -428,6 +568,50 @@ class MakeSalesMobileTwo extends StatelessWidget {
                             ).checkOut(
                               context: context,
                               mainReceipt: TempMainReceipt(
+                                bank:
+                                    double.tryParse(
+                                      widget
+                                          .bankController
+                                          .text,
+                                    ) ??
+                                    0,
+                                cashAlt:
+                                    double.tryParse(
+                                      widget
+                                          .cashController
+                                          .text,
+                                    ) ??
+                                    0,
+                                paymentMethod:
+                                    returnSalesProvider(
+                                      context,
+                                      listen: false,
+                                    ).returnPaymentMethod(),
+                                shopId:
+                                    returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        )
+                                        .returnShop(
+                                          userId(),
+                                        )
+                                        .shopId,
+                                staffId: userId(),
+                                staffName:
+                                    returnUserProvider(
+                                          context,
+                                          listen: false,
+                                        )
+                                        .currentUser(
+                                          userId(),
+                                        )
+                                        .name,
+                                customerId: int.tryParse(
+                                  returnCustomers(
+                                    context,
+                                    listen: false,
+                                  ).selectedCustomerId,
+                                ),
                                 id:
                                     returnReceiptProvider(
                                       context,
