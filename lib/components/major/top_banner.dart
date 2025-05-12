@@ -12,6 +12,7 @@ class TopBanner extends StatelessWidget {
   final double bottomSpace;
   final String? iconSvg;
   final IconData? iconData;
+  final Color? svgColor;
   const TopBanner({
     super.key,
     required this.subTitle,
@@ -22,6 +23,7 @@ class TopBanner extends StatelessWidget {
     this.iconSvg,
     this.iconData,
     this.isMain,
+    this.svgColor,
   });
 
   @override
@@ -126,6 +128,11 @@ class TopBanner extends StatelessWidget {
                       child:
                           iconSvg != null
                               ? SvgPicture.asset(
+                                color:
+                                    svgColor ??
+                                    theme
+                                        .lightModeColor
+                                        .prColor300,
                                 iconSvg ?? productIconSvg,
                                 height: 22,
                               )

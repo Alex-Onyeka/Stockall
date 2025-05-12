@@ -37,7 +37,8 @@ class TopBannerTwo extends StatelessWidget {
                 left: 20,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
                   Visibility(
                     visible: !isMain,
@@ -55,6 +56,7 @@ class TopBannerTwo extends StatelessWidget {
                               BorderRadius.circular(10),
                         ),
                         child: Icon(
+                          color: Colors.white,
                           Icons.arrow_back_ios_new_rounded,
                         ),
                       ),

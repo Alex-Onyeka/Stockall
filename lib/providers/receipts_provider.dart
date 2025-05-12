@@ -127,7 +127,7 @@ class ReceiptsProvider extends ChangeNotifier {
     TempMainReceipt(
       id: 1,
       barcode: 'B12345',
-      createdAt: DateTime(2025, 5, 5, 9, 30),
+      createdAt: DateTime(2025, 5, 5),
       shopId: 1,
       staffId: 's001',
       staffName: 'Alice Johnson',
@@ -137,13 +137,13 @@ class ReceiptsProvider extends ChangeNotifier {
       paymentMethod: 'Cash',
     ),
     TempMainReceipt(
-      id: 2,
+      id: 1,
       barcode: 'B12346',
-      createdAt: DateTime(2025, 5, 7, 14, 0),
-      shopId: 2,
+      createdAt: DateTime(2025, 5, 7),
+      shopId: 1,
       staffId: 's002',
       staffName: 'Bob Smith',
-      customerId: 3,
+      customerId: 1,
       bank: 40000,
       cashAlt: 0,
       paymentMethod: 'Bank',
@@ -151,7 +151,7 @@ class ReceiptsProvider extends ChangeNotifier {
     TempMainReceipt(
       id: 1,
       barcode: 'B12347',
-      createdAt: DateTime(2025, 5, 6, 11, 15),
+      createdAt: DateTime(2025, 5, 6),
       shopId: 1,
       staffId: 's001',
       staffName: 'Alice Johnson',
@@ -161,6 +161,86 @@ class ReceiptsProvider extends ChangeNotifier {
       paymentMethod: 'Split',
     ),
   ];
+
+  DateTime? singleDay;
+  DateTime? weekStartDate;
+
+  void setReceiptDay(DateTime day) {
+    singleDay = day;
+    weekStartDate = null;
+    notifyListeners();
+  }
+
+  void setReceiptWeek(DateTime weekStart) {
+    weekStartDate = weekStart;
+    singleDay = null;
+    notifyListeners();
+  }
+
+  void clearReceiptDate() {
+    singleDay = null;
+    weekStartDate = null;
+    notifyListeners();
+  }
+
+  List<TempMainReceipt> returnOwnReceiptsByDayOrWeek(
+    BuildContext context,
+  ) {
+    final shopId =
+        returnShopProvider(
+          context,
+        ).returnShop(userId()).shopId;
+
+    if (weekStartDate != null) {
+      final weekEndDate = weekStartDate!.add(
+        const Duration(days: 6),
+      );
+
+      return mainReceipts.where((receipt) {
+        return receipt.shopId == shopId &&
+            receipt.createdAt.isAfter(
+              weekStartDate!.subtract(
+                const Duration(seconds: 1),
+              ),
+            ) &&
+            receipt.createdAt.isBefore(
+              weekEndDate.add(const Duration(days: 1)),
+            );
+      }).toList();
+    }
+
+    final targetDate = singleDay ?? DateTime.now();
+
+    return mainReceipts.where((receipt) {
+      return receipt.shopId == shopId &&
+          receipt.createdAt.year == targetDate.year &&
+          receipt.createdAt.month == targetDate.month &&
+          receipt.createdAt.day == targetDate.day;
+    }).toList();
+  }
+
+  double getTotalRevenueForSelectedDay(
+    BuildContext context,
+  ) {
+    double tempTotalRevenue = 0;
+
+    for (var receipt in returnOwnReceiptsByDayOrWeek(
+      context,
+    )) {
+      var productRecords =
+          getOwnProductSalesRecord(context)
+              .where(
+                (record) => record.recepitId == receipt.id,
+              )
+              .toList();
+
+      for (var record in productRecords) {
+        tempTotalRevenue += record.revenue;
+      }
+    }
+
+    return tempTotalRevenue;
+  }
 
   List<TempMainReceipt> returnOwnReceipts(
     BuildContext context,

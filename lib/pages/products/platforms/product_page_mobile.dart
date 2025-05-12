@@ -64,7 +64,7 @@ class _ProductPageMobileState
                       title: 'Products',
                       theme: widget.theme,
                       bottomSpace: 100,
-                      topSpace: 30,
+                      topSpace: 20,
                       iconSvg: productIconSvg,
                     ),
                     Align(
@@ -115,14 +115,16 @@ class _ProductPageMobileState
                           },
                           color1: Colors.green,
                           title1: 'In Stock',
-                          value1: returnData(
-                            context,
-                          ).totalInStock(context),
+                          value1:
+                              returnData(context)
+                                  .totalInStock(context)
+                                  .toDouble(),
                           color2: Colors.amber,
                           title2: 'Out of Stock',
-                          value2: returnData(
-                            context,
-                          ).totalOutOfStock(context),
+                          value2:
+                              returnData(context)
+                                  .totalOutOfStock(context)
+                                  .toDouble(),
                           secondRow: false,
                         ),
                       ),

@@ -4,21 +4,22 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/compnents/products_summary_tab.dart';
 
 class ItemsSummary extends StatefulWidget {
-  final TextEditingController searchController;
+  final TextEditingController? searchController;
   final Function(String)? searchAction;
   final bool? onSearch;
-  final String mainTitle;
-  final String hintText;
+  final String? mainTitle;
+  final String? subTitle;
+  final String? hintText;
   final bool secondRow;
   final bool firsRow;
   final String? title1;
   final String? title2;
   final String? title3;
   final String? title4;
-  final int? value1;
-  final int? value2;
-  final int? value3;
-  final int? value4;
+  final double? value1;
+  final double? value2;
+  final double? value3;
+  final double? value4;
   final Color? color1;
   final Color? color2;
   final Color? color3;
@@ -28,10 +29,12 @@ class ItemsSummary extends StatefulWidget {
   final bool? isMoney2;
   final bool? isMoney3;
   final bool? isMoney4;
+  final bool? isFilter;
+  final Function()? filterAction;
 
   const ItemsSummary({
-    required this.searchController,
-    required this.searchAction,
+    this.searchController,
+    this.searchAction,
     super.key,
     required this.secondRow,
     required this.title1,
@@ -47,14 +50,17 @@ class ItemsSummary extends StatefulWidget {
     this.color3,
     this.color4,
     required this.firsRow,
-    required this.scanAction,
-    required this.hintText,
-    required this.mainTitle,
+    this.scanAction,
+    this.hintText,
+    this.mainTitle,
+    this.subTitle,
     this.isMoney1,
     this.isMoney2,
     this.isMoney3,
     this.isMoney4,
     this.onSearch,
+    this.isFilter,
+    this.filterAction,
   });
 
   @override
@@ -94,116 +100,157 @@ class _ItemsSummaryState extends State<ItemsSummary> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment:
+                    widget.isFilter != null
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.start,
                 children: [
-                  Text(
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize:
-                          theme.mobileTexts.b1.fontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    widget.mainTitle,
-                  ),
-                  SizedBox(height: 10),
-                  Visibility(
-                    visible: widget.onSearch ?? true,
-                    child: SizedBox(
-                      width:
-                          MediaQuery.of(
-                            context,
-                          ).size.width -
-                          ((returnDouble() * 2) + 40),
-                      child: TextFieldBarcode(
-                        searchController:
-                            widget.searchController,
-                        onChanged: widget.searchAction,
-                        onPressedScan: widget.scanAction,
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.mainTitle ?? '',
                       ),
-                    ),
+                      Text(
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        widget.subTitle ?? '',
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10),
                   Visibility(
-                    visible: widget.firsRow,
-                    child: SizedBox(
-                      width:
-                          MediaQuery.of(
-                            context,
-                          ).size.width -
-                          ((returnDouble() * 2) + 40),
-                      child: Column(
-                        spacing: 10,
+                    visible: widget.isFilter != null,
+                    child: MaterialButton(
+                      onPressed: widget.filterAction,
+                      child: Row(
+                        spacing: 3,
                         children: [
-                          Row(
-                            spacing: 10,
-                            children: [
-                              Expanded(
-                                child: ProductSummaryTab(
-                                  isMoney: widget.isMoney1,
-                                  color:
-                                      widget.color1 ??
-                                      Colors.amber,
-                                  title:
-                                      widget.title1 ?? '',
-                                  value: widget.value1 ?? 0,
-                                ),
-                              ),
-                              Expanded(
-                                child: ProductSummaryTab(
-                                  isMoney: widget.isMoney2,
-                                  color:
-                                      widget.color2 ??
-                                      Colors.amber,
-                                  title:
-                                      widget.title2 ?? '',
-                                  value: widget.value2 ?? 0,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Visibility(
-                            visible: widget.secondRow,
-                            child: Row(
-                              spacing: 10,
-                              children: [
-                                Expanded(
-                                  child: ProductSummaryTab(
-                                    isMoney:
-                                        widget.isMoney3,
-                                    color:
-                                        widget.color3 ??
-                                        Colors.amber,
-                                    title:
-                                        widget.title3 ?? '',
-                                    value:
-                                        widget.value3 ?? 0,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: ProductSummaryTab(
-                                    isMoney:
-                                        widget.isMoney4,
-                                    color:
-                                        widget.color4 ??
-                                        Colors.amber,
-                                    title:
-                                        widget.title4 ?? '',
-                                    value:
-                                        widget.value4 ?? 0,
-                                  ),
-                                ),
-                              ],
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade700,
                             ),
+                            'Set Date',
+                          ),
+                          Icon(
+                            size: 20,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .secColor100,
+                            Icons.date_range_outlined,
                           ),
                         ],
                       ),
                     ),
                   ),
                 ],
+              ),
+              // Visibility(
+              //   visible: widget.onSearch ?? true,
+              //   child: SizedBox(height: 10),
+              // ),
+              Visibility(
+                visible: widget.onSearch ?? true,
+                child: SizedBox(
+                  width:
+                      MediaQuery.of(context).size.width -
+                      ((returnDouble() * 2) + 40),
+                  child: TextFieldBarcode(
+                    searchController:
+                        widget.searchController ??
+                        TextEditingController(),
+                    onChanged: widget.searchAction,
+                    onPressedScan: widget.scanAction,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Visibility(
+                visible: widget.firsRow,
+                child: SizedBox(
+                  width:
+                      MediaQuery.of(context).size.width -
+                      ((returnDouble() * 2) + 40),
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      Row(
+                        spacing: 10,
+                        children: [
+                          Expanded(
+                            child: ProductSummaryTab(
+                              isMoney: widget.isMoney1,
+                              color:
+                                  widget.color1 ??
+                                  Colors.amber,
+                              title: widget.title1 ?? '',
+                              value: widget.value1 ?? 0,
+                            ),
+                          ),
+                          Expanded(
+                            child: ProductSummaryTab(
+                              isMoney: widget.isMoney2,
+                              color:
+                                  widget.color2 ??
+                                  Colors.amber,
+                              title: widget.title2 ?? '',
+                              value: widget.value2 ?? 0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: widget.secondRow,
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: ProductSummaryTab(
+                                isMoney: widget.isMoney3,
+                                color:
+                                    widget.color3 ??
+                                    Colors.amber,
+                                title: widget.title3 ?? '',
+                                value: widget.value3 ?? 0,
+                              ),
+                            ),
+                            Expanded(
+                              child: ProductSummaryTab(
+                                isMoney: widget.isMoney4,
+                                color:
+                                    widget.color4 ??
+                                    Colors.amber,
+                                title: widget.title4 ?? '',
+                                value: widget.value4 ?? 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

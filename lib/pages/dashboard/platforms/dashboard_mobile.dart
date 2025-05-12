@@ -133,7 +133,12 @@ class DashboardMobile extends StatelessWidget {
                                   theme: theme,
                                   icon: salesIconSvg,
                                   title: 'Sales',
-                                  action: () {},
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(2);
+                                  },
                                 ),
                                 ButtonTab(
                                   theme: theme,

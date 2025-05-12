@@ -40,11 +40,11 @@ class ReceiptPageMobile extends StatelessWidget {
                   Align(
                     alignment: Alignment(0, -1),
                     child: TopBannerTwo(
-                      isMain: true,
+                      isMain: isMain,
                       title: 'Receipt',
                       theme: theme,
                       bottomSpace: 200,
-                      topSpace: 20,
+                      topSpace: 10,
                     ),
                   ),
                   Positioned(

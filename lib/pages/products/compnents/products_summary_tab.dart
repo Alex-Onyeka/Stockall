@@ -5,7 +5,7 @@ import 'package:stockitt/main.dart';
 class ProductSummaryTab extends StatefulWidget {
   final String title;
   final bool? isMoney;
-  final int value;
+  final double value;
   final Color color;
 
   const ProductSummaryTab({
@@ -89,7 +89,7 @@ class _ProductSummaryTabState
                   fontWeight: FontWeight.bold,
                   color: Colors.grey.shade700,
                 ),
-                formatLargeNumber(widget.value.toString()),
+                formatLargeNumberDouble(widget.value),
               ),
             ],
           ),

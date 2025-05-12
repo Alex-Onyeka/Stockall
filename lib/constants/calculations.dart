@@ -24,3 +24,11 @@ String formatLargeNumberDoubleWidgetDecimal(num number) {
 String formatDateTime(DateTime date) {
   return DateFormat('MMM d, yyyy').format(date);
 }
+
+String formatDateTimeTime(DateTime date) {
+  return DateFormat('E, d : hh:mm a').format(date);
+}
+
+String formatTime(DateTime date) {
+  return DateFormat('hh:mm a').format(date);
+}
