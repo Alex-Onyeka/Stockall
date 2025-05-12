@@ -90,6 +90,7 @@ class _ReceiptTileMainState extends State<ReceiptTileMain> {
                 MaterialPageRoute(
                   builder: (context) {
                     return ReceiptPage(
+                      isMain: false,
                       mainReceipt: widget.mainReceipt,
                     );
                   },
@@ -181,6 +182,7 @@ class _ReceiptTileMainState extends State<ReceiptTileMain> {
                                   MaterialPageRoute(
                                     builder: (context) {
                                       return ReceiptPage(
+                                        isMain: false,
                                         mainReceipt:
                                             widget
                                                 .mainReceipt,

@@ -15,6 +15,8 @@ class _AddProductsThreeState
       TextEditingController();
   TextEditingController quantityController =
       TextEditingController();
+  TextEditingController discountController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class _AddProductsThreeState
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return AddProductsThreeMobile(
+              discountController: discountController,
               sizeController: sizeController,
               quantityController: quantityController,
             );

@@ -4,7 +4,12 @@ import 'package:stockitt/pages/sales/make_sales/receipt_page/platforms/receipt_p
 
 class ReceiptPage extends StatelessWidget {
   final TempMainReceipt mainReceipt;
-  const ReceiptPage({super.key, required this.mainReceipt});
+  final bool isMain;
+  const ReceiptPage({
+    super.key,
+    required this.mainReceipt,
+    required this.isMain,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +17,7 @@ class ReceiptPage extends StatelessWidget {
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
           return ReceiptPageMobile(
+            isMain: isMain,
             mainReceipt: mainReceipt,
           );
         } else if (constraints.maxWidth > 550 &&

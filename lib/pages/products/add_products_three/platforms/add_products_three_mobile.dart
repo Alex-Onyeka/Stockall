@@ -4,6 +4,7 @@ import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
+import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/main_dropdown.dart';
 import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
@@ -13,11 +14,13 @@ import 'package:stockitt/providers/comp_provider.dart';
 class AddProductsThreeMobile extends StatefulWidget {
   final TextEditingController sizeController;
   final TextEditingController quantityController;
+  final TextEditingController discountController;
 
   const AddProductsThreeMobile({
     super.key,
     required this.sizeController,
     required this.quantityController,
+    required this.discountController,
   });
 
   @override
@@ -51,6 +54,8 @@ class _AddProductsThreeMobileState
     } else {
       returnData(context, listen: false).size =
           widget.sizeController.text;
+      returnData(context, listen: false).discount =
+          double.tryParse(widget.discountController.text);
       returnData(
         context,
         listen: false,
@@ -77,9 +82,13 @@ class _AddProductsThreeMobileState
                     ).currentUser(userId()).userId,
                   )
                   .shopId,
-          id: int.parse(
-            "${DateTime.now().second} ${DateTime.now().minute}",
-          ),
+          id:
+              returnData(
+                context,
+                listen: false,
+              ).products.length +
+              1,
+
           barcode:
               returnData(context, listen: false).barcode,
           brand: returnData(context, listen: false).brand,
@@ -106,6 +115,8 @@ class _AddProductsThreeMobileState
               ).sellingPrice,
           quantity:
               returnData(context, listen: false).quantity,
+          discount:
+              returnData(context, listen: false).discount,
         ),
       );
 
@@ -198,7 +209,7 @@ class _AddProductsThreeMobileState
                               calcValue: 0.8,
                               position: 1,
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
                             NumberTextfield(
                               theme: theme,
                               hint: 'Enter Product Size',
@@ -206,7 +217,15 @@ class _AddProductsThreeMobileState
                               controller:
                                   widget.sizeController,
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
+                            EditCartTextField(
+                              theme: theme,
+                              hint: 'Set Discount %',
+                              title: 'Discount (Optional)',
+                              controller:
+                                  widget.discountController,
+                            ),
+                            SizedBox(height: 10),
                             NumberTextfield(
                               theme: theme,
                               hint: 'Enter Quantity',
@@ -214,7 +233,7 @@ class _AddProductsThreeMobileState
                               controller:
                                   widget.quantityController,
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
                             MainDropdown(
                               valueSet:
                                   returnData(
@@ -245,7 +264,7 @@ class _AddProductsThreeMobileState
                                   'Select Product Size Name (Optional)',
                               theme: theme,
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
                             InkWell(
                               onTap: () {
                                 returnData(

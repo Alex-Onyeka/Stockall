@@ -11,10 +11,10 @@ class DataProvider extends ChangeNotifier {
   bool isRefundable = false;
   String sizeType = '';
   String size = '';
-  double costPrice = 15;
-  double quantity = 15;
-  double sellingPrice = 15;
-  double discount = 15;
+  double costPrice = 0;
+  double quantity = 0;
+  double sellingPrice = 0;
+  double? discount;
   String color = '';
   String barcode = '';
 

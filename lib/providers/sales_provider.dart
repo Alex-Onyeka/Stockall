@@ -217,7 +217,10 @@ class SalesProvider extends ChangeNotifier {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return ReceiptPage(mainReceipt: mainReceipt);
+            return ReceiptPage(
+              isMain: true,
+              mainReceipt: mainReceipt,
+            );
           },
         ),
       );

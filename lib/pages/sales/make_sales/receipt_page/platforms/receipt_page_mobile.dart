@@ -10,10 +10,12 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class ReceiptPageMobile extends StatelessWidget {
+  final bool isMain;
   final TempMainReceipt mainReceipt;
   const ReceiptPageMobile({
     super.key,
     required this.mainReceipt,
+    required this.isMain,
   });
 
   @override
@@ -38,6 +40,7 @@ class ReceiptPageMobile extends StatelessWidget {
                   Align(
                     alignment: Alignment(0, -1),
                     child: TopBannerTwo(
+                      isMain: true,
                       title: 'Receipt',
                       theme: theme,
                       bottomSpace: 200,
