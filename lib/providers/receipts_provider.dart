@@ -291,9 +291,8 @@ class ReceiptsProvider extends ChangeNotifier {
     BuildContext context,
   ) {
     final sortedList =
-        returnOwnReceipts(context).toList()..sort(
-          (a, b) => a.createdAt.compareTo(b.createdAt),
-        );
+        returnOwnReceipts(context).toList()
+          ..sort((a, b) => b.id.compareTo(a.id));
     return sortedList;
   }
 

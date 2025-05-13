@@ -761,23 +761,27 @@ class _ReceiptDetailsContainerState
               },
             ),
             BottomActionButton(
-              text: 'Refund',
+              text: widget.isMain ? 'Print' : 'Refund',
               color: Colors.grey.shade600,
               iconSize: 23,
               theme: widget.theme,
               icon: Icons.print_outlined,
               action: () {
-                returnSalesProvider(
-                  context,
-                  listen: false,
-                ).refundProducts(
+                if (widget.isMain) {
+                  return;
+                } else {
                   returnSalesProvider(
                     context,
                     listen: false,
-                  ).productIdsToRefund,
-                  widget.mainReceipt,
-                  context,
-                );
+                  ).refundProducts(
+                    returnSalesProvider(
+                      context,
+                      listen: false,
+                    ).productIdsToRefund,
+                    widget.mainReceipt,
+                    context,
+                  );
+                }
               },
             ),
             BottomActionButton(

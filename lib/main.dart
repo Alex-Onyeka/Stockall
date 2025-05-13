@@ -5,6 +5,7 @@ import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
+import 'package:stockitt/providers/employee_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/receipts_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
@@ -55,6 +56,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => ReceiptsProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => EmployeeProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -63,6 +67,16 @@ void main() async {
 
 String userId() {
   return 'user_001';
+}
+
+EmployeeProvider returnEmployeeProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<EmployeeProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 ReceiptsProvider returnReceiptProvider(

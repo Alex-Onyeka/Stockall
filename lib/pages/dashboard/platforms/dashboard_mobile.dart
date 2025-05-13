@@ -8,6 +8,7 @@ import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
+import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 
 class DashboardMobile extends StatelessWidget {
@@ -159,7 +160,16 @@ class DashboardMobile extends StatelessWidget {
                                   theme: theme,
                                   icon: employeesIconSvg,
                                   title: 'Employees',
-                                  action: () {},
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return EmployeeListPage();
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                                 ButtonTab(
                                   theme: theme,
