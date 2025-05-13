@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
-import 'package:stockitt/components/calendar/calendar_widget.dart';
+import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
@@ -188,7 +188,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // initialRoute: '/',
       // routes: {'/': (context) => Home()},
-      home: CalendarWidget(),
+      home: Home(),
       //
       //
       //

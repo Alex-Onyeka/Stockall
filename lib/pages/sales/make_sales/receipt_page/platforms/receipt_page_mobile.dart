@@ -56,6 +56,7 @@ class ReceiptPageMobile extends StatelessWidget {
                           ).size.height -
                           50,
                       child: ReceiptDetailsContainer(
+                        isMain: isMain,
                         shop: shop,
                         user: user,
                         mainReceipt: mainReceipt,
@@ -74,6 +75,7 @@ class ReceiptPageMobile extends StatelessWidget {
 }
 
 class ReceiptDetailsContainer extends StatefulWidget {
+  final bool isMain;
   final TempShopClass shop;
   final TempMainReceipt mainReceipt;
   final TempUserClass user;
@@ -84,6 +86,7 @@ class ReceiptDetailsContainer extends StatefulWidget {
     required this.mainReceipt,
     required this.shop,
     required this.user,
+    required this.isMain,
   });
 
   @override
@@ -93,14 +96,6 @@ class ReceiptDetailsContainer extends StatefulWidget {
 
 class _ReceiptDetailsContainerState
     extends State<ReceiptDetailsContainer> {
-  // final ScrollController _scrollController =
-  //     ScrollController();
-  // @override
-  // void dispose() {
-  //   _scrollController
-  //       .dispose(); // Always dispose controllers
-  //   super.dispose();
-  // }
   String? customerName;
   @override
   Widget build(BuildContext context) {
@@ -528,6 +523,48 @@ class _ReceiptDetailsContainerState
                                         ],
                                       ),
                                     ),
+                                    Visibility(
+                                      visible:
+                                          !widget.isMain,
+                                      child: Checkbox(
+                                        value: returnSalesProvider(
+                                              context,
+                                            )
+                                            .productIdsToRefund
+                                            .contains(
+                                              productRecord
+                                                  .productRecordId,
+                                            ),
+                                        onChanged: (value) {
+                                          if (returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .productIdsToRefund
+                                              .contains(
+                                                productRecord
+                                                    .productRecordId,
+                                              )) {
+                                            returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).removeProductIdFromRefund(
+                                              productRecord
+                                                  .productRecordId,
+                                            );
+                                          } else {
+                                            returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).addproductIdToRefund(
+                                              productRecord
+                                                  .productRecordId,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
                                     Expanded(
                                       flex: 3,
                                       child: Column(
@@ -724,12 +761,24 @@ class _ReceiptDetailsContainerState
               },
             ),
             BottomActionButton(
-              text: 'Print',
+              text: 'Refund',
               color: Colors.grey.shade600,
               iconSize: 23,
               theme: widget.theme,
               icon: Icons.print_outlined,
-              action: () {},
+              action: () {
+                returnSalesProvider(
+                  context,
+                  listen: false,
+                ).refundProducts(
+                  returnSalesProvider(
+                    context,
+                    listen: false,
+                  ).productIdsToRefund,
+                  widget.mainReceipt,
+                  context,
+                );
+              },
             ),
             BottomActionButton(
               text: 'Download',

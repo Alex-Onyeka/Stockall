@@ -3,7 +3,13 @@ import 'package:stockitt/main.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarWidget extends StatefulWidget {
-  const CalendarWidget({super.key});
+  final Function(DateTime, DateTime)? onDaySelected;
+  final Function(DateTime, DateTime)? actionWeek;
+  const CalendarWidget({
+    super.key,
+    required this.onDaySelected,
+    required this.actionWeek,
+  });
 
   @override
   State<CalendarWidget> createState() =>
@@ -24,34 +30,31 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   ) {
     List<Map<String, DateTime>> weeks = [];
 
-    // Start from the first day of the month
-    DateTime start = DateTime(month.year, month.month, 1);
+    DateTime firstDayOfMonth = DateTime(
+      month.year,
+      month.month,
+      1,
+    );
 
-    // Adjust the start day to the previous Sunday (or whichever start of the week you'd prefer)
-    start = start.subtract(
-      Duration(days: start.weekday),
-    ); // Set to the start of the week
+    DateTime lastDayOfMonth = DateTime(
+      month.year,
+      month.month + 1,
+      0,
+    );
 
-    while (start.month <= month.month) {
-      // End is always 6 days after start, making a 7-day week
+    DateTime start = firstDayOfMonth.subtract(
+      Duration(days: firstDayOfMonth.weekday % 7),
+    );
+
+    while (start.isBefore(lastDayOfMonth)) {
       DateTime end = start.add(Duration(days: 6));
 
-      // If end goes to the next month, we limit it to the last day of the current month
-      if (end.month != month.month) {
-        end = DateTime(
-          month.year,
-          month.month + 1,
-          0,
-        ); // Set to the last day of the month
+      if (end.isAfter(lastDayOfMonth)) {
+        end = lastDayOfMonth;
       }
 
-      // If the start date is in the current month, add the week
-      if (start.month == month.month) {
-        weeks.add({'start': start, 'end': end});
-      }
-
-      // Move to the next week
-      start = end.add(Duration(days: 1));
+      weeks.add({'start': start, 'end': end});
+      start = start.add(Duration(days: 7));
     }
 
     return weeks;
@@ -90,9 +93,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Calendar with Range Selection'),
-      ),
       body: Column(
         children: [
           Padding(
@@ -127,7 +127,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   ),
                 ),
                 Row(
-                  spacing: 5,
+                  spacing: 10,
                   mainAxisAlignment:
                       MainAxisAlignment.center,
                   children: [
@@ -144,52 +144,55 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                           : "Switch to Weeks",
                     ),
 
-                    InkWell(
-                      borderRadius: BorderRadius.circular(
-                        20,
-                      ),
-                      onTap: () {
-                        setState(() {
-                          isWeekMode = !isWeekMode;
-                          calendarFormat =
-                              isWeekMode
-                                  ? CalendarFormat.month
-                                  : CalendarFormat.month;
-                        });
-                      },
-                      child: Container(
-                        height: 25,
-                        width: 50,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5,
+                    Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          20,
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(20),
+                        color:
+                            !isWeekMode
+                                ? Colors.grey.shade400
+                                : theme
+                                    .lightModeColor
+                                    .prColor300,
+                        border: Border.all(
                           color:
                               !isWeekMode
-                                  ? Colors.grey.shade400
-                                  : theme
-                                      .lightModeColor
-                                      .prColor300,
-                          border: Border.all(
-                            color:
-                                !isWeekMode
-                                    ? Colors.grey.shade600
-                                    : Colors.white,
-                          ),
+                                  ? Colors.grey.shade600
+                                  : Colors.white,
                         ),
-                        child: Align(
-                          alignment: Alignment(
-                            isWeekMode ? 1 : -1,
-                            0,
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          20,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            isWeekMode = !isWeekMode;
+                            calendarFormat =
+                                isWeekMode
+                                    ? CalendarFormat.month
+                                    : CalendarFormat.month;
+                          });
+                        },
+                        child: Container(
+                          height: 25,
+                          width: 50,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5,
                           ),
-                          child: Container(
-                            height: 12,
-                            width: 12,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
+                          child: Align(
+                            alignment: Alignment(
+                              isWeekMode ? 1 : -1,
+                              0,
+                            ),
+                            child: Container(
+                              height: 12,
+                              width: 12,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -204,6 +207,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           if (isWeekMode)
             Expanded(
               child: ListView.builder(
+                padding: EdgeInsets.only(top: 20),
                 itemCount:
                     getWeeksInMonth(
                       focusedDay ?? DateTime.now(),
@@ -216,27 +220,81 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   final start = week['start'] as DateTime;
                   final end = week['end'] as DateTime;
 
-                  return InkWell(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 5,
-                      ),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 5,
+                    ),
+                    child: Ink(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                           5,
                         ),
+                        color: Colors.white,
                         border: Border.all(
                           color: Colors.grey.shade200,
                         ),
                       ),
-                      child: Text(
-                        "Week ${index + 1}: ${formatDateRange(start, end)}",
+
+                      child: InkWell(
+                        onTap: () {
+                          widget.actionWeek!(start, end);
+                        },
+
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 15,
+                          ),
+                          // margin: EdgeInsets.symmetric(
+                          //   horizontal: 20,
+                          //   vertical: 5,
+                          // ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade700,
+                                    ),
+                                    "${index + 1}st  Week : ",
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                    ),
+                                    " ${formatDateRange(start, end)}",
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                size: 18,
+                                color: Colors.grey.shade500,
+                                Icons
+                                    .arrow_forward_ios_rounded,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -257,6 +315,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   this.selectedDay = selectedDay;
                   this.focusedDay = focusedDay;
                 });
+                widget.onDaySelected!(
+                  selectedDay,
+                  focusedDay,
+                );
               },
               onPageChanged: (newFocusedDay) {
                 setState(() {

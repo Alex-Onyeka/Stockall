@@ -82,6 +82,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
   bool isFocus = false;
   @override
   Widget build(BuildContext context) {
+    var receiptProvider = returnReceiptProvider(context);
     var theme = returnTheme(context);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -150,7 +151,10 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade700,
                             ),
-                            'Set Date',
+                            receiptProvider.isDateSet ||
+                                    receiptProvider.setDate
+                                ? 'Clear Date'
+                                : 'Set Date',
                           ),
                           Icon(
                             size: 20,
@@ -158,7 +162,10 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                 theme
                                     .lightModeColor
                                     .secColor100,
-                            Icons.date_range_outlined,
+                            receiptProvider.isDateSet ||
+                                    receiptProvider.setDate
+                                ? Icons.clear
+                                : Icons.date_range_outlined,
                           ),
                         ],
                       ),

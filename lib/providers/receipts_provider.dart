@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 
 class ReceiptsProvider extends ChangeNotifier {
@@ -162,24 +163,51 @@ class ReceiptsProvider extends ChangeNotifier {
     ),
   ];
 
+  void deleteMainReceipt(int id) {
+    mainReceipts.removeWhere((receipt) => receipt.id == id);
+    notifyListeners();
+  }
+
   DateTime? singleDay;
   DateTime? weekStartDate;
+
+  bool setDate = false;
+  bool isDateSet = false;
+  String? dateSet;
+
+  void openDatePicker() {
+    setDate = true;
+    notifyListeners();
+  }
 
   void setReceiptDay(DateTime day) {
     singleDay = day;
     weekStartDate = null;
+    isDateSet = true;
+    setDate = false;
+    dateSet = 'For ${formatDateTime(day)}';
     notifyListeners();
   }
 
-  void setReceiptWeek(DateTime weekStart) {
+  void setReceiptWeek(
+    DateTime weekStart,
+    DateTime endOfWeek,
+  ) {
     weekStartDate = weekStart;
     singleDay = null;
+    isDateSet = true;
+    setDate = false;
+    dateSet =
+        'From ${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
     notifyListeners();
   }
 
   void clearReceiptDate() {
     singleDay = null;
     weekStartDate = null;
+    setDate = false;
+    isDateSet = false;
+    dateSet = null;
     notifyListeners();
   }
 
@@ -196,7 +224,9 @@ class ReceiptsProvider extends ChangeNotifier {
         const Duration(days: 6),
       );
 
-      return mainReceipts.where((receipt) {
+      return getSortedReceiptsByDate(context).where((
+        receipt,
+      ) {
         return receipt.shopId == shopId &&
             receipt.createdAt.isAfter(
               weekStartDate!.subtract(
@@ -262,7 +292,7 @@ class ReceiptsProvider extends ChangeNotifier {
   ) {
     final sortedList =
         returnOwnReceipts(context).toList()..sort(
-          (a, b) => b.createdAt.compareTo(a.createdAt),
+          (a, b) => a.createdAt.compareTo(b.createdAt),
         );
     return sortedList;
   }

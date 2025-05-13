@@ -154,6 +154,83 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  List<int> productIdsToRefund = [];
+  void addproductIdToRefund(int index) {
+    productIdsToRefund.add(index);
+    notifyListeners();
+  }
+
+  void removeProductIdFromRefund(int index) {
+    productIdsToRefund.remove(index);
+    notifyListeners();
+  }
+
+  void refundProducts(
+    List<int> productRecordIds,
+    TempMainReceipt mainReceipt,
+    BuildContext context,
+  ) {
+    final dataProvider = returnData(context, listen: false);
+    final receiptProvider = returnReceiptProvider(
+      context,
+      listen: false,
+    );
+
+    final productSalesRecords =
+        receiptProvider.productSaleRecords;
+
+    // Make a copy of the list to avoid modifying it while iterating
+    final idsToRefund = List<int>.from(productRecordIds);
+
+    for (var id in idsToRefund) {
+      final saleRecord = productSalesRecords.firstWhere(
+        (record) => record.productRecordId == id,
+        orElse:
+            () =>
+                throw Exception(
+                  "Sale record not found: $id",
+                ),
+      );
+
+      final product = dataProvider.products.firstWhere(
+        (p) => p.id == saleRecord.productId,
+        orElse:
+            () =>
+                throw Exception(
+                  "Product not found: ${saleRecord.productId}",
+                ),
+      );
+
+      // Restore quantity
+      product.quantity += saleRecord.quantity;
+
+      // Remove the product sale record
+      productSalesRecords.removeWhere(
+        (record) => record.productRecordId == id,
+      );
+
+      // ✅ Remove the refunded ID from the refund list
+      removeProductIdFromRefund(id);
+    }
+
+    // 🧹 Optional: If all records for this receipt are gone, delete the receipt
+    final remainingProductsForThisReceipt =
+        productSalesRecords
+            .where(
+              (record) =>
+                  record.recepitId == mainReceipt.id,
+            )
+            .toList();
+
+    if (remainingProductsForThisReceipt.isEmpty) {
+      receiptProvider.deleteMainReceipt(mainReceipt.id);
+      Navigator.of(context).pop();
+    }
+
+    dataProvider.notifyListeners();
+    receiptProvider.notifyListeners();
+  }
+
   void createSales(
     BuildContext context,
     TempMainReceipt mainReceipt,
