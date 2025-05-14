@@ -7,4 +7,11 @@ class NavProvider extends ChangeNotifier {
     currentPage = index;
     notifyListeners();
   }
+
+  int currentAuth = 0;
+
+  void navigateAuth(int index) {
+    currentAuth = index;
+    notifyListeners();
+  }
 }

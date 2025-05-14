@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/pages/authentication/auth_landing/auth_landing.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/splash_screens/platforms/splash_desktop.dart';
 import 'package:stockitt/pages/authentication/splash_screens/platforms/splash_mobile.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -42,14 +42,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void nextPage() {
     setState(() {
-      currentPage == 2
-          ? Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AuthLanding(),
-            ),
-          )
-          : currentPage++;
+      if (currentPage == 2) {
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => AuthLanding(),
+        //   ),
+        // );
+        returnNavProvider(
+          context,
+          listen: false,
+        ).navigateAuth(1);
+      } else {
+        currentPage++;
+      }
     });
   }
 

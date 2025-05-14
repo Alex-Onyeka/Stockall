@@ -18,7 +18,9 @@ class _SignUpPageState extends State<SignUpPage> {
       TextEditingController();
   TextEditingController passwordController =
       TextEditingController();
-  TextEditingController idController =
+  TextEditingController nameController =
+      TextEditingController();
+  TextEditingController phoneNumberController =
       TextEditingController();
 
   bool checked = false;
@@ -29,7 +31,8 @@ class _SignUpPageState extends State<SignUpPage> {
     emailController.dispose();
     confirmPasswordController.dispose();
     passwordController.dispose();
-    idController.dispose();
+    nameController.dispose();
+    phoneNumberController.dispose();
   }
 
   @override
@@ -54,6 +57,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   checked = value!;
                 });
               },
+              nameController: nameController,
+              phoneNumberController: phoneNumberController,
               confirmPasswordController:
                   confirmPasswordController,
               emailController: emailController,

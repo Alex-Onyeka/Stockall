@@ -79,7 +79,7 @@ class _AddProductsThreeMobileState
                     returnUserProvider(
                       context,
                       listen: false,
-                    ).currentUser(userId()).userId,
+                    ).currentUser(userId()).userId!,
                   )
                   .shopId,
           id:

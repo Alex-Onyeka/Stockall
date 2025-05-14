@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class PhoneNumberTextField extends StatefulWidget {
-  final String title;
-  final String hint;
   final TextEditingController controller;
   final ThemeProvider theme;
+  final String title;
+  final String hint;
 
   const PhoneNumberTextField({
     super.key,
-    required this.title,
-    required this.hint,
     required this.controller,
     required this.theme,
+    required this.title,
+    required this.hint,
   });
 
   @override
@@ -22,6 +22,7 @@ class PhoneNumberTextField extends StatefulWidget {
 
 class _PhoneNumberTextFieldState
     extends State<PhoneNumberTextField> {
+  @override
   @override
   Widget build(BuildContext context) {
     return Column(

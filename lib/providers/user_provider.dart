@@ -10,8 +10,6 @@ class UserProvider extends ChangeNotifier {
       email: 'alexonyekasm@gmail.com',
       phone: '08012345678',
       role: 'admin',
-      image: null,
-      shopId: 1,
     ),
     TempUserClass(
       userId: 'user_002',
@@ -20,8 +18,6 @@ class UserProvider extends ChangeNotifier {
       email: 'chioma@example.com',
       phone: '08123456789',
       role: 'manager',
-      image: null,
-      shopId: 2,
     ),
     TempUserClass(
       userId: 'user_003',
@@ -30,8 +26,6 @@ class UserProvider extends ChangeNotifier {
       email: 'ahmed@example.com',
       phone: '09098765432',
       role: 'staff',
-      image: null,
-      shopId: 3,
     ),
   ];
 

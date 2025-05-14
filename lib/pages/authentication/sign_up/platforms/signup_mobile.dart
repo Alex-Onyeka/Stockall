@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
+import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/components/check_agree.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
 import 'package:stockitt/providers/comp_provider.dart';
@@ -15,6 +16,8 @@ class SignupMobile extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
+  final TextEditingController nameController;
+  final TextEditingController phoneNumberController;
   final Function()? onTap;
   final bool checked;
   final Function(bool?)? onChanged;
@@ -28,6 +31,8 @@ class SignupMobile extends StatefulWidget {
     required this.onChanged,
     required this.onTap,
     required this.checked,
+    required this.nameController,
+    required this.phoneNumberController,
   });
 
   @override
@@ -42,19 +47,16 @@ class _SignupMobileState extends State<SignupMobile> {
     return emailRegex.hasMatch(email);
   }
 
-  bool isGood = false;
-
-  void checkInputs() {
-    var theme = returnTheme(context);
-    // AuthProvider authProvider = AuthProvider();
+  void checkInputs() async {
     if (widget.emailController.text.isEmpty ||
         widget.passwordController.text.isEmpty ||
-        widget.confirmPasswordController.text.isEmpty) {
+        widget.confirmPasswordController.text.isEmpty ||
+        widget.phoneNumberController.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
           return InfoAlert(
-            theme: theme,
+            theme: widget.theme,
             message: 'Please fill out all Fields',
             title: 'Empty Input',
           );
@@ -65,7 +67,7 @@ class _SignupMobileState extends State<SignupMobile> {
         context: context,
         builder: (context) {
           return InfoAlert(
-            theme: theme,
+            theme: widget.theme,
             message:
                 'Email Address is Badly Formatted. Please Enter a Valid Email Address',
             title: 'Invalid Email',
@@ -78,7 +80,7 @@ class _SignupMobileState extends State<SignupMobile> {
         context: context,
         builder: (context) {
           return InfoAlert(
-            theme: theme,
+            theme: widget.theme,
             message:
                 'Your Password is less than 6 characters, therefore, it is too short... Choose a password that\'s long',
             title: 'Weak Password',
@@ -91,7 +93,7 @@ class _SignupMobileState extends State<SignupMobile> {
         context: context,
         builder: (context) {
           return InfoAlert(
-            theme: theme,
+            theme: widget.theme,
             message: 'The Password Fields Does not match',
             title: 'Password Mismatch',
           );
@@ -102,19 +104,29 @@ class _SignupMobileState extends State<SignupMobile> {
         context: context,
         builder: (context) {
           return InfoAlert(
-            theme: theme,
+            theme: widget.theme,
             message: 'Agree to Terms and Conditions',
             title: 'Check the Box to Continue',
           );
         },
       );
     } else {
-      setState(() {
-        isGood = true;
-      });
+      await AuthService().signUpAndCreateUser(
+        context: context,
+        email: widget.emailController.text,
+        password: widget.passwordController.text,
+        user: TempUserClass(
+          createdAt: DateTime.now(),
+          name: widget.nameController.text,
+          email: widget.emailController.text,
+          phone: widget.phoneNumberController.text,
+          role: 'Owner',
+        ),
+      );
       widget.confirmPasswordController.clear();
       widget.emailController.clear();
       widget.passwordController.clear();
+      widget.phoneNumberController.clear();
     }
   }
 
@@ -135,7 +147,7 @@ class _SignupMobileState extends State<SignupMobile> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(height: 60),
+                      SizedBox(height: 50),
                       Row(
                         spacing: 10,
                         mainAxisAlignment:
@@ -160,7 +172,7 @@ class _SignupMobileState extends State<SignupMobile> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
                       Column(
                         spacing: 8,
                         children: [
@@ -233,6 +245,14 @@ class _SignupMobileState extends State<SignupMobile> {
                                 .confirmPasswordController,
                         theme: widget.theme,
                       ),
+                      SizedBox(height: 15),
+                      PhoneNumberTextField(
+                        title: 'Phone Number*',
+                        hint: 'Enter your Phone Number',
+                        controller:
+                            widget.phoneNumberController,
+                        theme: widget.theme,
+                      ),
 
                       SizedBox(height: 20),
                       CheckAgree(
@@ -244,21 +264,8 @@ class _SignupMobileState extends State<SignupMobile> {
                       SizedBox(height: 20),
                       MainButtonP(
                         themeProvider: widget.theme,
-                        action: () async {
-                          // checkInputs();
-
-                          returnCompProvider(
-                            context,
-                            listen: false,
-                          ).switchLoader();
-                          await AuthService().signUp(
-                            widget.emailController.text,
-                            widget.passwordController.text,
-                          );
-                          returnCompProvider(
-                            context,
-                            listen: false,
-                          ).switchLoader();
+                        action: () {
+                          checkInputs();
                         },
                         text: 'Create Account',
                       ),
@@ -270,15 +277,22 @@ class _SignupMobileState extends State<SignupMobile> {
             ),
           ),
           Visibility(
-            visible:
-                Provider.of<CompProvider>(
-                  context,
-                ).isLoaderOn,
+            visible: context.watch<AuthService>().isLoading,
             child: Provider.of<CompProvider>(
               context,
               listen: false,
-            ).showSuccess('Successful'),
+            ).showLoader('Loading'),
           ),
+          // Visibility(
+          //   visible:
+          //       Provider.of<CompProvider>(
+          //         context,
+          //       ).isLoaderOn,
+          //   child: Provider.of<CompProvider>(
+          //     context,
+          //     listen: false,
+          //   ).showSuccess('Account Created Successfully'),
+          // ),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class EmailTextField extends StatefulWidget {
+  final String? Function(String?)? validatorAction;
   final ThemeProvider theme;
   final bool isEmail;
   final String hint;
@@ -14,6 +15,7 @@ class EmailTextField extends StatefulWidget {
     required this.isEmail,
     required this.hint,
     required this.title,
+    this.validatorAction,
   });
 
   @override
@@ -34,6 +36,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
           widget.title,
         ),
         TextFormField(
+          validator: widget.validatorAction,
           autocorrect: hidden && !widget.isEmail,
           enableSuggestions: hidden && !widget.isEmail,
           keyboardType:

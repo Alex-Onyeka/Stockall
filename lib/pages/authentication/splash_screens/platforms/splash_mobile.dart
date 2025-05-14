@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:stockitt/pages/authentication/auth_landing/auth_landing.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/splash_screens/platforms/components/mobile_splash_widget.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
@@ -42,7 +42,7 @@ class _SplashMobileState extends State<SplashMobile> {
                 subTitle:
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit ut , ',
                 lottie:
-                    'assets/animations/cart_loader.json',
+                    'assets/animations/shop_setup_icon.json',
                 constraints: widget.constraints,
                 themeProvider: widget.themeProvider,
               ),
@@ -77,14 +77,10 @@ class _SplashMobileState extends State<SplashMobile> {
                 children: [
                   MaterialButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      returnNavProvider(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return AuthLanding();
-                          },
-                        ),
-                      );
+                        listen: false,
+                      ).navigateAuth(1);
                     },
                     child: Text('Skip'),
                   ),
@@ -159,14 +155,10 @@ class _SplashMobileState extends State<SplashMobile> {
                             ),
                             curve: Curves.easeIn,
                           )
-                          : Navigator.pushReplacement(
+                          : returnNavProvider(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return AuthLanding();
-                              },
-                            ),
-                          );
+                            listen: false,
+                          ).navigateAuth(1);
                     },
                     child: Row(
                       spacing: 10,

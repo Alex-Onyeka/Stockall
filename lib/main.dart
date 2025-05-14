@@ -14,6 +14,7 @@ import 'package:stockitt/providers/shop_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/providers/user_provider.dart';
 import 'package:stockitt/providers/validate_input_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -60,6 +61,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => EmployeeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AuthService(),
         ),
       ],
       child: MyApp(),
@@ -202,7 +206,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: "/splash",
+      initialRoute: "/",
       routes: {
         '/': (context) => BasePage(),
         "/splash": (context) => SplashScreen(),

@@ -35,6 +35,9 @@ const String mainLoader =
 const String successAnim =
     'assets/animations/check_animation.json';
 
+const String shopSetup =
+    'assets/animations/shop_setup_icon.json';
+
 //
 //
 //

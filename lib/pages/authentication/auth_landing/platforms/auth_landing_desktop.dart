@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/pages/authentication/login/login_page.dart';
-import 'package:stockitt/pages/authentication/sign_up/sign_up_page.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class AuthLandingDesktop extends StatelessWidget {
@@ -119,14 +118,10 @@ class AuthLandingDesktop extends StatelessWidget {
                         SizedBox(height: 20),
                         MainButtonP(
                           action: () {
-                            Navigator.pushReplacement(
+                            returnNavProvider(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return SignUpPage();
-                                },
-                              ),
-                            );
+                              listen: false,
+                            ).navigateAuth(3);
                           },
                           text: 'Create an Account',
                           themeProvider: themeProvider,
@@ -134,14 +129,10 @@ class AuthLandingDesktop extends StatelessWidget {
                         SizedBox(height: 10),
                         InkWell(
                           onTap: () {
-                            Navigator.push(
+                            returnNavProvider(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return LoginPage();
-                                },
-                              ),
-                            );
+                              listen: false,
+                            ).navigateAuth(2);
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
