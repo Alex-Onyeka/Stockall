@@ -5,7 +5,7 @@ import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
+import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockitt/pages/employees/components/employee_tile_main.dart';
 import 'package:stockitt/providers/employee_provider.dart';
 
@@ -43,7 +43,7 @@ class _EmployeeListMobileState
             context,
             MaterialPageRoute(
               builder: (context) {
-                return AddEmployeeMobile();
+                return AddEmployeePage();
               },
             ),
           );
@@ -99,7 +99,7 @@ class _EmployeeListMobileState
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return AddEmployeeMobile();
+                        return AddEmployeePage();
                       },
                     ),
                   );

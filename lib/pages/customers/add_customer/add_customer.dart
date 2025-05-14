@@ -25,6 +25,19 @@ class _AddCustomerState extends State<AddCustomer> {
       TextEditingController();
   TextEditingController addressController =
       TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    addressController.dispose();
+    countryController.dispose();
+    cityController.dispose();
+    stateController.dispose();
+    emailController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

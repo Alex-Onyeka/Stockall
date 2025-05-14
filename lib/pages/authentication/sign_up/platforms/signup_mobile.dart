@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/components/check_agree.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/authentication/sign_up/signup_two.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class SignupMobile extends StatefulWidget {
   final ThemeProvider theme;
@@ -41,14 +42,17 @@ class _SignupMobileState extends State<SignupMobile> {
     return emailRegex.hasMatch(email);
   }
 
+  bool isGood = false;
+
   void checkInputs() {
+    var theme = returnTheme(context);
+    // AuthProvider authProvider = AuthProvider();
     if (widget.emailController.text.isEmpty ||
         widget.passwordController.text.isEmpty ||
         widget.confirmPasswordController.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
-          var theme = Provider.of<ThemeProvider>(context);
           return InfoAlert(
             theme: theme,
             message: 'Please fill out all Fields',
@@ -60,7 +64,6 @@ class _SignupMobileState extends State<SignupMobile> {
       showDialog(
         context: context,
         builder: (context) {
-          var theme = Provider.of<ThemeProvider>(context);
           return InfoAlert(
             theme: theme,
             message:
@@ -69,12 +72,24 @@ class _SignupMobileState extends State<SignupMobile> {
           );
         },
       );
+    } else if (widget.passwordController.text.length < 6 ||
+        widget.confirmPasswordController.text.length < 6) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Your Password is less than 6 characters, therefore, it is too short... Choose a password that\'s long',
+            title: 'Weak Password',
+          );
+        },
+      );
     } else if (widget.passwordController.text !=
         widget.confirmPasswordController.text) {
       showDialog(
         context: context,
         builder: (context) {
-          var theme = Provider.of<ThemeProvider>(context);
           return InfoAlert(
             theme: theme,
             message: 'The Password Fields Does not match',
@@ -86,7 +101,6 @@ class _SignupMobileState extends State<SignupMobile> {
       showDialog(
         context: context,
         builder: (context) {
-          var theme = Provider.of<ThemeProvider>(context);
           return InfoAlert(
             theme: theme,
             message: 'Agree to Terms and Conditions',
@@ -95,14 +109,9 @@ class _SignupMobileState extends State<SignupMobile> {
         },
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return SignupTwo();
-          },
-        ),
-      );
+      setState(() {
+        isGood = true;
+      });
       widget.confirmPasswordController.clear();
       widget.emailController.clear();
       widget.passwordController.clear();
@@ -235,22 +244,21 @@ class _SignupMobileState extends State<SignupMobile> {
                       SizedBox(height: 20),
                       MainButtonP(
                         themeProvider: widget.theme,
-                        action: () {
+                        action: () async {
                           // checkInputs();
 
-                          Provider.of<CompProvider>(
+                          returnCompProvider(
                             context,
                             listen: false,
-                          ).successAction(() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        SignupTwo(),
-                              ),
-                            );
-                          });
+                          ).switchLoader();
+                          await AuthService().signUp(
+                            widget.emailController.text,
+                            widget.passwordController.text,
+                          );
+                          returnCompProvider(
+                            context,
+                            listen: false,
+                          ).switchLoader();
                         },
                         text: 'Create Account',
                       ),

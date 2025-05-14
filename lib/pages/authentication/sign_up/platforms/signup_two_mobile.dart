@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/pages/authentication/verify_phone/verify_phone.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class SignupTwoMobile extends StatefulWidget {
@@ -38,16 +37,16 @@ class _SignupTwoMobileState extends State<SignupTwoMobile> {
         },
       );
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return VerifyPhone(
-              number: widget.phoneController.text,
-            );
-          },
-        ),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) {
+      //       return VerifyPhone(
+      //         number: widget.phoneController.text,
+      //       );
+      //     },
+      //   ),
+      // );
       widget.nameController.clear();
       widget.idController.clear();
       widget.phoneController.clear();
@@ -314,19 +313,19 @@ class _SignupTwoMobileState extends State<SignupTwoMobile> {
                     themeProvider: theme,
                     action: () {
                       // checkInputs();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return VerifyPhone(
-                              number:
-                                  widget
-                                      .phoneController
-                                      .text,
-                            );
-                          },
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) {
+                      //       return VerifyPhone(
+                      //         number:
+                      //             widget
+                      //                 .phoneController
+                      //                 .text,
+                      //       );
+                      //     },
+                      //   ),
+                      // );
                     },
                     text: 'Proceed to Verify',
                   ),

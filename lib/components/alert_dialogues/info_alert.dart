@@ -91,7 +91,8 @@ class InfoAlert extends StatelessWidget {
                   horizontal: 10.0,
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
                   children: [
                     InkWell(
                       onTap: () {
@@ -99,7 +100,7 @@ class InfoAlert extends StatelessWidget {
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 20,
+                          horizontal: 50,
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(

@@ -393,7 +393,7 @@ class EmployeeDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: TabBarUserInfoSection(
-                    mainText: employee.address,
+                    mainText: employee.address ?? 'Not Set',
                     text: 'Address',
                   ),
                 ),

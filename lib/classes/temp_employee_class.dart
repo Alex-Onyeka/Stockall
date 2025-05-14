@@ -5,7 +5,10 @@ class TempEmployeeClass {
   DateTime createdDate;
   String? phoneNumber;
   String role;
-  String address;
+  String? state;
+  String? country;
+  String? city;
+  String? address;
 
   TempEmployeeClass({
     required this.createdDate,
@@ -14,6 +17,9 @@ class TempEmployeeClass {
     required this.id,
     required this.role,
     this.phoneNumber,
-    required this.address,
+    this.address,
+    this.city,
+    this.country,
+    this.state,
   });
 }

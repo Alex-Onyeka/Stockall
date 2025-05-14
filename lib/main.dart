@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
-import 'package:stockitt/pages/home/home.dart';
+import 'package:stockitt/pages/authentication/base_page/base_page.dart';
+import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
@@ -13,15 +14,16 @@ import 'package:stockitt/providers/shop_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/providers/user_provider.dart';
 import 'package:stockitt/providers/validate_input_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // await Supabase.initialize(
-  //   url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
-  //   anonKey:
-  //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
-  // );
+  await Supabase.initialize(
+    url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
+  );
 
   runApp(
     MultiProvider(
@@ -200,11 +202,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // initialRoute: '/',
-      // routes: {'/': (context) => Home()},
-      home: Home(),
-      //
-      //
+      initialRoute: "/splash",
+      routes: {
+        '/': (context) => BasePage(),
+        "/splash": (context) => SplashScreen(),
+      },
       //
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -221,7 +223,6 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),
       ),
-      // home: const Home(),
     );
   }
 }

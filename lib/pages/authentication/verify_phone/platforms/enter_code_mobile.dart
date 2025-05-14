@@ -3,7 +3,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/pages/dashboard/dashboard.dart';
+import 'package:stockitt/pages/shop_setup/shop_setup_page.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
@@ -179,7 +179,7 @@ class EnterCodeMobile extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return Dashboard();
+                            return ShopSetupPage();
                           },
                         ),
                       ),

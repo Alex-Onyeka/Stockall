@@ -16,11 +16,16 @@ class CompProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void switchLoader() {
+    isLoaderOn = !isLoaderOn;
+    notifyListeners();
+  }
+
   void successAction(Function action) {
     isLoaderOn = true;
     notifyListeners();
 
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(milliseconds: 2500), () {
       action();
       isLoaderOn = false;
       notifyListeners();
@@ -37,10 +42,13 @@ class CompProvider extends ChangeNotifier {
               child: Stack(
                 children: [
                   Align(
-                    alignment: Alignment(0, -0.1),
+                    alignment: Alignment(0, 0),
                     child: SizedBox(
                       width: 180,
-                      child: Lottie.asset(mainLoader),
+                      child: Lottie.asset(
+                        mainLoader,
+                        height: 100,
+                      ),
                     ),
                   ),
                   Align(
@@ -52,6 +60,7 @@ class CompProvider extends ChangeNotifier {
                       child: Text(
                         textAlign: TextAlign.center,
                         style: TextStyle(
+                          decoration: TextDecoration.none,
                           color:
                               themeProvider
                                   .lightModeColor
@@ -59,7 +68,7 @@ class CompProvider extends ChangeNotifier {
                           fontSize:
                               themeProvider
                                   .mobileTexts
-                                  .h2
+                                  .h3
                                   .fontSize,
                           fontWeight:
                               themeProvider

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
+import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/pages/shop_setup/components/text_field.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -136,7 +137,16 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                               SizedBox(height: 5),
                               MainButtonP(
                                 themeProvider: theme,
-                                action: () {},
+                                action: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return Home();
+                                      },
+                                    ),
+                                  );
+                                },
                                 text: 'Create Shop',
                               ),
                             ],
