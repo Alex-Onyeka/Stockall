@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/progress_bar.dart';
+import 'package:stockitt/components/text_fields/barcode_scanner.dart';
+import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
 import 'package:stockitt/components/text_fields/main_dropdown.dart';
+import 'package:stockitt/components/text_fields/money_textfield.dart';
+import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
+import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/add_products_two/add_product_two.dart';
 
 class AddProductMobile extends StatefulWidget {
+  final TextEditingController costController;
+  final TextEditingController sellingController;
+  final TextEditingController categoryController;
   final TextEditingController nameController;
-  final TextEditingController descController;
+  final TextEditingController sizeController;
+  final TextEditingController quantityController;
+  final TextEditingController discountController;
   final TextEditingController brandController;
 
   const AddProductMobile({
     super.key,
+    required this.costController,
+    required this.sellingController,
+    required this.categoryController,
     required this.nameController,
-    required this.descController,
     required this.brandController,
+    required this.sizeController,
+    required this.quantityController,
+    required this.discountController,
   });
 
   @override
@@ -27,17 +42,40 @@ class AddProductMobile extends StatefulWidget {
 
 class _AddProductMobileState
     extends State<AddProductMobile> {
+  bool barCodeSet = false;
+  bool isLoading = false;
+  bool showSuccess = false;
+
+  String? barcode;
+  //
+  //
+  //
+  //
+
+  bool isOpenUnit = false;
   //
   //
   //
   bool isOpen = false;
 
-  void checkFields() {
+  void checkFields() async {
     if (widget.nameController.text.isEmpty ||
-        returnData(
-              context,
-              listen: false,
-            ).selectedCategory ==
+        widget.costController.text.isEmpty ||
+        widget.sellingController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Product Name, Cost Price and Selling Price Must be set',
+            title: 'Empty Input',
+          );
+        },
+      );
+    } else if (widget.quantityController.text.isEmpty ||
+        returnData(context, listen: false).selectedUnit ==
             null) {
       showDialog(
         context: context,
@@ -46,35 +84,89 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Product Name and Product Category Must be set',
+                'Product Quantity and Unit Must be set',
             title: 'Empty Input',
           );
         },
       );
     } else {
-      returnData(context, listen: false).name =
-          widget.nameController.text;
-      returnData(context, listen: false).desc =
-          widget.descController.text;
-      returnData(context, listen: false).brand =
-          widget.brandController.text;
-      returnData(context, listen: false).category =
-          returnData(
-            context,
-            listen: false,
-          ).selectedCategory!;
-      Navigator.push(
+      setState(() {
+        isLoading = true;
+      });
+      await returnData(
         context,
-        MaterialPageRoute(
-          builder: (context) {
-            return AddProductTwo();
-          },
+        listen: false,
+      ).createProduct(
+        TempProductClass(
+          name: widget.nameController.text.trim(),
+          unit:
+              returnData(
+                context,
+                listen: false,
+              ).selectedUnit!,
+          isRefundable:
+              returnData(
+                context,
+                listen: false,
+              ).isProductRefundable,
+          costPrice: double.parse(
+            widget.costController.text.replaceAll(',', ''),
+          ),
+          shopId: userShop!.shopId!,
+
+          sellingPrice: double.parse(
+            widget.sellingController.text.replaceAll(
+              ',',
+              '',
+            ),
+          ),
+          quantity: double.parse(
+            widget.quantityController.text.replaceAll(
+              ',',
+              '',
+            ),
+          ),
+          barcode: barcode,
+          size: widget.sizeController.text.replaceAll(
+            ',',
+            '',
+          ),
+          discount: double.tryParse(
+            widget.discountController.text,
+          ),
         ),
       );
+      setState(() {
+        isLoading = false;
+        showSuccess = true;
+      });
+      Future.delayed(Duration(seconds: 3), () {
+        if (!context.mounted) return;
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
+      });
     }
   }
 
   //
+  @override
+  void initState() {
+    super.initState();
+    setShop();
+  }
+
+  TempShopClass? userShop;
+  void setShop() async {
+    var shop = await returnShopProvider(
+      context,
+      listen: false,
+    ).getUserShop(userIdMain());
+
+    setState(() {
+      userShop = shop;
+    });
+  }
+
   //
   //
   @override
@@ -116,98 +208,262 @@ class _AddProductMobileState
           ],
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 30.0,
-              ),
-              child: SingleChildScrollView(
+          Column(
+            children: [
+              Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Column(
-                    children: [
-                      ProgressBar(
-                        theme: theme,
-                        percent: '0%',
-                        title: 'Your Progress',
-                        calcValue: 0.02,
-                        position: -1,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10.0,
                       ),
-                      SizedBox(height: 20),
-                      GeneralTextField(
-                        theme: theme,
-                        hint: 'Enter Product Name',
-                        lines: 1,
-                        title: 'Product Name',
-                        controller: widget.nameController,
-                      ),
-                      SizedBox(height: 20),
-                      GeneralTextField(
-                        theme: theme,
-                        hint: 'Enter Product Desription',
-                        lines: 4,
-                        title: 'Description (Optional)',
-                        controller: widget.descController,
-                      ),
-                      SizedBox(height: 20),
-                      GeneralTextField(
-                        theme: theme,
-                        hint: 'Brand',
-                        lines: 1,
-                        title: 'Enter Brand (Optional)',
-                        controller: widget.brandController,
-                      ),
-                      SizedBox(height: 20),
-                      MainDropdown(
-                        valueSet:
-                            returnData(context).catValueSet,
-                        onTap: () {
-                          categoriesBottomSheet(
-                            context,
-                            () {
+                      child: Column(
+                        children: [
+                          GeneralTextField(
+                            theme: theme,
+                            hint: 'Enter Product Name',
+                            lines: 1,
+                            title: 'Product Name',
+                            controller:
+                                widget.nameController,
+                          ),
+                          SizedBox(height: 10),
+                          BarcodeScanner(
+                            valueSet: barCodeSet,
+                            onTap: () async {
+                              String info = await scanCode(
+                                context,
+                                'failed',
+                              );
                               setState(() {
-                                isOpen = false;
+                                barcode = info;
+                                barCodeSet = true;
                               });
                             },
-                          );
-                          setState(() {
-                            isOpen = !isOpen;
-                          });
-                        },
-                        isOpen: isOpen,
-                        title: 'Category',
-                        hint:
-                            returnData(
-                              context,
-                            ).selectedCategory ??
-                            'Select Product Category',
-                        theme: theme,
+                            title:
+                                'Product Barcode (Optional)',
+                            hint:
+                                barcode ??
+                                'Click to Scan Product Barcode',
+                            theme: theme,
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            spacing: 15,
+                            children: [
+                              Expanded(
+                                child: MoneyTextfield(
+                                  theme: theme,
+                                  hint:
+                                      'Enter the actual Amount of the Item',
+                                  title: 'Cost - Price',
+                                  controller:
+                                      widget.costController,
+                                ),
+                              ),
+                              Expanded(
+                                child: MoneyTextfield(
+                                  theme: theme,
+                                  hint:
+                                      'Enter the Amount you wish to sell this Product',
+                                  title: 'Selling - Price',
+                                  controller:
+                                      widget
+                                          .sellingController,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          MainDropdown(
+                            valueSet:
+                                returnData(
+                                  context,
+                                ).unitValueSet,
+                            onTap: () {
+                              unitsBottomSheet(context, () {
+                                setState(() {
+                                  isOpenUnit = !isOpenUnit;
+                                });
+                              });
+                              setState(() {
+                                isOpenUnit = !isOpenUnit;
+                              });
+                            },
+                            isOpen: isOpenUnit,
+                            title: 'Unit',
+                            hint:
+                                returnData(
+                                  context,
+                                ).selectedUnit ??
+                                'Select Product Unit',
+                            theme: theme,
+                          ),
+
+                          SizedBox(height: 10),
+                          MainDropdown(
+                            valueSet:
+                                returnData(
+                                  context,
+                                ).catValueSet,
+                            onTap: () {
+                              categoriesBottomSheet(
+                                context,
+                                () {
+                                  setState(() {
+                                    isOpen = false;
+                                  });
+                                },
+                              );
+                              setState(() {
+                                isOpen = !isOpen;
+                              });
+                            },
+                            isOpen: isOpen,
+                            title: 'Category (Optional)',
+                            hint:
+                                returnData(
+                                  context,
+                                ).selectedCategory ??
+                                'Select Product Category',
+                            theme: theme,
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            spacing: 15,
+                            children: [
+                              Expanded(
+                                child: NumberTextfield(
+                                  theme: theme,
+                                  hint: 'Enter Quantity',
+                                  title: 'Quantity',
+                                  controller:
+                                      widget
+                                          .quantityController,
+                                ),
+                              ),
+
+                              Expanded(
+                                child: NumberTextfield(
+                                  theme: theme,
+                                  hint:
+                                      'Enter Product Size',
+                                  title: 'Size  (Optional)',
+                                  controller:
+                                      widget.sizeController,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          EditCartTextField(
+                            theme: theme,
+                            hint: 'Set Discount %',
+                            title: 'Discount (Optional)',
+                            controller:
+                                widget.discountController,
+                          ),
+                          SizedBox(height: 10),
+                          InkWell(
+                            onTap: () {
+                              returnData(
+                                context,
+                                listen: false,
+                              ).toggleRefundable();
+                            },
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Refundable?',
+                                      ),
+                                      Text(
+                                        'Allow Customers return this product after Purchase?',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Checkbox(
+                                  activeColor:
+                                      theme
+                                          .lightModeColor
+                                          .secColor100,
+                                  value:
+                                      returnData(
+                                        context,
+                                      ).isProductRefundable,
+                                  onChanged: (value) {
+                                    returnData(
+                                      context,
+                                      listen: false,
+                                    ).toggleRefundable();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 30.0,
+                    top: 20,
+                    left: 30,
+                    right: 30,
+                  ),
+                  child: MainButtonP(
+                    themeProvider: theme,
+                    action: () {
+                      checkFields();
+                    },
+                    text: 'Create Product',
+                  ),
+                ),
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                bottom: 30.0,
-                top: 20,
-                left: 30,
-                right: 30,
-              ),
-              child: MainButtonP(
-                themeProvider: theme,
-                action: () {
-                  checkFields();
-                },
-                text: 'Save and Continue',
-              ),
-            ),
+          Visibility(
+            visible: isLoading,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader('Creating Product'),
+          ),
+          Visibility(
+            visible: showSuccess,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showSuccess('Product Created Successfully'),
           ),
         ],
       ),

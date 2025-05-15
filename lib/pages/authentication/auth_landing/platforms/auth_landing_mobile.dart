@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
+import 'package:stockitt/components/buttons/main_button_transparent.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/authentication/login/login_page.dart';
+import 'package:stockitt/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class AuthLandingMobile extends StatelessWidget {
@@ -109,72 +111,34 @@ class AuthLandingMobile extends StatelessWidget {
                             SizedBox(height: 20),
                             MainButtonP(
                               action: () {
-                                returnNavProvider(
+                                Navigator.push(
                                   context,
-                                  listen: false,
-                                ).navigateAuth(3);
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SignUpPage();
+                                    },
+                                  ),
+                                );
                               },
                               text: 'Create an Account',
                               themeProvider: themeProvider,
                             ),
                             SizedBox(height: 10),
-                            InkWell(
-                              onTap: () {
-                                returnNavProvider(
+                            MainButtonTransparent(
+                              text:
+                                  'Already Have an account? Login',
+                              themeProvider: themeProvider,
+                              constraints: constraints,
+                              action: () {
+                                Navigator.push(
                                   context,
-                                  listen: false,
-                                ).navigateAuth(2);
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return LoginPage();
+                                    },
+                                  ),
+                                );
                               },
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                  bottom: 30,
-                                ),
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        10,
-                                      ),
-                                  border: Border.all(
-                                    color:
-                                        themeProvider
-                                            .lightModeColor
-                                            .prColor300,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    style: TextStyle(
-                                      color:
-                                          themeProvider
-                                              .lightModeColor
-                                              .prColor300,
-                                      fontSize:
-                                          themeProvider
-                                              .returnPlatform(
-                                                constraints,
-                                                context,
-                                              )
-                                              .b1
-                                              .fontSize,
-                                      fontWeight:
-                                          themeProvider
-                                              .returnPlatform(
-                                                constraints,
-                                                context,
-                                              )
-                                              .b1
-                                              .fontWeightRegular,
-                                    ),
-                                    'Already Have an account? Login',
-                                  ),
-                                ),
-                              ),
                             ),
                           ],
                         ),

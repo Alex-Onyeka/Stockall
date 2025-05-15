@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/dashboard/platforms/dashboard_desktop.dart';
 import 'package:stockitt/pages/dashboard/platforms/dashboard_mobile.dart';
 import 'package:stockitt/pages/dashboard/platforms/dashboard_tablet.dart';
@@ -19,6 +20,19 @@ class _DashboardState extends State<Dashboard> {
   //     listen: false,
   //   ).navigate(0);
   // }
+
+  @override
+  void initState() {
+    super.initState();
+    offOverlays();
+  }
+
+  void offOverlays() {
+    returnCompProvider(
+      context,
+      listen: false,
+    ).turnOffLoader();
+  }
 
   @override
   Widget build(BuildContext context) {

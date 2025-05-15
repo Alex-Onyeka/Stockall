@@ -1,7 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShopProvider extends ChangeNotifier {
+  final supabase = Supabase.instance.client;
+  Future<void> createShop(TempShopClass shop) async {
+    final response =
+        await supabase
+            .from('shops')
+            .insert(shop.toJson())
+            .select()
+            .single();
+
+    final newShop = TempShopClass.fromJson(response);
+    setShop(newShop);
+  }
+
+  Future<TempShopClass?> getUserShop(String userId) async {
+    final response =
+        await supabase
+            .from('shops')
+            .select()
+            .eq('user_id', userId)
+            .maybeSingle();
+
+    if (response == null) {
+      return null;
+    }
+
+    return TempShopClass.fromJson(response);
+  }
+
+  ShopProvider() {
+    _init();
+  }
+  Future<void> _init() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId != null) {
+      final shop = await getUserShop(userId);
+      if (shop != null) {
+        setShop(shop);
+      }
+    }
+  }
+
+  TempShopClass? userShop;
+
+  void setShop(TempShopClass shop) {
+    userShop = shop;
+    notifyListeners();
+  }
+
+  String name = '';
+  String? email;
+  String? phone;
+  String state = '';
+  String city = '';
+  String address = '';
+
   List<TempShopClass> shops = [
     TempShopClass(
       shopId: 1,

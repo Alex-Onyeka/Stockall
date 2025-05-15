@@ -12,6 +12,10 @@ class CompProvider extends ChangeNotifier {
   bool isLoadingLoaderOn = false;
 
   bool newNotif = true;
+  void turnOffLoader() {
+    isLoaderOn = false;
+    notifyListeners();
+  }
 
   void switchNotif() {
     newNotif = !newNotif;
@@ -54,7 +58,7 @@ class CompProvider extends ChangeNotifier {
                       width: 180,
                       child: Lottie.asset(
                         mainLoader,
-                        height: 100,
+                        height: 80,
                       ),
                     ),
                   ),
@@ -75,7 +79,7 @@ class CompProvider extends ChangeNotifier {
                           fontSize:
                               themeProvider
                                   .mobileTexts
-                                  .h3
+                                  .h4
                                   .fontSize,
                           fontWeight:
                               themeProvider

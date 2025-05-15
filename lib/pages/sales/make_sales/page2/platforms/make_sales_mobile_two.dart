@@ -641,7 +641,7 @@ class _MakeSalesMobileTwoState
                                         .returnShop(
                                           userId(),
                                         )
-                                        .shopId,
+                                        .shopId!,
                                 staffId: userId(),
                                 staffName:
                                     returnUserProvider(
@@ -710,7 +710,7 @@ class _MakeSalesMobileTwoState
                                         .cartItems
                                         .first
                                         .item
-                                        .id,
+                                        .id!,
                                 shopId:
                                     returnShopProvider(
                                           context,
@@ -719,7 +719,7 @@ class _MakeSalesMobileTwoState
                                         .returnShop(
                                           userId(),
                                         )
-                                        .shopId,
+                                        .shopId!,
                                 staffId: '1',
                                 staffName: 'staffName',
                                 recepitId:

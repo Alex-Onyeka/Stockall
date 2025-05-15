@@ -1,8 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/main.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
+  final supabase = Supabase.instance.client;
+
+  Future<void> createProduct(
+    TempProductClass product,
+  ) async {
+    await supabase
+        .from('products')
+        .insert(product.toJson())
+        .select()
+        .single();
+  }
+
+  Future<List<TempProductClass>> getProducts(
+    int shopId,
+  ) async {
+    final data = await supabase
+        .from('products')
+        .select()
+        .eq('shop_id', shopId)
+        .order('created_at', ascending: false);
+
+    return (data as List)
+        .map((json) => TempProductClass.fromJson(json))
+        .toList();
+  }
+
+  Future<List<TempProductClass>> searchProductName(
+    BuildContext context,
+    String name,
+  ) async {
+    var temp = await getProducts(shopId(context));
+    final tempData =
+        temp
+            .where((product) => product.name.contains(name))
+            .toList();
+
+    return tempData;
+  }
+
+  Future<List<TempProductClass>> getLowProducts(
+    int shopId,
+  ) async {
+    final data = await getProducts(shopId);
+
+    final tempData = data.where(
+      (product) => product.quantity < 10,
+    );
+
+    return tempData.toList();
+  }
+
+  Future<void> updateProduct(
+    int productId,
+    Map<String, dynamic> updates,
+  ) async {
+    final supabase = Supabase.instance.client;
+    await supabase
+        .from('products')
+        .update(updates)
+        .eq('id', productId);
+  }
+
+  Future<void> deleteProductMain(int productId) async {
+    await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+  }
+
   String name = '';
   String desc = '';
   String brand = '';
@@ -23,7 +93,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 1,
       id: 1,
       name: 'Airpod Pro 2nd Gen',
-      desc: 'A very Nice Product',
       brand: 'Gucci',
       category: 'Gadgets',
       unit: 'Number',
@@ -41,7 +110,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 2,
       id: 2,
       name: 'Red T-Shirt',
-      desc: 'Comfortable cotton t-shirt',
       brand: 'H&M',
       category: 'Clothing',
       barcode: '1234567890123',
@@ -59,7 +127,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 3,
       id: 3,
       name: 'Bluetooth Speaker',
-      desc: 'Portable wireless speaker',
       brand: 'JBL',
       category: 'Electronics',
       barcode: '2234567890123',
@@ -77,7 +144,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 1,
       id: 4,
       name: 'Running Shoes',
-      desc: 'Lightweight shoes for running',
       brand: 'Nike',
       category: 'Footwear',
       barcode: '3234567890123',
@@ -95,7 +161,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 1,
       id: 5,
       name: 'Notebook',
-      desc: '200-page ruled notebook',
       brand: 'Cambridge',
       category: 'Stationery',
       barcode: ']C1CT:557C40DLLQ80S3',
@@ -113,7 +178,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 2,
       id: 6,
       name: 'Coffee Mug',
-      desc: null,
       brand: 'IKEA',
       category: 'Kitchenware',
       barcode: ']C1CT:557C40DLLQ80S3',
@@ -131,7 +195,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 3,
       id: 7,
       name: 'Laptop Bag',
-      desc: 'Water-resistant laptop backpack',
       brand: 'Samsonite',
       category: 'Accessories',
       barcode: '6234567890123',
@@ -149,7 +212,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 2,
       id: 8,
       name: 'LED Bulb',
-      desc: '9W LED energy-saving bulb',
       brand: 'Philips',
       category: 'Electronics',
       barcode: '7234567890123',
@@ -167,7 +229,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 3,
       id: 9,
       name: 'Shampoo',
-      desc: 'Anti-dandruff shampoo 250ml',
       brand: 'Head & Shoulders',
       category: 'Personal Care',
       barcode: ']C1CT:557C40DLLQ80S3',
@@ -185,7 +246,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 2,
       id: 10,
       name: 'Wrist Watch',
-      desc: 'Analog watch with leather strap',
       brand: 'Fossil',
       category: 'Watches',
       barcode: '5060340392345',
@@ -203,7 +263,6 @@ class DataProvider extends ChangeNotifier {
       shopId: 3,
       id: 10,
       name: 'Face Mask Pack',
-      desc: 'Pack of 50 disposable masks',
       brand: null,
       category: 'Health',
       barcode: null,
@@ -218,12 +277,6 @@ class DataProvider extends ChangeNotifier {
       quantity: 4,
     ),
   ];
-
-  int currentSelect = 0;
-  void changeSelected(int number) {
-    currentSelect = number;
-    notifyListeners();
-  }
 
   List<TempProductClass> sortProductsByName(
     List<TempProductClass> products,
@@ -245,30 +298,6 @@ class DataProvider extends ChangeNotifier {
               element.shopId == currentShop(context).shopId,
         )
         .toList();
-  }
-
-  List<TempProductClass> filterProducts(
-    BuildContext context,
-  ) {
-    switch (currentSelect) {
-      case 1:
-        return returnOwnProducts(
-          context,
-        ).where((p) => p.quantity != 0).toList();
-      case 2:
-        return returnOwnProducts(context)
-            .where(
-              (p) => p.quantity <= 10 && p.quantity != 0,
-            )
-            .toList();
-      case 3:
-        return returnOwnProducts(
-          context,
-        ).where((p) => p.quantity == 0).toList();
-      case 0:
-      default:
-        return returnOwnProducts(context);
-    }
   }
 
   List<TempProductClass> searchProductsName(

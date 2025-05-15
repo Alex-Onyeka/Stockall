@@ -75,6 +75,27 @@ String userId() {
   return 'user_001';
 }
 
+String userIdMain() {
+  return AuthService().currentUser!.id;
+}
+
+int shopId(BuildContext context) {
+  var tempId =
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!;
+
+  return tempId;
+}
+
+AuthService returnAuth(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<AuthService>(context, listen: listen);
+}
+
 EmployeeProvider returnEmployeeProvider(
   BuildContext context, {
   bool listen = true,

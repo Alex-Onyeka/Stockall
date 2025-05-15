@@ -21,13 +21,12 @@ class AuthService extends ChangeNotifier {
   Stream<AuthState> get authStateChanges =>
       _client.auth.onAuthStateChange;
 
-  Future<void> signUpAndCreateUser({
+  Future<AuthResponse> signUpAndCreateUser({
     required BuildContext context,
     required String email,
     required String password,
     required TempUserClass user,
   }) async {
-    switchLoader();
     final signUpRes = await _client.auth.signUp(
       email: email,
       password: password,
@@ -50,19 +49,19 @@ class AuthService extends ChangeNotifier {
     );
 
     try {
-      final existingUserResponse =
-          await _client
-              .from('users')
-              .select()
-              .eq('user_id', userId)
-              .maybeSingle();
+      await _client
+          .from('users')
+          .select()
+          .eq('user_id', userId)
+          .maybeSingle();
 
-      if (existingUserResponse != null) {
-        print("User already exists, skipping insert.");
-        return;
-      }
+      // if (existingUserResponse != null) {
+      //   // print("User already exists, skipping insert.");
+      //   return ;
+      // }
 
       await _client.from('users').insert(userRow.toJson());
+      return signUpRes;
     } catch (e) {
       throw Exception('User creation error: $e');
     }
@@ -72,6 +71,7 @@ class AuthService extends ChangeNotifier {
     String email,
     String password,
   ) {
+    switchLoader();
     return _client.auth.signInWithPassword(
       email: email,
       password: password,

@@ -1,11 +1,10 @@
 class TempProductClass {
-  int id;
-  final String name;
+  int? id;
+  String name;
   final int shopId;
-  String? desc;
   String? brand;
-  String category;
-  final String? barcode;
+  String? category;
+  String? barcode;
   String unit;
   bool isRefundable;
   String? color;
@@ -17,11 +16,10 @@ class TempProductClass {
   double quantity;
 
   TempProductClass({
-    required this.id,
+    this.id,
     required this.name,
-    this.desc,
     this.brand,
-    required this.category,
+    this.category,
     this.barcode,
     required this.unit,
     required this.isRefundable,
@@ -34,4 +32,49 @@ class TempProductClass {
     required this.quantity,
     required this.shopId,
   });
+
+  factory TempProductClass.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return TempProductClass(
+      id: json['id'],
+      name: json['name'],
+      shopId: json['shop_id'],
+      brand: json['brand'],
+      category: json['category'],
+      barcode: json['barcode'],
+      unit: json['unit'],
+      isRefundable: json['is_refundable'],
+      color: json['color'],
+      sizeType: json['size_type'],
+      size: json['size'],
+      costPrice: (json['cost_price'] as num).toDouble(),
+      sellingPrice:
+          (json['selling_price'] as num).toDouble(),
+      discount:
+          json['discount'] != null
+              ? (json['discount'] as num).toDouble()
+              : null,
+      quantity: (json['quantity'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'shop_id': shopId,
+      'brand': brand,
+      'category': category,
+      'barcode': barcode,
+      'unit': unit,
+      'is_refundable': isRefundable,
+      'color': color,
+      'size_type': sizeType,
+      'size': size,
+      'cost_price': costPrice,
+      'selling_price': sellingPrice,
+      'discount': discount,
+      'quantity': quantity,
+    };
+  }
 }

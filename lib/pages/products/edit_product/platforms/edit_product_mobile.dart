@@ -10,7 +10,6 @@ import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/add_products_three/add_products_three.dart';
 
 class EditProductMobile extends StatefulWidget {
   final TempProductClass product;
@@ -86,14 +85,14 @@ class _EditProductMobileState
       returnData(context, listen: false).color =
           returnData(context, listen: false).selectedColor!;
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return AddProductsThree();
-          },
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) {
+      //       return AddProductsThree();
+      //     },
+      //   ),
+      // );
     }
   }
   //

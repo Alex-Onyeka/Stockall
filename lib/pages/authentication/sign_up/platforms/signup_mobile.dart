@@ -7,6 +7,7 @@ import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/pages/authentication/components/check_agree.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
+import 'package:stockitt/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
@@ -38,6 +39,9 @@ class SignupMobile extends StatefulWidget {
   @override
   State<SignupMobile> createState() => _SignupMobileState();
 }
+
+bool showSuccess = false;
+bool isLoading = false;
 
 class _SignupMobileState extends State<SignupMobile> {
   bool isValidEmail(String email) {
@@ -111,7 +115,10 @@ class _SignupMobileState extends State<SignupMobile> {
         },
       );
     } else {
-      await AuthService().signUpAndCreateUser(
+      setState(() {
+        isLoading = true;
+      });
+      var res = await AuthService().signUpAndCreateUser(
         context: context,
         email: widget.emailController.text,
         password: widget.passwordController.text,
@@ -123,10 +130,24 @@ class _SignupMobileState extends State<SignupMobile> {
           role: 'Owner',
         ),
       );
-      widget.confirmPasswordController.clear();
-      widget.emailController.clear();
-      widget.passwordController.clear();
-      widget.phoneNumberController.clear();
+      if (res.user != null) {
+        setState(() {
+          isLoading = false;
+          showSuccess = true;
+        });
+        await Future.delayed(Duration(seconds: 3), () {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return ShopBannerScreen();
+              },
+            ),
+          );
+        });
+      }
+      // Navigator
     }
   }
 
@@ -277,22 +298,19 @@ class _SignupMobileState extends State<SignupMobile> {
             ),
           ),
           Visibility(
-            visible: context.watch<AuthService>().isLoading,
+            visible: isLoading,
             child: Provider.of<CompProvider>(
               context,
               listen: false,
             ).showLoader('Loading'),
           ),
-          // Visibility(
-          //   visible:
-          //       Provider.of<CompProvider>(
-          //         context,
-          //       ).isLoaderOn,
-          //   child: Provider.of<CompProvider>(
-          //     context,
-          //     listen: false,
-          //   ).showSuccess('Account Created Successfully'),
-          // ),
+          Visibility(
+            visible: showSuccess,
+            child: Provider.of<CompProvider>(
+              context,
+              listen: false,
+            ).showSuccess('Account Created Successfully'),
+          ),
         ],
       ),
     );

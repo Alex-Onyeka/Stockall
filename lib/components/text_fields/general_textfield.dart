@@ -53,18 +53,14 @@ class GeneralTextField extends StatelessWidget {
               fontSize: 14,
             ),
             floatingLabelStyle: TextStyle(
-              fontWeight:
-                  FontWeight.w600, // top-of-field style
-              color:
-                  theme
-                      .lightModeColor
-                      .prColor300, // any color you like
+              fontWeight: FontWeight.w600,
+              color: theme.lightModeColor.prColor300,
               fontSize: 13,
               letterSpacing: 0.5,
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 20,
-              vertical: 15,
+              vertical: 12,
             ),
             // hintText: hint,
             // hintStyle: TextStyle(
@@ -77,14 +73,14 @@ class GeneralTextField extends StatelessWidget {
                 color: Colors.grey,
                 width: 1.5,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: theme.lightModeColor.prColor300,
                 width: 1.8,
               ),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
           controller: controller,

@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/dashboard/dashboard.dart';
+import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class LoginMobile extends StatefulWidget {
   final ThemeProvider theme;
@@ -31,7 +33,7 @@ class _LoginMobileState extends State<LoginMobile> {
     return emailRegex.hasMatch(email);
   }
 
-  void checkInputs() {
+  Future<void> checkInputs() async {
     if (widget.emailController.text.isEmpty ||
         widget.passwordController.text.isEmpty) {
       showDialog(
@@ -59,75 +61,55 @@ class _LoginMobileState extends State<LoginMobile> {
         },
       );
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return Dashboard();
-          },
-        ),
+      var res = await AuthService().signIn(
+        widget.emailController.text,
+        widget.passwordController.text,
       );
-      widget.emailController.clear();
-      widget.passwordController.clear();
+      if (res.user != null && context.mounted) {
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Home();
+            },
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 35.0,
-          ),
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(
-              context,
-            ).copyWith(scrollbars: false),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: 60),
-                  Row(
-                    spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+    return Stack(
+      children: [
+        Scaffold(
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 35.0,
+              ),
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(
+                  context,
+                ).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      Image.asset(mainLogoIcon, height: 20),
-                      Text(
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 25,
-                          fontWeight:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .h3
-                                  .fontWeightBold,
-                        ),
-                        'Stockitt',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Column(
-                    spacing: 8,
-                    children: [
+                      SizedBox(height: 60),
                       Row(
+                        spacing: 10,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
                         children: [
+                          Image.asset(
+                            mainLogoIcon,
+                            height: 20,
+                          ),
                           Text(
                             style: TextStyle(
-                              color:
-                                  widget
-                                      .theme
-                                      .lightModeColor
-                                      .shadesColorBlack,
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .h3
-                                      .fontSize,
+                              color: Colors.grey,
+                              fontSize: 25,
                               fontWeight:
                                   widget
                                       .theme
@@ -135,60 +117,100 @@ class _LoginMobileState extends State<LoginMobile> {
                                       .h3
                                       .fontWeightBold,
                             ),
-                            'Welcome Back',
+                            'Stockitt',
                           ),
                         ],
                       ),
-                      Row(
+                      SizedBox(height: 30),
+                      Column(
+                        spacing: 8,
                         children: [
-                          Flexible(
-                            child: Text(
-                              style:
-                                  Provider.of<
-                                        ThemeProvider
-                                      >(context)
-                                      .mobileTexts
-                                      .b1
-                                      .textStyleNormal,
-                              "Please Fill in The form to Login to your Account",
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .shadesColorBlack,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h3
+                                          .fontSize,
+                                  fontWeight:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h3
+                                          .fontWeightBold,
+                                ),
+                                'Welcome Back',
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  style:
+                                      Provider.of<
+                                            ThemeProvider
+                                          >(context)
+                                          .mobileTexts
+                                          .b1
+                                          .textStyleNormal,
+                                  "Please Fill in The form to Login to your Account",
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
+                      SizedBox(height: 30),
+                      EmailTextField(
+                        title: 'Email Address*',
+                        hint: 'Enter Email',
+                        isEmail: true,
+                        controller: widget.emailController,
+                        theme: widget.theme,
+                      ),
+                      SizedBox(height: 15),
+                      EmailTextField(
+                        title: 'Password*',
+                        hint: 'Enter Password',
+                        isEmail: false,
+                        controller:
+                            widget.passwordController,
+                        theme: widget.theme,
+                      ),
+
+                      SizedBox(height: 30),
+                      MainButtonP(
+                        themeProvider: widget.theme,
+                        action: () {
+                          checkInputs();
+                        },
+                        text: 'Login',
+                      ),
+                      SizedBox(height: 30),
                     ],
                   ),
-                  SizedBox(height: 30),
-                  EmailTextField(
-                    title: 'Email Address*',
-                    hint: 'Enter Email',
-                    isEmail: true,
-                    controller: widget.emailController,
-                    theme: widget.theme,
-                  ),
-                  SizedBox(height: 15),
-                  EmailTextField(
-                    title: 'Password*',
-                    hint: 'Enter Password',
-                    isEmail: false,
-                    controller: widget.passwordController,
-                    theme: widget.theme,
-                  ),
-
-                  SizedBox(height: 30),
-                  MainButtonP(
-                    themeProvider: widget.theme,
-                    action: () {
-                      checkInputs();
-                    },
-                    text: 'Login',
-                  ),
-                  SizedBox(height: 30),
-                ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        Visibility(
+          visible: context.watch<AuthService>().isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Logging in'),
+        ),
+      ],
     );
   }
 }

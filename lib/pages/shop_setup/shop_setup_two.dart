@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/pages/shop_setup/components/text_field.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class ShopSetupTwo extends StatefulWidget {
   const ShopSetupTwo({super.key});
@@ -15,169 +19,203 @@ class ShopSetupTwo extends StatefulWidget {
 }
 
 class _ShopSetupTwoState extends State<ShopSetupTwo> {
-  TextEditingController nameController =
+  bool isLoading = false;
+
+  bool success = false;
+
+  void loading() {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(Duration(seconds: 4), () {
+      setState(() {
+        isLoading = false;
+      });
+      showSuccess();
+    });
+  }
+
+  void showSuccess() {
+    setState(() {
+      success = true;
+    });
+    Future.delayed(Duration(seconds: 3), () {
+      if (!context.mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return Home();
+          },
+        ),
+      );
+      // setState(() {
+      //   success = false;
+      // });
+    });
+  }
+
+  TextEditingController stateController =
       TextEditingController();
-  TextEditingController emailController =
+  TextEditingController cityController =
       TextEditingController();
-  TextEditingController numberController =
+  TextEditingController addressController =
       TextEditingController();
+
+  void checkInputs() {
+    if (stateController.text.isEmpty ||
+        cityController.text.isEmpty ||
+        addressController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message: 'All Fields Must be filled',
+            title: 'Empty Fields',
+          );
+        },
+      );
+    } else {
+      returnShopProvider(context, listen: false).createShop(
+        TempShopClass(
+          createdAt: DateTime.now(),
+          userId: AuthService().currentUser!.id,
+          email:
+              returnShopProvider(
+                context,
+                listen: false,
+              ).email!,
+          name:
+              returnShopProvider(
+                context,
+                listen: false,
+              ).name,
+          state:
+              stateController.text.trim().isEmpty
+                  ? null
+                  : stateController.text.trim(),
+          shopAddress:
+              addressController.text.trim().isEmpty
+                  ? null
+                  : addressController.text.trim(),
+          city:
+              cityController.text.trim().isEmpty
+                  ? null
+                  : cityController.text.trim(),
+        ),
+      );
+      loading();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Provider.of<ThemeProvider>(context);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < 600) {
-            return Scaffold(
-              body: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TopBanner(
-                      bottomSpace: 50,
-                      topSpace: 40,
-                      theme: theme,
-                      subTitle:
-                          'Create a Shop to get Started.',
-                      title: 'Shop Setup',
-                    ),
-                    SizedBox(height: 30),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
-                      ),
-                      child: ProgressBar(
-                        position: 0.06,
-                        calcValue: 0.35,
-                        theme: theme,
-                        percent: '50%',
-                        title: 'Your Progress',
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Column(
-                      spacing: 10,
-                      children: [
-                        // Row(
-                        //   mainAxisAlignment:
-                        //       MainAxisAlignment.center,
-                        //   children: [
-                        //     Container(
-                        //       padding: EdgeInsets.all(30),
-                        //       decoration: BoxDecoration(
-                        //         shape: BoxShape.circle,
-                        //         color: Colors.grey.shade100,
-                        //       ),
-                        //       child: Center(
-                        //         child: Icon(
-                        //           size: 50,
-                        //           Icons.home_work_outlined,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        // Padding(
-                        //   padding:
-                        //       const EdgeInsets.symmetric(
-                        //         horizontal: 80.0,
-                        //       ),
-                        //   child: Text(
-                        //     textAlign: TextAlign.center,
-                        //     style: TextStyle(
-                        //       color:
-                        //           theme
-                        //               .lightModeColor
-                        //               .greyColor100,
-                        //       fontSize:
-                        //           theme
-                        //               .mobileTexts
-                        //               .b2
-                        //               .fontSize,
-                        //     ),
-                        //     'Enter Shop Details Below to Complete Shop Set Up',
-                        //   ),
-                        // ),
-                        // SizedBox(height: 20),
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 30.0,
-                              ),
-                          child: Column(
-                            spacing: 15,
-                            children: [
-                              FormFieldShop(
-                                isOptional: false,
-                                theme: theme,
-                                hintText: 'State',
-                                title: 'Enter State',
-                                isEmail: false,
-                                controller: nameController,
-                              ),
-                              FormFieldShop(
-                                isOptional: false,
-                                theme: theme,
-                                hintText: 'City',
-                                title: 'Enter City',
-
-                                isEmail: false,
-                                controller: emailController,
-                              ),
-                              FormFieldShop(
-                                isOptional: false,
-                                theme: theme,
-                                hintText: 'Address',
-                                title: 'Enter Address',
-                                isEmail: false,
-
-                                controller:
-                                    numberController,
-                              ),
-                              SizedBox(height: 5),
-                              MainButtonP(
-                                themeProvider: theme,
-                                action: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return Home();
-                                      },
-                                    ),
-                                  );
-                                },
-                                text: 'Create Shop',
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            return Scaffold(
-              body: Column(
+      child: Stack(
+        children: [
+          Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
                 children: [
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      gradient:
-                          theme.lightModeColor.prGradient,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
+                  TopBanner(
+                    bottomSpace: 50,
+                    iconData: Icons.home_work_outlined,
+                    topSpace: 40,
+                    theme: theme,
+                    subTitle:
+                        'Create a Shop to get Started.',
+                    title: 'Shop Setup',
+                  ),
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
                     ),
+                    child: ProgressBar(
+                      position: 0.06,
+                      calcValue: 0.35,
+                      theme: theme,
+                      percent: '50%',
+                      title: 'Your Progress',
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Column(
+                    spacing: 10,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                        ),
+                        child: Column(
+                          spacing: 15,
+                          children: [
+                            FormFieldShop(
+                              isPhone: false,
+                              isOptional: false,
+                              theme: theme,
+                              hintText: 'State',
+                              title: 'Enter State',
+                              isEmail: false,
+                              controller: stateController,
+                            ),
+                            FormFieldShop(
+                              isPhone: false,
+                              isOptional: false,
+                              theme: theme,
+                              hintText: 'City',
+                              title: 'Enter City',
+
+                              isEmail: false,
+                              controller: cityController,
+                            ),
+                            FormFieldShop(
+                              isPhone: false,
+                              isOptional: false,
+                              theme: theme,
+                              hintText: 'Address',
+                              title: 'Enter Address',
+                              isEmail: false,
+
+                              controller: addressController,
+                            ),
+                            SizedBox(height: 5),
+                            MainButtonP(
+                              themeProvider: theme,
+                              action: () {
+                                checkInputs();
+                                // loading();
+                              },
+                              text: 'Create Shop',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            );
-          }
-        },
+            ),
+          ),
+          Visibility(
+            visible: isLoading,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader('Setting Up Your Shop'),
+          ),
+          Visibility(
+            visible: success,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showSuccess('Shop Setup Complete'),
+          ),
+        ],
       ),
     );
   }

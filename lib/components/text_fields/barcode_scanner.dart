@@ -58,7 +58,7 @@ class BarcodeScanner extends StatelessWidget {
                   color: Colors.grey,
                   width: 1.5,
                 ),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(5),
               ),
             ),
           ),

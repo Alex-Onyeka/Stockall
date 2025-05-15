@@ -10,7 +10,6 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  bool isEmpty = true;
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -23,20 +22,14 @@ class _ProductsPageState extends State<ProductsPage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth < 500) {
-              return ProductPageMobile(
-                theme: theme,
-                isEmpty: isEmpty,
-              );
+              return ProductPageMobile(theme: theme);
             } else {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
                     width: 700,
-                    child: ProductPageMobile(
-                      theme: theme,
-                      isEmpty: isEmpty,
-                    ),
+                    child: ProductPageMobile(theme: theme),
                   ),
                 ],
               );

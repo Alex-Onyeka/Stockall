@@ -11,10 +11,34 @@ class AddProduct extends StatefulWidget {
 class _AddProductState extends State<AddProduct> {
   TextEditingController nameController =
       TextEditingController();
-  TextEditingController descController =
-      TextEditingController();
   TextEditingController brandController =
       TextEditingController();
+  TextEditingController categoryController =
+      TextEditingController();
+  TextEditingController costController =
+      TextEditingController();
+  TextEditingController sellingController =
+      TextEditingController();
+  TextEditingController sizeController =
+      TextEditingController();
+  TextEditingController quantityController =
+      TextEditingController();
+  TextEditingController discountController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    brandController.dispose();
+    nameController.dispose();
+    categoryController.dispose();
+    costController.dispose();
+    sellingController.dispose();
+    discountController.dispose();
+    quantityController.dispose();
+    sizeController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -25,8 +49,13 @@ class _AddProductState extends State<AddProduct> {
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return AddProductMobile(
+              discountController: discountController,
+              sizeController: sizeController,
+              quantityController: quantityController,
+              categoryController: categoryController,
+              costController: costController,
+              sellingController: sellingController,
               brandController: brandController,
-              descController: descController,
               nameController: nameController,
             );
           } else {

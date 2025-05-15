@@ -299,7 +299,7 @@ class _AddCustomerMobileState
                               shopId:
                                   currentShop(
                                     context,
-                                  ).shopId,
+                                  ).shopId!,
                               country:
                                   widget
                                       .countryController
@@ -348,7 +348,7 @@ class _AddCustomerMobileState
                                   shopId:
                                       currentShop(
                                         context,
-                                      ).shopId,
+                                      ).shopId!,
                                   id:
                                       returnCustomers(
                                         context,

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
 import 'package:stockitt/components/major/top_banner.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/shop_setup/shop_setup_two.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/pages/shop_setup/components/text_field.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class ShopSetupPage extends StatefulWidget {
   const ShopSetupPage({super.key});
@@ -22,6 +25,49 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
       TextEditingController();
   TextEditingController numberController =
       TextEditingController();
+  void checkInput() {
+    if (nameController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message: 'Shop Name Must be set',
+            title: 'Empty Fields',
+          );
+        },
+      );
+    } else {
+      returnShopProvider(context, listen: false).name =
+          nameController.text.trim();
+      returnShopProvider(context, listen: false).email =
+          emailController.text.isEmpty
+              ? AuthService().currentUser!.email!
+              : emailController.text;
+      // returnShopProvider(context, listen: false).email =
+      //     emailController.text.isEmpty
+      //         ? AuthService().currentUser!.email!
+      //         : emailController.text;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return ShopSetupTwo();
+          },
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    emailController.dispose();
+    numberController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Provider.of<ThemeProvider>(context);
@@ -61,64 +107,26 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                     Column(
                       spacing: 10,
                       children: [
-                        // Row(
-                        //   mainAxisAlignment:
-                        //       MainAxisAlignment.center,
-                        //   children: [
-                        //     Container(
-                        //       padding: EdgeInsets.all(30),
-                        //       decoration: BoxDecoration(
-                        //         shape: BoxShape.circle,
-                        //         color: Colors.grey.shade100,
-                        //       ),
-                        //       child: Center(
-                        //         child: Icon(
-                        //           size: 50,
-                        //           Icons.home_work_outlined,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        // Padding(
-                        //   padding:
-                        //       const EdgeInsets.symmetric(
-                        //         horizontal: 80.0,
-                        //       ),
-                        //   child: Text(
-                        //     textAlign: TextAlign.center,
-                        //     style: TextStyle(
-                        //       color:
-                        //           theme
-                        //               .lightModeColor
-                        //               .greyColor100,
-                        //       fontSize:
-                        //           theme
-                        //               .mobileTexts
-                        //               .b2
-                        //               .fontSize,
-                        //     ),
-                        //     'Enter Shop Details Below to Complete Shop Set Up',
-                        //   ),
-                        // ),
-                        // SizedBox(height: 20),
                         Padding(
                           padding:
                               const EdgeInsets.symmetric(
                                 horizontal: 30.0,
                               ),
                           child: Column(
-                            spacing: 15,
+                            spacing: 20,
                             children: [
                               FormFieldShop(
+                                isPhone: false,
                                 isOptional: false,
                                 theme: theme,
-                                hintText: 'Name',
+                                hintText:
+                                    'Enter your shop Name',
                                 title: 'Shop Name',
                                 isEmail: false,
                                 controller: nameController,
                               ),
                               FormFieldShop(
+                                isPhone: false,
                                 isOptional: true,
                                 theme: theme,
                                 hintText: 'Shop Email',
@@ -129,6 +137,7 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                                 controller: emailController,
                               ),
                               FormFieldShop(
+                                isPhone: true,
                                 isOptional: true,
                                 theme: theme,
                                 hintText:
@@ -144,14 +153,7 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                               MainButtonP(
                                 themeProvider: theme,
                                 action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ShopSetupTwo();
-                                      },
-                                    ),
-                                  );
+                                  checkInput();
                                 },
                                 text: 'Save and Proceed',
                               ),

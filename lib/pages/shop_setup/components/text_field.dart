@@ -8,6 +8,7 @@ class FormFieldShop extends StatelessWidget {
   final bool isEmail;
   final String hintText;
   final String title;
+  final bool isPhone;
   const FormFieldShop({
     super.key,
     required this.theme,
@@ -17,6 +18,7 @@ class FormFieldShop extends StatelessWidget {
     required this.controller,
     this.message,
     required this.isOptional,
+    required this.isPhone,
   });
 
   final ThemeProvider theme;
@@ -71,9 +73,15 @@ class FormFieldShop extends StatelessWidget {
               keyboardType:
                   isEmail
                       ? TextInputType.emailAddress
+                      : isPhone
+                      ? TextInputType.phone
                       : TextInputType.text,
               autocorrect: true,
               controller: controller,
+              textCapitalization:
+                  isEmail
+                      ? TextCapitalization.none
+                      : TextCapitalization.words,
               enableSuggestions: true,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(

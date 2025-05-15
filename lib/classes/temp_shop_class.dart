@@ -1,5 +1,5 @@
 class TempShopClass {
-  final int shopId;
+  final int? shopId;
   final DateTime createdAt;
   final String userId;
   String email;
@@ -11,7 +11,7 @@ class TempShopClass {
   List<String>? colors;
 
   TempShopClass({
-    required this.shopId,
+    this.shopId,
     required this.createdAt,
     required this.userId,
     required this.email,
@@ -22,4 +22,36 @@ class TempShopClass {
     this.categories,
     this.colors,
   });
+
+  factory TempShopClass.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return TempShopClass(
+      shopId: json['shop_id'],
+      createdAt: DateTime.parse(json['created_at']),
+      userId: json['user_id'],
+      email: json['email'],
+      name: json['name'],
+      state: json['state'],
+      city: json['city'],
+      shopAddress: json['shop_address'],
+      categories:
+          (json['categories'] as List?)?.cast<String>(),
+      colors: (json['colors'] as List?)?.cast<String>(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'created_at': createdAt.toIso8601String(),
+      'user_id': userId,
+      'email': email,
+      'name': name,
+      'state': state,
+      'city': city,
+      'shop_address': shopAddress,
+      'categories': categories,
+      'colors': colors,
+    };
+  }
 }

@@ -104,7 +104,7 @@ class ReceiptsProvider extends ChangeNotifier {
           discountedAmount: item.discountCost(),
           productRecordId: productSaleRecords.length + 1,
           createdAt: DateTime.now(),
-          productId: item.item.id,
+          productId: item.item.id!,
           shopId: item.item.shopId,
           staffId: 'staffId',
           staffName: 'staffName',

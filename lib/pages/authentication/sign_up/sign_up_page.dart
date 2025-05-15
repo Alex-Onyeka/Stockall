@@ -48,11 +48,15 @@ class _SignUpPageState extends State<SignUpPage> {
             return SignupMobile(
               checked: checked,
               onTap: () {
+                FocusManager.instance.primaryFocus
+                    ?.unfocus();
                 setState(() {
                   checked = !checked;
                 });
               },
               onChanged: (value) {
+                FocusManager.instance.primaryFocus
+                    ?.unfocus();
                 setState(() {
                   checked = value!;
                 });

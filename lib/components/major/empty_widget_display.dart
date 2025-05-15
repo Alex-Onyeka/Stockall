@@ -8,7 +8,8 @@ class EmptyWidgetDisplay extends StatelessWidget {
   final String title;
   final String subText;
   final String buttonText;
-  final String svg;
+  final String? svg;
+  final IconData? icon;
   final Function()? action;
   final ThemeProvider theme;
   final double height;
@@ -18,8 +19,9 @@ class EmptyWidgetDisplay extends StatelessWidget {
     required this.title,
     required this.subText,
     required this.buttonText,
-    required this.svg,
+    this.svg,
     this.action,
+    this.icon,
     required this.theme,
     required this.height,
   });
@@ -41,7 +43,25 @@ class EmptyWidgetDisplay extends StatelessWidget {
               ),
             ),
             child: colorWidget(
-              SvgPicture.asset(svg, height: height),
+              Stack(
+                children: [
+                  Visibility(
+                    visible: svg != null,
+                    child: SvgPicture.asset(
+                      svg ?? '',
+                      height: height,
+                    ),
+                  ),
+                  Visibility(
+                    visible: icon != null,
+                    child: Icon(
+                      icon,
+                      size: height,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               true,
               context,
             ),
