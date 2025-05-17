@@ -50,14 +50,16 @@ class _HomeState extends State<Home> {
             listen: false,
           ).showLoader('Loading');
         } else if (snapshot.hasError) {
-          return Center(
-            child: EmptyWidgetDisplayOnly(
-              title: 'An Error Occurred',
-              subText:
-                  'We couldn\'t load your data. Check your internet.',
-              icon: Icons.clear,
-              theme: theme,
-              height: 30,
+          return Scaffold(
+            body: Center(
+              child: EmptyWidgetDisplayOnly(
+                title: 'An Error Occurred',
+                subText:
+                    'We couldn\'t load your data. Check your internet.',
+                icon: Icons.clear,
+                theme: theme,
+                height: 30,
+              ),
             ),
           );
         } else if (snapshot.data == null && !_navigated) {

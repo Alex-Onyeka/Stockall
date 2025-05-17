@@ -24,12 +24,14 @@ class BasePage extends StatelessWidget {
             listen: false,
           ).showLoader('Loading');
         } else if (snapshot.hasError) {
-          return EmptyWidgetDisplayOnly(
-            title: 'An Error Occured',
-            subText:
-                'An error occured while loading your data. Please check your internet and try again',
-            theme: returnTheme(context),
-            height: 35,
+          return Scaffold(
+            body: EmptyWidgetDisplayOnly(
+              title: 'An Error Occured',
+              subText:
+                  'An error occured while loading your data. Please check your internet and try again',
+              theme: returnTheme(context),
+              height: 35,
+            ),
           );
         }
 

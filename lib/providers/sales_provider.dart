@@ -94,12 +94,14 @@ class SalesProvider extends ChangeNotifier {
     // if (!context.mounted) {
     //   return;
     // }
+    if (context.mounted) {
+      returnCustomers(
+        context,
+        listen: false,
+      ).clearSelectedCustomer();
+      returnNavProvider(context, listen: false).navigate(0);
+    }
 
-    returnCustomers(
-      context,
-      listen: false,
-    ).clearSelectedCustomer();
-    returnNavProvider(context, listen: false).navigate(0);
     notifyListeners();
     return receipt;
   }

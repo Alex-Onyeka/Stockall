@@ -34,6 +34,8 @@ class MakeSalesMobileTwo extends StatefulWidget {
 class _MakeSalesMobileTwoState
     extends State<MakeSalesMobileTwo> {
   bool isUpdating = false;
+  bool isLoading = false;
+  bool showSuccess = false;
 
   @override
   void initState() {
@@ -561,6 +563,9 @@ class _MakeSalesMobileTwoState
                         child: MainButtonP(
                           themeProvider: theme,
                           action: () async {
+                            setState(() {
+                              isLoading = true;
+                            });
                             var receipt = await returnSalesProvider(
                               context,
                               listen: false,
@@ -651,16 +656,28 @@ class _MakeSalesMobileTwoState
                                 ).selectedCustomerId,
                               ),
                             );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ReceiptPage(
-                                    mainReceipt: receipt,
-                                    isMain: true,
+                            setState(() {
+                              isLoading = false;
+                              showSuccess = true;
+                            });
+                            await Future.delayed(
+                              Duration(seconds: 3),
+                              () {
+                                if (context.mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ReceiptPage(
+                                          mainReceipt:
+                                              receipt,
+                                          isMain: true,
+                                        );
+                                      },
+                                    ),
                                   );
-                                },
-                              ),
+                                }
+                              },
                             );
                           },
                           text: 'Check Out',
@@ -675,7 +692,13 @@ class _MakeSalesMobileTwoState
           ),
         ),
         Visibility(
-          visible: returnCompProvider(context).isLoaderOn,
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+          ).showLoader('Loading'),
+        ),
+        Visibility(
+          visible: showSuccess,
           child: returnCompProvider(
             context,
           ).showSuccess('Sales Successful'),

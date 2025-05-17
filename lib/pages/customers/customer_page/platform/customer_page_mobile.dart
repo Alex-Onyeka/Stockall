@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
-import 'package:stockitt/classes/temp_main_receipt.dart';
+import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -19,9 +19,6 @@ class CustomerPageMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var customer = returnCustomers(
-    //   context,
-    // ).returnCustomerById(customerId, context);
     var theme = returnTheme(context);
     return SafeArea(
       child: Scaffold(
@@ -227,40 +224,85 @@ class DetailsPageContainer extends StatelessWidget {
                     //     20,
                     child: Builder(
                       builder: (context) {
-                        List<TempMainReceipt> receipts =
-                            returnReceiptProvider(context)
-                                .returnOwnReceipts(context)
-                                .where(
-                                  (receipt) =>
-                                      receipt.customerId ==
-                                      customer.id,
-                                )
-                                .toList();
-                        if (returnReceiptProvider(context)
-                            .returnOwnReceipts(context)
-                            .where(
-                              (test) =>
-                                  test.customerId ==
-                                  customer.id,
+                        var receipts = returnReceiptProvider(
+                              context,
+                              listen: false,
                             )
-                            .isEmpty) {
-                          return Center(
-                            child: Text('Empty'),
-                          );
-                        } else {
-                          return ListView.builder(
-                            itemCount: receipts.length,
-                            itemBuilder: (context, index) {
-                              TempMainReceipt receipt =
-                                  receipts[index];
-
-                              return ReceiptTileMain(
-                                theme: theme,
-                                mainReceipt: receipt,
+                            .loadReceipts(
+                              returnShopProvider(
+                                context,
+                                listen: false,
+                              ).userShop!.shopId!,
+                            )
+                            .then((receipts) {
+                              final receipt = receipts.where(
+                                (receipt) =>
+                                    receipt.customerId !=
+                                        null &&
+                                    receipt.customerId ==
+                                        customer.id,
                               );
-                            },
-                          );
-                        }
+                              return receipt;
+                            });
+                        return FutureBuilder(
+                          future: receipts,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return returnCompProvider(
+                                context,
+                                listen: false,
+                              ).showLoader('Loading');
+                            } else if (snapshot.hasError) {
+                              return EmptyWidgetDisplayOnly(
+                                title: 'An Error Occured',
+                                subText:
+                                    'An error occured. Please check your internet and try again.',
+                                theme: theme,
+                                height: 35,
+                              );
+                            } else {
+                              if (snapshot.data!.isEmpty) {
+                                return EmptyWidgetDisplayOnly(
+                                  title: 'Empty List',
+                                  subText:
+                                      'This customer has not made any purchases from you yet.',
+                                  theme: theme,
+                                  height: 35,
+                                );
+                              } else {
+                                var tempReceipts =
+                                    snapshot.data!;
+
+                                return ListView.builder(
+                                  itemCount:
+                                      tempReceipts.length,
+                                  itemBuilder: (
+                                    context,
+                                    index,
+                                  ) {
+                                    var singleReceipt =
+                                        tempReceipts
+                                            .toList()[index];
+
+                                    return ReceiptTileMain(
+                                      theme: theme,
+                                      mainReceipt:
+                                          singleReceipt,
+                                    );
+                                  },
+                                );
+                              }
+                            }
+                            // return Center(
+                            //   child: Container(
+                            //     height: 100,
+                            //     width: 100,
+                            //     color: Colors.grey,
+                            //   ),
+                            // );
+                          },
+                        );
                       },
                     ),
                   ),

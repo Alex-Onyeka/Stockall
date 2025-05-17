@@ -128,6 +128,7 @@ class TopBanner extends StatelessWidget {
                       child:
                           iconSvg != null
                               ? SvgPicture.asset(
+                                // ignore: deprecated_member_use
                                 color:
                                     svgColor ??
                                     theme

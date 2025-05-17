@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/classes/temp_user_class.dart';

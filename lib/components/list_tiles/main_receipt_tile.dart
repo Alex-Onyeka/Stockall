@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -38,41 +38,25 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
     }
   }
 
-  TempCustomersClass? returnCustomer() {
-    final customers = returnCustomers(
-      context,
-      listen: false,
-    ).getOwnCustomer(context);
-    for (var customer in customers) {
-      if (customer.id == widget.mainReceipt.customerId) {
-        return customer;
-      }
-    }
-    return null; // No match found
-  }
+  late Future<TempCustomersClass?> customerFuture;
 
-  List<TempProductSaleRecord> salesRecord() {
-    return returnReceiptProvider(context, listen: false)
-        .getOwnProductSalesRecord(context)
-        .where(
-          (record) =>
-              record.recepitId == widget.mainReceipt.id,
-        )
-        .toList();
-  }
-
-  TempProductClass? firstProductRecord() {
-    final sales = salesRecord();
-    if (sales.isEmpty) return null;
-
-    try {
-      return returnData(context, listen: false)
-          .returnOwnProducts(context)
-          .firstWhere(
-            (product) =>
-                product.id == sales.first.productId,
-          );
-    } catch (e) {
+  Future<TempCustomersClass?> getCustomer() async {
+    if (widget.mainReceipt.customerId != null) {
+      var tempCustomer = await returnCustomers(
+        context,
+        listen: false,
+      ).fetchCustomers(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+      return tempCustomer.firstWhere(
+        (customer) =>
+            customer.id != null &&
+            customer.id == widget.mainReceipt.customerId!,
+      );
+    } else {
       return null;
     }
   }
@@ -97,18 +81,101 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
         .toList();
   }
 
+  late Future<List<TempProductSaleRecord>> productFuture;
+  @override
+  void initState() {
+    super.initState();
+    productFuture = getProductRecord();
+    customerFuture = getCustomer();
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return FutureBuilder(
-      future: getProductRecord(),
+      future: productFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
-          return Container();
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.white,
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                vertical: 5,
+                horizontal: 15,
+              ),
+              height: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.grey.shade400,
+              ),
+            ),
+          );
         } else if (snapshot.hasError) {
-          return Container();
+          return Container(
+            margin: EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 15,
+            ),
+            height: 150,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.grey.shade400,
+            ),
+            child: Center(
+              child: Text('Error Loading Receipt'),
+            ),
+          );
         } else {
+          double getTotal() {
+            double totalAmount = 0;
+            for (var element
+                in snapshot.data!
+                    .where(
+                      (test) =>
+                          test.recepitId ==
+                          widget.mainReceipt.id,
+                    )
+                    .toList()) {
+              totalAmount += element.revenue;
+            }
+            return totalAmount;
+          }
+
+          var productReceipts =
+              snapshot.data!
+                  .where(
+                    (test) =>
+                        test.recepitId ==
+                        widget.mainReceipt.id,
+                  )
+                  .toList();
+
+          var firstProductId =
+              productReceipts
+                  .firstWhere(
+                    (test) =>
+                        test.recepitId ==
+                        widget.mainReceipt.id,
+                  )
+                  .productId;
+          var firstProduct = returnData(
+                context,
+                listen: false,
+              )
+              .getProducts(
+                returnShopProvider(
+                  context,
+                  listen: false,
+                ).userShop!.shopId!,
+              )
+              .then((products) {
+                final product = products.firstWhere(
+                  (product) => product.id == firstProductId,
+                );
+                return product;
+              });
           return Padding(
             padding: const EdgeInsets.only(bottom: 15.0),
             child: Ink(
@@ -206,7 +273,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                               fontWeight: FontWeight.bold,
                               color: Colors.grey,
                             ),
-                            '${salesRecord().length} Items Sold',
+                            '${snapshot.data!.length} Item(s) Sold',
                           ),
                         ],
                       ),
@@ -250,23 +317,56 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                     ),
                                     'Product Name',
                                   ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    cutLongText(
-                                      cutLongText(
-                                        firstProductRecord()
-                                                ?.name ??
-                                            'N/A',
-                                      ),
-                                    ),
+                                  FutureBuilder(
+                                    future: firstProduct,
+                                    builder: (
+                                      context,
+                                      snapshot,
+                                    ) {
+                                      if (snapshot
+                                              .connectionState ==
+                                          ConnectionState
+                                              .waiting) {
+                                        return Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          cutLongText(
+                                            cutLongText(
+                                              'Product',
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        var product =
+                                            snapshot.data;
+                                        return Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          cutLongText(
+                                            cutLongText(
+                                              product?.name ??
+                                                  'N/A',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
@@ -335,12 +435,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                           FontWeight.bold,
                                     ),
                                     formatLargeNumberDouble(
-                                      returnReceiptProvider(
-                                        context,
-                                      ).getTotalMainRevenueReceipt(
-                                        snapshot.data!,
-                                        context,
-                                      ),
+                                      getTotal(),
                                     ),
                                   ),
                                 ],
@@ -354,20 +449,70 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                            ),
-                            'Customer: ${returnCustomer() != null ? returnCustomer()!.name : 'Not Found'}',
+                          FutureBuilder<
+                            TempCustomersClass?
+                          >(
+                            future: customerFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot
+                                      .connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                  ),
+                                  'Customer',
+                                );
+                              } else if (snapshot
+                                  .hasError) {
+                                return Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                  ),
+                                  'Not Sett',
+                                );
+                              } else {
+                                TempCustomersClass?
+                                customer = snapshot.data;
+                                return Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                  ),
+
+                                  "Customer: ${cutLongText(customer != null ? customer.name : 'Not Set')}",
+                                );
+                              }
+                            },
                           ),
                           Text(
                             style: TextStyle(
@@ -379,7 +524,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade700,
                             ),
-                            'Staff: Alex',
+                            'Cashier: ${cutLongText(widget.mainReceipt.staffName)}',
                           ),
                         ],
                       ),
