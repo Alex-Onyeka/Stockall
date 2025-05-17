@@ -1,5 +1,5 @@
 class TempCustomersClass {
-  final int id;
+  final int? id;
   final DateTime dateAdded;
   final int shopId;
   String? country;
@@ -12,7 +12,7 @@ class TempCustomersClass {
 
   TempCustomersClass({
     this.country,
-    required this.id,
+    this.id,
     required this.name,
     required this.email,
     required this.phone,
@@ -22,4 +22,35 @@ class TempCustomersClass {
     required this.dateAdded,
     required this.shopId,
   });
+
+  factory TempCustomersClass.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return TempCustomersClass(
+      id: json['id'],
+      dateAdded: DateTime.parse(json['date_added']),
+      shopId: json['shop_id'],
+      country: json['country'],
+      name: json['name'],
+      email: json['email'],
+      phone: json['phone'],
+      address: json['address'],
+      city: json['city'],
+      state: json['state'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'date_added': dateAdded.toIso8601String(),
+      'shop_id': shopId,
+      'country': country,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'city': city,
+      'state': state,
+    };
+  }
 }

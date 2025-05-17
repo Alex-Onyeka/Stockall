@@ -117,8 +117,12 @@ ReceiptsProvider returnReceiptProvider(
 }
 
 TempShopClass currentShop(BuildContext context) {
-  return returnShopProvider(context, listen: false).shops
-      .firstWhere((element) => element.userId == userId());
+  return returnShopProvider(
+    context,
+    listen: false,
+  ).shops.firstWhere(
+    (element) => element.userId == userIdMain(),
+  );
 }
 
 UserProvider returnUserProvider(

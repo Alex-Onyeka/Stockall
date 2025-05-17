@@ -294,23 +294,19 @@ class _AddCustomerMobileState
                           returnCustomers(
                             context,
                             listen: false,
-                          ).addCustomer(
+                          ).addCustomerMain(
                             TempCustomersClass(
                               shopId:
-                                  currentShop(
+                                  returnShopProvider(
                                     context,
-                                  ).shopId!,
+                                    listen: false,
+                                  ).userShop!.shopId!,
                               country:
                                   widget
                                       .countryController
                                       .text,
                               dateAdded: DateTime.now(),
-                              id:
-                                  returnCustomers(
-                                    context,
-                                    listen: false,
-                                  ).customers.length +
-                                  1,
+
                               name:
                                   widget
                                       .nameController
@@ -341,48 +337,43 @@ class _AddCustomerMobileState
                           returnCustomers(
                             context,
                             listen: false,
-                          ).updateCustomer(
-                            mainCustomer: widget.customer!,
-                            setterCustomer:
-                                TempCustomersClass(
-                                  shopId:
-                                      currentShop(
-                                        context,
-                                      ).shopId!,
-                                  id:
-                                      returnCustomers(
-                                        context,
-                                        listen: false,
-                                      ).getId(),
-                                  name:
-                                      widget
-                                          .nameController
-                                          .text,
-                                  email:
-                                      widget
-                                          .emailController
-                                          .text,
-                                  phone:
-                                      widget
-                                          .phoneController
-                                          .text,
-                                  address:
-                                      widget
-                                          .addressController
-                                          .text,
-                                  city:
-                                      widget
-                                          .cityController
-                                          .text,
-                                  state:
-                                      widget
-                                          .stateController
-                                          .text,
-                                  dateAdded:
-                                      widget
-                                          .customer!
-                                          .dateAdded,
-                                ),
+                          ).updateCustomerMain(
+                            TempCustomersClass(
+                              id: widget.customer!.id,
+                              shopId:
+                                  returnShopProvider(
+                                    context,
+                                    listen: false,
+                                  ).userShop!.shopId!,
+                              name:
+                                  widget
+                                      .nameController
+                                      .text,
+                              email:
+                                  widget
+                                      .emailController
+                                      .text,
+                              phone:
+                                  widget
+                                      .phoneController
+                                      .text,
+                              address:
+                                  widget
+                                      .addressController
+                                      .text,
+                              city:
+                                  widget
+                                      .cityController
+                                      .text,
+                              state:
+                                  widget
+                                      .stateController
+                                      .text,
+                              dateAdded:
+                                  widget
+                                      .customer!
+                                      .dateAdded,
+                            ),
                           );
                         }
                         returnCompProvider(

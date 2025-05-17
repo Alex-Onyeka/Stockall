@@ -5,9 +5,11 @@ import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
+import 'package:stockitt/pages/authentication/sign_up/platforms/signup_mobile.dart';
 import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginMobile extends StatefulWidget {
   final ThemeProvider theme;
@@ -61,19 +63,62 @@ class _LoginMobileState extends State<LoginMobile> {
         },
       );
     } else {
-      var res = await AuthService().signIn(
-        widget.emailController.text,
-        widget.passwordController.text,
-      );
-      if (res.user != null && context.mounted) {
-        Navigator.pushReplacement(
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        var res = await AuthService().signIn(
+          widget.emailController.text,
+          widget.passwordController.text,
+        );
+        if (res.user != null && context.mounted) {
+          setState(() {
+            isLoading = false;
+            showSuccess = true;
+          });
+          Future.delayed(Duration(seconds: 3), () {
+            Navigator.pushReplacement(
+              // ignore: use_build_context_synchronously
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return Home();
+                },
+              ),
+            );
+          });
+        }
+      } on AuthException catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        if (!context.mounted) return;
+        showDialog(
           // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return Home();
-            },
-          ),
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              theme: widget.theme,
+              message: e.message,
+              title: 'Authentication Error',
+            );
+          },
+        );
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        if (!context.mounted) return;
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              theme: widget.theme,
+              message: e.toString(),
+              title: 'Unexpected Error',
+            );
+          },
         );
       }
     }
@@ -204,11 +249,18 @@ class _LoginMobileState extends State<LoginMobile> {
           ),
         ),
         Visibility(
-          visible: context.watch<AuthService>().isLoading,
+          visible: isLoading,
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Logging in'),
+          ).showLoader('Logging In'),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showSuccess('Logged In Successfully'),
         ),
       ],
     );

@@ -11,17 +11,17 @@ import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class CustomerPageMobile extends StatelessWidget {
-  final int customerId;
+  final TempCustomersClass customer;
   const CustomerPageMobile({
     super.key,
-    required this.customerId,
+    required this.customer,
   });
 
   @override
   Widget build(BuildContext context) {
-    var customer = returnCustomers(
-      context,
-    ).returnCustomerById(customerId, context);
+    // var customer = returnCustomers(
+    //   context,
+    // ).returnCustomerById(customerId, context);
     var theme = returnTheme(context);
     return SafeArea(
       child: Scaffold(

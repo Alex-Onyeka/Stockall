@@ -863,12 +863,14 @@ void editProductBottomSheet(
 // C A R T   B O T T O M  S H E E T
 
 class CustomBottomPanel extends StatefulWidget {
+  final List<TempProductClass> products;
   final TextEditingController searchController;
   final VoidCallback close;
   const CustomBottomPanel({
     super.key,
     required this.searchController,
     required this.close,
+    required this.products,
   });
 
   @override
@@ -1257,12 +1259,9 @@ class _CustomBottomPanelState
                       setState(() {
                         scanResult = result;
                         productResults.addAll(
-                          returnData(
-                            context,
-                            listen: false,
-                          ).searchProductsBarcode(
-                            result,
-                            context,
+                          widget.products.where(
+                            (product) =>
+                                product.barcode == result,
                           ),
                         );
                       });
@@ -1303,12 +1302,16 @@ class _CustomBottomPanelState
                             ],
                           ),
                         );
-                      } else if (returnData(context)
-                              .searchProductsName(
-                                widget
-                                    .searchController
-                                    .text,
-                                context,
+                      } else if (widget.products
+                              .where(
+                                (product) => product.name
+                                    .toLowerCase()
+                                    .contains(
+                                      widget
+                                          .searchController
+                                          .text
+                                          .toLowerCase(),
+                                    ),
                               )
                               .isEmpty &&
                           searchResult != null) {
@@ -1405,24 +1408,34 @@ class _CustomBottomPanelState
                               top: 10,
                             ),
                             itemCount:
-                                returnData(context)
-                                    .searchProductsName(
-                                      widget
-                                          .searchController
-                                          .text,
-                                      context,
+                                widget.products
+                                    .where(
+                                      (product) => product
+                                          .name
+                                          .toLowerCase()
+                                          .contains(
+                                            widget
+                                                .searchController
+                                                .text
+                                                .toLowerCase(),
+                                          ),
                                     )
                                     .length,
                             itemBuilder: (context, index) {
                               final product =
-                                  returnData(
-                                    context,
-                                  ).searchProductsName(
-                                    widget
-                                        .searchController
-                                        .text,
-                                    context,
-                                  )[index];
+                                  widget.products
+                                      .where(
+                                        (product) => product
+                                            .name
+                                            .toLowerCase()
+                                            .contains(
+                                              widget
+                                                  .searchController
+                                                  .text
+                                                  .toLowerCase(),
+                                            ),
+                                      )
+                                      .toList()[index];
                               return ProductTileCartSearch(
                                 action: () {
                                   if (product.quantity ==

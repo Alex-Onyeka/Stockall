@@ -411,8 +411,7 @@ class _TotalProductsPageState
                                                       'Empty List',
                                                   subText:
                                                       'You Don\'t have any product under this category',
-                                                  buttonText:
-                                                      'Add Products',
+
                                                   icon:
                                                       Icons
                                                           .dangerous_outlined,

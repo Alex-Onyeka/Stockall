@@ -14,6 +14,7 @@ class DataProvider extends ChangeNotifier {
         .insert(product.toJson())
         .select()
         .single();
+    clearFields();
   }
 
   Future<List<TempProductClass>> getProducts(
@@ -23,7 +24,7 @@ class DataProvider extends ChangeNotifier {
         .from('products')
         .select()
         .eq('shop_id', shopId)
-        .order('created_at', ascending: false);
+        .order('name', ascending: true);
 
     return (data as List)
         .map((json) => TempProductClass.fromJson(json))

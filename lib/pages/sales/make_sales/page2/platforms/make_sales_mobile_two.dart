@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/payment_type_button.dart';
@@ -9,7 +7,9 @@ import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
+import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class MakeSalesMobileTwo extends StatefulWidget {
   final double totalAmount;
@@ -231,14 +231,13 @@ class _MakeSalesMobileTwoState
                                                     listen:
                                                         false,
                                                   )
-                                                  .returnCustomerById(
+                                                  .getCustomerByIdMain(
                                                     int.parse(
                                                       returnCustomers(
                                                         context,
                                                       ).selectedCustomerId,
                                                     ),
-                                                    context,
-                                                  )
+                                                  )!
                                                   .name,
                                             ),
                                           ],
@@ -561,186 +560,106 @@ class _MakeSalesMobileTwoState
                             ).cartItems.isNotEmpty,
                         child: MainButtonP(
                           themeProvider: theme,
-                          action: () {
-                            returnSalesProvider(
+                          action: () async {
+                            var receipt = await returnSalesProvider(
                               context,
                               listen: false,
-                            ).checkOut(
+                            ).checkoutMain(
+                              context: context,
+                              cartItems:
+                                  returnSalesProvider(
+                                    context,
+                                    listen: false,
+                                  ).cartItems,
+                              staffId:
+                                  AuthService()
+                                      .currentUser!
+                                      .id,
+                              staffName:
+                                  returnUserProvider(
+                                    context,
+                                    listen: false,
+                                  ).currentUserMain!.name,
+                              shopId:
+                                  returnShopProvider(
+                                    context,
+                                    listen: false,
+                                  ).userShop!.shopId!,
+                              bank:
+                                  returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).returnPaymentMethod() ==
+                                          'Split'
+                                      ? double.tryParse(
+                                            widget
+                                                .bankController
+                                                .text,
+                                          ) ??
+                                          0
+                                      : returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).returnPaymentMethod() ==
+                                          'Bank'
+                                      ? returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).calcFinalTotalMain(
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).cartItems,
+                                      )
+                                      : 0,
+                              cashAlt:
+                                  returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).returnPaymentMethod() ==
+                                          'Split'
+                                      ? double.tryParse(
+                                            widget
+                                                .cashController
+                                                .text,
+                                          ) ??
+                                          0
+                                      : returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).returnPaymentMethod() ==
+                                          'Bank'
+                                      ? 0
+                                      : returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).calcFinalTotalMain(
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).cartItems,
+                                      ),
+                              paymentMethod:
+                                  returnSalesProvider(
+                                    context,
+                                    listen: false,
+                                  ).returnPaymentMethod(),
                               customerId: int.tryParse(
                                 returnCustomers(
                                   context,
                                   listen: false,
                                 ).selectedCustomerId,
                               ),
-                              context: context,
-                              mainReceipt: TempMainReceipt(
-                                bank:
-                                    returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).returnPaymentMethod() ==
-                                            'Split'
-                                        ? double.tryParse(
-                                              widget
-                                                  .bankController
-                                                  .text,
-                                            ) ??
-                                            0
-                                        : returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).returnPaymentMethod() ==
-                                            'Bank'
-                                        ? returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).calcFinalTotalMain(
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).cartItems,
-                                        )
-                                        : 0,
-                                cashAlt:
-                                    returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).returnPaymentMethod() ==
-                                            'Split'
-                                        ? double.tryParse(
-                                              widget
-                                                  .cashController
-                                                  .text,
-                                            ) ??
-                                            0
-                                        : returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).returnPaymentMethod() ==
-                                            'Bank'
-                                        ? 0
-                                        : returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).calcFinalTotalMain(
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).cartItems,
-                                        ),
-                                paymentMethod:
-                                    returnSalesProvider(
-                                      context,
-                                      listen: false,
-                                    ).returnPaymentMethod(),
-                                shopId:
-                                    returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .returnShop(
-                                          userId(),
-                                        )
-                                        .shopId!,
-                                staffId: userId(),
-                                staffName:
-                                    returnUserProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .currentUser(
-                                          userId(),
-                                        )
-                                        .name,
-                                customerId: int.tryParse(
-                                  returnCustomers(
-                                    context,
-                                    listen: false,
-                                  ).selectedCustomerId,
-                                ),
-                                id:
-                                    returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).mainReceipts.length +
-                                    1,
-                                createdAt: DateTime.now(),
-                              ),
-                              productRecord: TempProductSaleRecord(
-                                discount:
-                                    returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .cartItems
-                                        .first
-                                        .discount,
-                                customerId: int.tryParse(
-                                  returnCustomers(
-                                    context,
-                                    listen: false,
-                                  ).selectedCustomerId,
-                                ),
-                                originalCost:
-                                    returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).cartItems.first
-                                        .totalCost(),
-                                discountedAmount:
-                                    returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).cartItems.first
-                                        .discountCost(),
-                                productRecordId:
-                                    returnReceiptProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .productSaleRecords
-                                        .length +
-                                    1,
-                                createdAt: DateTime.now(),
-                                productId:
-                                    returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .cartItems
-                                        .first
-                                        .item
-                                        .id!,
-                                shopId:
-                                    returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .returnShop(
-                                          userId(),
-                                        )
-                                        .shopId!,
-                                staffId: '1',
-                                staffName: 'staffName',
-                                recepitId:
-                                    returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).mainReceipts.length,
-                                quantity:
-                                    returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .cartItems
-                                        .first
-                                        .quantity,
-                                revenue:
-                                    returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).cartItems.first
-                                        .revenue(),
+                            );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ReceiptPage(
+                                    mainReceipt: receipt,
+                                    isMain: true,
+                                  );
+                                },
                               ),
                             );
                           },

@@ -5,7 +5,6 @@ import 'package:stockitt/providers/theme_provider.dart';
 class EmptyWidgetDisplayOnly extends StatelessWidget {
   final String title;
   final String subText;
-  final String buttonText;
   final String? svg;
   final IconData? icon;
   final ThemeProvider theme;
@@ -15,7 +14,6 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
     super.key,
     required this.title,
     required this.subText,
-    required this.buttonText,
     this.svg,
     this.icon,
     required this.theme,

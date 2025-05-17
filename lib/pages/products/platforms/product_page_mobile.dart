@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/items_summary.dart';
@@ -72,10 +73,143 @@ class _ProductPageMobileState
         builder: (context, snapshot) {
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
-            return returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader('Loading');
+            return Column(
+              children: [
+                SizedBox(
+                  height: 320,
+                  child: Stack(
+                    children: [
+                      TopBanner(
+                        subTitle:
+                            'Data of All Product Records',
+                        title: 'Products',
+                        theme: widget.theme,
+                        bottomSpace: 100,
+                        topSpace: 20,
+                        iconSvg: productIconSvg,
+                      ),
+                      Align(
+                        alignment: Alignment(0, 1),
+                        child: ItemsSummary(
+                          searchController:
+                              searchController,
+                          searchAction: (value) {},
+                          hintText: 'Search Product Name',
+                          mainTitle: 'Products Summary',
+                          firsRow: true,
+                          scanAction: () async {},
+                          color1: Colors.green,
+                          title1: 'In Stock',
+                          value1: 0,
+                          color2: Colors.amber,
+                          title2: 'Out of Stock',
+                          value2: 0,
+                          secondRow: false,
+                        ),
+                      ),
+                      //
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        15,
+                        10,
+                        15,
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                  'Products',
+                                ),
+                                MaterialButton(
+                                  onPressed: () {},
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .secColor100,
+                                        ),
+                                        'See All',
+                                      ),
+                                      Icon(
+                                        size: 16,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor100,
+                                        Icons
+                                            .arrow_forward_ios_rounded,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: 5,
+                              itemBuilder: (
+                                context,
+                                index,
+                              ) {
+                                return Shimmer.fromColors(
+                                  baseColor:
+                                      Colors.grey.shade300,
+                                  highlightColor:
+                                      Colors.white,
+                                  child: Container(
+                                    margin:
+                                        EdgeInsets.symmetric(
+                                          vertical: 5,
+                                          horizontal: 10,
+                                        ),
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade300,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
           } else if (snapshot.hasError) {
             return Center(
               child: EmptyWidgetDisplay(

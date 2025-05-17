@@ -1,5 +1,5 @@
 class TempMainReceipt {
-  final int id;
+  final int? id;
   final String? barcode;
   final DateTime createdAt;
   final int shopId;
@@ -11,7 +11,7 @@ class TempMainReceipt {
   final double bank;
 
   TempMainReceipt({
-    required this.id,
+    this.id,
     this.barcode,
     required this.createdAt,
     required this.shopId,
@@ -22,4 +22,35 @@ class TempMainReceipt {
     required this.bank,
     required this.cashAlt,
   });
+
+  factory TempMainReceipt.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return TempMainReceipt(
+      id: json['id'] as int?,
+      barcode: json['barcode'] as String?,
+      createdAt: DateTime.parse(json['created_at']),
+      shopId: json['shop_id'],
+      staffId: json['staff_id'],
+      staffName: json['staff_name'],
+      customerId: json['customer_id'],
+      paymentMethod: json['payment_method'],
+      cashAlt: (json['cash_alt'] as num).toDouble(),
+      bank: (json['bank'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'barcode': barcode,
+      'created_at': createdAt.toIso8601String(),
+      'shop_id': shopId,
+      'staff_id': staffId,
+      'staff_name': staffName,
+      'customer_id': customerId,
+      'payment_method': paymentMethod,
+      'cash_alt': cashAlt,
+      'bank': bank,
+    };
+  }
 }

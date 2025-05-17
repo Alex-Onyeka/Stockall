@@ -27,7 +27,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
     setState(() {
       isLoading = true;
     });
-    Future.delayed(Duration(seconds: 4), () {
+    Future.delayed(Duration(seconds: 3), () {
       setState(() {
         isLoading = false;
       });
@@ -42,6 +42,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
     Future.delayed(Duration(seconds: 3), () {
       if (!context.mounted) return;
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (context) {

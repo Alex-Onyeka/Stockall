@@ -1,8 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/main.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
+  //
+  //
+  //
+  //
+
+  final SupabaseClient supabase = Supabase.instance.client;
+  List<TempCustomersClass> _customers = [];
+
+  List<TempCustomersClass> get customersMain => _customers;
+
+  /// Fetch all customers by shop ID
+  Future<List<TempCustomersClass>> fetchCustomers(
+    int shopId,
+  ) async {
+    final data = await supabase
+        .from('customers')
+        .select()
+        .eq('shop_id', shopId)
+        .order('date_added', ascending: false);
+
+    _customers =
+        (data as List)
+            .map(
+              (json) => TempCustomersClass.fromJson(json),
+            )
+            .toList();
+
+    notifyListeners();
+    return _customers;
+  }
+
+  /// Add a new customer
+  Future<void> addCustomerMain(
+    TempCustomersClass customer,
+  ) async {
+    final res =
+        await supabase
+            .from('customers')
+            .insert({
+              'shop_id': customer.shopId,
+              'country': customer.country,
+              'name': customer.name,
+              'email': customer.email,
+              'phone': customer.phone,
+              'address': customer.address,
+              'city': customer.city,
+              'state': customer.state,
+            })
+            .select()
+            .single();
+
+    final newCustomer = TempCustomersClass.fromJson(res);
+    _customers.insert(0, newCustomer);
+    notifyListeners();
+  }
+
+  /// Update a customer by ID
+  Future<void> updateCustomerMain(
+    TempCustomersClass customer,
+  ) async {
+    await supabase
+        .from('customers')
+        .update({
+          'country': customer.country,
+          'name': customer.name,
+          'email': customer.email,
+          'phone': customer.phone,
+          'address': customer.address,
+          'city': customer.city,
+          'state': customer.state,
+        })
+        .eq('id', customer.id!);
+
+    int index = _customers.indexWhere(
+      (c) => c.id == customer.id,
+    );
+    if (index != -1) {
+      _customers[index] = customer;
+      notifyListeners();
+    }
+  }
+
+  /// Delete a customer by ID
+  Future<void> deleteCustomerMain(int id) async {
+    await supabase.from('customers').delete().eq('id', id);
+    _customers.removeWhere((c) => c.id == id);
+    notifyListeners();
+  }
+
+  /// Get single customer by ID
+  TempCustomersClass? getCustomerByIdMain(int id) {
+    try {
+      return _customers.firstWhere((c) => c.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+
   List<TempCustomersClass> customers = [
     TempCustomersClass(
       shopId: 1,

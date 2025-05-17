@@ -6,9 +6,103 @@ import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockitt/providers/data_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
   List<TempCartItem> cartItems = [];
+
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  Future<TempMainReceipt> checkoutMain({
+    required BuildContext context,
+    required List<TempCartItem> cartItems,
+    required String staffId,
+    required String staffName,
+    required int shopId,
+    required String paymentMethod,
+    required double cashAlt,
+    required double bank,
+    int? customerId,
+  }) async {
+    final createdAt = DateTime.now();
+
+    // Step 1: Create the receipt
+    final receiptData = {
+      'created_at': createdAt.toIso8601String(),
+      'shop_id': shopId,
+      'staff_id': staffId,
+      'staff_name': staffName,
+      'customer_id': customerId,
+      'payment_method': paymentMethod,
+      'cash_alt': cashAlt,
+      'bank': bank,
+    };
+
+    final receiptRes =
+        await supabase
+            .from('receipts')
+            .insert(receiptData)
+            .select()
+            .single();
+
+    final receipt = TempMainReceipt.fromJson(receiptRes);
+    final receiptId = receipt.id!;
+
+    // Step 2: Create product sale records
+    final productSaleRecords =
+        cartItems.map((cartItem) {
+          final product = cartItem.item;
+
+          return TempProductSaleRecord(
+            createdAt: createdAt,
+            productId: product.id!,
+            shopId: product.shopId,
+            staffId: staffId,
+            customerId: customerId,
+            staffName: staffName,
+            recepitId: receiptId,
+            quantity: cartItem.quantity,
+            revenue: cartItem.revenue(),
+            discountedAmount: cartItem.discountCost(),
+            originalCost: cartItem.totalCost(),
+            discount: cartItem.discount,
+          );
+        }).toList();
+
+    final dataToInsert =
+        productSaleRecords.map((e) => e.toJson()).toList();
+
+    await supabase
+        .from('product_sales')
+        .insert(dataToInsert);
+
+    // ✅ Step 3: Decrement product quantities using the Supabase RPC
+    for (final cartItem in cartItems) {
+      await supabase.rpc(
+        'decrement_product_quantity',
+        params: {
+          'p_product_id': cartItem.item.id,
+          'p_quantity': cartItem.quantity,
+        },
+      );
+    }
+
+    // Step 4: Reset everything
+    resetPaymentMethod();
+    clearCart();
+
+    // if (!context.mounted) {
+    //   return;
+    // }
+
+    returnCustomers(
+      context,
+      listen: false,
+    ).clearSelectedCustomer();
+    returnNavProvider(context, listen: false).navigate(0);
+    notifyListeners();
+    return receipt;
+  }
 
   void clearCart() {
     cartItems.clear();
@@ -51,6 +145,25 @@ class SalesProvider extends ChangeNotifier {
 
   double calcFinalTotalMain(List<TempCartItem> items) {
     return calcTotalMain(items) - calcDiscountMain(items);
+  }
+
+  String addItemToCartMain(TempCartItem newItem) {
+    String result = '';
+    final index = cartItems.indexWhere(
+      (item) => item.item.id == newItem.item.id,
+    );
+
+    if (index != -1) {
+      // Item exists
+      cartItems[index].quantity += newItem.quantity;
+      result = 'Item Updated Successfully';
+    } else {
+      cartItems.add(newItem);
+      result = 'Item Added Successfully';
+    }
+
+    notifyListeners();
+    return result;
   }
 
   String addItemToCart(TempCartItem newItem) {
@@ -223,7 +336,7 @@ class SalesProvider extends ChangeNotifier {
             .toList();
 
     if (remainingProductsForThisReceipt.isEmpty) {
-      receiptProvider.deleteMainReceipt(mainReceipt.id);
+      receiptProvider.deleteMainReceipt(mainReceipt.id!);
       Navigator.of(context).pop();
     }
 
@@ -231,21 +344,43 @@ class SalesProvider extends ChangeNotifier {
     receiptProvider.notifyListeners();
   }
 
+  void createProductSalesRecord(
+    BuildContext context,
+    TempMainReceipt mainReceipt,
+    List<TempProductSaleRecord> productRecords,
+    int? customerId,
+  ) async {
+    await returnReceiptProvider(
+      context,
+      listen: false,
+    ).createReceipt(mainReceipt);
+    if (!context.mounted) return;
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).createProductSaleRecord(productRecords);
+    notifyListeners();
+  }
+
   void createSales(
     BuildContext context,
     TempMainReceipt mainReceipt,
     TempProductSaleRecord productRecord,
     int? customerId,
-  ) {
-    var newId = returnReceiptProvider(
+  ) async {
+    await returnReceiptProvider(
       context,
       listen: false,
-    ).createMainReceipt(mainReceipt);
-
+    ).createReceipt(mainReceipt);
+    if (!context.mounted) return;
     returnReceiptProvider(
       context,
       listen: false,
-    ).createProductSalesRecord(context, newId, customerId);
+    ).createProductSalesRecord(
+      context,
+      mainReceipt.id!,
+      customerId,
+    );
     notifyListeners();
   }
 

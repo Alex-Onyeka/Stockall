@@ -3,8 +3,173 @@ import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReceiptsProvider extends ChangeNotifier {
+  //
+  //
+  //
+
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  List<TempMainReceipt> _receipts = [];
+  List<TempMainReceipt> get receipts => _receipts;
+
+  // CREATE a new receipt
+  Future<int> createReceipt(TempMainReceipt receipt) async {
+    final res =
+        await supabase
+            .from('receipts')
+            .insert(receipt.toJson())
+            .select()
+            .single();
+
+    final newReceipt = TempMainReceipt.fromJson(res);
+
+    _receipts.add(newReceipt);
+
+    notifyListeners();
+    return newReceipt.id!;
+  }
+
+  // READ all receipts for a shop
+  Future<void> loadReceipts(int shopId) async {
+    final data = await supabase
+        .from('receipts')
+        .select()
+        .eq('shop_id', shopId)
+        .order('created_at', ascending: false);
+
+    _receipts =
+        (data as List)
+            .map((json) => TempMainReceipt.fromJson(json))
+            .toList();
+
+    notifyListeners();
+  }
+
+  // UPDATE a receipt
+  Future<void> updateReceipt(
+    TempMainReceipt updated,
+  ) async {
+    // Use only the updatable fields
+    final updateData = {
+      'barcode': updated.barcode,
+      'payment_method': updated.paymentMethod,
+      'cash_alt': updated.cashAlt,
+      'bank': updated.bank,
+      'customer_id': updated.customerId,
+    };
+
+    await supabase
+        .from('receipts')
+        .update(updateData)
+        .eq('id', updated.id!);
+
+    final index = _receipts.indexWhere(
+      (r) => r.id == updated.id,
+    );
+    if (index != -1) {
+      _receipts[index] = updated;
+      notifyListeners();
+    }
+  }
+
+  // DELETE a receipt
+  Future<void> deleteReceipt(int id) async {
+    await supabase.from('receipts').delete().eq('id', id);
+    _receipts.removeWhere((r) => r.id == id);
+    notifyListeners();
+  }
+
+  //
+  //
+  //
+  //
+  //
+
+  List<TempProductSaleRecord> _sales = [];
+  List<TempProductSaleRecord> get produtRecordSalesMain =>
+      _sales;
+
+  // CREATE a new product sale record
+  Future<void> createProductSaleRecord(
+    List<TempProductSaleRecord> records,
+  ) async {
+    final dataToInsert =
+        records.map((e) => e.toJson()).toList();
+
+    await supabase
+        .from('product_sales')
+        .insert(dataToInsert);
+
+    // You can optionally fetch updated records here if needed
+
+    notifyListeners();
+  }
+
+  // READ sales for a shop
+  Future<List<TempProductSaleRecord>>
+  loadProductSalesRecord(int shopId) async {
+    final data = await supabase
+        .from('product_sales')
+        .select()
+        .eq('shop_id', shopId)
+        .order('created_at', ascending: false);
+
+    _sales =
+        (data as List)
+            .map(
+              (json) =>
+                  TempProductSaleRecord.fromJson(json),
+            )
+            .toList();
+
+    notifyListeners();
+    return _sales;
+  }
+
+  // UPDATE a sale record
+  Future<void> updateProductSaleRecord(
+    TempProductSaleRecord record,
+  ) async {
+    // Use toJson but remove the ID because you don't update the primary key
+    final updateData =
+        record.toJson()..remove('product_record_id');
+
+    await supabase
+        .from('product_sales')
+        .update(updateData)
+        .eq('product_record_id', record.productRecordId!);
+
+    final index = _sales.indexWhere(
+      (r) => r.productRecordId == record.productRecordId,
+    );
+    if (index != -1) {
+      _sales[index] = record;
+      notifyListeners();
+    }
+  }
+
+  // DELETE a sale record
+  Future<void> deleteProductSaleRecord(int recordId) async {
+    await supabase
+        .from('product_sales')
+        .delete()
+        .eq('product_record_id', recordId);
+    _sales.removeWhere(
+      (r) => r.productRecordId == recordId,
+    );
+    notifyListeners();
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+
   List<TempProductSaleRecord> productSaleRecords = [
     TempProductSaleRecord(
       discount: 10,
@@ -292,7 +457,7 @@ class ReceiptsProvider extends ChangeNotifier {
   ) {
     final sortedList =
         returnOwnReceipts(context).toList()
-          ..sort((a, b) => b.id.compareTo(a.id));
+          ..sort((a, b) => b.id!.compareTo(a.id!));
     return sortedList;
   }
 
@@ -318,35 +483,29 @@ class ReceiptsProvider extends ChangeNotifier {
 
   double getSubTotalRevenueForReceipt(
     BuildContext context,
-    TempMainReceipt mainReceipt,
+    List<TempProductSaleRecord> records,
   ) {
     double tempRev = 0;
-    var beans =
-        getOwnProductSalesRecord(context)
-            .where(
-              (bean) => bean.recepitId == mainReceipt.id,
-            )
-            .toList();
+    // var temp =
+    //     await loadProductSalesRecord(returnShopProvider(context, listen: false).userShop!.shopId!);
+    //     var beans=   temp.where(
+    //           (bean) => bean.recepitId == mainReceipt.id,
+    //         )
+    //         .toList();
 
-    for (var bean in beans) {
+    for (var bean in records) {
       tempRev += bean.originalCost!;
     }
     return tempRev;
   }
 
   double getTotalMainRevenueReceipt(
-    TempMainReceipt mainReceipt,
+    List<TempProductSaleRecord> records,
     BuildContext context,
   ) {
     double tempTotal = 0;
-    var productRecords =
-        getOwnProductSalesRecord(context)
-            .where(
-              (test) => test.recepitId == mainReceipt.id,
-            )
-            .toList();
 
-    for (var productRecord in productRecords) {
+    for (var productRecord in records) {
       tempTotal += productRecord.revenue;
     }
 

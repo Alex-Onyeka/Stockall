@@ -5,15 +5,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
   Future<void> createShop(TempShopClass shop) async {
-    final response =
-        await supabase
-            .from('shops')
-            .insert(shop.toJson())
-            .select()
-            .single();
+    // Insert the shop
+    await supabase.from('shops').insert(shop.toJson());
 
-    final newShop = TempShopClass.fromJson(response);
-    setShop(newShop);
+    // Fetch the newly created shop
+    final response = await getUserShop(shop.userId);
+
+    if (response != null) {
+      setShop(response);
+    }
   }
 
   Future<TempShopClass?> getUserShop(String userId) async {
