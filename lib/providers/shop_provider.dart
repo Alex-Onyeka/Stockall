@@ -52,6 +52,7 @@ class ShopProvider extends ChangeNotifier {
   }
 
   String name = '';
+  String country = '';
   String? email;
   String? phone;
   String state = '';

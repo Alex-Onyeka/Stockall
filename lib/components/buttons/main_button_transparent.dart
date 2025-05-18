@@ -18,7 +18,10 @@ class MainButtonTransparent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: action,
+      onTap: () {
+        action!();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(

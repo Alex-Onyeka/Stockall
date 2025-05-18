@@ -58,6 +58,8 @@ class _AddProductMobileState
   //
   bool isOpen = false;
 
+  bool setDate = false;
+
   void checkFields() async {
     if (widget.nameController.text.isEmpty ||
         widget.costController.text.isEmpty ||
@@ -238,7 +240,7 @@ class _AddProductMobileState
                             onTap: () async {
                               String info = await scanCode(
                                 context,
-                                'failed',
+                                'Not Saved',
                               );
                               setState(() {
                                 barcode = info;
@@ -368,13 +370,129 @@ class _AddProductMobileState
                             controller:
                                 widget.discountController,
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 15),
+                          // Row(
+                          //   mainAxisAlignment:
+                          //       MainAxisAlignment.center,
+                          //   spacing: 10,
+                          //   children: [
+                          //     InkWell(
+                          //       onTap: () {
+                          //         setState(() {
+                          //           setDate = true;
+                          //         });
+                          //         returnData(
+                          //           context,
+                          //           listen: false,
+                          //         ).changeDateBoolToTrue();
+                          //       },
+                          //       child: Container(
+                          //         padding:
+                          //             EdgeInsets.symmetric(
+                          //               horizontal: 10,
+                          //               vertical: 5,
+                          //             ),
+                          //         decoration: BoxDecoration(
+                          //           border: Border.all(
+                          //             color:
+                          //                 Colors
+                          //                     .grey
+                          //                     .shade200,
+                          //           ),
+                          //         ),
+                          //         child: Row(
+                          //           spacing: 5,
+                          //           children: [
+                          //             Text(
+                          //               style: TextStyle(
+                          //                 fontSize:
+                          //                     theme
+                          //                         .mobileTexts
+                          //                         .b2
+                          //                         .fontSize,
+                          //                 fontWeight:
+                          //                     FontWeight
+                          //                         .bold,
+                          //               ),
+                          //               formatDateTimeTime(
+                          //                     returnData(
+                          //                           context,
+                          //                         ).startDate ??
+                          //                         DateTime.now(),
+                          //                   ) ??
+                          //                   'Set Start Date',
+                          //             ),
+                          //             Icon(
+                          //               size: 20,
+                          //               Icons
+                          //                   .calendar_month_outlined,
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     InkWell(
+                          //       onTap: () {
+                          //         setState(() {
+                          //           setDate = true;
+                          //         });
+                          //         returnData(
+                          //           context,
+                          //           listen: false,
+                          //         ).changeDateBoolToFalse();
+                          //       },
+                          //       child: Container(
+                          //         padding:
+                          //             EdgeInsets.symmetric(
+                          //               horizontal: 10,
+                          //               vertical: 5,
+                          //             ),
+                          //         decoration: BoxDecoration(
+                          //           border: Border.all(
+                          //             color:
+                          //                 Colors
+                          //                     .grey
+                          //                     .shade200,
+                          //           ),
+                          //         ),
+                          //         child: Row(
+                          //           spacing: 5,
+                          //           children: [
+                          //             Text(
+                          //               style: TextStyle(
+                          //                 fontSize:
+                          //                     theme
+                          //                         .mobileTexts
+                          //                         .b2
+                          //                         .fontSize,
+                          //                 fontWeight:
+                          //                     FontWeight
+                          //                         .bold,
+                          //               ),
+                          //               'Set End Date',
+                          //             ),
+                          //             Icon(
+                          //               size: 20,
+                          //               Icons
+                          //                   .calendar_month_outlined,
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // SizedBox(height: 20),
                           InkWell(
                             onTap: () {
                               returnData(
                                 context,
                                 listen: false,
                               ).toggleRefundable();
+                              FocusManager
+                                  .instance
+                                  .primaryFocus
+                                  ?.unfocus();
                             },
                             child: Row(
                               mainAxisAlignment:
@@ -420,6 +538,10 @@ class _AddProductMobileState
                                       context,
                                       listen: false,
                                     ).toggleRefundable();
+                                    FocusManager
+                                        .instance
+                                        .primaryFocus
+                                        ?.unfocus();
                                   },
                                 ),
                               ],
@@ -451,6 +573,54 @@ class _AddProductMobileState
               ),
             ],
           ),
+          // Visibility(
+          //   visible: setDate,
+          //   child: Center(
+          //     child: Container(
+          //       decoration: BoxDecoration(
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: const Color.fromARGB(
+          //               30,
+          //               0,
+          //               0,
+          //               0,
+          //             ),
+          //             blurRadius: 5,
+          //           ),
+          //         ],
+          //       ),
+          //       height:
+          //           MediaQuery.of(context).size.height -
+          //           300,
+          //       width:
+          //           (MediaQuery.of(context).size.width /
+          //               10) *
+          //           9.2,
+          //       child: CalendarWidget(
+          //         isMain: false,
+          //         onDaySelected: (selectedDay, focusedDay) {
+          //           returnData(
+          //             context,
+          //             listen: false,
+          //           ).setDate(selectedDay);
+          //           setState(() {
+          //             setDate = false;
+          //           });
+          //         },
+          //         actionWeek: (startOfWeek, endOfWeek) {
+          //           returnReceiptProvider(
+          //             context,
+          //             listen: false,
+          //           ).setReceiptWeek(
+          //             startOfWeek,
+          //             endOfWeek,
+          //           );
+          //         },
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Visibility(
             visible: isLoading,
             child: returnCompProvider(

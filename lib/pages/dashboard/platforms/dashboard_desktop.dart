@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/dashboard/components/button_tab.dart';
-import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
@@ -35,6 +34,7 @@ class DashboardDesktop extends StatelessWidget {
                       SizedBox(height: 20),
                       DashboardTotalSalesBanner(
                         theme: theme,
+                        value: 0,
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -147,7 +147,6 @@ class DashboardDesktop extends StatelessWidget {
               ),
             ),
           ),
-          MainBottomNav(),
         ],
       ),
     );

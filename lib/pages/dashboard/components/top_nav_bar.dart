@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
@@ -121,6 +122,14 @@ class TopNavBar extends StatelessWidget {
                     context,
                     listen: false,
                   ).switchNotif();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return NotificationsPage();
+                      },
+                    ),
+                  );
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),

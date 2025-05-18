@@ -13,6 +13,8 @@ class TempProductClass {
   double costPrice;
   double sellingPrice;
   double? discount;
+  DateTime? startDate;
+  DateTime? endDate;
   double quantity;
 
   TempProductClass({
@@ -29,6 +31,8 @@ class TempProductClass {
     required this.costPrice,
     required this.sellingPrice,
     this.discount,
+    this.startDate,
+    this.endDate,
     required this.quantity,
     required this.shopId,
   });
@@ -55,6 +59,15 @@ class TempProductClass {
           json['discount'] != null
               ? (json['discount'] as num).toDouble()
               : null,
+      startDate:
+          json['starting_date'] != null
+              ? DateTime.parse(json['starting_date'])
+              : null,
+
+      endDate:
+          json['ending_date'] != null
+              ? DateTime.parse(json['ending_date'])
+              : null,
       quantity: (json['quantity'] as num).toDouble(),
     );
   }
@@ -74,6 +87,11 @@ class TempProductClass {
       'cost_price': costPrice,
       'selling_price': sellingPrice,
       'discount': discount,
+      'starting_date':
+          startDate?.toIso8601String().split('T').first,
+      'ending_date':
+          endDate?.toIso8601String().split('T').first,
+
       'quantity': quantity,
     };
   }

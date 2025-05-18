@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/pages/authentication/base_page/base_page.dart';
+import 'package:stockitt/pages/authentication/launch_screen/launch_screen.dart';
 import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
@@ -19,6 +21,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.white, // or any color
+      statusBarIconBrightness:
+          Brightness.dark, // for Android
+      systemNavigationBarContrastEnforced: true,
+      statusBarBrightness: Brightness.light, // for iOS
+    ),
+  );
 
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
@@ -231,18 +242,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: "/",
+      initialRoute: "/launch",
       routes: {
         '/': (context) => BasePage(),
+        '/launch': (context) => LaunchScreen(),
         "/splash": (context) => SplashScreen(),
       },
       //
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
-          // systemOverlayStyle: SystemUiOverlayStyle(
-          //   systemStatusBarContrastEnforced: true,
-          // ),
+          systemOverlayStyle: SystemUiOverlayStyle(
+            systemStatusBarContrastEnforced: true,
+          ),
           backgroundColor: Colors.white,
           centerTitle: true,
           elevation: 0,

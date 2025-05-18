@@ -153,7 +153,6 @@ class ReceiptsProvider extends ChangeNotifier {
           .map((json) => TempMainReceipt.fromJson(json))
           .toList();
     } catch (e) {
-      print('Error loading receipts: $e');
       return [];
     }
   }
@@ -449,52 +448,58 @@ class ReceiptsProvider extends ChangeNotifier {
 
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeek(
     BuildContext context,
+    List<TempMainReceipt> receipts,
   ) {
-    final shopId =
-        returnShopProvider(
-          context,
-        ).returnShop(userId()).shopId;
-
     if (weekStartDate != null) {
-      final weekEndDate = weekStartDate!.add(
-        const Duration(days: 6),
-      );
+      final weekStartUtc = weekStartDate!.toUtc();
+      final weekEndUtc = weekStartUtc.add(
+        const Duration(days: 7),
+      ); // end exclusive
 
-      return getSortedReceiptsByDate(context).where((
-        receipt,
-      ) {
-        return receipt.shopId == shopId &&
-            receipt.createdAt.isAfter(
-              weekStartDate!.subtract(
+      return receipts.where((receipt) {
+        final created = receipt.createdAt.toUtc();
+        return created.isAfter(
+              weekStartUtc.subtract(
                 const Duration(seconds: 1),
               ),
             ) &&
-            receipt.createdAt.isBefore(
-              weekEndDate.add(const Duration(days: 1)),
-            );
+            created.isBefore(weekEndUtc);
       }).toList();
     }
 
-    final targetDate = singleDay ?? DateTime.now();
+    final targetDate =
+        (singleDay ?? DateTime.now()).toUtc();
+    final startOfDay = DateTime.utc(
+      targetDate.year,
+      targetDate.month,
+      targetDate.day,
+    );
+    final endOfDay = startOfDay.add(
+      const Duration(days: 1),
+    );
 
-    return mainReceipts.where((receipt) {
-      return receipt.shopId == shopId &&
-          receipt.createdAt.year == targetDate.year &&
-          receipt.createdAt.month == targetDate.month &&
-          receipt.createdAt.day == targetDate.day;
+    return receipts.where((receipt) {
+      final created = receipt.createdAt.toUtc();
+      return created.isAfter(
+            startOfDay.subtract(const Duration(seconds: 1)),
+          ) &&
+          created.isBefore(endOfDay);
     }).toList();
   }
 
   double getTotalRevenueForSelectedDay(
     BuildContext context,
+    List<TempMainReceipt> receiptss,
+    List<TempProductSaleRecord> productSalesRecords,
   ) {
     double tempTotalRevenue = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeek(
       context,
+      receiptss,
     )) {
       var productRecords =
-          getOwnProductSalesRecord(context)
+          productSalesRecords
               .where(
                 (record) => record.recepitId == receipt.id,
               )

@@ -86,6 +86,9 @@ class _LoginMobileState extends State<LoginMobile> {
                 },
               ),
             );
+            setState(() {
+              showSuccess = false;
+            });
           });
         }
       } on AuthException catch (e) {

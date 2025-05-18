@@ -46,6 +46,10 @@ dependencies:
   simple_barcode_scanner: ^0.3.0
   table_calendar: ^3.2.0
   shimmer: ^3.0.0
+  dropdown_search: ^6.0.2
+  http: ^1.4.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.6
 
 
 
@@ -87,6 +91,21 @@ flutter:
     - assets/images/small_images/
   # - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/logos/logo_icon_main.png
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/logos/logo_icon_splash.png
+  android: true
+  ios: true
+  fullscreen: true 
+  # Control image size and positioning
+  android_gravity: center
+  ios_content_mode: center
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

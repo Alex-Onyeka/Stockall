@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/main.dart';
 
 class ProductDetailsPage extends StatelessWidget {
@@ -42,38 +43,17 @@ class ProductDetailsPage extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 30.0,
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.h3.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  product.name,
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color:
-                        theme.lightModeColor.greyColor200,
-                  ),
-                ),
-              ),
-            ),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 30.0),
+          child: EmptyWidgetDisplayOnly(
+            title: 'Coming Soon',
+            subText:
+                'This feature is not yet available... Our group of dedicated professional engineers are working on it.',
+            theme: theme,
+            height: 30,
+            icon: Icons.clear,
+          ),
         ),
       ),
     );

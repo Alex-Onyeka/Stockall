@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class DashboardTotalSalesBanner extends StatelessWidget {
+  final double value;
   const DashboardTotalSalesBanner({
     super.key,
     required this.theme,
+    required this.value,
   });
 
   final ThemeProvider theme;
@@ -54,11 +57,13 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.h4.fontSize,
+                              theme.mobileTexts.h3.fontSize,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
-                        '0,000',
+                        formatLargeNumberDoubleWidgetDecimal(
+                          value,
+                        ),
                       ),
                     ],
                   ),

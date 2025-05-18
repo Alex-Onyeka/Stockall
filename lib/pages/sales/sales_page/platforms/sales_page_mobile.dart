@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
+import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/items_summary.dart';
+import 'package:stockitt/components/major/my_drawer_widget.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
@@ -25,31 +27,73 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
     var tempReceipts = returnReceiptProvider(
       context,
       listen: false,
-    ).loadReceiptsByDayOrWeek(
-      shopId:
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop!.shopId!,
+    ).loadReceipts(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
     );
 
     return tempReceipts;
   }
 
-  // late Future<List<TempMainReceipt>> mainReceiptFuture;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   mainReceiptFuture = getMainReceipts();
-  // }
+  late Future<List<TempMainReceipt>> mainReceiptFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    mainReceiptFuture = getMainReceipts();
+    getProdutRecordsFuture = getProductSalesRecord();
+  }
+
+  late Future<List<TempProductSaleRecord>>
+  getProdutRecordsFuture;
+  Future<List<TempProductSaleRecord>>
+  getProductSalesRecord() async {
+    var tempRecords = await returnReceiptProvider(
+      context,
+      listen: false,
+    ).loadProductSalesRecord(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempRecords
+        .where(
+          (beans) =>
+              beans.shopId ==
+              returnShopProvider(
+                context,
+                listen: false,
+              ).userShop!.shopId!,
+        )
+        .toList();
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
-      bottomNavigationBar: MainBottomNav(),
+      key: _scaffoldKey,
+      bottomNavigationBar: MainBottomNav(
+        globalKey: _scaffoldKey,
+      ),
+      onDrawerChanged: (isOpened) {
+        if (!isOpened) {
+          returnNavProvider(
+            context,
+            listen: false,
+          ).closeDrawer();
+        }
+      },
+      drawer: MyDrawerWidget(theme: theme),
       body: FutureBuilder(
-        future: getMainReceipts(),
+        future: mainReceiptFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
@@ -66,7 +110,13 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
               height: 35,
             );
           } else {
-            var mainReceipts = snapshot.data!;
+            var mainReceipts = returnReceiptProvider(
+              context,
+              listen: false,
+            ).returnOwnReceiptsByDayOrWeek(
+              context,
+              snapshot.data!,
+            );
             return SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
@@ -98,50 +148,144 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                       listen: false,
                                     ).clearReceiptDate();
                                   },
-                                  child: ItemsSummary(
-                                    isFilter: true,
-                                    isMoney1: true,
-                                    mainTitle:
-                                        'Sales Record Summary',
-                                    subTitle:
-                                        returnReceiptProvider(
-                                          context,
-                                        ).dateSet ??
-                                        'For Today',
-                                    firsRow: true,
-                                    color1: Colors.green,
-                                    title1: 'Sales Revenue',
-                                    value1: 0,
-                                    // returnReceiptProvider(
-                                    //   context,
-                                    // ).getTotalRevenueForSelectedDay(
-                                    //   context,
-                                    // ),
-                                    color2: Colors.amber,
-                                    title2: 'Sales Number',
-                                    value2:
-                                        mainReceipts.length
-                                            .toDouble(),
-                                    secondRow: false,
-                                    onSearch: false,
-                                    filterAction: () {
-                                      if (returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).isDateSet ||
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).setDate) {
-                                        returnReceiptProvider(
-                                          context,
-                                          listen: false,
-                                        ).clearReceiptDate();
+                                  child: FutureBuilder<
+                                    List<
+                                      TempProductSaleRecord
+                                    >
+                                  >(
+                                    future:
+                                        getProdutRecordsFuture,
+                                    builder: (
+                                      context,
+                                      snapshot,
+                                    ) {
+                                      if (snapshot
+                                              .connectionState ==
+                                          ConnectionState
+                                              .waiting) {
+                                        return ItemsSummary(
+                                          isFilter: true,
+                                          isMoney1: true,
+                                          mainTitle:
+                                              'Sales Record Summary',
+                                          subTitle:
+                                              returnReceiptProvider(
+                                                context,
+                                              ).dateSet ??
+                                              'For Today',
+                                          firsRow: true,
+                                          color1:
+                                              Colors.green,
+                                          title1:
+                                              'Sales Revenue',
+                                          value1: 0,
+
+                                          color2:
+                                              Colors.amber,
+                                          title2:
+                                              'Sales Number',
+                                          value2:
+                                              mainReceipts
+                                                  .length
+                                                  .toDouble(),
+                                          secondRow: false,
+                                          onSearch: false,
+                                          filterAction: () {
+                                            if (returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).isDateSet ||
+                                                returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setDate) {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).clearReceiptDate();
+                                            } else {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).openDatePicker();
+                                            }
+                                          },
+                                        );
+                                      } else if (snapshot
+                                          .hasError) {
+                                        return Container(
+                                          height: 100,
+                                          width: 200,
+                                          color:
+                                              Colors.amber,
+                                        );
                                       } else {
-                                        returnReceiptProvider(
-                                          context,
-                                          listen: false,
-                                        ).openDatePicker();
+                                        List<
+                                          TempProductSaleRecord
+                                        >
+                                        records =
+                                            snapshot.data!;
+                                        return ItemsSummary(
+                                          isFilter: true,
+                                          isMoney1: true,
+                                          mainTitle:
+                                              'Sales Record Summary',
+                                          subTitle:
+                                              returnReceiptProvider(
+                                                context,
+                                              ).dateSet ??
+                                              'For Today',
+                                          firsRow: true,
+                                          color1:
+                                              Colors.green,
+                                          title1:
+                                              'Sales Revenue',
+                                          value1: returnReceiptProvider(
+                                            context,
+                                          ).getTotalRevenueForSelectedDay(
+                                            context,
+                                            mainReceipts,
+                                            records,
+                                          ),
+                                          color2:
+                                              Colors.amber,
+                                          title2:
+                                              'Sales Number',
+                                          value2:
+                                              mainReceipts
+                                                  .length
+                                                  .toDouble(),
+                                          secondRow: false,
+                                          onSearch: false,
+                                          filterAction: () {
+                                            if (returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).isDateSet ||
+                                                returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setDate) {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).clearReceiptDate();
+                                            } else {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).openDatePicker();
+                                            }
+                                          },
+                                        );
                                       }
                                     },
                                   ),
@@ -275,7 +419,17 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                               return MainReceiptTile(
                                                 mainReceipt:
                                                     mainReceipt,
+                                                key: ValueKey(
+                                                  mainReceipt
+                                                      .id!,
+                                                ),
                                               );
+                                              // return ListTile(
+                                              //   title: Text(
+                                              //     mainReceipt
+                                              //         .staffName,
+                                              //   ),
+                                              // );
                                             },
                                           );
                                         }

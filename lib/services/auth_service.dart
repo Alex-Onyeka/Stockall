@@ -80,6 +80,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _client.auth.signOut();
+    notifyListeners();
   }
 
   User? get currentUser => _client.auth.currentUser;

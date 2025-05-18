@@ -27,8 +27,8 @@ class MobileSplashWidget extends StatelessWidget {
             SizedBox(height: 50),
             Lottie.asset(
               lottie,
-              width: 200,
-              height: 200,
+              width: 170,
+              height: 170,
               fit: BoxFit.contain,
             ),
             SizedBox(height: 20),

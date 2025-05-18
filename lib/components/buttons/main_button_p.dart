@@ -27,7 +27,11 @@ class MainButtonP extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: InkWell(
-              onTap: action,
+              onTap: () {
+                action!();
+                FocusManager.instance.primaryFocus
+                    ?.unfocus();
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical:

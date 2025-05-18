@@ -14,9 +14,6 @@ class BasePage extends StatelessWidget {
       stream:
           Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
-        final session =
-            Supabase.instance.client.auth.currentSession;
-
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
           return returnCompProvider(
@@ -34,6 +31,11 @@ class BasePage extends StatelessWidget {
             ),
           );
         }
+
+        final session =
+            snapshot.hasData
+                ? snapshot.data!.session
+                : null;
 
         if (session != null) {
           return const Home();

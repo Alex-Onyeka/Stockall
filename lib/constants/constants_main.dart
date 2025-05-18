@@ -38,6 +38,8 @@ const String successAnim =
 const String shopSetup =
     'assets/animations/shop_setup_icon.json';
 
+const String profitAnim = 'assets/animations/profit.json';
+
 //
 //
 //

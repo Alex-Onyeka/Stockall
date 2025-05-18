@@ -5,6 +5,7 @@ class TempShopClass {
   String email;
   String name;
   String? state;
+  String? country;
   String? city;
   String? shopAddress;
   List<String>? categories;
@@ -21,6 +22,7 @@ class TempShopClass {
     this.shopAddress,
     this.categories,
     this.colors,
+    this.country,
   });
 
   factory TempShopClass.fromJson(
@@ -28,6 +30,7 @@ class TempShopClass {
   ) {
     return TempShopClass(
       shopId: json['shop_id'],
+      country: json['country'],
       createdAt: DateTime.parse(json['created_at']),
       userId: json['user_id'],
       email: json['email'],
@@ -49,6 +52,7 @@ class TempShopClass {
       'name': name,
       'state': state,
       'city': city,
+      'country': country,
       'shop_address': shopAddress,
       'categories': categories,
       'colors': colors,

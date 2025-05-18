@@ -7,13 +7,31 @@ import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
 
-class DashboardTablet extends StatelessWidget {
+class DashboardTablet extends StatefulWidget {
   const DashboardTablet({super.key});
+
+  @override
+  State<DashboardTablet> createState() =>
+      _DashboardTabletState();
+}
+
+class _DashboardTabletState extends State<DashboardTablet> {
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
+      drawer: Drawer(),
+      onDrawerChanged: (isOpened) {
+        if (!isOpened) {
+          returnNavProvider(
+            context,
+            listen: false,
+          ).closeDrawer();
+        }
+      },
       body: Column(
         children: [
           TopNavBar(
@@ -35,6 +53,7 @@ class DashboardTablet extends StatelessWidget {
                       SizedBox(height: 20),
                       DashboardTotalSalesBanner(
                         theme: theme,
+                        value: 0,
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -147,7 +166,7 @@ class DashboardTablet extends StatelessWidget {
               ),
             ),
           ),
-          MainBottomNav(),
+          MainBottomNav(globalKey: _scaffoldKey),
         ],
       ),
     );

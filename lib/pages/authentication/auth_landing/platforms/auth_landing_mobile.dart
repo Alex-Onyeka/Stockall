@@ -125,8 +125,7 @@ class AuthLandingMobile extends StatelessWidget {
                             ),
                             SizedBox(height: 10),
                             MainButtonTransparent(
-                              text:
-                                  'Already Have an account? Login',
+                              text: 'Login',
                               themeProvider: themeProvider,
                               constraints: constraints,
                               action: () {

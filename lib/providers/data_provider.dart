@@ -17,6 +17,30 @@ class DataProvider extends ChangeNotifier {
     clearFields();
   }
 
+  bool isStartDate = true;
+
+  DateTime? startDate;
+  DateTime? endDate;
+
+  void changeDateBoolToTrue() {
+    isStartDate = true;
+    notifyListeners();
+  }
+
+  void changeDateBoolToFalse() {
+    isStartDate = false;
+    notifyListeners();
+  }
+
+  void setDate(DateTime date) {
+    if (isStartDate) {
+      startDate = date;
+    } else {
+      endDate = date;
+    }
+    notifyListeners();
+  }
+
   Future<List<TempProductClass>> getProducts(
     int shopId,
   ) async {
@@ -400,27 +424,36 @@ class DataProvider extends ChangeNotifier {
   // C A T E G O R Y  D A T A
   bool catValueSet = false;
   List<String> categories = [
-    'Clothess',
-    'Shoess',
-    'Drinkss',
-    'Electronicss',
-    'Bookss',
-    'Digital Gaddgetss',
-    'Foods',
-    'Clothes.',
-    'Shoes.',
-    'Drinks.',
-    'Electronics.',
-    'Books.',
-    'Digital Gaddgets.',
-    'Food.',
-    'Clothes',
-    'Shoes',
-    'Drinks',
-    'Electronics',
+    'Appliances',
+    'Automotive',
+    'Baby Products',
+    'Beverages',
     'Books',
-    'Digital Gaddgets',
-    'Food',
+    'Clothing',
+    'Computers',
+    'Cosmetics',
+    'Dairy',
+    'Electronics',
+    'Footwear',
+    'Furniture',
+    'Groceries',
+    'Hardware',
+    'Health',
+    'Home Essentials',
+    'Household Supplies',
+    'Jewelry',
+    'Kitchenware',
+    'Meat & Seafood',
+    'Medicines',
+    'Mobile Phones',
+    'Office Supplies',
+    'Personal Care',
+    'Pet Supplies',
+    'Snacks',
+    'Sports Equipment',
+    'Stationery',
+    'Toys',
+    'Vegetables',
     'Others',
   ];
 
@@ -462,16 +495,39 @@ class DataProvider extends ChangeNotifier {
   bool unitValueSet = false;
 
   List<String> units = [
-    'Lites',
-    'Lengths',
-    'Kgs',
-    'currentSelects',
-    'Guages',
-    'Lite',
-    'Length',
-    'Kg',
-    'currentSelect',
-    'Guage',
+    'bags',
+    'barrels',
+    'bottles',
+    'boxes',
+    'bundles',
+    'cans',
+    'cartons',
+    'cases',
+    'dozens',
+    'drops',
+    'g',
+    'gallons',
+    'items',
+    'jars',
+    'kg',
+    'lb',
+    'liters',
+    'mg',
+    'ml',
+    'oz',
+    'packs',
+    'pairs',
+    'pieces',
+    'reams',
+    'rolls',
+    'sachets',
+    'sheets',
+    'sets',
+    'sticks',
+    'tins',
+    'trays',
+    'tubes',
+    'units',
     'Others',
   ];
 

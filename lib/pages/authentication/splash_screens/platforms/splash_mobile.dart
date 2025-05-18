@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/splash_screens/platforms/components/mobile_splash_widget.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -40,7 +41,7 @@ class _SplashMobileState extends State<SplashMobile> {
                 title:
                     'Manage Stocks and Track Sales in Real Time',
                 subTitle:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit ut , ',
+                    'Stay on top of your inventory and monitor sales as they happen, all in one place.',
                 lottie:
                     'assets/animations/shop_setup_icon.json',
                 constraints: widget.constraints,
@@ -48,9 +49,9 @@ class _SplashMobileState extends State<SplashMobile> {
               ),
               MobileSplashWidget(
                 title:
-                    'Manage Stocks and Track Sales in Real Time',
+                    'Quick Transactions with Barcode Scanner',
                 subTitle:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit ut , ',
+                    'Speed up checkout and reduce errors by scanning products instantly using your camera.',
                 lottie:
                     'assets/animations/cart_loader.json',
                 constraints: widget.constraints,
@@ -58,11 +59,10 @@ class _SplashMobileState extends State<SplashMobile> {
               ),
               MobileSplashWidget(
                 title:
-                    'Manage Stocks and Track Sales in Real Time',
+                    'Analyse Profits and Get Daily Reports',
                 subTitle:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit ut , ',
-                lottie:
-                    'assets/animations/cart_loader.json',
+                    'View clear summaries of your earnings and track business performance every day.',
+                lottie: profitAnim,
                 constraints: widget.constraints,
                 themeProvider: widget.themeProvider,
               ),

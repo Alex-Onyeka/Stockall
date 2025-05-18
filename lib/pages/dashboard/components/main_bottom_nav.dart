@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/dashboard/components/nav_button.dart';
 import 'package:stockitt/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 
 class MainBottomNav extends StatelessWidget {
-  const MainBottomNav({super.key});
+  final GlobalKey<ScaffoldState> globalKey;
+  const MainBottomNav({super.key, required this.globalKey});
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +57,71 @@ class MainBottomNav extends StatelessWidget {
                   title: 'Sales',
                 ),
               ),
-              NavButton(
-                currentPage:
-                    Provider.of<NavProvider>(
-                      context,
-                    ).currentPage,
-                index: 3,
-                icon: Icons.settings,
-                title: 'Settings',
+              InkWell(
+                onTap: () {
+                  Provider.of<NavProvider>(
+                    context,
+                    listen: false,
+                  ).setSettings();
+                  globalKey.currentState?.openDrawer();
+                },
+                child: SizedBox(
+                  height: 42,
+                  child: Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        color:
+                            returnNavProvider(
+                                  context,
+                                ).settingNow
+                                ? const Color.fromARGB(
+                                  255,
+                                  4,
+                                  49,
+                                  199,
+                                )
+                                : Colors.grey,
+                        size:
+                            returnNavProvider(
+                                  context,
+                                ).settingNow
+                                ? 22
+                                : 18,
+                        Icons.settings,
+                      ),
+                      Text(
+                        style: TextStyle(
+                          color:
+                              returnNavProvider(
+                                    context,
+                                  ).settingNow
+                                  ? const Color.fromARGB(
+                                    255,
+                                    4,
+                                    49,
+                                    199,
+                                  )
+                                  : Colors.grey,
+                          fontSize:
+                              returnNavProvider(
+                                    context,
+                                  ).settingNow
+                                  ? 13
+                                  : 12,
+                          fontWeight:
+                              returnNavProvider(
+                                    context,
+                                  ).settingNow
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                        'Settings',
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

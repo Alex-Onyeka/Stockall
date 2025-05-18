@@ -859,16 +859,25 @@ class _ReceiptDetailsContainerState
                 spacing: 10,
                 children: [
                   BottomActionButton(
-                    text: 'Finish',
+                    text:
+                        widget.isMain
+                            ? 'Finish'
+                            : 'Go Back',
                     color: Colors.grey.shade600,
-                    iconSize: 25,
+                    iconSize: 20,
                     theme: widget.theme,
-                    icon: Icons.home_outlined,
+                    icon:
+                        widget.isMain
+                            ? Icons.home_outlined
+                            : Icons
+                                .arrow_back_ios_new_rounded,
                     action: () {
-                      Navigator.popUntil(
-                        context,
-                        ModalRoute.withName('/'),
-                      );
+                      widget.isMain
+                          ? Navigator.popUntil(
+                            context,
+                            ModalRoute.withName('/'),
+                          )
+                          : Navigator.of(context).pop();
                     },
                   ),
                   BottomActionButton(
@@ -877,32 +886,16 @@ class _ReceiptDetailsContainerState
                     color: Colors.grey.shade600,
                     iconSize: 23,
                     theme: widget.theme,
-                    icon: Icons.print_outlined,
+                    icon:
+                        widget.isMain
+                            ? Icons.print_outlined
+                            : Icons
+                                .settings_backup_restore_rounded,
                     action: () {
                       if (widget.isMain) {
                         return;
-                      } else {
-                        returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).refundProducts(
-                          returnSalesProvider(
-                            context,
-                            listen: false,
-                          ).productIdsToRefund,
-                          widget.mainReceipt,
-                          context,
-                        );
-                      }
+                      } else {}
                     },
-                  ),
-                  BottomActionButton(
-                    text: 'Download',
-                    color: Colors.grey.shade600,
-                    iconSize: 23,
-                    theme: widget.theme,
-                    icon: Icons.download_outlined,
-                    action: () {},
                   ),
                 ],
               ),

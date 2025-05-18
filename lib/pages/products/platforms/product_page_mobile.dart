@@ -3,6 +3,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/items_summary.dart';
+import 'package:stockitt/components/major/my_drawer_widget.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
@@ -63,11 +64,26 @@ class _ProductPageMobileState
     _productsFuture = getProductList(context);
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
-      bottomNavigationBar: MainBottomNav(),
+      bottomNavigationBar: MainBottomNav(
+        globalKey: _scaffoldKey,
+      ),
+      drawer: MyDrawerWidget(theme: theme),
+      onDrawerChanged: (isOpened) {
+        if (!isOpened) {
+          returnNavProvider(
+            context,
+            listen: false,
+          ).closeDrawer();
+        }
+      },
+      key: _scaffoldKey,
       body: FutureBuilder(
         future: _productsFuture,
         builder: (context, snapshot) {
@@ -341,7 +357,15 @@ class _ProductPageMobileState
                                             return AddProduct();
                                           },
                                         ),
-                                      );
+                                      ).then((_) {
+                                        if (context
+                                            .mounted) {
+                                          _productsFuture =
+                                              getProductList(
+                                                context,
+                                              );
+                                        }
+                                      });
                                     },
                                     theme: widget.theme,
                                   ),
