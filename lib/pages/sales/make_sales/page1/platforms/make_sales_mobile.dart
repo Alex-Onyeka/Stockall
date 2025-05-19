@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_cart_item.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
@@ -9,6 +11,7 @@ import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/pages/products/compnents/cart_item_main.dart';
 import 'package:stockitt/pages/sales/make_sales/page2/make_sales_two.dart';
 
@@ -64,7 +67,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {
+        // ignore: deprecated_member_use
+        onPopInvokedWithResult: (didPop, result) {
           if (showBottomPanel) {
             // Just close the panel
             setState(() {
@@ -72,7 +76,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             });
           } else {
             // Schedule pop to happen after the current frame
-            Future.microtask(() => Navigator.pop(context));
+            if (context.mounted) {
+              Future.microtask(() {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  // Optional: Navigate to a fallback or dashboard
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (_) => Home(),
+                    ),
+                  );
+                }
+              });
+            }
           }
         },
         child: Scaffold(
@@ -80,7 +97,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             toolbarHeight: 60,
             leading: IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.maybePop(
+                  context,
+                ); // ✅ respects PopScope
               },
               icon: Padding(
                 padding: const EdgeInsets.only(

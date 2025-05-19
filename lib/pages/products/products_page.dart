@@ -19,22 +19,34 @@ class _ProductsPageState extends State<ProductsPage> {
             () =>
                 FocusManager.instance.primaryFocus
                     ?.unfocus(),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < 500) {
-              return ProductPageMobile(theme: theme);
-            } else {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 700,
-                    child: ProductPageMobile(theme: theme),
-                  ),
-                ],
-              );
-            }
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            returnNavProvider(
+              context,
+              listen: false,
+            ).navigate(0);
           },
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 500) {
+                return ProductPageMobile(theme: theme);
+              } else {
+                return Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 700,
+                      child: ProductPageMobile(
+                        theme: theme,
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
         ),
       ),
     );

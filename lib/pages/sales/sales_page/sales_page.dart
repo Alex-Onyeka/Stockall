@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/sales/sales_page/platforms/sales_page_mobile.dart';
 
 class SalesPage extends StatelessWidget {
@@ -6,17 +7,26 @@ class SalesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
-          return SalesPageMobile();
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
-        } else {
-          return Scaffold();
-        }
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        returnNavProvider(
+          context,
+          listen: false,
+        ).navigate(0);
       },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 550) {
+            return SalesPageMobile();
+          } else if (constraints.maxWidth > 550 &&
+              constraints.maxWidth < 1000) {
+            return Scaffold();
+          } else {
+            return Scaffold();
+          }
+        },
+      ),
     );
   }
 }

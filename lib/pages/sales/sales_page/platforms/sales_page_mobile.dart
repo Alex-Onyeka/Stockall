@@ -118,7 +118,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
 
   @override
   Widget build(BuildContext context) {
-    clearDate();
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
