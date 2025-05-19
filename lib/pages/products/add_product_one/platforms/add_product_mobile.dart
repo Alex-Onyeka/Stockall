@@ -3,6 +3,7 @@ import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
+import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/text_fields/barcode_scanner.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
@@ -10,6 +11,7 @@ import 'package:stockitt/components/text_fields/main_dropdown.dart';
 import 'package:stockitt/components/text_fields/money_textfield.dart';
 import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
 
@@ -91,6 +93,21 @@ class _AddProductMobileState
           );
         },
       );
+    } else if (widget.discountController.text.isNotEmpty &&
+        returnData(context, listen: false).endDate ==
+            null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'If you want to set a discount for this product, you must set end date for that discount.',
+            title: 'Set End Date for Discount',
+          );
+        },
+      );
     } else {
       setState(() {
         isLoading = true;
@@ -136,6 +153,14 @@ class _AddProductMobileState
           discount: double.tryParse(
             widget.discountController.text,
           ),
+          endDate:
+              returnData(context, listen: false).endDate,
+          startDate:
+              returnData(
+                context,
+                listen: false,
+              ).startDate ??
+              DateTime.now(),
         ),
       );
       setState(() {
@@ -174,469 +199,568 @@ class _AddProductMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Padding(
-            padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 10,
-            ),
-            child: Icon(Icons.arrow_back_ios_new_rounded),
-          ),
-        ),
-        centerTitle: true,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              style: TextStyle(
-                fontSize: theme.mobileTexts.h4.fontSize,
-                fontWeight: FontWeight.bold,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 10,
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                ),
               ),
-              'New Product',
             ),
-            SizedBox(height: 5),
-            Text(
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b2.fontSize,
-              ),
-              'Add New Product to you Store',
-            ),
-          ],
-        ),
-      ),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0,
+            centerTitle: true,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.h4.fontSize,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: SingleChildScrollView(
+                  'New Product',
+                ),
+                SizedBox(height: 5),
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b2.fontSize,
+                  ),
+                  'Add New Product to you Store',
+                ),
+              ],
+            ),
+          ),
+          body: Stack(
+            children: [
+              Column(
+                children: [
+                  Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10.0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0,
                       ),
-                      child: Column(
-                        children: [
-                          GeneralTextField(
-                            theme: theme,
-                            hint: 'Enter Product Name',
-                            lines: 1,
-                            title: 'Product Name',
-                            controller:
-                                widget.nameController,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 10.0,
                           ),
-                          SizedBox(height: 10),
-                          BarcodeScanner(
-                            valueSet: barCodeSet,
-                            onTap: () async {
-                              String info = await scanCode(
-                                context,
-                                'Not Saved',
-                              );
-                              setState(() {
-                                barcode = info;
-                                barCodeSet = true;
-                              });
-                            },
-                            title:
-                                'Product Barcode (Optional)',
-                            hint:
-                                barcode ??
-                                'Click to Scan Product Barcode',
-                            theme: theme,
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            spacing: 15,
+                          child: Column(
                             children: [
-                              Expanded(
-                                child: MoneyTextfield(
-                                  theme: theme,
-                                  hint:
-                                      'Enter the actual Amount of the Item',
-                                  title: 'Cost - Price',
-                                  controller:
-                                      widget.costController,
-                                ),
+                              GeneralTextField(
+                                theme: theme,
+                                hint: 'Enter Product Name',
+                                lines: 1,
+                                title: 'Product Name',
+                                controller:
+                                    widget.nameController,
                               ),
-                              Expanded(
-                                child: MoneyTextfield(
-                                  theme: theme,
-                                  hint:
-                                      'Enter the Amount you wish to sell this Product',
-                                  title: 'Selling - Price',
-                                  controller:
-                                      widget
-                                          .sellingController,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          MainDropdown(
-                            valueSet:
-                                returnData(
-                                  context,
-                                ).unitValueSet,
-                            onTap: () {
-                              unitsBottomSheet(context, () {
-                                setState(() {
-                                  isOpenUnit = !isOpenUnit;
-                                });
-                              });
-                              setState(() {
-                                isOpenUnit = !isOpenUnit;
-                              });
-                            },
-                            isOpen: isOpenUnit,
-                            title: 'Unit',
-                            hint:
-                                returnData(
-                                  context,
-                                ).selectedUnit ??
-                                'Select Product Unit',
-                            theme: theme,
-                          ),
-
-                          SizedBox(height: 10),
-                          MainDropdown(
-                            valueSet:
-                                returnData(
-                                  context,
-                                ).catValueSet,
-                            onTap: () {
-                              categoriesBottomSheet(
-                                context,
-                                () {
+                              SizedBox(height: 10),
+                              BarcodeScanner(
+                                valueSet: barCodeSet,
+                                onTap: () async {
+                                  String info =
+                                      await scanCode(
+                                        context,
+                                        'Not Saved',
+                                      );
                                   setState(() {
-                                    isOpen = false;
+                                    barcode = info;
+                                    barCodeSet = true;
                                   });
                                 },
-                              );
-                              setState(() {
-                                isOpen = !isOpen;
-                              });
-                            },
-                            isOpen: isOpen,
-                            title: 'Category (Optional)',
-                            hint:
-                                returnData(
-                                  context,
-                                ).selectedCategory ??
-                                'Select Product Category',
-                            theme: theme,
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            spacing: 15,
-                            children: [
-                              Expanded(
-                                child: NumberTextfield(
-                                  theme: theme,
-                                  hint: 'Enter Quantity',
-                                  title: 'Quantity',
-                                  controller:
-                                      widget
-                                          .quantityController,
-                                ),
+                                title:
+                                    'Product Barcode (Optional)',
+                                hint:
+                                    barcode ??
+                                    'Click to Scan Product Barcode',
+                                theme: theme,
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                spacing: 15,
+                                children: [
+                                  Expanded(
+                                    child: MoneyTextfield(
+                                      theme: theme,
+                                      hint:
+                                          'Enter the actual Amount of the Item',
+                                      title: 'Cost - Price',
+                                      controller:
+                                          widget
+                                              .costController,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: MoneyTextfield(
+                                      theme: theme,
+                                      hint:
+                                          'Enter the Amount you wish to sell this Product',
+                                      title:
+                                          'Selling - Price',
+                                      controller:
+                                          widget
+                                              .sellingController,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              MainDropdown(
+                                valueSet:
+                                    returnData(
+                                      context,
+                                    ).unitValueSet,
+                                onTap: () {
+                                  unitsBottomSheet(
+                                    context,
+                                    () {
+                                      setState(() {
+                                        isOpenUnit =
+                                            !isOpenUnit;
+                                      });
+                                    },
+                                  );
+                                  setState(() {
+                                    isOpenUnit =
+                                        !isOpenUnit;
+                                  });
+                                },
+                                isOpen: isOpenUnit,
+                                title: 'Unit',
+                                hint:
+                                    returnData(
+                                      context,
+                                    ).selectedUnit ??
+                                    'Select Product Unit',
+                                theme: theme,
                               ),
 
-                              Expanded(
-                                child: NumberTextfield(
-                                  theme: theme,
-                                  hint:
-                                      'Enter Product Size',
-                                  title: 'Size  (Optional)',
-                                  controller:
-                                      widget.sizeController,
-                                ),
+                              SizedBox(height: 10),
+                              MainDropdown(
+                                valueSet:
+                                    returnData(
+                                      context,
+                                    ).catValueSet,
+                                onTap: () {
+                                  categoriesBottomSheet(
+                                    context,
+                                    () {
+                                      setState(() {
+                                        isOpen = false;
+                                      });
+                                    },
+                                  );
+                                  setState(() {
+                                    isOpen = !isOpen;
+                                  });
+                                },
+                                isOpen: isOpen,
+                                title:
+                                    'Category (Optional)',
+                                hint:
+                                    returnData(
+                                      context,
+                                    ).selectedCategory ??
+                                    'Select Product Category',
+                                theme: theme,
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          EditCartTextField(
-                            theme: theme,
-                            hint: 'Set Discount %',
-                            title: 'Discount (Optional)',
-                            controller:
-                                widget.discountController,
-                          ),
-                          SizedBox(height: 15),
-                          // Row(
-                          //   mainAxisAlignment:
-                          //       MainAxisAlignment.center,
-                          //   spacing: 10,
-                          //   children: [
-                          //     InkWell(
-                          //       onTap: () {
-                          //         setState(() {
-                          //           setDate = true;
-                          //         });
-                          //         returnData(
-                          //           context,
-                          //           listen: false,
-                          //         ).changeDateBoolToTrue();
-                          //       },
-                          //       child: Container(
-                          //         padding:
-                          //             EdgeInsets.symmetric(
-                          //               horizontal: 10,
-                          //               vertical: 5,
-                          //             ),
-                          //         decoration: BoxDecoration(
-                          //           border: Border.all(
-                          //             color:
-                          //                 Colors
-                          //                     .grey
-                          //                     .shade200,
-                          //           ),
-                          //         ),
-                          //         child: Row(
-                          //           spacing: 5,
-                          //           children: [
-                          //             Text(
-                          //               style: TextStyle(
-                          //                 fontSize:
-                          //                     theme
-                          //                         .mobileTexts
-                          //                         .b2
-                          //                         .fontSize,
-                          //                 fontWeight:
-                          //                     FontWeight
-                          //                         .bold,
-                          //               ),
-                          //               formatDateTimeTime(
-                          //                     returnData(
-                          //                           context,
-                          //                         ).startDate ??
-                          //                         DateTime.now(),
-                          //                   ) ??
-                          //                   'Set Start Date',
-                          //             ),
-                          //             Icon(
-                          //               size: 20,
-                          //               Icons
-                          //                   .calendar_month_outlined,
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //     ),
-                          //     InkWell(
-                          //       onTap: () {
-                          //         setState(() {
-                          //           setDate = true;
-                          //         });
-                          //         returnData(
-                          //           context,
-                          //           listen: false,
-                          //         ).changeDateBoolToFalse();
-                          //       },
-                          //       child: Container(
-                          //         padding:
-                          //             EdgeInsets.symmetric(
-                          //               horizontal: 10,
-                          //               vertical: 5,
-                          //             ),
-                          //         decoration: BoxDecoration(
-                          //           border: Border.all(
-                          //             color:
-                          //                 Colors
-                          //                     .grey
-                          //                     .shade200,
-                          //           ),
-                          //         ),
-                          //         child: Row(
-                          //           spacing: 5,
-                          //           children: [
-                          //             Text(
-                          //               style: TextStyle(
-                          //                 fontSize:
-                          //                     theme
-                          //                         .mobileTexts
-                          //                         .b2
-                          //                         .fontSize,
-                          //                 fontWeight:
-                          //                     FontWeight
-                          //                         .bold,
-                          //               ),
-                          //               'Set End Date',
-                          //             ),
-                          //             Icon(
-                          //               size: 20,
-                          //               Icons
-                          //                   .calendar_month_outlined,
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-                          // SizedBox(height: 20),
-                          InkWell(
-                            onTap: () {
-                              returnData(
-                                context,
-                                listen: false,
-                              ).toggleRefundable();
-                              FocusManager
-                                  .instance
-                                  .primaryFocus
-                                  ?.unfocus();
-                            },
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Refundable?',
-                                      ),
-                                      Text(
-                                        'Allow Customers return this product after Purchase?',
-                                      ),
-                                    ],
+                              SizedBox(height: 10),
+                              Row(
+                                spacing: 15,
+                                children: [
+                                  Expanded(
+                                    child: NumberTextfield(
+                                      theme: theme,
+                                      hint:
+                                          'Enter Quantity',
+                                      title: 'Quantity',
+                                      controller:
+                                          widget
+                                              .quantityController,
+                                    ),
                                   ),
-                                ),
-                                Checkbox(
-                                  activeColor:
-                                      theme
-                                          .lightModeColor
-                                          .secColor100,
-                                  value:
-                                      returnData(
-                                        context,
-                                      ).isProductRefundable,
-                                  onChanged: (value) {
+
+                                  Expanded(
+                                    child: NumberTextfield(
+                                      theme: theme,
+                                      hint:
+                                          'Enter Product Size',
+                                      title:
+                                          'Size  (Optional)',
+                                      controller:
+                                          widget
+                                              .sizeController,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              EditCartTextField(
+                                onChanged: (value) {
+                                  setState(() {});
+                                  if (value.isEmpty) {
                                     returnData(
                                       context,
                                       listen: false,
-                                    ).toggleRefundable();
-                                    FocusManager
-                                        .instance
-                                        .primaryFocus
-                                        ?.unfocus();
-                                  },
+                                    ).clearEndDate();
+                                    returnData(
+                                      context,
+                                      listen: false,
+                                    ).clearStartDate();
+                                  }
+                                },
+                                theme: theme,
+                                hint: 'Set Discount %',
+                                title:
+                                    'Discount (Optional)',
+                                controller:
+                                    widget
+                                        .discountController,
+                              ),
+                              SizedBox(height: 15),
+                              Visibility(
+                                visible:
+                                    widget
+                                        .discountController
+                                        .text
+                                        .isNotEmpty,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 10,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          setDate = true;
+                                        });
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).changeDateBoolToTrue();
+                                        FocusManager
+                                            .instance
+                                            .primaryFocus
+                                            ?.unfocus();
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              horizontal:
+                                                  10,
+                                              vertical: 5,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade200,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatDateTime(
+                                                returnData(
+                                                      context,
+                                                    ).startDate ??
+                                                    DateTime.now(),
+                                              ),
+                                            ),
+                                            Icon(
+                                              size: 20,
+                                              Icons
+                                                  .calendar_month_outlined,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          setDate = true;
+                                        });
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).clearEndDate();
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).changeDateBoolToFalse();
+                                        FocusManager
+                                            .instance
+                                            .primaryFocus
+                                            ?.unfocus();
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              horizontal:
+                                                  10,
+                                              vertical: 5,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade200,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              returnData(
+                                                        context,
+                                                      ).endDate !=
+                                                      null
+                                                  ? formatDateTime(
+                                                    returnData(
+                                                          context,
+                                                        ).endDate ??
+                                                        DateTime.now(),
+                                                  )
+                                                  : 'Set End Date',
+                                            ),
+                                            Icon(
+                                              size: 20,
+                                              Icons
+                                                  .calendar_month_outlined,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 20),
+                              InkWell(
+                                onTap: () {
+                                  returnData(
+                                    context,
+                                    listen: false,
+                                  ).toggleRefundable();
+                                  FocusManager
+                                      .instance
+                                      .primaryFocus
+                                      ?.unfocus();
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Refundable?',
+                                          ),
+                                          Text(
+                                            'Allow Customers return this product after Purchase?',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      activeColor:
+                                          theme
+                                              .lightModeColor
+                                              .secColor100,
+                                      value:
+                                          returnData(
+                                            context,
+                                          ).isProductRefundable,
+                                      onChanged: (value) {
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).toggleRefundable();
+                                        FocusManager
+                                            .instance
+                                            .primaryFocus
+                                            ?.unfocus();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 30.0,
+                        top: 20,
+                        left: 30,
+                        right: 30,
+                      ),
+                      child: MainButtonP(
+                        themeProvider: theme,
+                        action: () {
+                          checkFields();
+                        },
+                        text: 'Create Product',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Visibility(
+                visible: setDate,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      setDate = false;
+                    });
+                  },
+                  child: Container(
+                    color: const Color.fromARGB(
+                      32,
+                      0,
+                      0,
+                      0,
+                    ),
+                    height:
+                        MediaQuery.of(context).size.height,
+                    width:
+                        MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(
+                                30,
+                                0,
+                                0,
+                                0,
+                              ),
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        height:
+                            MediaQuery.of(
+                              context,
+                            ).size.height -
+                            300,
+                        width:
+                            (MediaQuery.of(
+                                  context,
+                                ).size.width /
+                                10) *
+                            9.2,
+                        child: CalendarWidget(
+                          isMain: false,
+                          onDaySelected: (
+                            selectedDay,
+                            focusedDay,
+                          ) {
+                            returnData(
+                              context,
+                              listen: false,
+                            ).setDate(selectedDay);
+                            setState(() {
+                              setDate = false;
+                            });
+                          },
+                          actionWeek: (
+                            startOfWeek,
+                            endOfWeek,
+                          ) {
+                            returnReceiptProvider(
+                              context,
+                              listen: false,
+                            ).setReceiptWeek(
+                              startOfWeek,
+                              endOfWeek,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-              Container(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 30.0,
-                    top: 20,
-                    left: 30,
-                    right: 30,
-                  ),
-                  child: MainButtonP(
-                    themeProvider: theme,
-                    action: () {
-                      checkFields();
-                    },
-                    text: 'Create Product',
-                  ),
-                ),
-              ),
             ],
           ),
-          // Visibility(
-          //   visible: setDate,
-          //   child: Center(
-          //     child: Container(
-          //       decoration: BoxDecoration(
-          //         boxShadow: [
-          //           BoxShadow(
-          //             color: const Color.fromARGB(
-          //               30,
-          //               0,
-          //               0,
-          //               0,
-          //             ),
-          //             blurRadius: 5,
-          //           ),
-          //         ],
-          //       ),
-          //       height:
-          //           MediaQuery.of(context).size.height -
-          //           300,
-          //       width:
-          //           (MediaQuery.of(context).size.width /
-          //               10) *
-          //           9.2,
-          //       child: CalendarWidget(
-          //         isMain: false,
-          //         onDaySelected: (selectedDay, focusedDay) {
-          //           returnData(
-          //             context,
-          //             listen: false,
-          //           ).setDate(selectedDay);
-          //           setState(() {
-          //             setDate = false;
-          //           });
-          //         },
-          //         actionWeek: (startOfWeek, endOfWeek) {
-          //           returnReceiptProvider(
-          //             context,
-          //             listen: false,
-          //           ).setReceiptWeek(
-          //             startOfWeek,
-          //             endOfWeek,
-          //           );
-          //         },
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Visibility(
-            visible: isLoading,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader('Creating Product'),
-          ),
-          Visibility(
-            visible: showSuccess,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showSuccess('Product Created Successfully'),
-          ),
-        ],
-      ),
+        ),
+
+        Visibility(
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Creating Product'),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showSuccess('Product Created Successfully'),
+        ),
+      ],
     );
   }
 }

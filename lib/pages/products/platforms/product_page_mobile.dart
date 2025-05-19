@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/items_summary.dart';
@@ -46,6 +47,24 @@ class _ProductPageMobileState
   void initState() {
     super.initState();
     _productsFuture = getProductList(context);
+    notificationsFuture = fetchNotifications();
+  }
+
+  late Future<List<TempNotification>> notificationsFuture;
+
+  Future<List<TempNotification>>
+  fetchNotifications() async {
+    var tempGet = await returnNotificationProvider(
+      context,
+      listen: false,
+    ).fetchRecentNotifications(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempGet;
   }
 
   Future<List<TempProductClass>> getProductList(
@@ -74,7 +93,31 @@ class _ProductPageMobileState
       bottomNavigationBar: MainBottomNav(
         globalKey: _scaffoldKey,
       ),
-      drawer: MyDrawerWidget(theme: theme),
+      drawer: FutureBuilder<List<TempNotification>>(
+        future: notificationsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: [],
+            );
+          } else if (snapshot.hasError) {
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: [],
+            );
+          } else {
+            List<TempNotification> notifications =
+                snapshot.data!;
+
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: notifications,
+            );
+          }
+        },
+      ),
       onDrawerChanged: (isOpened) {
         if (!isOpened) {
           returnNavProvider(
@@ -360,10 +403,12 @@ class _ProductPageMobileState
                                       ).then((_) {
                                         if (context
                                             .mounted) {
-                                          _productsFuture =
-                                              getProductList(
-                                                context,
-                                              );
+                                          setState(() {
+                                            _productsFuture =
+                                                getProductList(
+                                                  context,
+                                                );
+                                          });
                                         }
                                       });
                                     },

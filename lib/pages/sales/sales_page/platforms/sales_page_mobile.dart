@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
+import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/list_tiles/main_receipt_tile.dart';
@@ -42,8 +43,31 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
   @override
   void initState() {
     super.initState();
+    // Defer clearDate until after first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      clearDate();
+    });
+
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
+    notificationsFuture = fetchNotifications();
+  }
+
+  late Future<List<TempNotification>> notificationsFuture;
+
+  Future<List<TempNotification>>
+  fetchNotifications() async {
+    var tempGet = await returnNotificationProvider(
+      context,
+      listen: false,
+    ).fetchRecentNotifications(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempGet;
   }
 
   late Future<List<TempProductSaleRecord>>
@@ -75,8 +99,23 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
 
+  void clearDate() {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceiptDate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    mainReceiptFuture = getMainReceipts();
+    getProdutRecordsFuture = getProductSalesRecord();
+  }
+
   @override
   Widget build(BuildContext context) {
+    clearDate();
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -91,7 +130,31 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           ).closeDrawer();
         }
       },
-      drawer: MyDrawerWidget(theme: theme),
+      drawer: FutureBuilder<List<TempNotification>>(
+        future: notificationsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: [],
+            );
+          } else if (snapshot.hasError) {
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: [],
+            );
+          } else {
+            List<TempNotification> notifications =
+                snapshot.data!;
+
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: notifications,
+            );
+          }
+        },
+      ),
       body: FutureBuilder(
         future: mainReceiptFuture,
         builder: (context, snapshot) {
@@ -341,7 +404,14 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                 return TotalSalesPage();
                                               },
                                             ),
-                                          );
+                                          ).then((_) {
+                                            setState(() {
+                                              mainReceiptFuture =
+                                                  getMainReceipts();
+                                              getProdutRecordsFuture =
+                                                  getProductSalesRecord();
+                                            });
+                                          });
                                         },
                                         child: Row(
                                           spacing: 5,

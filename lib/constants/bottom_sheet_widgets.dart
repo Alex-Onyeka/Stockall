@@ -792,7 +792,7 @@ void editProductBottomSheet(
                               MaterialPageRoute(
                                 builder: (context) {
                                   return ProductDetailsPage(
-                                    product: product,
+                                    productId: product.id!,
                                   );
                                 },
                               ),

@@ -18,7 +18,7 @@ class DashboardDesktop extends StatelessWidget {
           TopNavBar(
             openSideBar: () {},
             theme: theme,
-            notifNumber: 2,
+            notifications: [],
             subText: 'No 12 Wuse, Abuja, Nigeria',
             title: 'Alex Shop',
           ),

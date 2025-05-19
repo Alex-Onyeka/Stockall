@@ -228,7 +228,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                formatDateTime(
+                                formatDateWithDay(
                                   widget
                                       .mainReceipt
                                       .createdAt,

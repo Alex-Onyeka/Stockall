@@ -249,7 +249,15 @@ class _TotalProductsPageState
                                               return AddProduct();
                                             },
                                           ),
-                                        );
+                                        ).then((_) {
+                                          if (context
+                                              .mounted) {
+                                            _productsFuture =
+                                                getProductList(
+                                                  context,
+                                                );
+                                          }
+                                        });
                                       },
                                       theme: widget.theme,
                                     ),

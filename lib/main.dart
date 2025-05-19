@@ -10,6 +10,7 @@ import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
 import 'package:stockitt/providers/employee_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
+import 'package:stockitt/providers/notifications_provider.dart';
 import 'package:stockitt/providers/receipts_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
 import 'package:stockitt/providers/shop_provider.dart';
@@ -76,6 +77,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => AuthService(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -105,6 +109,16 @@ AuthService returnAuth(
   bool listen = true,
 }) {
   return Provider.of<AuthService>(context, listen: listen);
+}
+
+NotificationProvider returnNotificationProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<NotificationProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 EmployeeProvider returnEmployeeProvider(

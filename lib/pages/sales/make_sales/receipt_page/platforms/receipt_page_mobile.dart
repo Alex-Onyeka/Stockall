@@ -520,6 +520,96 @@ class _ReceiptDetailsContainerState
                                 ],
                               ),
                               SizedBox(height: 10),
+                              Row(
+                                spacing: 10,
+                                children: [
+                                  Expanded(
+                                    flex: 5,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Date',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .normal,
+                                          ),
+                                          formatDateTime(
+                                            widget
+                                                .mainReceipt
+                                                .createdAt,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Time',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .normal,
+                                          ),
+                                          formatTime(
+                                            widget
+                                                .mainReceipt
+                                                .createdAt,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
                               Divider(),
                               Row(
                                 children: [

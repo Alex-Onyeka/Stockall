@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
+import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/pages/notifications/notifications_page.dart';
-import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class TopNavBar extends StatelessWidget {
-  final int notifNumber;
+  final List<TempNotification> notifications;
   final String title;
   final String subText;
+  final Function()? action;
   final ThemeProvider theme;
   final Function()? openSideBar;
 
   const TopNavBar({
     super.key,
-    required this.notifNumber,
+    required this.notifications,
     required this.title,
     required this.subText,
     required this.theme,
     required this.openSideBar,
+    this.action,
   });
 
   @override
@@ -118,18 +118,11 @@ class TopNavBar extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Provider.of<CompProvider>(
-                    context,
-                    listen: false,
-                  ).switchNotif();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return NotificationsPage();
-                      },
-                    ),
-                  );
+                  // Provider.of<CompProvider>(
+                  //   context,
+                  //   listen: false,
+                  // ).switchNotif();
+                  action!();
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),
@@ -151,9 +144,9 @@ class TopNavBar extends StatelessWidget {
               ),
               Visibility(
                 visible:
-                    Provider.of<CompProvider>(
-                      context,
-                    ).newNotif,
+                    notifications
+                        .where((notif) => !notif.isViewed)
+                        .isNotEmpty,
                 child: Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -168,7 +161,7 @@ class TopNavBar extends StatelessWidget {
                         fontSize: 14,
                         color: Colors.white,
                       ),
-                      '$notifNumber',
+                      '${notifications.where((notif) => !notif.isViewed).length}',
                     ),
                   ),
                 ),

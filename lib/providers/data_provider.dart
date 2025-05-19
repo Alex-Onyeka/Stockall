@@ -27,8 +27,18 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearStartDate() {
+    startDate = null;
+    notifyListeners();
+  }
+
   void changeDateBoolToFalse() {
     isStartDate = false;
+    notifyListeners();
+  }
+
+  void clearEndDate() {
+    endDate = null;
     notifyListeners();
   }
 

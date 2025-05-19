@@ -37,7 +37,7 @@ class _DashboardTabletState extends State<DashboardTablet> {
           TopNavBar(
             openSideBar: () {},
             theme: theme,
-            notifNumber: 2,
+            notifications: [],
             subText: 'No 12 Wuse, Abuja, Nigeria',
             title: 'Alex Shop',
           ),

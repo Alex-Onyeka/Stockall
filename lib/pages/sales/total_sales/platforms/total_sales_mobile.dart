@@ -40,6 +40,16 @@ class _TotalSalesMobileState
     super.initState();
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      clearDate();
+    });
+  }
+
+  void clearDate() {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceiptDate();
   }
 
   late Future<List<TempProductSaleRecord>>
@@ -66,6 +76,13 @@ class _TotalSalesMobileState
               ).userShop!.shopId!,
         )
         .toList();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    mainReceiptFuture = getMainReceipts();
+    getProdutRecordsFuture = getProductSalesRecord();
   }
 
   @override
@@ -337,7 +354,14 @@ class _TotalSalesMobileState
                                           return MakeSalesPage();
                                         },
                                       ),
-                                    );
+                                    ).then((_) {
+                                      setState(() {
+                                        mainReceiptFuture =
+                                            getMainReceipts();
+                                        getProdutRecordsFuture =
+                                            getProductSalesRecord();
+                                      });
+                                    });
                                   },
                                 );
                               } else {

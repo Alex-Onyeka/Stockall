@@ -39,7 +39,9 @@ class SearchProductTile extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return ProductDetailsPage(product: product);
+              return ProductDetailsPage(
+                productId: product.id!,
+              );
             },
           ),
         );

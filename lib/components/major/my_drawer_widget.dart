@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
+import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/pages/report/report_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
 
 class MyDrawerWidget extends StatelessWidget {
   final ThemeProvider theme;
-  const MyDrawerWidget({super.key, required this.theme});
+  final List<TempNotification> notifications;
+  const MyDrawerWidget({
+    super.key,
+    required this.theme,
+    required this.notifications,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -129,8 +136,178 @@ class MyDrawerWidget extends StatelessWidget {
                     title: 'Report',
                     svg: reportIconSvg,
                   ),
+                  SizedBox(height: 10),
+                  Divider(
+                    height: 30,
+                    color: Colors.grey.shade200,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return NotificationsPage(
+                              notifications: notifications,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: SizedBox(
+                      height: 50,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Row(
+                              spacing: 10,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.start,
+                              children: [
+                                Stack(
+                                  children: [
+                                    Icon(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade400,
+                                      size: 22,
+                                      Icons
+                                          .notifications_on_outlined,
+                                    ),
+                                  ],
+                                ),
+
+                                Text(
+                                  style: TextStyle(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade600,
+                                    fontSize: 14,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Notifications',
+                                ),
+                              ],
+                            ),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    // Provider.of<CompProvider>(
+                                    //   context,
+                                    //   listen: false,
+                                    // ).switchNotif();
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return NotificationsPage(
+                                            notifications:
+                                                notifications,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(
+                                      10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          const Color.fromARGB(
+                                            208,
+                                            245,
+                                            245,
+                                            245,
+                                          ),
+                                      shape:
+                                          BoxShape.circle,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      height: 25,
+                                      width: 25,
+                                      notifIconSvg,
+                                      color:
+                                          notifications
+                                                  .where(
+                                                    (
+                                                      notif,
+                                                    ) =>
+                                                        !notif.isViewed,
+                                                  )
+                                                  .isNotEmpty
+                                              ? null
+                                              : Colors
+                                                  .grey
+                                                  .shade500,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 25,
+                                  left: 32,
+                                  child: Visibility(
+                                    visible:
+                                        notifications
+                                            .where(
+                                              (notif) =>
+                                                  !notif
+                                                      .isViewed,
+                                            )
+                                            .isNotEmpty,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        shape:
+                                            BoxShape.circle,
+                                        gradient:
+                                            theme
+                                                .lightModeColor
+                                                .secGradient,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            fontSize: 14,
+                                            color:
+                                                Colors
+                                                    .white,
+                                          ),
+                                          '${notifications.where((notif) => !notif.isViewed).length}',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
+
               Padding(
                 padding: const EdgeInsets.only(
                   bottom: 30.0,

@@ -33,6 +33,10 @@ String formatDateTimeTime(DateTime date) {
   return DateFormat('E, d : hh:mm a').format(date);
 }
 
+String formatDateWithDay(DateTime date) {
+  return DateFormat('E, MMM d, yyyy').format(date);
+}
+
 String formatTime(DateTime date) {
   return DateFormat('hh:mm a').format(date);
 }

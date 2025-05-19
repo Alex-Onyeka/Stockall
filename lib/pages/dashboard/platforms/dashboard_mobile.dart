@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
+import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
@@ -16,6 +17,7 @@ import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
+import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/pages/report/report_page.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
@@ -47,6 +49,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
     return tempReceipts;
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    notificationsFuture = fetchNotifications();
+  }
+
   late Future<List<TempMainReceipt>> mainReceiptFuture;
 
   @override
@@ -54,11 +62,39 @@ class _DashboardMobileState extends State<DashboardMobile> {
     super.initState();
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
+    notificationsFuture = fetchNotifications();
     shop =
         returnShopProvider(
           context,
           listen: false,
         ).userShop!;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      clearDate();
+    });
+  }
+
+  void clearDate() {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceiptDate();
+  }
+
+  late Future<List<TempNotification>> notificationsFuture;
+
+  Future<List<TempNotification>>
+  fetchNotifications() async {
+    var tempGet = await returnNotificationProvider(
+      context,
+      listen: false,
+    ).fetchRecentNotifications(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempGet;
   }
 
   late Future<List<TempProductSaleRecord>>
@@ -87,12 +123,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
         .toList();
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  // }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -109,7 +139,31 @@ class _DashboardMobileState extends State<DashboardMobile> {
           ).closeDrawer();
         }
       },
-      drawer: MyDrawerWidget(theme: theme),
+      drawer: FutureBuilder<List<TempNotification>>(
+        future: notificationsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: [],
+            );
+          } else if (snapshot.hasError) {
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: [],
+            );
+          } else {
+            List<TempNotification> notifications =
+                snapshot.data!;
+
+            return MyDrawerWidget(
+              theme: theme,
+              notifications: notifications,
+            );
+          }
+        },
+      ),
       body: FutureBuilder(
         future: mainReceiptFuture,
         builder: (context, snapshot) {
@@ -139,20 +193,85 @@ class _DashboardMobileState extends State<DashboardMobile> {
               children: [
                 Column(
                   children: [
-                    TopNavBar(
-                      openSideBar: () {
-                        _scaffoldKey.currentState
-                            ?.openDrawer();
-                        returnNavProvider(
-                          context,
-                          listen: false,
-                        ).setSettings();
+                    FutureBuilder(
+                      future: notificationsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return TopNavBar(
+                            openSideBar: () {
+                              _scaffoldKey.currentState
+                                  ?.openDrawer();
+                              returnNavProvider(
+                                context,
+                                listen: false,
+                              ).setSettings();
+                            },
+                            theme: theme,
+                            notifications: [],
+                            subText:
+                                shop.shopAddress ??
+                                shop.email,
+                            title: shop.name,
+                          );
+                        } else if (snapshot.hasError) {
+                          return TopNavBar(
+                            action: () {},
+                            openSideBar: () {
+                              _scaffoldKey.currentState
+                                  ?.openDrawer();
+                              returnNavProvider(
+                                context,
+                                listen: false,
+                              ).setSettings();
+                            },
+                            theme: theme,
+                            notifications: [],
+                            subText:
+                                shop.shopAddress ??
+                                shop.email,
+                            title: shop.name,
+                          );
+                        } else {
+                          List<TempNotification>
+                          notifications = snapshot.data!;
+
+                          return TopNavBar(
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return NotificationsPage(
+                                      notifications:
+                                          notifications,
+                                    );
+                                  },
+                                ),
+                              ).then((_) {
+                                setState(() {
+                                  notificationsFuture =
+                                      fetchNotifications();
+                                });
+                              });
+                            },
+                            openSideBar: () {
+                              _scaffoldKey.currentState
+                                  ?.openDrawer();
+                              returnNavProvider(
+                                context,
+                                listen: false,
+                              ).setSettings();
+                            },
+                            theme: theme,
+                            notifications: notifications,
+                            subText:
+                                shop.shopAddress ??
+                                shop.email,
+                            title: shop.name,
+                          );
+                        }
                       },
-                      theme: theme,
-                      notifNumber: 2,
-                      subText:
-                          shop.shopAddress ?? shop.email,
-                      title: shop.name,
                     ),
 
                     Expanded(
@@ -372,10 +491,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                       child: Wrap(
                                         alignment:
                                             WrapAlignment
-                                                .start,
+                                                .center,
                                         runAlignment:
                                             WrapAlignment
-                                                .start,
+                                                .center,
                                         direction:
                                             Axis.horizontal,
                                         runSpacing: 15,
