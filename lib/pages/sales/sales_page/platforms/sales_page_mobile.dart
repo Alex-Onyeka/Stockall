@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
@@ -11,9 +12,11 @@ import 'package:stockitt/components/major/my_drawer_widget.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockitt/pages/sales/total_sales/total_sales_page.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class SalesPageMobile extends StatefulWidget {
   const SalesPageMobile({super.key});
@@ -136,11 +139,13 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
+              action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
+              action: () {},
               theme: theme,
               notifications: [],
             );
@@ -149,6 +154,33 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                 snapshot.data!;
 
             return MyDrawerWidget(
+              action: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message: 'You are about to Logout',
+                      title: 'Are you Sure?',
+                      action: () {
+                        AuthService().signOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AuthScreensPage();
+                            },
+                          ),
+                        );
+                        returnNavProvider(
+                          context,
+                          listen: false,
+                        ).navigate(0);
+                      },
+                    );
+                  },
+                );
+              },
               theme: theme,
               notifications: notifications,
             );

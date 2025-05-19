@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/items_summary.dart';
 import 'package:stockitt/components/major/my_drawer_widget.dart';
@@ -9,12 +10,14 @@ import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
 import 'package:stockitt/pages/products/compnents/search_product_tile.dart';
 import 'package:stockitt/pages/products/total_products/total_products_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class ProductPageMobile extends StatefulWidget {
   const ProductPageMobile({super.key, required this.theme});
@@ -91,6 +94,20 @@ class _ProductPageMobileState
     var theme = returnTheme(context);
     return Scaffold(
       bottomNavigationBar: MainBottomNav(
+        action: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AddProduct();
+              },
+            ),
+          ).then((_) {
+            setState(() {
+              _productsFuture = getProductList(context);
+            });
+          });
+        },
         globalKey: _scaffoldKey,
       ),
       drawer: FutureBuilder<List<TempNotification>>(
@@ -99,11 +116,13 @@ class _ProductPageMobileState
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
+              action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
+              action: () {},
               theme: theme,
               notifications: [],
             );
@@ -112,6 +131,33 @@ class _ProductPageMobileState
                 snapshot.data!;
 
             return MyDrawerWidget(
+              action: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message: 'You are about to Logout',
+                      title: 'Are you Sure?',
+                      action: () {
+                        AuthService().signOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AuthScreensPage();
+                            },
+                          ),
+                        );
+                        returnNavProvider(
+                          context,
+                          listen: false,
+                        ).navigate(0);
+                      },
+                    );
+                  },
+                );
+              },
               theme: theme,
               notifications: notifications,
             );

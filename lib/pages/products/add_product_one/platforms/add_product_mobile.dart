@@ -167,6 +167,12 @@ class _AddProductMobileState
         isLoading = false;
         showSuccess = true;
       });
+      if (context.mounted) {
+        // ignore: use_build_context_synchronously
+        returnData(context, listen: false).clearEndDate();
+        // ignore: use_build_context_synchronously
+        returnData(context, listen: false).clearStartDate();
+      }
       Future.delayed(Duration(seconds: 3), () {
         if (!context.mounted) return;
         // ignore: use_build_context_synchronously
@@ -179,6 +185,9 @@ class _AddProductMobileState
   @override
   void initState() {
     super.initState();
+    // widget.costController.text = '0';
+    // widget.sellingController.text = '0';
+    // widget.discountController.text = '0';
     setShop();
   }
 
@@ -191,6 +200,25 @@ class _AddProductMobileState
 
     setState(() {
       userShop = shop;
+    });
+  }
+
+  double cost = 0;
+  double selling = 0;
+  double discount = 0;
+
+  double costDiscount = 0;
+
+  double sellingDiscount = 0;
+
+  void checkDiscount() {
+    final discountedPrice =
+        cost - (cost * (discount / 100));
+    final discountedSellingPrice =
+        selling - (selling * (discount / 100));
+    setState(() {
+      costDiscount = discountedPrice;
+      sellingDiscount = discountedSellingPrice;
     });
   }
 
@@ -290,6 +318,23 @@ class _AddProductMobileState
                                 children: [
                                   Expanded(
                                     child: MoneyTextfield(
+                                      onChanged: (value) {
+                                        if (value.isEmpty) {
+                                          cost = 0;
+                                        } else {
+                                          setState(() {
+                                            cost = double.parse(
+                                              widget
+                                                  .costController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            );
+                                          });
+                                        }
+                                      },
                                       theme: theme,
                                       hint:
                                           'Enter the actual Amount of the Item',
@@ -301,6 +346,23 @@ class _AddProductMobileState
                                   ),
                                   Expanded(
                                     child: MoneyTextfield(
+                                      onChanged: (value) {
+                                        if (value.isEmpty) {
+                                          selling = 0;
+                                        } else {
+                                          setState(() {
+                                            selling = double.parse(
+                                              widget
+                                                  .sellingController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            );
+                                          });
+                                        }
+                                      },
                                       theme: theme,
                                       hint:
                                           'Enter the Amount you wish to sell this Product',
@@ -406,7 +468,15 @@ class _AddProductMobileState
                               SizedBox(height: 10),
                               EditCartTextField(
                                 onChanged: (value) {
-                                  setState(() {});
+                                  setState(() {
+                                    discount =
+                                        double.tryParse(
+                                          value,
+                                        ) ??
+                                        0;
+                                  });
+                                  checkDiscount();
+
                                   if (value.isEmpty) {
                                     returnData(
                                       context,
@@ -425,6 +495,107 @@ class _AddProductMobileState
                                 controller:
                                     widget
                                         .discountController,
+                              ),
+                              Visibility(
+                                visible:
+                                    widget
+                                        .discountController
+                                        .text
+                                        .isNotEmpty,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 5),
+                                    Row(
+                                      spacing: 15,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      children: [
+                                        Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Cost-price:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatLargeNumberDouble(
+                                                costDiscount,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Divider(),
+                                        Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Selling-price',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatLargeNumberDouble(
+                                                sellingDiscount,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                               SizedBox(height: 15),
                               Visibility(

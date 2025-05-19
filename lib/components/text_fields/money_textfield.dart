@@ -6,6 +6,7 @@ class MoneyTextfield extends StatefulWidget {
   final String title;
   final String hint;
   final TextEditingController controller;
+  final Function(String)? onChanged;
   final ThemeProvider theme;
 
   const MoneyTextfield({
@@ -14,6 +15,7 @@ class MoneyTextfield extends StatefulWidget {
     required this.hint,
     required this.controller,
     required this.theme,
+    this.onChanged,
   });
 
   @override
@@ -82,6 +84,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         ),
         SizedBox(height: 10),
         TextFormField(
+          onChanged: widget.onChanged,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

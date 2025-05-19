@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/payment_type_button.dart';
@@ -563,120 +564,154 @@ class _MakeSalesMobileTwoState
                         child: MainButtonP(
                           themeProvider: theme,
                           action: () async {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            var receipt = await returnSalesProvider(
-                              context,
-                              listen: false,
-                            ).checkoutMain(
+                            showDialog(
                               context: context,
-                              cartItems:
-                                  returnSalesProvider(
-                                    context,
-                                    listen: false,
-                                  ).cartItems,
-                              staffId:
-                                  AuthService()
-                                      .currentUser!
-                                      .id,
-                              staffName:
-                                  returnUserProvider(
-                                    context,
-                                    listen: false,
-                                  ).currentUserMain!.name,
-                              shopId:
-                                  returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  ).userShop!.shopId!,
-                              bank:
-                                  returnSalesProvider(
+                              builder: (context) {
+                                return ConfirmationAlert(
+                                  theme: theme,
+                                  message:
+                                      'You are about to record a Sale, are you sure you want to proceed?',
+                                  title: 'Are you sure?',
+                                  action: () async {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    var receipt = await returnSalesProvider(
+                                      context,
+                                      listen: false,
+                                    ).checkoutMain(
+                                      context: context,
+                                      cartItems:
+                                          returnSalesProvider(
                                             context,
                                             listen: false,
-                                          ).returnPaymentMethod() ==
-                                          'Split'
-                                      ? double.tryParse(
-                                            widget
-                                                .bankController
-                                                .text,
-                                          ) ??
-                                          0
-                                      : returnSalesProvider(
+                                          ).cartItems,
+                                      staffId:
+                                          AuthService()
+                                              .currentUser!
+                                              .id,
+                                      staffName:
+                                          returnUserProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .currentUserMain!
+                                              .name,
+                                      shopId:
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .shopId!,
+                                      bank:
+                                          returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).returnPaymentMethod() ==
+                                                  'Split'
+                                              ? double.tryParse(
+                                                    widget
+                                                        .bankController
+                                                        .text,
+                                                  ) ??
+                                                  0
+                                              : returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).returnPaymentMethod() ==
+                                                  'Bank'
+                                              ? returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).calcFinalTotalMain(
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).cartItems,
+                                              )
+                                              : 0,
+                                      cashAlt:
+                                          returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).returnPaymentMethod() ==
+                                                  'Split'
+                                              ? double.tryParse(
+                                                    widget
+                                                        .cashController
+                                                        .text,
+                                                  ) ??
+                                                  0
+                                              : returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).returnPaymentMethod() ==
+                                                  'Bank'
+                                              ? 0
+                                              : returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).calcFinalTotalMain(
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).cartItems,
+                                              ),
+                                      paymentMethod:
+                                          returnSalesProvider(
                                             context,
                                             listen: false,
-                                          ).returnPaymentMethod() ==
-                                          'Bank'
-                                      ? returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).calcFinalTotalMain(
-                                        returnSalesProvider(
+                                          ).returnPaymentMethod(),
+                                      customerId: int.tryParse(
+                                        returnCustomers(
                                           context,
                                           listen: false,
-                                        ).cartItems,
-                                      )
-                                      : 0,
-                              cashAlt:
-                                  returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).returnPaymentMethod() ==
-                                          'Split'
-                                      ? double.tryParse(
-                                            widget
-                                                .cashController
-                                                .text,
-                                          ) ??
-                                          0
-                                      : returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).returnPaymentMethod() ==
-                                          'Bank'
-                                      ? 0
-                                      : returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).calcFinalTotalMain(
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).cartItems,
+                                        ).selectedCustomerId,
                                       ),
-                              paymentMethod:
-                                  returnSalesProvider(
-                                    context,
-                                    listen: false,
-                                  ).returnPaymentMethod(),
-                              customerId: int.tryParse(
-                                returnCustomers(
-                                  context,
-                                  listen: false,
-                                ).selectedCustomerId,
-                              ),
-                            );
-                            setState(() {
-                              isLoading = false;
-                              showSuccess = true;
-                            });
-                            await Future.delayed(
-                              Duration(seconds: 3),
-                              () {
-                                if (context.mounted) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ReceiptPage(
-                                          mainReceipt:
-                                              receipt,
-                                          isMain: true,
-                                        );
+                                    );
+                                    setState(() {
+                                      isLoading = false;
+                                      showSuccess = true;
+                                    });
+                                    await Future.delayed(
+                                      Duration(seconds: 3),
+                                      () {
+                                        if (context
+                                            .mounted) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ReceiptPage(
+                                                  mainReceipt:
+                                                      receipt,
+                                                  isMain:
+                                                      true,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        }
                                       },
-                                    ),
-                                  );
-                                }
+                                    );
+                                  },
+                                );
                               },
                             );
                           },

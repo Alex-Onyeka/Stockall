@@ -390,6 +390,8 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                     'Receipt NO.',
                                   ),
                                   Text(
+                                    textAlign:
+                                        TextAlign.left,
                                     style: TextStyle(
                                       fontSize:
                                           theme
@@ -400,7 +402,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                           FontWeight.bold,
                                     ),
                                     cutLongText2(
-                                      '${widget.mainReceipt.id}',
+                                      '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString().substring(0, 2)}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
                                     ),
                                   ),
                                 ],

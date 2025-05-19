@@ -3,22 +3,22 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/pages/report/report_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
-import 'package:stockitt/services/auth_service.dart';
 
 class MyDrawerWidget extends StatelessWidget {
   final ThemeProvider theme;
+  final Function()? action;
   final List<TempNotification> notifications;
   const MyDrawerWidget({
     super.key,
     required this.theme,
     required this.notifications,
+    required this.action,
   });
 
   @override
@@ -314,21 +314,7 @@ class MyDrawerWidget extends StatelessWidget {
                 ),
                 child: NavListTileAlt(
                   height: 16,
-                  action: () {
-                    AuthService().signOut();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return AuthScreensPage();
-                        },
-                      ),
-                    );
-                    returnNavProvider(
-                      context,
-                      listen: false,
-                    ).navigate(0);
-                  },
+                  action: action,
                   title: 'Logout',
                   // svg: reportIconSvg,
                   icon: Icons.logout_rounded,

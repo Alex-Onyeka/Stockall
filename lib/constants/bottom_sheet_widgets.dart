@@ -131,37 +131,41 @@ void unitsBottomSheet(
                               ),
                             ),
                           ),
-                          child: ListTile(
-                            title: Text(units[index]),
-                            onTap: () {
-                              Provider.of<DataProvider>(
-                                context,
-                                listen: false,
-                              ).selectUnit(unit);
-                            },
-                            trailing: Checkbox(
-                              shape: CircleBorder(
-                                side: BorderSide(),
-                              ),
-                              side: BorderSide(
-                                color: Colors.grey.shade400,
-                                width: 1.2,
-                              ),
-                              activeColor:
-                                  returnTheme(context)
-                                      .lightModeColor
-                                      .prColor250,
-                              value:
-                                  returnData(
-                                    context,
-                                  ).selectedUnit ==
-                                  unit,
-                              onChanged: (value) {
+                          child: Material(
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Text(units[index]),
+                              onTap: () {
                                 Provider.of<DataProvider>(
                                   context,
                                   listen: false,
                                 ).selectUnit(unit);
                               },
+                              trailing: Checkbox(
+                                shape: CircleBorder(
+                                  side: BorderSide(),
+                                ),
+                                side: BorderSide(
+                                  color:
+                                      Colors.grey.shade400,
+                                  width: 1.2,
+                                ),
+                                activeColor:
+                                    returnTheme(context)
+                                        .lightModeColor
+                                        .prColor250,
+                                value:
+                                    returnData(
+                                      context,
+                                    ).selectedUnit ==
+                                    unit,
+                                onChanged: (value) {
+                                  Provider.of<DataProvider>(
+                                    context,
+                                    listen: false,
+                                  ).selectUnit(unit);
+                                },
+                              ),
                             ),
                           ),
                         );
@@ -297,37 +301,45 @@ void categoriesBottomSheet(
                               ),
                             ),
                           ),
-                          child: ListTile(
-                            title: Text(categories[index]),
-                            onTap: () {
-                              Provider.of<DataProvider>(
-                                context,
-                                listen: false,
-                              ).selectCategory(category);
-                            },
-                            trailing: Checkbox(
-                              shape: CircleBorder(
-                                side: BorderSide(),
+                          child: Material(
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Text(
+                                categories[index],
                               ),
-                              side: BorderSide(
-                                color: Colors.grey.shade400,
-                                width: 1.2,
-                              ),
-                              activeColor:
-                                  returnTheme(context)
-                                      .lightModeColor
-                                      .prColor250,
-                              value:
-                                  returnData(
-                                    context,
-                                  ).selectedCategory ==
-                                  category,
-                              onChanged: (value) {
+                              onTap: () {
                                 Provider.of<DataProvider>(
                                   context,
                                   listen: false,
                                 ).selectCategory(category);
                               },
+                              trailing: Checkbox(
+                                shape: CircleBorder(
+                                  side: BorderSide(),
+                                ),
+                                side: BorderSide(
+                                  color:
+                                      Colors.grey.shade400,
+                                  width: 1.2,
+                                ),
+                                activeColor:
+                                    returnTheme(context)
+                                        .lightModeColor
+                                        .prColor250,
+                                value:
+                                    returnData(
+                                      context,
+                                    ).selectedCategory ==
+                                    category,
+                                onChanged: (value) {
+                                  Provider.of<DataProvider>(
+                                    context,
+                                    listen: false,
+                                  ).selectCategory(
+                                    category,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         );

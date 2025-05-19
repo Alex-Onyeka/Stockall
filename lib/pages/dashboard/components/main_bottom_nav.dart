@@ -9,7 +9,12 @@ import 'package:stockitt/providers/nav_provider.dart';
 
 class MainBottomNav extends StatelessWidget {
   final GlobalKey<ScaffoldState> globalKey;
-  const MainBottomNav({super.key, required this.globalKey});
+  final Function()? action;
+  const MainBottomNav({
+    super.key,
+    required this.globalKey,
+    this.action,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -128,14 +133,22 @@ class MainBottomNav extends StatelessWidget {
         ),
         InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return MakeSalesPage();
-                },
-              ),
-            );
+            if (returnNavProvider(
+                  context,
+                  listen: false,
+                ).currentPage ==
+                1) {
+              action!();
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return MakeSalesPage();
+                  },
+                ),
+              );
+            }
           },
           child: Container(
             decoration: BoxDecoration(

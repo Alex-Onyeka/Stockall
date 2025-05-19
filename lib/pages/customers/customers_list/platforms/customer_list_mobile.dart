@@ -390,7 +390,14 @@ class _CustomerListMobileState
                                                   );
                                                 },
                                               ),
-                                            );
+                                            ).then((_) {
+                                              setState(() {
+                                                _customersFuture =
+                                                    getCustomerList(
+                                                      context,
+                                                    );
+                                              });
+                                            });
                                           }
                                         },
                                         theme: theme,

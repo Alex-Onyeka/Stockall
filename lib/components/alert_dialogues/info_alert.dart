@@ -94,33 +94,35 @@ class InfoAlert extends StatelessWidget {
                   mainAxisAlignment:
                       MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 50,
-                          vertical: 10,
+                    Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5,
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .errorColor200,
-                        ),
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
-                            color: Colors.white,
+                        color: Colors.grey.shade200,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 10,
                           ),
-                          'Cancel',
+
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade800,
+                            ),
+                            'Close',
+                          ),
                         ),
                       ),
                     ),

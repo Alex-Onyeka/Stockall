@@ -5,10 +5,12 @@ import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/my_drawer_widget.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
 import 'package:stockitt/pages/dashboard/components/button_tab.dart';
 import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
@@ -145,11 +147,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
+              action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
+              action: () {},
               theme: theme,
               notifications: [],
             );
@@ -158,6 +162,33 @@ class _DashboardMobileState extends State<DashboardMobile> {
                 snapshot.data!;
 
             return MyDrawerWidget(
+              action: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message: 'You are about to Logout',
+                      title: 'Are you Sure?',
+                      action: () {
+                        AuthService().signOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AuthScreensPage();
+                            },
+                          ),
+                        );
+                        returnNavProvider(
+                          context,
+                          listen: false,
+                        ).navigate(0);
+                      },
+                    );
+                  },
+                );
+              },
               theme: theme,
               notifications: notifications,
             );
