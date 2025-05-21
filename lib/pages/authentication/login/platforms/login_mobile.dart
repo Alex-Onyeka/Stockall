@@ -76,6 +76,7 @@ class _LoginMobileState extends State<LoginMobile> {
             isLoading = false;
             showSuccess = true;
           });
+
           Future.delayed(Duration(seconds: 3), () {
             Navigator.pushReplacement(
               // ignore: use_build_context_synchronously

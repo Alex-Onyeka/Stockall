@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/local_database/local_user/local_user_database.dart';
 import 'package:stockitt/pages/authentication/base_page/base_page.dart';
 import 'package:stockitt/pages/authentication/launch_screen/launch_screen.dart';
 import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
-import 'package:stockitt/providers/employee_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/notifications_provider.dart';
 import 'package:stockitt/providers/receipts_provider.dart';
@@ -37,6 +37,8 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
   );
+
+  await LocalUserDatabase().initDb();
 
   runApp(
     MultiProvider(
@@ -71,9 +73,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => ReceiptsProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => EmployeeProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (_) => EmployeeProvider(),
+        // ),
         ChangeNotifierProvider(
           create: (_) => AuthService(),
         ),
@@ -121,15 +123,15 @@ NotificationProvider returnNotificationProvider(
   );
 }
 
-EmployeeProvider returnEmployeeProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<EmployeeProvider>(
-    context,
-    listen: listen,
-  );
-}
+// EmployeeProvider returnEmployeeProvider(
+//   BuildContext context, {
+//   bool listen = true,
+// }) {
+//   return Provider.of<EmployeeProvider>(
+//     context,
+//     listen: listen,
+//   );
+// }
 
 ReceiptsProvider returnReceiptProvider(
   BuildContext context, {

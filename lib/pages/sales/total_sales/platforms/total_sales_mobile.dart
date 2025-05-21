@@ -79,13 +79,6 @@ class _TotalSalesMobileState
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    mainReceiptFuture = getMainReceipts();
-    getProdutRecordsFuture = getProductSalesRecord();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return GestureDetector(
@@ -354,14 +347,7 @@ class _TotalSalesMobileState
                                           return MakeSalesPage();
                                         },
                                       ),
-                                    ).then((_) {
-                                      setState(() {
-                                        mainReceiptFuture =
-                                            getMainReceipts();
-                                        getProdutRecordsFuture =
-                                            getProductSalesRecord();
-                                      });
-                                    });
+                                    );
                                   },
                                 );
                               } else {

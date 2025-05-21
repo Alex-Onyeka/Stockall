@@ -44,111 +44,113 @@ class CompProvider extends ChangeNotifier {
   }
 
   Widget showLoader(String message) {
-    return Container(
-      color: const Color.fromARGB(245, 255, 255, 255),
-      child: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment(0, 0),
-                    child: SizedBox(
-                      width: 180,
-                      child: Lottie.asset(
-                        mainLoader,
-                        height: 80,
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment(0, 0.1),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 50.0,
-                      ),
-                      child: Text(
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color:
-                              themeProvider
-                                  .lightModeColor
-                                  .prColor300,
-                          fontSize:
-                              themeProvider
-                                  .mobileTexts
-                                  .h4
-                                  .fontSize,
-                          fontWeight:
-                              themeProvider
-                                  .mobileTexts
-                                  .h2
-                                  .fontWeightBold,
+    return Material(
+      child: Container(
+        color: const Color.fromARGB(245, 255, 255, 255),
+        child: Center(
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment(0, 0),
+                      child: SizedBox(
+                        width: 180,
+                        child: Lottie.asset(
+                          mainLoader,
+                          height: 80,
                         ),
-                        message,
                       ),
                     ),
-                  ),
-                ],
+                    Align(
+                      alignment: Alignment(0, 0.1),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 60.0,
+                        ),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                themeProvider
+                                    .lightModeColor
+                                    .prColor300,
+                            fontSize:
+                                themeProvider
+                                    .mobileTexts
+                                    .h4
+                                    .fontSize,
+                            fontWeight:
+                                themeProvider
+                                    .mobileTexts
+                                    .h2
+                                    .fontWeightBold,
+                          ),
+                          message,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget showSuccess(String? message) {
-    return Container(
-      color: const Color.fromARGB(251, 255, 255, 255),
-      child: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment(0, -0.2),
-                    child: SizedBox(
-                      width: 180,
-                      child: Lottie.asset(successAnim),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment(0, 0.2),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 50.0,
+    return Material(
+      child: Container(
+        color: const Color.fromARGB(251, 255, 255, 255),
+        child: Center(
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment(0, -0.2),
+                      child: SizedBox(
+                        width: 180,
+                        child: Lottie.asset(successAnim),
                       ),
-                      child: Text(
-                        message ?? 'Success',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color:
-                              themeProvider
-                                  .lightModeColor
-                                  .prColor300,
-                          fontSize:
-                              themeProvider
-                                  .mobileTexts
-                                  .h2
-                                  .fontSize,
-                          fontWeight:
-                              themeProvider
-                                  .mobileTexts
-                                  .h2
-                                  .fontWeightBold,
+                    ),
+                    Align(
+                      alignment: Alignment(0, 0.2),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 60.0,
+                        ),
+                        child: Text(
+                          message ?? 'Success',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                themeProvider
+                                    .lightModeColor
+                                    .prColor300,
+                            fontSize:
+                                themeProvider
+                                    .mobileTexts
+                                    .h2
+                                    .fontSize,
+                            fontWeight:
+                                themeProvider
+                                    .mobileTexts
+                                    .h2
+                                    .fontWeightBold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

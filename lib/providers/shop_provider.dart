@@ -31,6 +31,59 @@ class ShopProvider extends ChangeNotifier {
     return TempShopClass.fromJson(response);
   }
 
+  Future<List<String>> fetchShopCategories(
+    int shopId,
+  ) async {
+    final response =
+        await supabase
+            .from('shops')
+            .select('categories')
+            .eq('shop_id', shopId)
+            .single();
+
+    final List<dynamic> categories =
+        response['categories'] ?? [];
+    return categories.cast<String>();
+  }
+
+  Future<void> appendShopCategories({
+    required int shopId,
+    required List<String> newCategories,
+  }) async {
+    try {
+      // Step 1: Fetch existing categories
+      final response =
+          await supabase
+              .from('shops')
+              .select('categories')
+              .eq('shop_id', shopId)
+              .maybeSingle();
+
+      List<String> existingCategories =
+          (response?['categories'] as List<dynamic>?)
+              ?.cast<String>() ??
+          [];
+
+      // Step 2: Merge and deduplicate
+      final updatedCategories =
+          {
+            ...existingCategories,
+            ...newCategories,
+          }.toList();
+
+      // Step 3: Update in database
+      await supabase
+          .from('shops')
+          .update({'categories': updatedCategories})
+          .eq('shop_id', shopId);
+
+      // print('Updated categories: $updateResult');
+    } catch (e) {
+      // print('Error appending categories: $e');
+      rethrow;
+    }
+  }
+
   ShopProvider() {
     _init();
   }

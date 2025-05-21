@@ -34,7 +34,7 @@ class _CustomerListMobileState
     returnData(
       context,
       listen: false,
-    ).toggleFloatingAction(context);
+    ).showFloatingActionButton();
   }
 
   String searchResult = '';
@@ -87,7 +87,7 @@ class _CustomerListMobileState
         },
         color:
             returnTheme(context).lightModeColor.prColor300,
-        text: 'Add New Customer',
+        text: 'Add Customer',
       ),
       appBar: AppBar(
         toolbarHeight: 60,

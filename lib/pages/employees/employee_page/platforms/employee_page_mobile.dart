@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockitt/classes/temp_employee_class.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
-class EmployeePageMobile extends StatelessWidget {
+class EmployeePageMobile extends StatefulWidget {
   final String employeeId;
   const EmployeePageMobile({
     super.key,
@@ -18,46 +19,181 @@ class EmployeePageMobile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    var employee = returnEmployeeProvider(
+  State<EmployeePageMobile> createState() =>
+      _EmployeePageMobileState();
+}
+
+class _EmployeePageMobileState
+    extends State<EmployeePageMobile> {
+  late Future<TempUserClass> employeeFuture;
+  Future<TempUserClass> getEmployee() async {
+    var tempEmp = await returnUserProvider(
       context,
-    ).returnEmployee(employeeId);
+      listen: false,
+    ).fetchUserById(widget.employeeId);
+
+    return tempEmp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
+    employeeFuture = getEmployee();
+  }
+
+  bool isLoading = false;
+  bool showSuccess = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    employeeFuture = getEmployee();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            SizedBox(
-              height:
-                  MediaQuery.of(context).size.height - 50,
-              child: Stack(
-                alignment: Alignment(0, 1),
-                children: [
-                  Align(
-                    alignment: Alignment(0, -1),
-                    child: TopBanner(
-                      isMain: false,
-                      subTitle:
-                          'Full Details about employee',
-                      title: 'Employee Details',
-                      theme: theme,
-                      bottomSpace: 100,
-                      topSpace: 30,
-                      iconData: Icons.person,
-                    ),
+      child: Stack(
+        children: [
+          Scaffold(
+            body: Column(
+              children: [
+                SizedBox(
+                  height:
+                      MediaQuery.of(context).size.height -
+                      50,
+                  child: Stack(
+                    alignment: Alignment(0, 1),
+                    children: [
+                      Align(
+                        alignment: Alignment(0, -1),
+                        child: TopBanner(
+                          isMain: false,
+                          subTitle:
+                              'Full Details about employee',
+                          title: 'Employee Details',
+                          theme: theme,
+                          bottomSpace: 100,
+                          topSpace: 30,
+                          iconData: Icons.person,
+                        ),
+                      ),
+                      FutureBuilder<TempUserClass>(
+                        future: employeeFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return returnCompProvider(
+                              context,
+                              listen: false,
+                            ).showLoader('Loading');
+                          } else if (snapshot.hasError) {
+                            return EmptyWidgetDisplayOnly(
+                              title: 'An Error Occured',
+                              subText:
+                                  'Error occurred while Loading data.Please check you internet connection and try again.',
+                              theme: theme,
+                              height: 30,
+                              icon: Icons.clear,
+                            );
+                          } else {
+                            TempUserClass employee =
+                                snapshot.data!;
+                            return Positioned(
+                              top: 110,
+                              child: DetailsPageContainer(
+                                editAction: () {},
+                                deleteAction: () {
+                                  final safeContext =
+                                      context;
+                                  showDialog(
+                                    context: safeContext,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'You are about to delete your staff, are you sure to proceed?',
+                                        title:
+                                            'Are you sure?',
+                                        action: () async {
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                          setState(() {
+                                            isLoading =
+                                                true;
+                                          });
+
+                                          await returnUserProvider(
+                                            context,
+                                            listen: false,
+                                          ).deleteUser(
+                                            widget
+                                                .employeeId,
+                                          );
+
+                                          setState(() {
+                                            isLoading =
+                                                false;
+                                            showSuccess =
+                                                true;
+                                          });
+
+                                          await Future.delayed(
+                                            Duration(
+                                              seconds: 2,
+                                            ),
+                                          );
+
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                theme: theme,
+                                employee: employee,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 110,
-                    child: DetailsPageContainer(
-                      theme: theme,
-                      employee: employee,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Visibility(
+            visible: isLoading,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader('Loading'),
+          ),
+          Visibility(
+            visible: showSuccess,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showSuccess('Deleted Successfully'),
+          ),
+        ],
       ),
     );
   }
@@ -65,11 +201,15 @@ class EmployeePageMobile extends StatelessWidget {
 
 class DetailsPageContainer extends StatelessWidget {
   final ThemeProvider theme;
-  final TempEmployeeClass employee;
+  final Function() deleteAction;
+  final Function() editAction;
+  final TempUserClass employee;
   const DetailsPageContainer({
     super.key,
     required this.theme,
     required this.employee,
+    required this.deleteAction,
+    required this.editAction,
   });
 
   @override
@@ -121,7 +261,7 @@ class DetailsPageContainer extends StatelessWidget {
                                     .b1
                                     .fontSize,
                           ),
-                          employee.employeeName,
+                          employee.name,
                         ),
                       ),
                       SizedBox(
@@ -135,7 +275,7 @@ class DetailsPageContainer extends StatelessWidget {
                                     .b3
                                     .fontSize,
                           ),
-                          employee.email ?? '',
+                          employee.email,
                         ),
                       ),
                     ],
@@ -194,7 +334,7 @@ class DetailsPageContainer extends StatelessWidget {
                     Expanded(
                       child: TabBarTabButton(
                         index: 1,
-                        text: 'Purchases',
+                        text: 'Sales',
                         theme: theme,
                       ),
                     ),
@@ -233,7 +373,7 @@ class DetailsPageContainer extends StatelessWidget {
                                 .where(
                                   (receipt) =>
                                       receipt.staffId ==
-                                      employee.id,
+                                      employee.userId,
                                 )
                                 .toList();
                         if (returnReceiptProvider(context)
@@ -241,7 +381,7 @@ class DetailsPageContainer extends StatelessWidget {
                             .where(
                               (test) =>
                                   test.staffId ==
-                                  employee.id,
+                                  employee.userId,
                             )
                             .isEmpty) {
                           return Center(
@@ -278,7 +418,7 @@ class DetailsPageContainer extends StatelessWidget {
                 color: theme.lightModeColor.errorColor200,
                 iconSize: 18,
                 text: 'Delete',
-                action: () {},
+                action: deleteAction,
                 theme: theme,
               ),
               CustomerActionButton(
@@ -286,16 +426,7 @@ class DetailsPageContainer extends StatelessWidget {
                 color: Colors.grey,
                 iconSize: 15,
                 text: 'Edit',
-                action: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return AddEmployeePage();
-                      },
-                    ),
-                  );
-                },
+                action: editAction,
                 theme: theme,
               ),
             ],
@@ -313,7 +444,7 @@ class EmployeeDetailsContainer extends StatelessWidget {
     required this.theme,
   });
 
-  final TempEmployeeClass employee;
+  final TempUserClass employee;
   final ThemeProvider theme;
 
   @override
@@ -331,7 +462,7 @@ class EmployeeDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: TabBarUserInfoSection(
-                    mainText: employee.employeeName,
+                    mainText: employee.name,
                     text: 'Name',
                   ),
                 ),
@@ -339,7 +470,7 @@ class EmployeeDetailsContainer extends StatelessWidget {
                   flex: 5,
                   child: TabBarUserInfoSection(
                     mainText: formatDateTime(
-                      employee.createdDate,
+                      employee.createdAt!,
                     ),
                     text: 'Date Added',
                   ),
@@ -355,15 +486,14 @@ class EmployeeDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: TabBarUserInfoSection(
-                    mainText: employee.email ?? 'Not Set',
+                    mainText: employee.email,
                     text: 'Email',
                   ),
                 ),
                 Expanded(
                   flex: 5,
                   child: TabBarUserInfoSection(
-                    mainText:
-                        employee.phoneNumber ?? 'Not Set',
+                    mainText: employee.phone ?? 'Not Set',
                     text: 'Phone Number',
                   ),
                 ),
@@ -393,7 +523,7 @@ class EmployeeDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: TabBarUserInfoSection(
-                    mainText: employee.address ?? 'Not Set',
+                    mainText: 'Not Set',
                     text: 'Address',
                   ),
                 ),
@@ -549,6 +679,10 @@ class TabBarTabButton extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
+          color:
+              returnCompProvider(context).activeTab == index
+                  ? const Color.fromARGB(50, 255, 193, 7)
+                  : Colors.transparent,
           border: Border(
             bottom: BorderSide(
               color:

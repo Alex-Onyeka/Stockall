@@ -97,7 +97,10 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
               ).name,
           state: selectedStateName.trim(),
           country: selectedCountryName,
-          shopAddress: addressController.text.trim(),
+          shopAddress:
+              addressController.text.isEmpty
+                  ? null
+                  : addressController.text,
           city: selectedCityName,
         ),
       );

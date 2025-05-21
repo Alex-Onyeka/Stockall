@@ -10,7 +10,6 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
 import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
-import 'package:stockitt/services/auth_service.dart';
 
 class MakeSalesMobileTwo extends StatefulWidget {
   final double totalAmount;
@@ -563,22 +562,27 @@ class _MakeSalesMobileTwoState
                             ).cartItems.isNotEmpty,
                         child: MainButtonP(
                           themeProvider: theme,
-                          action: () async {
+                          action: () {
+                            BuildContext safeContext =
+                                context;
                             showDialog(
-                              context: context,
-                              builder: (context) {
+                              context: safeContext,
+                              builder: (_) {
                                 return ConfirmationAlert(
                                   theme: theme,
                                   message:
                                       'You are about to record a Sale, are you sure you want to proceed?',
                                   title: 'Are you sure?',
                                   action: () async {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
                                     setState(() {
                                       isLoading = true;
                                     });
+                                    if (safeContext
+                                        .mounted) {
+                                      Navigator.of(
+                                        safeContext,
+                                      ).pop();
+                                    }
                                     var receipt = await returnSalesProvider(
                                       context,
                                       listen: false,
@@ -590,16 +594,20 @@ class _MakeSalesMobileTwoState
                                             listen: false,
                                           ).cartItems,
                                       staffId:
-                                          AuthService()
-                                              .currentUser!
-                                              .id,
+                                          returnUserProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .currentUserEmp!
+                                              .userId!,
                                       staffName:
                                           returnUserProvider(
                                                 context,
                                                 listen:
                                                     false,
                                               )
-                                              .currentUserMain!
+                                              .currentUserEmp!
                                               .name,
                                       shopId:
                                           returnShopProvider(
@@ -687,29 +695,30 @@ class _MakeSalesMobileTwoState
                                       isLoading = false;
                                       showSuccess = true;
                                     });
+
                                     await Future.delayed(
                                       Duration(seconds: 3),
-                                      () {
-                                        if (context
-                                            .mounted) {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return ReceiptPage(
-                                                  mainReceipt:
-                                                      receipt,
-                                                  isMain:
-                                                      true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        }
-                                      },
+                                      () {},
                                     );
+                                    if (context.mounted) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ReceiptPage(
+                                              mainReceipt:
+                                                  receipt,
+                                              isMain: true,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }
+                                    setState(() {
+                                      showSuccess = false;
+                                    });
                                   },
                                 );
                               },
@@ -726,6 +735,7 @@ class _MakeSalesMobileTwoState
             ),
           ),
         ),
+
         Visibility(
           visible: isLoading,
           child: returnCompProvider(

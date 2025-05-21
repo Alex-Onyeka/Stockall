@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_employee_class.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
 
 class AddEmployeePage extends StatefulWidget {
-  final TempEmployeeClass? employee;
+  final TempUserClass? employee;
   const AddEmployeePage({super.key, this.employee});
 
   @override
@@ -14,29 +14,15 @@ class AddEmployeePage extends StatefulWidget {
 class _AddEmployeePageState extends State<AddEmployeePage> {
   TextEditingController nameController =
       TextEditingController();
-  TextEditingController phoneController =
-      TextEditingController();
   TextEditingController emailController =
-      TextEditingController();
-  TextEditingController stateController =
-      TextEditingController();
-  TextEditingController cityController =
-      TextEditingController();
-  TextEditingController countryController =
-      TextEditingController();
-  TextEditingController addressController =
       TextEditingController();
 
   @override
   void dispose() {
     super.dispose();
-    addressController.dispose();
-    countryController.dispose();
-    cityController.dispose();
-    stateController.dispose();
+
     emailController.dispose();
     nameController.dispose();
-    phoneController.dispose();
   }
 
   @override
@@ -50,12 +36,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           if (constraints.maxWidth < 550) {
             return AddEmployeeMobile(
               nameController: nameController,
-              phoneController: phoneController,
-              addressController: addressController,
-              cityController: cityController,
-              countryController: countryController,
-              stateController: stateController,
-              employee: widget.employee,
+              emailController: emailController,
             );
           } else if (constraints.maxWidth > 500 &&
               constraints.maxWidth < 1000) {

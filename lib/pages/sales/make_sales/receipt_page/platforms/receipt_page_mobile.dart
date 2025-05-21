@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/top_banner_two.dart';
 import 'package:stockitt/constants/calculations.dart';
@@ -22,7 +21,6 @@ class ReceiptPageMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = returnUserProvider(context).currentUserMain;
     var shop = returnShopProvider(context).userShop;
     var theme = returnTheme(context);
     return SafeArea(
@@ -56,7 +54,6 @@ class ReceiptPageMobile extends StatelessWidget {
                       child: ReceiptDetailsContainer(
                         isMain: isMain,
                         shop: shop!,
-                        user: user!,
                         mainReceipt: mainReceipt,
                         theme: theme,
                       ),
@@ -76,14 +73,12 @@ class ReceiptDetailsContainer extends StatefulWidget {
   final bool isMain;
   final TempShopClass shop;
   final TempMainReceipt mainReceipt;
-  final TempUserClass user;
   final ThemeProvider theme;
   const ReceiptDetailsContainer({
     super.key,
     required this.theme,
     required this.mainReceipt,
     required this.shop,
-    required this.user,
     required this.isMain,
   });
 
@@ -730,7 +725,7 @@ class _ReceiptDetailsContainerState
                                           ),
                                           Visibility(
                                             visible:
-                                                !widget
+                                                widget
                                                     .isMain,
                                             child: Checkbox(
                                               value: returnSalesProvider(

@@ -515,7 +515,6 @@ class DataProvider extends ChangeNotifier {
     'cases',
     'dozens',
     'drops',
-    'g',
     'gallons',
     'items',
     'jars',

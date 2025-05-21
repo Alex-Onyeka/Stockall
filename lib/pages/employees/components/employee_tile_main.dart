@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_employee_class.dart';
-import 'package:stockitt/pages/employees/employee_page/employee_page.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class EmployeeTileMain extends StatelessWidget {
@@ -8,9 +7,11 @@ class EmployeeTileMain extends StatelessWidget {
     super.key,
     required this.employee,
     required this.theme,
+    required this.action,
   });
 
-  final TempEmployeeClass employee;
+  final TempUserClass employee;
+  final Function() action;
   final ThemeProvider theme;
 
   @override
@@ -24,18 +25,7 @@ class EmployeeTileMain extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(5),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return EmployeePage(
-                    employeeId: employee.id,
-                  );
-                },
-              ),
-            );
-          },
+          onTap: action,
           child: SizedBox(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -69,7 +59,7 @@ class EmployeeTileMain extends StatelessWidget {
                                   color: Colors.black,
                                 ),
                                 employee
-                                    .employeeName
+                                    .name
                                     .characters
                                     .first
                                     .toUpperCase(),
@@ -91,7 +81,7 @@ class EmployeeTileMain extends StatelessWidget {
                                       FontWeight.bold,
                                 ),
 
-                                employee.employeeName,
+                                employee.name,
                               ),
                               Text(
                                 style: TextStyle(
@@ -107,7 +97,7 @@ class EmployeeTileMain extends StatelessWidget {
                                           .b3
                                           .fontSize,
                                 ),
-                                employee.email!,
+                                employee.email,
                               ),
                             ],
                           ),

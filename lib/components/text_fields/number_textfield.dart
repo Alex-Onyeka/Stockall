@@ -126,7 +126,7 @@ class _NumberTextfieldState extends State<NumberTextfield> {
                 color: Colors.grey,
                 width: 1.5,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -134,7 +134,7 @@ class _NumberTextfieldState extends State<NumberTextfield> {
                     widget.theme.lightModeColor.prColor300,
                 width: 1.8,
               ),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
           controller: widget.controller,

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:stockitt/classes/temp_employee_class.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
+import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockitt/pages/employees/components/employee_tile_main.dart';
-import 'package:stockitt/providers/employee_provider.dart';
+import 'package:stockitt/pages/employees/employee_page/employee_page.dart';
 
 class EmployeeListMobile extends StatefulWidget {
   const EmployeeListMobile({super.key});
@@ -27,13 +27,30 @@ class _EmployeeListMobileState
       context,
       listen: false,
     ).toggleFloatingAction(context);
+    employeesFuture = getEmployees();
+  }
+
+  late Future<List<TempUserClass>> employeesFuture;
+
+  Future<List<TempUserClass>> getEmployees() async {
+    var tempEmp =
+        await returnUserProvider(
+          context,
+          listen: false,
+        ).fetchUsers();
+
+    return tempEmp!;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    employeesFuture = getEmployees();
   }
 
   @override
   Widget build(BuildContext context) {
-    final employeeProvider = Provider.of<EmployeeProvider>(
-      context,
-    );
     var theme = returnTheme(context);
     return Scaffold(
       floatingActionButton: FloatingActionButtonMain(
@@ -46,7 +63,11 @@ class _EmployeeListMobileState
                 return AddEmployeePage();
               },
             ),
-          );
+          ).then((_) {
+            setState(() {
+              employeesFuture = getEmployees();
+            });
+          });
         },
         color:
             returnTheme(context).lightModeColor.prColor300,
@@ -81,64 +102,109 @@ class _EmployeeListMobileState
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 20.0),
-        child: Builder(
-          builder: (context) {
-            if (employeeProvider.employeeList.isEmpty) {
-              return EmptyWidgetDisplay(
-                title: 'Empty Employee List',
-                subText:
-                    'Your Have not Created Any Employee Yet.',
-                buttonText: 'Create Employee',
-                svg: productIconSvg,
-                theme: theme,
-                height: 35,
-                action: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return AddEmployeePage();
-                      },
-                    ),
-                  );
-                },
-              );
-            } else {
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30.0,
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount:
-                            employeeProvider
-                                .employeeList
-                                .length,
-                        itemBuilder: (context, index) {
-                          List<TempEmployeeClass>
-                          employees =
-                              employeeProvider.employeeList;
-                          TempEmployeeClass employee =
-                              employees[index];
+      body: FutureBuilder<List<TempUserClass>>(
+        future: employeesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader('Loading');
+          } else if (snapshot.hasError) {
+            return EmptyWidgetDisplayOnly(
+              title: 'An Error Occured',
+              subText:
+                  'An error occoured while loading your data, please check your internet and try again.',
+              theme: theme,
+              height: 30,
+              icon: Icons.clear,
+            );
+          } else {
+            List<TempUserClass> employees = snapshot.data!;
 
-                          return EmployeeTileMain(
-                            employee: employee,
-                            theme: theme,
-                          );
-                        },
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Builder(
+                builder: (context) {
+                  if (employees.isEmpty) {
+                    return EmptyWidgetDisplay(
+                      title: 'Empty Employee List',
+                      subText:
+                          'Your Have not Created Any Employee Yet.',
+                      buttonText: 'Create Employee',
+                      svg: productIconSvg,
+                      theme: theme,
+                      height: 35,
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AddEmployeePage();
+                            },
+                          ),
+                        ).then((_) {
+                          setState(() {
+                            employeesFuture =
+                                getEmployees();
+                          });
+                        });
+                      },
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0,
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
-        ),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: employees.length,
+                              itemBuilder: (
+                                context,
+                                index,
+                              ) {
+                                TempUserClass employee =
+                                    employees[index];
+
+                                return EmployeeTileMain(
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return EmployeePage(
+                                            employeeId:
+                                                employee
+                                                    .userId!,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {
+                                        employeesFuture =
+                                            getEmployees();
+                                      });
+                                    });
+                                  },
+                                  employee: employee,
+                                  theme: theme,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }

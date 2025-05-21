@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_employee_class.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
-import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/authentication/components/email_text_field.dart';
+import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class AddEmployeeMobile extends StatefulWidget {
-  final TempEmployeeClass? employee;
   final TextEditingController nameController;
-  final TextEditingController phoneController;
-  final TextEditingController addressController;
-  final TextEditingController countryController;
-  final TextEditingController cityController;
-  final TextEditingController stateController;
+  final TextEditingController emailController;
 
   const AddEmployeeMobile({
     super.key,
     required this.nameController,
-    required this.phoneController,
-    required this.addressController,
-    required this.countryController,
-    required this.cityController,
-    required this.stateController,
-    this.employee,
+    required this.emailController,
   });
 
   @override
@@ -32,45 +26,67 @@ class AddEmployeeMobile extends StatefulWidget {
 
 class _AddEmployeeMobileState
     extends State<AddEmployeeMobile> {
-  //
-  //
-  //
+  bool isLoading = false;
+  bool showSuccess = false;
 
-  bool isExtra = false;
-
-  //
-  //
-  @override
-  void initState() {
-    super.initState();
-    if (widget.employee == null) {
-      return;
-    } else {
-      setState(() {
-        isExtra = true;
-      });
-      widget.nameController.text =
-          widget.employee!.employeeName;
-      widget.phoneController.text =
-          widget.employee!.phoneNumber ?? '';
-      if (widget.employee!.address != null) {
-        widget.addressController.text =
-            widget.employee!.address!;
-      }
-      if (widget.employee!.country != null) {
-        widget.countryController.text =
-            widget.employee!.country!;
-      }
-
-      if (widget.employee!.city != null) {
-        widget.cityController.text = widget.employee!.city!;
-      }
-      if (widget.employee!.state != null) {
-        widget.stateController.text =
-            widget.employee!.state!;
-      }
-    }
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+    );
+    return emailRegex.hasMatch(email);
   }
+
+  //
+  //
+  //
+  int? currentSelected;
+  List<Map<String, dynamic>> employees = [
+    {
+      'position': 'Owner',
+      'auths': ['Overall Access'],
+    },
+    {
+      'position': 'General Manager',
+      'auths': [
+        'Add Products',
+        'Update Products',
+        'Delete Products',
+        'Add Customers',
+        'Update Customers',
+        'Delete Customers',
+        'Make Sale',
+        'View Daily Sales',
+        'View Weekly Sales',
+        'Make Refund',
+        'Delete Sales',
+      ],
+    },
+    {
+      'position': 'Manager',
+      'auths': [
+        'Add Products',
+        'Update Products',
+        'Add Customers',
+        'Update Customers',
+        'Delete Customers',
+        'Make Sale',
+        'View Daily Sales',
+        'Make Refund',
+      ],
+    },
+    {
+      'position': 'Cashier',
+      'auths': [
+        'Add Customers',
+        'Make Sale',
+        'View Products',
+        'View Daily Sales',
+        'Make Refund,',
+      ],
+    },
+  ];
+  //
+  //
 
   //
   @override
@@ -79,6 +95,7 @@ class _AddEmployeeMobileState
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
             toolbarHeight: 60,
             leading: IconButton(
@@ -105,295 +122,419 @@ class _AddEmployeeMobileState
                     fontSize: theme.mobileTexts.h4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  widget.employee != null
-                      ? 'Edit Employee Info'
-                      : 'Add New Employee',
+
+                  'Add New Employee',
                 ),
               ],
             ),
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 25.0,
-            ),
+          body: SafeArea(
             child: Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        GeneralTextField(
-                          title: 'Name',
-                          hint: 'Enter employees\' Name',
-                          controller: widget.nameController,
-                          lines: 1,
-                          theme: theme,
-                        ),
-                        SizedBox(height: 15),
-                        PhoneNumberTextField(
-                          title: 'Phone Number',
-                          hint:
-                              'Enter employees\' Phone Numer',
-                          controller:
-                              widget.phoneController,
-                          theme: theme,
-                        ),
                         SizedBox(height: 20),
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Icon(
-                              size: 17,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor100,
-                              Icons.warning_rounded,
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize: 12,
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 10.0,
                               ),
-                              'The fields below are optional.',
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              isExtra = !isExtra;
-                            });
-                          },
-                          child: Row(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.center,
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            spacing: 5,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                isExtra
-                                    ? 'Colapse'
-                                    : 'Expand',
-                              ),
-                              Icon(
-                                size: 35,
-                                color: Colors.grey,
-                                isExtra
-                                    ? Icons
-                                        .keyboard_arrow_up_rounded
-                                    : Icons
-                                        .keyboard_arrow_down_rounded,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Visibility(
-                          visible: isExtra,
                           child: Column(
                             children: [
-                              GeneralTextField(
-                                title: 'Country',
-                                hint:
-                                    'Enter Country (Nigeria)',
-                                controller:
-                                    widget
-                                        .countryController,
-                                lines: 1,
-                                theme: theme,
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 20.0,
+                                        ),
+                                    child: Column(
+                                      children: [
+                                        GeneralTextField(
+                                          title: 'Name',
+                                          hint:
+                                              'Enter employees\' Name',
+                                          controller:
+                                              widget
+                                                  .nameController,
+                                          lines: 1,
+                                          theme: theme,
+                                        ),
+                                        SizedBox(
+                                          height: 12,
+                                        ),
+                                        EmailTextField(
+                                          title: 'Email',
+                                          hint:
+                                              'Enter employees\' Email',
+                                          isEmail: true,
+                                          controller:
+                                              widget
+                                                  .emailController,
+                                          theme: theme,
+                                        ),
+                                        SizedBox(
+                                          height: 12,
+                                        ),
+                                        EmailTextField(
+                                          controller:
+                                              widget
+                                                  .emailController,
+                                          theme: theme,
+                                          isEmail: false,
+                                          hint:
+                                              'Set Password',
+                                          title: 'Password',
+                                        ),
+                                        SizedBox(
+                                          height: 25,
+                                        ),
+                                        Row(
+                                          spacing: 5,
+                                          children: [
+                                            Icon(
+                                              size: 20,
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .secColor100,
+                                              Icons
+                                                  .warning_rounded,
+                                            ),
+                                            Flexible(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Select Staff Role.',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          12,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+                                                    'Note, Staff Role Determines their Authorization level.',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 0),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        NeverScrollableScrollPhysics(),
+                                    itemCount:
+                                        employees.length,
+                                    itemBuilder: (
+                                      context,
+                                      index,
+                                    ) {
+                                      var employee =
+                                          employees[index];
+                                      return EmployeeListTile(
+                                        currentSelected:
+                                            currentSelected ??
+                                            5,
+                                        index: index,
+                                        action: () {
+                                          setState(() {
+                                            currentSelected =
+                                                index;
+                                          });
+                                        },
+                                        authorizations:
+                                            employee['auths'],
+                                        position:
+                                            employee['position'],
+                                        theme: theme,
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 15),
-                              GeneralTextField(
-                                title: 'State',
-                                hint: 'Enter State (Abuja)',
-                                controller:
-                                    widget.stateController,
-                                lines: 1,
-                                theme: theme,
-                              ),
-                              SizedBox(height: 15),
-                              GeneralTextField(
-                                title: 'City',
-                                hint: 'Enter City (Wuse)',
-                                controller:
-                                    widget.cityController,
-                                lines: 1,
-                                theme: theme,
-                              ),
-                              SizedBox(height: 15),
-                              GeneralTextField(
-                                title: 'Address',
-                                hint:
-                                    'Enter Address (32 close, behind school gate.)',
-                                controller:
-                                    widget
-                                        .addressController,
-                                lines: 1,
-                                theme: theme,
-                              ),
+                              SizedBox(height: 20),
                             ],
                           ),
                         ),
-                        SizedBox(height: 15),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                MainButtonP(
-                  themeProvider: theme,
-                  action: () {
-                    returnValidate(
-                      context,
-                      listen: false,
-                    ).checkInputs(
-                      conditionsThree: false,
-                      conditionsFour: false,
-                      conditionsSecond: false,
-                      conditionsFirst:
-                          widget
-                              .nameController
-                              .text
-                              .isEmpty ||
-                          widget
-                              .phoneController
-                              .text
-                              .isEmpty,
-                      context: context,
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.only(top: 20),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                    ),
+                    child: MainButtonP(
+                      themeProvider: theme,
                       action: () {
-                        // if (widget.employee == null) {
-                        //   returnEmployeesPro(
-                        //     context,
-                        //     listen: false,
-                        //   ).addemployee(
-                        //     TempemployeesClass(
-                        //       shopId:
-                        //           currentShop(
-                        //             context,
-                        //           ).shopId,
-                        //       country:
-                        //           widget
-                        //               .countryController
-                        //               .text,
-                        //       dateAdded: DateTime.now(),
-                        //       id:
-                        //           returnemployees(
-                        //             context,
-                        //             listen: false,
-                        //           ).employees.length +
-                        //           1,
-                        //       name:
-                        //           widget
-                        //               .nameController
-                        //               .text,
-                        //       email:
-                        //           widget
-                        //               .emailController
-                        //               .text,
-                        //       phone:
-                        //           widget
-                        //               .phoneController
-                        //               .text,
-                        //       address:
-                        //           widget
-                        //               .addressController
-                        //               .text,
-                        //       city:
-                        //           widget
-                        //               .cityController
-                        //               .text,
-                        //       state:
-                        //           widget
-                        //               .stateController
-                        //               .text,
-                        //     ),
-                        //   );
-                        // } else {
-                        //   returnemployees(
-                        //     context,
-                        //     listen: false,
-                        //   ).updateemployee(
-                        //     mainemployee: widget.employee!,
-                        //     setteremployee:
-                        //         TempemployeesClass(
-                        //           shopId:
-                        //               currentShop(
-                        //                 context,
-                        //               ).shopId,
-                        //           id:
-                        //               returnemployees(
-                        //                 context,
-                        //                 listen: false,
-                        //               ).getId(),
-                        //           name:
-                        //               widget
-                        //                   .nameController
-                        //                   .text,
-                        //           email:
-                        //               widget
-                        //                   .emailController
-                        //                   .text,
-                        //           phone:
-                        //               widget
-                        //                   .phoneController
-                        //                   .text,
-                        //           address:
-                        //               widget
-                        //                   .addressController
-                        //                   .text,
-                        //           city:
-                        //               widget
-                        //                   .cityController
-                        //                   .text,
-                        //           state:
-                        //               widget
-                        //                   .stateController
-                        //                   .text,
-                        //           dateAdded:
-                        //               widget
-                        //                   .employee!
-                        //                   .dateAdded,
-                        //         ),
-                        //   );
-                        // }
-                        returnCompProvider(
-                          context,
-                          listen: false,
-                        ).successAction(
-                          () => Navigator.of(context).pop(),
-                        );
+                        if (widget
+                                .nameController
+                                .text
+                                .isEmpty ||
+                            widget
+                                .emailController
+                                .text
+                                .isEmpty ||
+                            currentSelected == null) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return InfoAlert(
+                                theme: theme,
+                                message:
+                                    'Name, email and Staff Role must be set.',
+                                title: 'Fields not set',
+                              );
+                            },
+                          );
+                        } else if (!isValidEmail(
+                          widget.emailController.text,
+                        )) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return InfoAlert(
+                                theme: theme,
+                                message:
+                                    'Please enter a valid Email Address',
+                                title: 'Email Invalid',
+                              );
+                            },
+                          );
+                        } else {
+                          final safeContext = context;
+                          showDialog(
+                            context: safeContext,
+                            builder: (context) {
+                              return ConfirmationAlert(
+                                theme: theme,
+                                message:
+                                    'You are about to create an employee with the role of a ${employees[currentSelected!]['position']}, do you want to proceed?',
+                                title: 'Procced?',
+                                action: () async {
+                                  if (safeContext.mounted) {
+                                    Navigator.of(
+                                      safeContext,
+                                    ).pop();
+                                  }
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  await returnUserProvider(
+                                    context,
+                                    listen: false,
+                                  ).addUser(
+                                    TempUserClass(
+                                      name:
+                                          widget
+                                              .nameController
+                                              .text
+                                              .trim(),
+                                      email:
+                                          widget
+                                              .emailController
+                                              .text
+                                              .trim(),
+                                      role:
+                                          employees[currentSelected!]['position'],
+                                      authUserId:
+                                          AuthService()
+                                              .currentUser!
+                                              .id,
+                                      password:
+                                          widget
+                                              .emailController
+                                              .text
+                                              .trim(),
+                                    ),
+                                  );
+
+                                  setState(() {
+                                    isLoading = false;
+                                    showSuccess = true;
+                                  });
+
+                                  await Future.delayed(
+                                    Duration(seconds: 2),
+                                  );
+
+                                  if (safeContext.mounted) {
+                                    Navigator.of(
+                                      safeContext,
+                                    ).pop();
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        }
                       },
-                    );
-                  },
-                  text:
-                      widget.employee != null
-                          ? 'Update Details'
-                          : 'Add Employee',
+                      text: 'Add Employee',
+                    ),
+                  ),
                 ),
+                SizedBox(height: 20),
               ],
             ),
           ),
         ),
         Visibility(
-          visible: returnCompProvider(context).isLoaderOn,
+          visible: isLoading,
           child: returnCompProvider(
             context,
             listen: false,
-          ).showSuccess(
-            widget.employee != null
-                ? 'employee Updated Successfully'
-                : 'employee Added Successfully',
-          ),
+          ).showLoader('Loading'),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showSuccess('Employee Added Successfully'),
         ),
       ],
+    );
+  }
+}
+
+class EmployeeListTile extends StatelessWidget {
+  final String position;
+  final List<String> authorizations;
+  final Function() action;
+  final int index;
+  final int currentSelected;
+  final ThemeProvider theme;
+
+  const EmployeeListTile({
+    super.key,
+    required this.position,
+    required this.authorizations,
+    required this.action,
+    required this.theme,
+    required this.index,
+    required this.currentSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Ink(
+        color: Colors.white,
+        child: InkWell(
+          onTap: () {
+            action();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(
+              bottom: 20.0,
+              left: 15,
+              right: 15,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b1.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      position,
+                    ),
+                    SizedBox(height: 5),
+                    Checkbox(
+                      activeColor:
+                          theme.lightModeColor.secColor100,
+                      value: currentSelected == index,
+                      onChanged: (value) {
+                        action();
+                        FocusManager.instance.primaryFocus
+                            ?.unfocus();
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children:
+                                authorizations.map((auth) {
+                                  return Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          vertical: 4,
+                                          horizontal: 8,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade200,
+                                      ),
+                                    ),
+
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      auth,
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

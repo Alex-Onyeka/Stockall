@@ -86,10 +86,12 @@ class EmptyWidgetDisplay extends StatelessWidget {
             subText,
           ),
           SizedBox(height: 20),
-          SmallButtonMain(
-            theme: theme,
-            action: action,
-            buttonText: buttonText,
+          Material(
+            child: SmallButtonMain(
+              theme: theme,
+              action: action,
+              buttonText: buttonText,
+            ),
           ),
         ],
       ),

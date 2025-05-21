@@ -17,12 +17,6 @@ class _AddCustomerState extends State<AddCustomer> {
       TextEditingController();
   TextEditingController emailController =
       TextEditingController();
-  TextEditingController stateController =
-      TextEditingController();
-  TextEditingController cityController =
-      TextEditingController();
-  TextEditingController countryController =
-      TextEditingController();
   TextEditingController addressController =
       TextEditingController();
 
@@ -30,9 +24,6 @@ class _AddCustomerState extends State<AddCustomer> {
   void dispose() {
     super.dispose();
     addressController.dispose();
-    countryController.dispose();
-    cityController.dispose();
-    stateController.dispose();
     emailController.dispose();
     nameController.dispose();
     phoneController.dispose();
@@ -52,9 +43,6 @@ class _AddCustomerState extends State<AddCustomer> {
               nameController: nameController,
               phoneController: phoneController,
               addressController: addressController,
-              cityController: cityController,
-              countryController: countryController,
-              stateController: stateController,
               customer: widget.customer,
             );
           } else if (constraints.maxWidth > 500 &&

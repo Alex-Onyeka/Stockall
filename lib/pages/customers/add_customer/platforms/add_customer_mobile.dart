@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:stockitt/classes/temp_customers_class.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
@@ -11,9 +16,6 @@ class AddCustomerMobile extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController phoneController;
   final TextEditingController addressController;
-  final TextEditingController countryController;
-  final TextEditingController cityController;
-  final TextEditingController stateController;
 
   const AddCustomerMobile({
     super.key,
@@ -21,9 +23,6 @@ class AddCustomerMobile extends StatefulWidget {
     required this.emailController,
     required this.phoneController,
     required this.addressController,
-    required this.countryController,
-    required this.cityController,
-    required this.stateController,
     this.customer,
   });
 
@@ -42,9 +41,122 @@ class _AddCustomerMobileState
 
   //
   //
+
+  Future<void> fetchCountries() async {
+    final url = Uri.parse(
+      'https://api.countrystatecity.in/v1/countries',
+    );
+    final response = await http.get(
+      url,
+      headers: {'X-CSCAPI-KEY': apiKey},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData = jsonDecode(
+        response.body,
+      );
+
+      // Convert List<dynamic> to List<String>
+      final List<String> countryNames =
+          responseData
+              .map<String>(
+                (country) => country['name'].toString(),
+              )
+              .toList();
+
+      // Assign it to countries
+      setState(() {
+        countries = countryNames;
+        countriesCodes = responseData;
+      });
+    } else {
+      throw Exception('Failed to load countries');
+    }
+  }
+
+  Future<void> fetchStates(String countryCode) async {
+    final url = Uri.parse(
+      'https://api.countrystatecity.in/v1/countries/$countryCode/states',
+    );
+    final response = await http.get(
+      url,
+      headers: {'X-CSCAPI-KEY': apiKey},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData = jsonDecode(
+        response.body,
+      );
+
+      final List<String> stateNames =
+          responseData
+              .map<String>(
+                (state) => state['name'].toString(),
+              )
+              .toList();
+
+      setState(() {
+        states = stateNames;
+        stateCodes = responseData;
+        cities = [];
+      });
+    } else {
+      throw Exception('Failed to load states');
+    }
+  }
+
+  Future<void> fetchCities(
+    String countryCode,
+    String stateCode,
+  ) async {
+    final url = Uri.parse(
+      'https://api.countrystatecity.in/v1/countries/$countryCode/states/$stateCode/cities',
+    );
+    final response = await http.get(
+      url,
+      headers: {'X-CSCAPI-KEY': apiKey},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData = jsonDecode(
+        response.body,
+      );
+
+      final List<String> cityNames =
+          responseData
+              .map<String>(
+                (city) => city['name'].toString(),
+              )
+              .toList();
+
+      setState(() {
+        cities = cityNames;
+      });
+    } else {
+      throw Exception('Failed to load cities');
+    }
+  }
+
+  final String apiKey =
+      'ZmdubFNvNDloNjBrNWs2VGpTQ0ttem1Xa3A1SVdZZmpWTE5tdnBKVw==';
+
+  FutureOr<List<String>> countries = [];
+  List<dynamic> countriesCodes = [];
+  FutureOr<List<String>> states = [];
+  List<dynamic> stateCodes = [];
+  FutureOr<List<String>> cities = [];
+
+  String? selectedCountryCode;
+  String selectedCountryName = 'Select Your Country';
+  String? selectedStateCode;
+  String selectedStateName = 'Select Your State';
+  String? selectedCity;
+  String selectedCityName = 'Select Your City';
+
   @override
   void initState() {
     super.initState();
+    fetchCountries();
     if (widget.customer == null) {
       return;
     } else {
@@ -59,16 +171,14 @@ class _AddCustomerMobileState
             widget.customer!.address!;
       }
       if (widget.customer!.country != null) {
-        widget.countryController.text =
-            widget.customer!.country!;
+        selectedCountryName = widget.customer!.country!;
       }
 
       if (widget.customer!.city != null) {
-        widget.cityController.text = widget.customer!.city!;
+        selectedCityName = widget.customer!.city!;
       }
       if (widget.customer!.state != null) {
-        widget.stateController.text =
-            widget.customer!.state!;
+        selectedStateName = widget.customer!.state!;
       }
     }
   }
@@ -212,33 +322,179 @@ class _AddCustomerMobileState
                           visible: isExtra,
                           child: Column(
                             children: [
-                              GeneralTextField(
-                                title: 'Country',
-                                hint:
-                                    'Enter Country (Nigeria)',
-                                controller:
-                                    widget
-                                        .countryController,
-                                lines: 1,
-                                theme: theme,
-                              ),
-                              SizedBox(height: 15),
-                              GeneralTextField(
-                                title: 'State',
-                                hint: 'Enter State (Abuja)',
-                                controller:
-                                    widget.stateController,
-                                lines: 1,
-                                theme: theme,
-                              ),
-                              SizedBox(height: 15),
-                              GeneralTextField(
-                                title: 'City',
-                                hint: 'Enter City (Wuse)',
-                                controller:
-                                    widget.cityController,
-                                lines: 1,
-                                theme: theme,
+                              Column(
+                                spacing: 10,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 0.0,
+                                        ),
+                                    child: Column(
+                                      spacing: 20,
+                                      children: [
+                                        DropdownSearch<
+                                          String
+                                        >(
+                                          items: (
+                                            filter,
+                                            loadProps,
+                                          ) {
+                                            return countries;
+                                          },
+                                          enabled: true,
+                                          selectedItem:
+                                              selectedCountryName,
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            setState(() {
+                                              final selected =
+                                                  countriesCodes.firstWhere(
+                                                    (
+                                                      country,
+                                                    ) =>
+                                                        country['name'] ==
+                                                        value,
+                                                  );
+                                              setState(() {
+                                                selectedCountryCode =
+                                                    selected['iso2'] ??
+                                                    '0';
+                                                selectedCountryName =
+                                                    selected['name'] ??
+                                                    'Not Found';
+                                              });
+                                            });
+                                            fetchStates(
+                                              selectedCountryCode!,
+                                            );
+                                            // print(countriesCodes);
+                                            // print(countries);
+                                          },
+                                          popupProps: PopupProps.menu(
+                                            showSearchBox:
+                                                true,
+                                            menuProps: MenuProps(
+                                              backgroundColor:
+                                                  Colors
+                                                      .white,
+                                            ),
+                                            searchFieldProps: TextFieldProps(
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    'Search Country here...',
+                                                border:
+                                                    OutlineInputBorder(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        DropdownSearch<
+                                          String
+                                        >(
+                                          items: (
+                                            filter,
+                                            loadProps,
+                                          ) {
+                                            return states;
+                                          },
+                                          enabled:
+                                              selectedCountryCode !=
+                                              null,
+                                          selectedItem:
+                                              selectedStateName,
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            setState(() {
+                                              final selected =
+                                                  stateCodes.firstWhere(
+                                                    (
+                                                      state,
+                                                    ) =>
+                                                        state['name'] ==
+                                                        value,
+                                                  );
+                                              setState(() {
+                                                selectedStateCode =
+                                                    selected['iso2'] ??
+                                                    '0';
+                                                selectedStateName =
+                                                    selected['name'] ??
+                                                    '';
+                                              });
+                                            });
+                                            fetchCities(
+                                              selectedCountryCode!,
+                                              selectedStateCode!,
+                                            );
+                                          },
+                                          popupProps: PopupProps.menu(
+                                            showSearchBox:
+                                                true,
+                                            menuProps: MenuProps(
+                                              backgroundColor:
+                                                  Colors
+                                                      .white,
+                                            ),
+                                            searchFieldProps: TextFieldProps(
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    'Search State here...',
+                                                border:
+                                                    OutlineInputBorder(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        DropdownSearch<
+                                          String
+                                        >(
+                                          items: (
+                                            filter,
+                                            loadProps,
+                                          ) {
+                                            return cities;
+                                          },
+                                          enabled:
+                                              selectedStateCode !=
+                                              null,
+                                          selectedItem:
+                                              selectedCityName,
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            setState(() {
+                                              selectedCity =
+                                                  value;
+                                              selectedCityName =
+                                                  value ??
+                                                  'Select Your City';
+                                            });
+                                          },
+                                          popupProps: PopupProps.menu(
+                                            showSearchBox:
+                                                true,
+                                            menuProps: MenuProps(
+                                              backgroundColor:
+                                                  Colors
+                                                      .white,
+                                            ),
+                                            searchFieldProps: TextFieldProps(
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    'Search City here...',
+                                                border:
+                                                    OutlineInputBorder(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                               SizedBox(height: 15),
                               GeneralTextField(
@@ -301,10 +557,7 @@ class _AddCustomerMobileState
                                     context,
                                     listen: false,
                                   ).userShop!.shopId!,
-                              country:
-                                  widget
-                                      .countryController
-                                      .text,
+                              country: selectedCountryName,
                               dateAdded: DateTime.now(),
 
                               name:
@@ -323,14 +576,8 @@ class _AddCustomerMobileState
                                   widget
                                       .addressController
                                       .text,
-                              city:
-                                  widget
-                                      .cityController
-                                      .text,
-                              state:
-                                  widget
-                                      .stateController
-                                      .text,
+                              city: selectedCityName,
+                              state: selectedStateName,
                             ),
                           );
                         } else {
@@ -361,14 +608,9 @@ class _AddCustomerMobileState
                                   widget
                                       .addressController
                                       .text,
-                              city:
-                                  widget
-                                      .cityController
-                                      .text,
-                              state:
-                                  widget
-                                      .stateController
-                                      .text,
+                              city: selectedCityName,
+                              state: selectedStateName,
+                              country: selectedCountryName,
                               dateAdded:
                                   widget
                                       .customer!

@@ -63,8 +63,8 @@ class ConfirmationAlert extends StatelessWidget {
                     child: Center(
                       child: Icon(
                         color: Colors.white,
-                        size: 50,
-                        Icons.clear_rounded,
+                        size: 30,
+                        Icons.question_mark_outlined,
                       ),
                     ),
                   ),
@@ -108,7 +108,9 @@ class ConfirmationAlert extends StatelessWidget {
                                   .errorColor200,
                         ),
                         child: InkWell(
-                          onTap: action,
+                          onTap: () {
+                            action!();
+                          },
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 20,

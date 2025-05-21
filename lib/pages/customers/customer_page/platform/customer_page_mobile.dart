@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_customers_class.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/calculations.dart';
@@ -269,6 +270,7 @@ class DetailsPageContainer extends StatelessWidget {
                                       'This customer has not made any purchases from you yet.',
                                   theme: theme,
                                   height: 35,
+                                  icon: Icons.clear,
                                 );
                               } else {
                                 var tempReceipts =
@@ -320,7 +322,38 @@ class DetailsPageContainer extends StatelessWidget {
                 color: theme.lightModeColor.errorColor200,
                 iconSize: 18,
                 text: 'Delete',
-                action: () {},
+                action: () {
+                  final safeContext = context;
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ConfirmationAlert(
+                        theme: theme,
+                        message:
+                            'You are about to delete your customer, are you sure you want to proceed?',
+                        title: 'Are you sure?',
+                        action: () async {
+                          if (safeContext.mounted) {
+                            Navigator.of(safeContext).pop();
+                          }
+                          returnCustomers(
+                            context,
+                            listen: false,
+                          ).deleteCustomerMain(
+                            customer.id!,
+                          );
+                          await Future.delayed(
+                            Duration(microseconds: 500),
+                            () {},
+                          );
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
                 theme: theme,
               ),
               CustomerActionButton(
@@ -640,6 +673,10 @@ class TabBarTabButton extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
+          color:
+              returnCompProvider(context).activeTab == index
+                  ? const Color.fromARGB(39, 255, 201, 7)
+                  : Colors.transparent,
           border: Border(
             bottom: BorderSide(
               color:

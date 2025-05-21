@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/calendar/calendar_widget.dart';
@@ -55,6 +56,7 @@ class _AddProductMobileState
   //
 
   bool isOpenUnit = false;
+  bool isSizedTypeOpen = false;
   //
   //
   //
@@ -109,75 +111,90 @@ class _AddProductMobileState
         },
       );
     } else {
-      setState(() {
-        isLoading = true;
-      });
-      await returnData(
-        context,
-        listen: false,
-      ).createProduct(
-        TempProductClass(
-          name: widget.nameController.text.trim(),
-          unit:
-              returnData(
-                context,
-                listen: false,
-              ).selectedUnit!,
-          isRefundable:
-              returnData(
-                context,
-                listen: false,
-              ).isProductRefundable,
-          costPrice: double.parse(
-            widget.costController.text.replaceAll(',', ''),
-          ),
-          shopId: userShop!.shopId!,
+      final safeContext = context; // screen-level context
 
-          sellingPrice: double.parse(
-            widget.sellingController.text.replaceAll(
-              ',',
-              '',
-            ),
-          ),
-          quantity: double.parse(
-            widget.quantityController.text.replaceAll(
-              ',',
-              '',
-            ),
-          ),
-          barcode: barcode,
-          size: widget.sizeController.text.replaceAll(
-            ',',
-            '',
-          ),
-          discount: double.tryParse(
-            widget.discountController.text,
-          ),
-          endDate:
-              returnData(context, listen: false).endDate,
-          startDate:
-              returnData(
-                context,
+      showDialog(
+        context: safeContext,
+        builder: (context) {
+          return ConfirmationAlert(
+            theme: returnTheme(safeContext),
+            message:
+                'You are about to add a new product to your stock, are you sure you want to proceed?',
+            title: 'Are you sure?',
+            action: () async {
+              if (safeContext.mounted) {
+                Navigator.of(
+                  safeContext,
+                ).pop(); // close dialog
+              }
+
+              setState(() {
+                isLoading = true;
+              });
+
+              final dataProvider = returnData(
+                safeContext,
                 listen: false,
-              ).startDate ??
-              DateTime.now(),
-        ),
+              );
+
+              await dataProvider.createProduct(
+                TempProductClass(
+                  name: widget.nameController.text.trim(),
+                  unit: dataProvider.selectedUnit!,
+                  sizeType: dataProvider.selectedSize,
+                  isRefundable:
+                      dataProvider.isProductRefundable,
+                  costPrice: double.parse(
+                    widget.costController.text.replaceAll(
+                      ',',
+                      '',
+                    ),
+                  ),
+                  shopId: userShop!.shopId!,
+                  sellingPrice: double.parse(
+                    widget.sellingController.text
+                        .replaceAll(',', ''),
+                  ),
+                  quantity: double.parse(
+                    widget.quantityController.text
+                        .replaceAll(',', ''),
+                  ),
+                  barcode: barcode,
+                  size: widget.sizeController.text
+                      .replaceAll(',', ''),
+                  discount: double.tryParse(
+                    widget.discountController.text,
+                  ),
+                  startDate:
+                      dataProvider.startDate ??
+                      DateTime.now(),
+                  endDate: dataProvider.endDate,
+                ),
+              );
+
+              setState(() {
+                isLoading = false;
+                showSuccess = true;
+              });
+
+              // Clear data before popping
+              if (safeContext.mounted) {
+                dataProvider.clearEndDate();
+                dataProvider.clearStartDate();
+              }
+
+              Future.delayed(Duration(seconds: 2), () {
+                // Pop current screen
+                if (safeContext.mounted) {
+                  Navigator.of(
+                    safeContext,
+                  ).pop(); // pop current page
+                }
+              });
+            },
+          );
+        },
       );
-      setState(() {
-        isLoading = false;
-        showSuccess = true;
-      });
-      if (context.mounted) {
-        // ignore: use_build_context_synchronously
-        returnData(context, listen: false).clearEndDate();
-        // ignore: use_build_context_synchronously
-        returnData(context, listen: false).clearStartDate();
-      }
-      Future.delayed(Duration(seconds: 3), () {
-        if (!context.mounted) return;
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
-      });
     }
   }
 
@@ -403,6 +420,37 @@ class _AddProductMobileState
                                       context,
                                     ).selectedUnit ??
                                     'Select Product Unit',
+                                theme: theme,
+                              ),
+                              SizedBox(height: 10),
+                              MainDropdown(
+                                valueSet:
+                                    returnData(
+                                      context,
+                                    ).sizeValueSet,
+                                onTap: () {
+                                  sizeTypeBottomSheet(
+                                    context,
+                                    () {
+                                      setState(() {
+                                        isSizedTypeOpen =
+                                            !isSizedTypeOpen;
+                                      });
+                                    },
+                                  );
+                                  setState(() {
+                                    isSizedTypeOpen =
+                                        !isSizedTypeOpen;
+                                  });
+                                },
+                                isOpen: isSizedTypeOpen,
+                                title:
+                                    'Size Type (Optional)',
+                                hint:
+                                    returnData(
+                                      context,
+                                    ).selectedSize ??
+                                    'Select Product Size Type',
                                 theme: theme,
                               ),
 
@@ -874,7 +922,7 @@ class _AddProductMobileState
                             MediaQuery.of(
                               context,
                             ).size.height -
-                            300,
+                            250,
                         width:
                             (MediaQuery.of(
                                   context,

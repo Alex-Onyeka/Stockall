@@ -46,6 +46,8 @@ class AuthService extends ChangeNotifier {
       email: email,
       phone: user.phone,
       role: user.role,
+      authUserId: userId,
+      password: password,
     );
 
     try {
