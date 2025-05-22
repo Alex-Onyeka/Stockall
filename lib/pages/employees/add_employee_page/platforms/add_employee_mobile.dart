@@ -12,11 +12,17 @@ import 'package:stockitt/services/auth_service.dart';
 class AddEmployeeMobile extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final TextEditingController newPasswordController;
+  final TempUserClass? employee;
 
   const AddEmployeeMobile({
     super.key,
     required this.nameController,
     required this.emailController,
+    required this.passwordController,
+    required this.newPasswordController,
+    this.employee,
   });
 
   @override
@@ -88,6 +94,22 @@ class _AddEmployeeMobileState
   //
   //
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.employee != null) {
+      widget.emailController.text = widget.employee!.email;
+      widget.nameController.text = widget.employee!.name;
+      widget.passwordController.text =
+          widget.employee!.password;
+      currentSelected = employees.indexOf(
+        employees.firstWhere(
+          (emp) => emp['position'] == widget.employee!.role,
+        ),
+      );
+    }
+  }
+
   //
   @override
   Widget build(BuildContext context) {
@@ -123,7 +145,9 @@ class _AddEmployeeMobileState
                     fontWeight: FontWeight.bold,
                   ),
 
-                  'Add New Employee',
+                  widget.employee != null
+                      ? 'Edit Employee'
+                      : 'Add New Employee',
                 ),
               ],
             ),
@@ -153,6 +177,10 @@ class _AddEmployeeMobileState
                                     child: Column(
                                       children: [
                                         GeneralTextField(
+                                          isEnabled:
+                                              widget
+                                                  .employee ==
+                                              null,
                                           title: 'Name',
                                           hint:
                                               'Enter employees\' Name',
@@ -166,6 +194,10 @@ class _AddEmployeeMobileState
                                           height: 12,
                                         ),
                                         EmailTextField(
+                                          isEnabled:
+                                              widget
+                                                  .employee ==
+                                              null,
                                           title: 'Email',
                                           hint:
                                               'Enter employees\' Email',
@@ -175,97 +207,194 @@ class _AddEmployeeMobileState
                                                   .emailController,
                                           theme: theme,
                                         ),
-                                        SizedBox(
-                                          height: 12,
-                                        ),
-                                        EmailTextField(
-                                          controller:
+                                        Visibility(
+                                          visible:
                                               widget
-                                                  .emailController,
-                                          theme: theme,
-                                          isEmail: false,
-                                          hint:
-                                              'Set Password',
-                                          title: 'Password',
+                                                  .employee ==
+                                              null,
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 12,
+                                              ),
+                                              EmailTextField(
+                                                controller:
+                                                    widget
+                                                        .emailController,
+                                                theme:
+                                                    theme,
+                                                isEmail:
+                                                    false,
+                                                hint:
+                                                    'Enter Password',
+                                                title:
+                                                    'Password',
+                                              ),
+                                            ],
+                                          ),
                                         ),
+
+                                        Visibility(
+                                          visible:
+                                              widget
+                                                  .employee !=
+                                              null,
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 30,
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .h4
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'Change Password',
+                                              ),
+                                              SizedBox(
+                                                height: 12,
+                                              ),
+                                              EmailTextField(
+                                                isEnabled:
+                                                    widget
+                                                        .employee ==
+                                                    null,
+                                                controller:
+                                                    widget.employee !=
+                                                            null
+                                                        ? widget.passwordController
+                                                        : widget.emailController,
+                                                theme:
+                                                    theme,
+                                                isEmail:
+                                                    false,
+                                                hint:
+                                                    'Old Password',
+                                                title:
+                                                    'Old Password',
+                                              ),
+                                              SizedBox(
+                                                height: 12,
+                                              ),
+                                              EmailTextField(
+                                                controller:
+                                                    widget
+                                                        .newPasswordController,
+                                                theme:
+                                                    theme,
+                                                isEmail:
+                                                    false,
+                                                hint:
+                                                    'Enter New Password',
+                                                title:
+                                                    'New Password',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
                                         SizedBox(
                                           height: 25,
                                         ),
-                                        Row(
-                                          spacing: 5,
-                                          children: [
-                                            Icon(
-                                              size: 20,
-                                              color:
-                                                  theme
-                                                      .lightModeColor
-                                                      .secColor100,
-                                              Icons
-                                                  .warning_rounded,
-                                            ),
-                                            Flexible(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'Select Staff Role.',
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          12,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                    ),
-                                                    'Note, Staff Role Determines their Authorization level.',
-                                                  ),
-                                                ],
+                                        Visibility(
+                                          visible:
+                                              returnLocalDatabase(
+                                                    context,
+                                                  )
+                                                  .currentEmployee!
+                                                  .role ==
+                                              'Owner',
+                                          child: Row(
+                                            spacing: 5,
+                                            children: [
+                                              Icon(
+                                                size: 20,
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                Icons
+                                                    .warning_rounded,
                                               ),
-                                            ),
-                                          ],
+                                              Flexible(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      'Select Staff Role.',
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            12,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      ),
+                                                      'Note, Staff Role Determines their Authorization level.',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   SizedBox(height: 0),
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        NeverScrollableScrollPhysics(),
-                                    itemCount:
-                                        employees.length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      var employee =
-                                          employees[index];
-                                      return EmployeeListTile(
-                                        currentSelected:
-                                            currentSelected ??
-                                            5,
-                                        index: index,
-                                        action: () {
-                                          setState(() {
-                                            currentSelected =
-                                                index;
-                                          });
-                                        },
-                                        authorizations:
-                                            employee['auths'],
-                                        position:
-                                            employee['position'],
-                                        theme: theme,
-                                      );
-                                    },
+                                  Visibility(
+                                    visible:
+                                        returnLocalDatabase(
+                                              context,
+                                            )
+                                            .currentEmployee!
+                                            .role ==
+                                        'Owner',
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          employees.length,
+                                      itemBuilder: (
+                                        context,
+                                        index,
+                                      ) {
+                                        var employee =
+                                            employees[index];
+                                        return EmployeeListTile(
+                                          currentSelected:
+                                              currentSelected ??
+                                              5,
+                                          index: index,
+                                          action: () {
+                                            setState(() {
+                                              currentSelected =
+                                                  index;
+                                            });
+                                          },
+                                          authorizations:
+                                              employee['auths'],
+                                          position:
+                                              employee['position'],
+                                          theme: theme,
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
@@ -287,40 +416,110 @@ class _AddEmployeeMobileState
                     child: MainButtonP(
                       themeProvider: theme,
                       action: () {
-                        if (widget
-                                .nameController
-                                .text
-                                .isEmpty ||
-                            widget
-                                .emailController
-                                .text
-                                .isEmpty ||
-                            currentSelected == null) {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return InfoAlert(
-                                theme: theme,
-                                message:
-                                    'Name, email and Staff Role must be set.',
-                                title: 'Fields not set',
-                              );
-                            },
-                          );
-                        } else if (!isValidEmail(
-                          widget.emailController.text,
-                        )) {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return InfoAlert(
-                                theme: theme,
-                                message:
-                                    'Please enter a valid Email Address',
-                                title: 'Email Invalid',
-                              );
-                            },
-                          );
+                        if (widget.employee == null) {
+                          if (widget
+                                  .nameController
+                                  .text
+                                  .isEmpty ||
+                              widget
+                                  .emailController
+                                  .text
+                                  .isEmpty ||
+                              currentSelected == null) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return InfoAlert(
+                                  theme: theme,
+                                  message:
+                                      'Name, email and Staff Role must be set.',
+                                  title: 'Fields not set',
+                                );
+                              },
+                            );
+                          } else if (!isValidEmail(
+                            widget.emailController.text,
+                          )) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return InfoAlert(
+                                  theme: theme,
+                                  message:
+                                      'Please enter a valid Email Address',
+                                  title: 'Email Invalid',
+                                );
+                              },
+                            );
+                          } else {
+                            final safeContext = context;
+                            showDialog(
+                              context: safeContext,
+                              builder: (context) {
+                                return ConfirmationAlert(
+                                  theme: theme,
+                                  message:
+                                      'You are about to create an employee with the role of a ${employees[currentSelected!]['position']}, do you want to proceed?',
+                                  title: 'Procced?',
+                                  action: () async {
+                                    if (safeContext
+                                        .mounted) {
+                                      Navigator.of(
+                                        safeContext,
+                                      ).pop();
+                                    }
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    await returnUserProvider(
+                                      context,
+                                      listen: false,
+                                    ).addEmployee(
+                                      TempUserClass(
+                                        name:
+                                            widget
+                                                .nameController
+                                                .text
+                                                .trim(),
+                                        email:
+                                            widget
+                                                .emailController
+                                                .text
+                                                .trim(),
+                                        role:
+                                            employees[currentSelected!]['position'],
+                                        authUserId:
+                                            AuthService()
+                                                .currentUser!
+                                                .id,
+                                        password:
+                                            widget
+                                                .emailController
+                                                .text
+                                                .trim(),
+                                      ),
+                                    );
+
+                                    setState(() {
+                                      isLoading = false;
+                                      showSuccess = true;
+                                    });
+
+                                    await Future.delayed(
+                                      Duration(seconds: 2),
+                                    );
+
+                                    if (safeContext
+                                        .mounted) {
+                                      Navigator.of(
+                                        safeContext,
+                                      ).pop();
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          }
                         } else {
                           final safeContext = context;
                           showDialog(
@@ -329,7 +528,7 @@ class _AddEmployeeMobileState
                               return ConfirmationAlert(
                                 theme: theme,
                                 message:
-                                    'You are about to create an employee with the role of a ${employees[currentSelected!]['position']}, do you want to proceed?',
+                                    'You are about to update details, do you want to proceed?',
                                 title: 'Procced?',
                                 action: () async {
                                   if (safeContext.mounted) {
@@ -343,8 +542,12 @@ class _AddEmployeeMobileState
                                   await returnUserProvider(
                                     context,
                                     listen: false,
-                                  ).addUser(
+                                  ).updateUser(
                                     TempUserClass(
+                                      userId:
+                                          widget
+                                              .employee!
+                                              .userId,
                                       name:
                                           widget
                                               .nameController
@@ -357,16 +560,20 @@ class _AddEmployeeMobileState
                                               .trim(),
                                       role:
                                           employees[currentSelected!]['position'],
-                                      authUserId:
-                                          AuthService()
-                                              .currentUser!
-                                              .id,
+
                                       password:
                                           widget
-                                              .emailController
-                                              .text
-                                              .trim(),
+                                                  .newPasswordController
+                                                  .text
+                                                  .isNotEmpty
+                                              ? widget
+                                                  .newPasswordController
+                                                  .text
+                                              : widget
+                                                  .passwordController
+                                                  .text,
                                     ),
+                                    context,
                                   );
 
                                   setState(() {
@@ -389,7 +596,26 @@ class _AddEmployeeMobileState
                           );
                         }
                       },
-                      text: 'Add Employee',
+                      text:
+                          widget.employee != null &&
+                                  returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentEmployee!
+                                          .role ==
+                                      'Owner'
+                              ? 'Update Details'
+                              : widget.employee != null &&
+                                  returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentEmployee!
+                                          .role !=
+                                      'Owner'
+                              ? 'Save New Password'
+                              : 'Add Employee',
                     ),
                   ),
                 ),
@@ -410,7 +636,11 @@ class _AddEmployeeMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showSuccess('Employee Added Successfully'),
+          ).showSuccess(
+            widget.employee != null
+                ? 'Updated Successfully'
+                : 'Employee Added Successfully',
+          ),
         ),
       ],
     );

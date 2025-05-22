@@ -8,6 +8,7 @@ import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
@@ -109,7 +110,24 @@ class _EmployeePageMobileState
                             return Positioned(
                               top: 110,
                               child: DetailsPageContainer(
-                                editAction: () {},
+                                editAction: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return AddEmployeePage(
+                                          employee:
+                                              employee,
+                                        );
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    setState(() {
+                                      employeeFuture =
+                                          getEmployee();
+                                    });
+                                  });
+                                },
                                 deleteAction: () {
                                   final safeContext =
                                       context;
@@ -199,7 +217,7 @@ class _EmployeePageMobileState
   }
 }
 
-class DetailsPageContainer extends StatelessWidget {
+class DetailsPageContainer extends StatefulWidget {
   final ThemeProvider theme;
   final Function() deleteAction;
   final Function() editAction;
@@ -211,6 +229,28 @@ class DetailsPageContainer extends StatelessWidget {
     required this.deleteAction,
     required this.editAction,
   });
+
+  @override
+  State<DetailsPageContainer> createState() =>
+      _DetailsPageContainerState();
+}
+
+class _DetailsPageContainerState
+    extends State<DetailsPageContainer> {
+  late Future<List<TempMainReceipt>> receiptsFuture;
+
+  Future<List<TempMainReceipt>> getReceipts() async {
+    var temp = await returnReceiptProvider(
+      context,
+    ).loadReceipts(26);
+    return temp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    receiptsFuture = getReceipts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -256,12 +296,13 @@ class DetailsPageContainer extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize:
-                                theme
+                                widget
+                                    .theme
                                     .mobileTexts
                                     .b1
                                     .fontSize,
                           ),
-                          employee.name,
+                          widget.employee.name,
                         ),
                       ),
                       SizedBox(
@@ -270,12 +311,13 @@ class DetailsPageContainer extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize:
-                                theme
+                                widget
+                                    .theme
                                     .mobileTexts
                                     .b3
                                     .fontSize,
                           ),
-                          employee.email,
+                          widget.employee.email,
                         ),
                       ),
                     ],
@@ -298,9 +340,16 @@ class DetailsPageContainer extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                          widget
+                              .theme
+                              .mobileTexts
+                              .b3
+                              .fontSize,
                       color:
-                          theme.lightModeColor.secColor200,
+                          widget
+                              .theme
+                              .lightModeColor
+                              .secColor200,
                     ),
                     'Employee',
                   ),
@@ -328,14 +377,14 @@ class DetailsPageContainer extends StatelessWidget {
                       child: TabBarTabButton(
                         index: 0,
                         text: 'Basic Information',
-                        theme: theme,
+                        theme: widget.theme,
                       ),
                     ),
                     Expanded(
                       child: TabBarTabButton(
                         index: 1,
                         text: 'Sales',
-                        theme: theme,
+                        theme: widget.theme,
                       ),
                     ),
                   ],
@@ -348,8 +397,8 @@ class DetailsPageContainer extends StatelessWidget {
                       ).activeTab ==
                       0,
                   child: EmployeeDetailsContainer(
-                    employee: employee,
-                    theme: theme,
+                    employee: widget.employee,
+                    theme: widget.theme,
                   ),
                 ),
                 Visibility(
@@ -365,37 +414,39 @@ class DetailsPageContainer extends StatelessWidget {
                     // width:
                     //     MediaQuery.of(context).size.width -
                     //     20,
-                    child: Builder(
-                      builder: (context) {
-                        List<TempMainReceipt> receipts =
-                            returnReceiptProvider(context)
-                                .returnOwnReceipts(context)
-                                .where(
-                                  (receipt) =>
-                                      receipt.staffId ==
-                                      employee.userId,
-                                )
-                                .toList();
-                        if (returnReceiptProvider(context)
-                            .returnOwnReceipts(context)
-                            .where(
-                              (test) =>
-                                  test.staffId ==
-                                  employee.userId,
-                            )
-                            .isEmpty) {
+                    child: FutureBuilder(
+                      future: receiptsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return returnCompProvider(
+                            context,
+                            listen: false,
+                          ).showLoader('Loading');
+                        } else if (snapshot
+                                .connectionState ==
+                            ConnectionState.waiting) {
                           return Center(
                             child: Text('Empty'),
                           );
+                        } else if (snapshot.data!.isEmpty) {
+                          return EmptyWidgetDisplayOnly(
+                            title: 'title',
+                            subText: 'subText',
+                            theme: returnTheme(context),
+                            height: 30,
+                            icon: Icons.clear,
+                          );
                         } else {
+                          var receipts = snapshot.data!;
                           return ListView.builder(
-                            itemCount: receipts.length,
+                            itemCount: 2,
                             itemBuilder: (context, index) {
                               TempMainReceipt receipt =
                                   receipts[index];
 
                               return ReceiptTileMain(
-                                theme: theme,
+                                theme: widget.theme,
                                 mainReceipt: receipt,
                               );
                             },
@@ -413,21 +464,32 @@ class DetailsPageContainer extends StatelessWidget {
             spacing: 15,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomerActionButton(
-                icon: Icons.delete_outline_rounded,
-                color: theme.lightModeColor.errorColor200,
-                iconSize: 18,
-                text: 'Delete',
-                action: deleteAction,
-                theme: theme,
+              Visibility(
+                visible:
+                    returnLocalDatabase(
+                      context,
+                    ).currentEmployee!.role ==
+                    'Owner',
+                child: CustomerActionButton(
+                  icon: Icons.delete_outline_rounded,
+                  color:
+                      widget
+                          .theme
+                          .lightModeColor
+                          .errorColor200,
+                  iconSize: 18,
+                  text: 'Delete',
+                  action: widget.deleteAction,
+                  theme: widget.theme,
+                ),
               ),
               CustomerActionButton(
                 svg: editIconSvg,
                 color: Colors.grey,
                 iconSize: 15,
                 text: 'Edit',
-                action: editAction,
-                theme: theme,
+                action: widget.editAction,
+                theme: widget.theme,
               ),
             ],
           ),

@@ -16,6 +16,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       TextEditingController();
   TextEditingController emailController =
       TextEditingController();
+  TextEditingController passwordController =
+      TextEditingController();
+  TextEditingController newPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -23,6 +27,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
     emailController.dispose();
     nameController.dispose();
+    passwordController.dispose();
   }
 
   @override
@@ -35,8 +40,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return AddEmployeeMobile(
+              newPasswordController: newPasswordController,
+              passwordController: passwordController,
               nameController: nameController,
               emailController: emailController,
+              employee: widget.employee,
             );
           } else if (constraints.maxWidth > 500 &&
               constraints.maxWidth < 1000) {

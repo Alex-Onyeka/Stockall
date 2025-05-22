@@ -35,6 +35,7 @@ class _DashboardTabletState extends State<DashboardTablet> {
       body: Column(
         children: [
           TopNavBar(
+            role: '',
             openSideBar: () {},
             theme: theme,
             notifications: [],

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_notification.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class TopNavBar extends StatelessWidget {
@@ -10,6 +12,7 @@ class TopNavBar extends StatelessWidget {
   final String subText;
   final Function()? action;
   final ThemeProvider theme;
+  final String role;
   final Function()? openSideBar;
 
   const TopNavBar({
@@ -20,6 +23,7 @@ class TopNavBar extends StatelessWidget {
     required this.theme,
     required this.openSideBar,
     this.action,
+    required this.role,
   });
 
   @override
@@ -114,56 +118,124 @@ class TopNavBar extends StatelessWidget {
             ],
           ),
           Stack(
-            alignment: Alignment(1.2, -1.8),
             children: [
-              InkWell(
-                onTap: () {
-                  // Provider.of<CompProvider>(
-                  //   context,
-                  //   listen: false,
-                  // ).switchNotif();
-                  action!();
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(
-                      208,
-                      245,
-                      245,
-                      245,
+              Visibility(
+                visible:
+                    role == 'Owner' ||
+                    role == "General Manager",
+                child: Stack(
+                  alignment: Alignment(1.2, -1.8),
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        // Provider.of<CompProvider>(
+                        //   context,
+                        //   listen: false,
+                        // ).switchNotif();
+                        action!();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(
+                            208,
+                            245,
+                            245,
+                            245,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          height: 25,
+                          width: 25,
+                          notifIconSvg,
+                        ),
+                      ),
                     ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: SvgPicture.asset(
-                    height: 25,
-                    width: 25,
-                    notifIconSvg,
-                  ),
+                    Visibility(
+                      visible:
+                          notifications
+                              .where(
+                                (notif) => !notif.isViewed,
+                              )
+                              .isNotEmpty,
+                      child: Container(
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient:
+                              theme
+                                  .lightModeColor
+                                  .secGradient,
+                        ),
+                        child: Center(
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                            '${notifications.where((notif) => !notif.isViewed).length}',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Visibility(
                 visible:
-                    notifications
-                        .where((notif) => !notif.isViewed)
-                        .isNotEmpty,
-                child: Container(
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient:
-                        theme.lightModeColor.secGradient,
-                  ),
-                  child: Center(
-                    child: Text(
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.white,
+                    role != 'Owner' &&
+                    role != "General Manager",
+                child: Stack(
+                  alignment: Alignment(1.2, -1.8),
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ConfirmationAlert(
+                              theme: theme,
+                              message:
+                                  'You are about to Logout',
+                              title: 'Are you Sure?',
+                              action: () async {
+                                await returnLocalDatabase(
+                                  context,
+                                  listen: false,
+                                ).deleteUser();
+
+                                if (context.mounted) {
+                                  Navigator.popAndPushNamed(
+                                    context,
+                                    '/',
+                                  );
+                                  returnNavProvider(
+                                    context,
+                                    listen: false,
+                                  ).navigate(0);
+                                }
+                              },
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(
+                            208,
+                            245,
+                            245,
+                            245,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.logout_rounded),
                       ),
-                      '${notifications.where((notif) => !notif.isViewed).length}',
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],

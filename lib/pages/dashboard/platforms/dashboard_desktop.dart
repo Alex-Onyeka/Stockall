@@ -16,6 +16,7 @@ class DashboardDesktop extends StatelessWidget {
       body: Column(
         children: [
           TopNavBar(
+            role: '',
             openSideBar: () {},
             theme: theme,
             notifications: [],

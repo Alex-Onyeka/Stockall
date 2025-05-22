@@ -34,14 +34,28 @@ class TempUserClass {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'user_id': userId,
+  Map<String, dynamic> toJson({bool includeUserId = true}) {
+    final map = {
       'name': name,
       'email': email,
       'phone': phone,
       'role': role,
       'password': password,
+      'auth_user_id': authUserId,
     };
+
+    if (includeUserId && userId != null) {
+      map['user_id'] = userId;
+    }
+
+    // if (authUserId != null) {
+    //   map['auth_user_id'] = authUserId;
+    // }
+
+    if (createdAt != null) {
+      map['created_at'] = createdAt!.toIso8601String();
+    }
+
+    return map;
   }
 }

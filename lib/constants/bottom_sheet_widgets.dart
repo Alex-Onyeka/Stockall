@@ -243,207 +243,202 @@ void categoriesBottomSheet(
                 child: FutureBuilder(
                   future: categoriesFuture,
                   builder: (context, snapshot) {
-                    return Column(
-                      children: [
-                        Center(
-                          child: Container(
-                            height: 4,
-                            width: 70,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              color: Colors.grey.shade400,
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return returnCompProvider(
+                        context,
+                        listen: false,
+                      ).showLoader('Loading');
+                    } else if (snapshot.hasError) {
+                      return EmptyWidgetDisplayOnly(
+                        title: 'An Error Occured',
+                        subText:
+                            'Please check your internet and try again.',
+                        theme: returnTheme(context),
+                        height: 30,
+                        icon: Icons.clear,
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          Center(
+                            child: Container(
+                              height: 4,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                color: Colors.grey.shade400,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Category',
-                                  style: TextStyle(
-                                    fontSize:
-                                        returnTheme(context)
-                                            .mobileTexts
-                                            .b1
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Select Product Category',
-                                  style: TextStyle(
-                                    fontSize:
-                                        returnTheme(context)
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                FocusScope.of(
-                                  context,
-                                ).unfocus();
-                              },
-                              icon: Icon(
-                                returnData(
-                                      context,
-                                    ).catValueSet
-                                    ? Icons.check
-                                    : Icons.clear_rounded,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                            child: Builder(
-                              builder: (context) {
-                                if (snapshot
-                                        .connectionState ==
-                                    ConnectionState
-                                        .waiting) {
-                                  return returnCompProvider(
-                                    context,
-                                    listen: false,
-                                  ).showLoader('Loading');
-                                } else if (snapshot
-                                    .hasError) {
-                                  return SingleChildScrollView(
-                                    child: EmptyWidgetDisplayOnly(
-                                      title: 'Error ',
-                                      subText:
-                                          'Error Fetching Categories',
-                                      theme: returnTheme(
-                                        context,
-                                      ),
-                                      height: 30,
-                                      icon: Icons.clear,
-                                    ),
-                                  );
-                                } else if (snapshot
-                                    .data!
-                                    .isEmpty) {
-                                  return Material(
-                                    color: Colors.white,
-                                    child: EmptyWidgetDisplay(
-                                      title:
-                                          'No Categories',
-                                      subText:
-                                          'You currently do not have any categories set, click to create category for your store.',
-                                      buttonText:
-                                          'Create Category',
-                                      theme: returnTheme(
-                                        context,
-                                      ),
-                                      height: 35,
-                                      icon:
-                                          Icons
-                                              .book_outlined,
-                                      action: () {
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return CreateCategory();
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                } else {
-                                  var categories =
-                                      snapshot.data!;
-                                  return ListView.builder(
-                                    controller:
-                                        scrollController,
-                                    itemCount:
-                                        categories.length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      String category =
-                                          categories[index];
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade300,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Material(
-                                          color:
-                                              Colors.white,
-                                          child: ListTile(
-                                            title: Text(
-                                              categories[index],
-                                            ),
-                                            onTap: () {
-                                              Provider.of<
-                                                DataProvider
-                                              >(
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    'Category',
+                                    style: TextStyle(
+                                      fontSize:
+                                          returnTheme(
                                                 context,
-                                                listen:
-                                                    false,
-                                              ).selectCategory(
-                                                category,
-                                              );
-                                            },
-                                            trailing: Checkbox(
-                                              shape: CircleBorder(
-                                                side:
-                                                    BorderSide(),
-                                              ),
-                                              side: BorderSide(
+                                              )
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Select Product Category',
+                                    style: TextStyle(
+                                      fontSize:
+                                          returnTheme(
+                                                context,
+                                              )
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                  FocusScope.of(
+                                    context,
+                                  ).unfocus();
+                                },
+                                icon: Icon(
+                                  returnData(
+                                        context,
+                                      ).catValueSet
+                                      ? Icons.check
+                                      : Icons.clear_rounded,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                                border: Border.all(
+                                  color:
+                                      Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Builder(
+                                builder: (context) {
+                                  if (snapshot
+                                          .connectionState ==
+                                      ConnectionState
+                                          .waiting) {
+                                    return returnCompProvider(
+                                      context,
+                                      listen: false,
+                                    ).showLoader('Loading');
+                                  } else if (snapshot
+                                      .hasError) {
+                                    return SingleChildScrollView(
+                                      child: EmptyWidgetDisplayOnly(
+                                        title: 'Error ',
+                                        subText:
+                                            'Error Fetching Categories',
+                                        theme: returnTheme(
+                                          context,
+                                        ),
+                                        height: 30,
+                                        icon: Icons.clear,
+                                      ),
+                                    );
+                                  } else if (snapshot
+                                      .data!
+                                      .isEmpty) {
+                                    return Material(
+                                      color: Colors.white,
+                                      child: EmptyWidgetDisplay(
+                                        title:
+                                            'No Categories',
+                                        subText:
+                                            'You currently do not have any categories set, click to create category for your store.',
+                                        buttonText:
+                                            'Create Category',
+                                        theme: returnTheme(
+                                          context,
+                                        ),
+                                        height: 35,
+                                        icon:
+                                            Icons
+                                                .book_outlined,
+                                        action: () {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return CreateCategory();
+                                              },
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  } else {
+                                    var categories =
+                                        snapshot.data!;
+                                    return ListView.builder(
+                                      controller:
+                                          scrollController,
+                                      itemCount:
+                                          categories.length,
+                                      itemBuilder: (
+                                        context,
+                                        index,
+                                      ) {
+                                        String category =
+                                            categories[index];
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
                                                 color:
                                                     Colors
                                                         .grey
-                                                        .shade400,
-                                                width: 1.2,
+                                                        .shade300,
                                               ),
-                                              activeColor:
-                                                  returnTheme(
-                                                    context,
-                                                  ).lightModeColor.prColor250,
-                                              value:
-                                                  returnData(
-                                                    context,
-                                                  ).selectedCategory ==
-                                                  category,
-                                              onChanged: (
-                                                value,
-                                              ) {
+                                            ),
+                                          ),
+                                          child: Material(
+                                            color:
+                                                Colors
+                                                    .white,
+                                            child: ListTile(
+                                              title: Text(
+                                                categories[index],
+                                              ),
+                                              onTap: () {
                                                 Provider.of<
                                                   DataProvider
                                                 >(
@@ -454,132 +449,70 @@ void categoriesBottomSheet(
                                                   category,
                                                 );
                                               },
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Visibility(
-                          visible:
-                              snapshot.data!.isNotEmpty,
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 10,
-                            children: [
-                              Expanded(
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                    },
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            vertical: 7,
-                                            horizontal: 10,
-                                          ),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              3,
-                                            ),
-                                        border: Border.all(
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade400,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Row(
-                                          spacing: 8,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
+                                              trailing: Checkbox(
+                                                shape: CircleBorder(
+                                                  side:
+                                                      BorderSide(),
+                                                ),
+                                                side: BorderSide(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade400,
+                                                  width:
+                                                      1.2,
+                                                ),
+                                                activeColor:
                                                     returnTheme(
                                                       context,
-                                                    ).mobileTexts.b2.fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                    ).lightModeColor.prColor250,
+                                                value:
+                                                    returnData(
+                                                      context,
+                                                    ).selectedCategory ==
+                                                    category,
+                                                onChanged: (
+                                                  value,
+                                                ) {
+                                                  Provider.of<
+                                                    DataProvider
+                                                  >(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).selectCategory(
+                                                    category,
+                                                  );
+                                                },
                                               ),
-                                              returnData(
-                                                    context,
-                                                  ).catValueSet
-                                                  ? 'Select'
-                                                  : 'Cancel',
                                             ),
-                                            Icon(
-                                              size: 25,
-                                              color:
-                                                  Colors
-                                                      .grey,
-
-                                              returnData(
-                                                    context,
-                                                  ).catValueSet
-                                                  ? Icons
-                                                      .check
-                                                  : Icons
-                                                      .clear,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
                                           ),
-                                      color:
-                                          returnTheme(
-                                                context,
-                                              )
-                                              .lightModeColor
-                                              .prColor300,
-                                    ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          Visibility(
+                            visible:
+                                snapshot.data!.isNotEmpty,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  child: Material(
+                                    color:
+                                        Colors.transparent,
                                     child: InkWell(
                                       onTap: () {
                                         Navigator.of(
                                           context,
                                         ).pop();
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return CreateCategory();
-                                            },
-                                          ),
-                                        );
                                       },
                                       borderRadius:
                                           BorderRadius.circular(
@@ -606,16 +539,13 @@ void categoriesBottomSheet(
                                         ),
                                         child: Center(
                                           child: Row(
-                                            spacing: 5,
+                                            spacing: 8,
                                             mainAxisAlignment:
                                                 MainAxisAlignment
                                                     .center,
                                             children: [
                                               Text(
                                                 style: TextStyle(
-                                                  color:
-                                                      Colors
-                                                          .white,
                                                   fontSize:
                                                       returnTheme(
                                                         context,
@@ -624,15 +554,25 @@ void categoriesBottomSheet(
                                                       FontWeight
                                                           .bold,
                                                 ),
-                                                'Add New',
+                                                returnData(
+                                                      context,
+                                                    ).catValueSet
+                                                    ? 'Select'
+                                                    : 'Cancel',
                                               ),
                                               Icon(
                                                 size: 25,
                                                 color:
                                                     Colors
-                                                        .white,
+                                                        .grey,
 
-                                                Icons.add,
+                                                returnData(
+                                                      context,
+                                                    ).catValueSet
+                                                    ? Icons
+                                                        .check
+                                                    : Icons
+                                                        .clear,
                                               ),
                                             ],
                                           ),
@@ -641,73 +581,171 @@ void categoriesBottomSheet(
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Visibility(
-                          visible: false,
-                          child: Row(
-                            children: [
-                              SmallButtonMain(
-                                theme: returnTheme(context),
-                                action: () {
-                                  if (returnData(
-                                        context,
-                                        listen: false,
-                                      ).catValueSet ==
-                                      true) {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                  } else {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return CreateCategory();
-                                        },
+                                Expanded(
+                                  child: Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        color:
+                                            returnTheme(
+                                                  context,
+                                                )
+                                                .lightModeColor
+                                                .prColor300,
                                       ),
-                                    );
-                                  }
-                                },
-                                buttonText:
-                                    returnData(
-                                              context,
-                                            ).catValueSet ==
-                                            true
-                                        ? 'Save Category'
-                                        : 'Add New Category',
-                              ),
-                              SmallButtonMain(
-                                theme: returnTheme(context),
-                                action: () {
-                                  if (returnData(
-                                        context,
-                                        listen: false,
-                                      ).catValueSet ==
-                                      true) {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                  } else {}
-                                },
-                                buttonText:
-                                    returnData(
-                                              context,
-                                            ).catValueSet ==
-                                            true
-                                        ? 'Save Category'
-                                        : 'Add New Category',
-                              ),
-                            ],
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return CreateCategory();
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        child: Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                vertical: 7,
+                                                horizontal:
+                                                    10,
+                                              ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  3,
+                                                ),
+                                            border: Border.all(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade400,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Row(
+                                              spacing: 5,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.white,
+                                                    fontSize:
+                                                        returnTheme(
+                                                          context,
+                                                        ).mobileTexts.b2.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'Add New',
+                                                ),
+                                                Icon(
+                                                  size: 25,
+                                                  color:
+                                                      Colors
+                                                          .white,
+
+                                                  Icons.add,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    );
+                          Visibility(
+                            visible: false,
+                            child: Row(
+                              children: [
+                                SmallButtonMain(
+                                  theme: returnTheme(
+                                    context,
+                                  ),
+                                  action: () {
+                                    if (returnData(
+                                          context,
+                                          listen: false,
+                                        ).catValueSet ==
+                                        true) {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    } else {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return CreateCategory();
+                                          },
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  buttonText:
+                                      returnData(
+                                                context,
+                                              ).catValueSet ==
+                                              true
+                                          ? 'Save Category'
+                                          : 'Add New Category',
+                                ),
+                                SmallButtonMain(
+                                  theme: returnTheme(
+                                    context,
+                                  ),
+                                  action: () {
+                                    if (returnData(
+                                          context,
+                                          listen: false,
+                                        ).catValueSet ==
+                                        true) {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    } else {}
+                                  },
+                                  buttonText:
+                                      returnData(
+                                                context,
+                                              ).catValueSet ==
+                                              true
+                                          ? 'Save Category'
+                                          : 'Add New Category',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
                   },
                 ),
               ),

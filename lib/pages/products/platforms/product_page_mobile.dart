@@ -116,12 +116,14 @@ class _ProductPageMobileState
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
+              role: '',
               action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
+              role: '',
               action: () {},
               theme: theme,
               notifications: [],
@@ -131,6 +133,7 @@ class _ProductPageMobileState
                 snapshot.data!;
 
             return MyDrawerWidget(
+              role: '',
               action: () {
                 showDialog(
                   context: context,

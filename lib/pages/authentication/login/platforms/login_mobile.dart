@@ -5,7 +5,6 @@ import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/authentication/sign_up/platforms/signup_mobile.dart';
 import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
@@ -34,6 +33,9 @@ class _LoginMobileState extends State<LoginMobile> {
     );
     return emailRegex.hasMatch(email);
   }
+
+  bool issLoading = false;
+  bool showwSuccess = false;
 
   Future<void> checkInputs() async {
     if (widget.emailController.text.isEmpty ||
@@ -64,7 +66,7 @@ class _LoginMobileState extends State<LoginMobile> {
       );
     } else {
       setState(() {
-        isLoading = true;
+        issLoading = true;
       });
       try {
         var res = await AuthService().signIn(
@@ -73,8 +75,8 @@ class _LoginMobileState extends State<LoginMobile> {
         );
         if (res.user != null && context.mounted) {
           setState(() {
-            isLoading = false;
-            showSuccess = true;
+            issLoading = false;
+            showwSuccess = true;
           });
 
           Future.delayed(Duration(seconds: 3), () {
@@ -88,13 +90,13 @@ class _LoginMobileState extends State<LoginMobile> {
               ),
             );
             setState(() {
-              showSuccess = false;
+              showwSuccess = false;
             });
           });
         }
       } on AuthException catch (e) {
         setState(() {
-          isLoading = false;
+          issLoading = false;
         });
         if (!context.mounted) return;
         showDialog(
@@ -110,7 +112,7 @@ class _LoginMobileState extends State<LoginMobile> {
         );
       } catch (e) {
         setState(() {
-          isLoading = false;
+          issLoading = false;
         });
         if (!context.mounted) return;
         showDialog(
@@ -253,14 +255,14 @@ class _LoginMobileState extends State<LoginMobile> {
           ),
         ),
         Visibility(
-          visible: isLoading,
+          visible: issLoading,
           child: returnCompProvider(
             context,
             listen: false,
           ).showLoader('Logging In'),
         ),
         Visibility(
-          visible: showSuccess,
+          visible: showwSuccess,
           child: returnCompProvider(
             context,
             listen: false,

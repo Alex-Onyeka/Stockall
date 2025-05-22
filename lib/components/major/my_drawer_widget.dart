@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_notification.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
@@ -14,11 +15,13 @@ class MyDrawerWidget extends StatelessWidget {
   final ThemeProvider theme;
   final Function()? action;
   final List<TempNotification> notifications;
+  final String role;
   const MyDrawerWidget({
     super.key,
     required this.theme,
     required this.notifications,
     required this.action,
+    required this.role,
   });
 
   @override
@@ -98,7 +101,10 @@ class MyDrawerWidget extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return EmployeeListPage();
+                            return EmployeeListPage(
+                              empId: '',
+                              role: '',
+                            );
                           },
                         ),
                       );
@@ -308,17 +314,65 @@ class MyDrawerWidget extends StatelessWidget {
                 ],
               ),
 
-              Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 30.0,
-                ),
-                child: NavListTileAlt(
-                  height: 16,
-                  action: action,
-                  title: 'Logout',
-                  // svg: reportIconSvg,
-                  icon: Icons.logout_rounded,
-                ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 15.0,
+                    ),
+                    child: NavListTileAlt(
+                      height: 16,
+                      action: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ConfirmationAlert(
+                              theme: theme,
+                              message:
+                                  'You are about to Logout',
+                              title: 'Are you Sure?',
+                              action: () async {
+                                await returnLocalDatabase(
+                                  context,
+                                  listen: false,
+                                ).deleteUser();
+
+                                if (context.mounted) {
+                                  Navigator.popAndPushNamed(
+                                    context,
+                                    '/',
+                                  );
+                                  returnNavProvider(
+                                    context,
+                                    listen: false,
+                                  ).navigate(0);
+                                }
+                              },
+                            );
+                          },
+                        );
+                      },
+                      title: 'Employee Logout',
+                      // svg: reportIconSvg,
+                      icon: Icons.logout_rounded,
+                    ),
+                  ),
+                  Visibility(
+                    visible: role == 'Owner',
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 30.0,
+                      ),
+                      child: NavListTileAlt(
+                        height: 16,
+                        action: action,
+                        title: 'Logout',
+                        // svg: reportIconSvg,
+                        icon: Icons.logout_rounded,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

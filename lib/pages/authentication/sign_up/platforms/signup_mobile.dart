@@ -6,7 +6,6 @@ import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
 import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
 import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/authentication/components/check_agree.dart';
 import 'package:stockitt/pages/authentication/components/email_text_field.dart';
 import 'package:stockitt/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -137,34 +136,16 @@ class _SignupMobileState extends State<SignupMobile> {
           ),
         );
 
-        if (context.mounted) {
-          returnUserProvider(
-            // ignore: use_build_context_synchronously
-            context,
-            listen: false,
-          ).setEmployee(
-            TempUserClass(
-              name: widget.nameController.text.trim(),
-              email: widget.emailController.text.trim(),
-              phone:
-                  widget.phoneNumberController.text.trim(),
-              role: 'Owner',
-              password: widget.passwordController.text,
-              authUserId: res.user!.id,
-              userId: res.user!.id,
-            ),
-          );
-        }
-
         if (res.user != null) {
+          if (!mounted) return;
           setState(() {
             isLoading = false;
             showSuccess = true;
           });
 
-          await Future.delayed(Duration(seconds: 3), () {
+          Future.delayed(Duration(seconds: 3), () {
+            if (!mounted) return;
             Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
               context,
               MaterialPageRoute(
                 builder: (context) => ShopBannerScreen(),

@@ -10,7 +10,13 @@ import 'package:stockitt/pages/employees/components/employee_tile_main.dart';
 import 'package:stockitt/pages/employees/employee_page/employee_page.dart';
 
 class EmployeeListMobile extends StatefulWidget {
-  const EmployeeListMobile({super.key});
+  final String role;
+  final String empId;
+  const EmployeeListMobile({
+    super.key,
+    required this.role,
+    required this.empId,
+  });
 
   @override
   State<EmployeeListMobile> createState() =>
@@ -42,12 +48,12 @@ class _EmployeeListMobileState
     return tempEmp!;
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
 
-    employeesFuture = getEmployees();
-  }
+  //   employeesFuture = getEmployees();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +70,11 @@ class _EmployeeListMobileState
               },
             ),
           ).then((_) {
-            setState(() {
-              employeesFuture = getEmployees();
-            });
+            if (mounted) {
+              setState(() {
+                employeesFuture = getEmployees();
+              });
+            }
           });
         },
         color:
@@ -121,7 +129,15 @@ class _EmployeeListMobileState
               icon: Icons.clear,
             );
           } else {
-            List<TempUserClass> employees = snapshot.data!;
+            List<TempUserClass> employees =
+                widget.role == 'Owner'
+                    ? snapshot.data!
+                    : snapshot.data!
+                        .where(
+                          (emp) =>
+                              emp.userId == widget.empId,
+                        )
+                        .toList();
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 20.0),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_user_class.dart';
+import 'package:stockitt/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
@@ -51,18 +52,24 @@ class AuthService extends ChangeNotifier {
     );
 
     try {
+      // Check if user exists remotely (optional)
       await _client
           .from('users')
           .select()
           .eq('user_id', userId)
           .maybeSingle();
 
-      // if (existingUserResponse != null) {
-      //   // print("User already exists, skipping insert.");
-      //   return ;
-      // }
-
+      // Insert into Supabase
       await _client.from('users').insert(userRow.toJson());
+
+      // ✅ Insert into local SQLite
+      if (context.mounted) {
+        await returnLocalDatabase(
+          context,
+          listen: false,
+        ).insertUser(userRow);
+      }
+
       return signUpRes;
     } catch (e) {
       throw Exception('User creation error: $e');

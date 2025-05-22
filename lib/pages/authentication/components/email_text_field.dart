@@ -7,6 +7,7 @@ class EmailTextField extends StatefulWidget {
   final bool isEmail;
   final String hint;
   final String title;
+  final bool? isEnabled;
   final TextEditingController controller;
   const EmailTextField({
     super.key,
@@ -16,6 +17,7 @@ class EmailTextField extends StatefulWidget {
     required this.hint,
     required this.title,
     this.validatorAction,
+    this.isEnabled,
   });
 
   @override
@@ -36,6 +38,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
           widget.title,
         ),
         TextFormField(
+          enabled: widget.isEnabled ?? true,
           validator: widget.validatorAction,
           autocorrect: hidden && !widget.isEmail,
           enableSuggestions: hidden && !widget.isEmail,
@@ -43,7 +46,10 @@ class _EmailTextFieldState extends State<EmailTextField> {
               widget.isEmail
                   ? TextInputType.emailAddress
                   : TextInputType.visiblePassword,
-          obscureText: hidden && !widget.isEmail,
+          obscureText:
+              widget.isEnabled == false
+                  ? false
+                  : hidden && !widget.isEmail,
           decoration: InputDecoration(
             suffixIcon: Visibility(
               visible: !widget.isEmail,
@@ -76,6 +82,14 @@ class _EmailTextFieldState extends State<EmailTextField> {
                   widget.theme.lightModeColor.secColor200,
             ),
             enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color:
+                    widget.theme.lightModeColor.prColor200,
+                width: 1.0,
+              ),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color:
                     widget.theme.lightModeColor.prColor200,

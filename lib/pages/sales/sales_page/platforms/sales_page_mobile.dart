@@ -138,12 +138,14 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
+              role: '',
               action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
+              role: '',
               action: () {},
               theme: theme,
               notifications: [],
@@ -153,6 +155,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                 snapshot.data!;
 
             return MyDrawerWidget(
+              role: '',
               action: () {
                 showDialog(
                   context: context,

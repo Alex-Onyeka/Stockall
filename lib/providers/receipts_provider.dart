@@ -55,6 +55,46 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
+  Future<List<TempMainReceipt>> loadReceiptsByUserId({
+    required int shopId,
+    required String userId,
+  }) async {
+    try {
+      final now = DateTime.now();
+      final startOfDay =
+          DateTime(
+            now.year,
+            now.month,
+            now.day,
+          ).toIso8601String();
+      final endOfDay =
+          DateTime(
+            now.year,
+            now.month,
+            now.day,
+            23,
+            59,
+            59,
+          ).toIso8601String();
+
+      final data = await supabase
+          .from('receipts')
+          .select('*') // select only needed fields
+          .eq('shop_id', shopId)
+          .eq('staff_id', userId)
+          .gte('created_at', startOfDay)
+          .lte('created_at', endOfDay)
+          .order('created_at', ascending: false);
+
+      return (data as List)
+          .map((json) => TempMainReceipt.fromJson(json))
+          .toList();
+    } catch (e) {
+      print("❌ Failed to load today's receipts: $e");
+      return [];
+    }
+  }
+
   //
   //
   //

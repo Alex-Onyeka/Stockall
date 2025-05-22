@@ -8,6 +8,7 @@ class GeneralTextField extends StatelessWidget {
   final TextEditingController controller;
   final Function(String)? onChanged;
   final int lines;
+  final bool? isEnabled;
   final ThemeProvider theme;
 
   const GeneralTextField({
@@ -19,6 +20,7 @@ class GeneralTextField extends StatelessWidget {
     required this.theme,
     this.onChanged,
     this.isEmail,
+    this.isEnabled,
   });
 
   @override
@@ -32,6 +34,7 @@ class GeneralTextField extends StatelessWidget {
           title,
         ),
         TextFormField(
+          enabled: isEnabled ?? true,
           style: TextStyle(fontWeight: FontWeight.bold),
           onChanged: onChanged,
           maxLines: lines,
@@ -69,6 +72,13 @@ class GeneralTextField extends StatelessWidget {
             //   fontWeight: FontWeight.normal,
             // ),
             enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.5,
+              ),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
                 width: 1.5,

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockitt/classes/temp_user_class.dart';
+import 'package:stockitt/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -17,7 +18,7 @@ class UserProvider extends ChangeNotifier {
   Future<List<TempUserClass>?> fetchUsers() async {
     final authUser = _supabase.auth.currentUser;
     isLoading = true;
-    notifyListeners();
+    // notifyListeners();
     if (authUser == null) {
       _currentUser = null;
       return null;
@@ -36,7 +37,7 @@ class UserProvider extends ChangeNotifier {
             .toList();
 
     isLoading = false;
-    notifyListeners();
+    // notifyListeners();
     return _users;
   }
 
@@ -75,17 +76,17 @@ class UserProvider extends ChangeNotifier {
     return user;
   }
 
-  TempUserClass? currentUserEmp;
+  // TempUserClass? currentUserEmp;
 
-  void setEmployee(TempUserClass user) {
-    currentUserEmp = user;
-    notifyListeners();
-  }
+  // void setEmployee(TempUserClass user) {
+  //   currentUserEmp = user;
+  //   notifyListeners();
+  // }
 
-  void logoutCurrentEmployee() {
-    currentUserEmp = null;
-    notifyListeners();
-  }
+  // void logoutCurrentEmployee() {
+  //   currentUserEmp = null;
+  //   notifyListeners();
+  // }
 
   Future<TempUserClass?> fetchUserByEmailAndAuthId(
     String email,
@@ -113,28 +114,66 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> addUser(TempUserClass user) async {
-    await _supabase.from('users').insert(user.toJson());
-
-    await fetchUsers(); // still useful if you rely on the list
-    await fetchCurrentUser(); // update the _currentUser right after insertion
+    try {
+      await _supabase
+          .from('users')
+          .insert(user.toJson(includeUserId: true));
+      await fetchUsers();
+      await fetchCurrentUser();
+    } catch (e, st) {
+      debugPrint('Error adding main user: $e\n$st');
+    }
   }
 
-  Future<void> updateUser(TempUserClass user) async {
+  Future<void> addEmployee(TempUserClass employee) async {
+    try {
+      await _supabase
+          .from('users')
+          .insert(employee.toJson(includeUserId: false));
+      await fetchUsers();
+    } catch (e, st) {
+      debugPrint('Error adding employee: $e\n$st');
+    }
+  }
+
+  Future<TempUserClass> updateUser(
+    TempUserClass user,
+    BuildContext context,
+  ) async {
     if (user.userId == null) {
       throw Exception('User ID is required for update.');
     }
 
-    await _supabase
-        .from('users')
-        .update({
-          'name': user.name,
-          'email': user.email,
-          'phone': user.phone,
-          'role': user.role,
-        })
-        .eq('user_id', user.userId!);
+    final updatedRows =
+        await _supabase
+            .from('users')
+            .update({
+              'name': user.name,
+              'email': user.email,
+              'phone': user.phone,
+              'role': user.role,
+              'password': user.password,
+            })
+            .eq('user_id', user.userId!)
+            .select()
+            .single(); // Ensures we only get one record back
+    final updatedUser = TempUserClass.fromJson(updatedRows);
+    if (context.mounted) {
+      await returnLocalDatabase(
+        context,
+        listen: false,
+      ).deleteUser();
+    }
+    if (context.mounted) {
+      returnLocalDatabase(
+        context,
+        listen: false,
+      ).insertUser(updatedUser);
+    }
 
     await fetchUsers();
+
+    return updatedUser;
   }
 
   Future<void> deleteUser(String userId) async {
