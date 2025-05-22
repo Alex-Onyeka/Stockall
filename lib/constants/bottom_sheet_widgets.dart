@@ -508,83 +508,6 @@ void categoriesBottomSheet(
                                   child: Material(
                                     color:
                                         Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
-                                      },
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              vertical: 7,
-                                              horizontal:
-                                                  10,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(
-                                                3,
-                                              ),
-                                          border: Border.all(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade400,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Row(
-                                            spacing: 8,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      returnTheme(
-                                                        context,
-                                                      ).mobileTexts.b2.fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                returnData(
-                                                      context,
-                                                    ).catValueSet
-                                                    ? 'Select'
-                                                    : 'Cancel',
-                                              ),
-                                              Icon(
-                                                size: 25,
-                                                color:
-                                                    Colors
-                                                        .grey,
-
-                                                returnData(
-                                                      context,
-                                                    ).catValueSet
-                                                    ? Icons
-                                                        .check
-                                                    : Icons
-                                                        .clear,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Material(
-                                    color:
-                                        Colors.transparent,
                                     child: Ink(
                                       decoration: BoxDecoration(
                                         borderRadius:
@@ -667,6 +590,83 @@ void categoriesBottomSheet(
                                                 ),
                                               ],
                                             ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      },
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              vertical: 7,
+                                              horizontal:
+                                                  10,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                3,
+                                              ),
+                                          border: Border.all(
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade400,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Row(
+                                            spacing: 8,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      returnTheme(
+                                                        context,
+                                                      ).mobileTexts.b2.fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                returnData(
+                                                      context,
+                                                    ).catValueSet
+                                                    ? 'Select'
+                                                    : 'Cancel',
+                                              ),
+                                              Icon(
+                                                size: 25,
+                                                color:
+                                                    Colors
+                                                        .grey,
+
+                                                returnData(
+                                                      context,
+                                                    ).catValueSet
+                                                    ? Icons
+                                                        .check
+                                                    : Icons
+                                                        .clear,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -1690,7 +1690,7 @@ class _CustomBottomPanelState
                     onPressedScan: () async {
                       productResults.clear();
                       searchResult = null;
-                      String result = await scanCode(
+                      String? result = await scanCode(
                         context,
                         'Failed',
                       );

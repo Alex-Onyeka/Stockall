@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+// import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
@@ -142,6 +143,17 @@ class _DashboardMobileState extends State<DashboardMobile> {
     return tempUser;
   }
 
+  late Future<String?> shopFuture;
+
+  Future<String?> getShop() async {
+    var tempShop = await returnShopProvider(
+      context,
+      listen: false,
+    ).getUserShop(AuthService().currentUser!.id);
+
+    return tempShop!.activeEmployee;
+  }
+
   TextEditingController emailController =
       TextEditingController();
   TextEditingController passwordController =
@@ -154,6 +166,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProdutRecordsFuture = getProductSalesRecord();
     notificationsFuture = fetchNotifications();
     localUserFuture = getUserEmp();
+    shopFuture = getShop();
     shop =
         returnShopProvider(
           context,
@@ -509,6 +522,173 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 );
                                               }
                                             },
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Row(
+                                            spacing: 6,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .end,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade500,
+                                                ),
+                                                'Current Staff:',
+                                              ),
+                                              FutureBuilder<
+                                                String?
+                                              >(
+                                                future:
+                                                    shopFuture,
+                                                builder: (
+                                                  context,
+                                                  snapshot,
+                                                ) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState
+                                                          .waiting) {
+                                                    return Shimmer.fromColors(
+                                                      baseColor:
+                                                          Colors.grey.shade300,
+                                                      highlightColor:
+                                                          Colors.white,
+                                                      child: Container(
+                                                        padding: EdgeInsets.symmetric(
+                                                          horizontal:
+                                                              10,
+                                                          vertical:
+                                                              5,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(
+                                                            2,
+                                                          ),
+                                                          color: const Color.fromARGB(
+                                                            137,
+                                                            245,
+                                                            245,
+                                                            245,
+                                                          ),
+                                                          border: Border.all(
+                                                            color:
+                                                                Colors.grey.shade200,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          spacing:
+                                                              5,
+                                                          children: [
+                                                            Container(
+                                                              padding: EdgeInsets.all(
+                                                                4,
+                                                              ),
+                                                              decoration: BoxDecoration(
+                                                                shape:
+                                                                    BoxShape.circle,
+                                                                color:
+                                                                    theme.lightModeColor.secColor200,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                // color:
+                                                                //     theme.lightModeColor.secColor200,
+                                                                fontSize:
+                                                                    theme.mobileTexts.b2.fontSize,
+                                                              ),
+                                                              'Loading',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  } else if (snapshot
+                                                      .hasError) {
+                                                    return Container(
+                                                      padding: EdgeInsets.symmetric(
+                                                        horizontal:
+                                                            10,
+                                                        vertical:
+                                                            6,
+                                                      ),
+                                                      child: Text(
+                                                        'Not Set',
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return Container(
+                                                      padding: EdgeInsets.symmetric(
+                                                        horizontal:
+                                                            10,
+                                                        vertical:
+                                                            5,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          2,
+                                                        ),
+                                                        color: const Color.fromARGB(
+                                                          137,
+                                                          245,
+                                                          245,
+                                                          245,
+                                                        ),
+                                                        border: Border.all(
+                                                          color:
+                                                              Colors.grey.shade200,
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        spacing:
+                                                            5,
+                                                        children: [
+                                                          Container(
+                                                            padding: EdgeInsets.all(
+                                                              4,
+                                                            ),
+                                                            decoration: BoxDecoration(
+                                                              shape:
+                                                                  BoxShape.circle,
+                                                              color:
+                                                                  theme.lightModeColor.secColor200,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                              // color:
+                                                              //     theme.lightModeColor.secColor200,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b2.fontSize,
+                                                            ),
+                                                            snapshot.data ??
+                                                                'Not Set',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ],
                                           ),
                                           SizedBox(
                                             height: 20,

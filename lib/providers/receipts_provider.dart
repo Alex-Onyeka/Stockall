@@ -129,7 +129,7 @@ class ReceiptsProvider extends ChangeNotifier {
     isDateSet = true;
     setDate = false;
     dateSet =
-        'From ${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
+        '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
     notifyListeners();
   }
 

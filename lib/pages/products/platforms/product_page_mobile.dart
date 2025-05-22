@@ -132,8 +132,14 @@ class _ProductPageMobileState
             List<TempNotification> notifications =
                 snapshot.data!;
 
+            var localUser =
+                returnLocalDatabase(
+                  context,
+                  listen: false,
+                ).currentEmployee;
+
             return MyDrawerWidget(
-              role: '',
+              role: localUser != null ? localUser.role : '',
               action: () {
                 showDialog(
                   context: context,

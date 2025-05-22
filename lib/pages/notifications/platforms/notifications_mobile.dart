@@ -176,6 +176,12 @@ class _NotificatonTileMainState
                                     .theme
                                     .lightModeColor
                                     .errorColor200
+                                : widget.notif.notifId ==
+                                    'product_deleted'
+                                ? widget
+                                    .theme
+                                    .lightModeColor
+                                    .errorColor200
                                 : widget
                                     .theme
                                     .lightModeColor
@@ -185,6 +191,12 @@ class _NotificatonTileMainState
                             : widget.notif.notifId ==
                                 'out_of_stock'
                             ? Icons.dangerous_outlined
+                            : widget.notif.notifId ==
+                                'product_created'
+                            ? Icons.plus_one
+                            : widget.notif.notifId ==
+                                'product_deleted'
+                            ? Icons.exposure_minus_1_rounded
                             : Icons.add_chart_rounded,
                       ),
                     ),

@@ -229,8 +229,7 @@ class _AddProductMobileState
   double sellingDiscount = 0;
 
   void checkDiscount() {
-    final discountedPrice =
-        cost - (cost * (discount / 100));
+    final discountedPrice = selling * (discount / 100);
     final discountedSellingPrice =
         selling - (selling * (discount / 100));
     setState(() {
@@ -577,47 +576,6 @@ class _AddProductMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Cost-price:',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor200,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              formatLargeNumberDouble(
-                                                costDiscount,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Divider(),
-                                        Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    Colors
-                                                        .grey,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
                                               'Selling-price',
                                             ),
                                             Text(
@@ -637,6 +595,46 @@ class _AddProductMobileState
                                               ),
                                               formatLargeNumberDouble(
                                                 sellingDiscount,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Discount:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              formatLargeNumberDouble(
+                                                costDiscount,
                                               ),
                                             ),
                                           ],

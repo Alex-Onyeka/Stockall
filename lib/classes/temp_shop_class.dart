@@ -10,6 +10,7 @@ class TempShopClass {
   String? shopAddress;
   List<String>? categories;
   List<String>? colors;
+  String? activeEmployee;
 
   TempShopClass({
     this.shopId,
@@ -23,6 +24,7 @@ class TempShopClass {
     this.categories,
     this.colors,
     this.country,
+    this.activeEmployee,
   });
 
   factory TempShopClass.fromJson(
@@ -41,6 +43,7 @@ class TempShopClass {
       categories:
           (json['categories'] as List?)?.cast<String>(),
       colors: (json['colors'] as List?)?.cast<String>(),
+      activeEmployee: json['active_employee'],
     );
   }
 

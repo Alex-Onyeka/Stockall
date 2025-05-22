@@ -153,9 +153,14 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           } else {
             List<TempNotification> notifications =
                 snapshot.data!;
+            var localUser =
+                returnLocalDatabase(
+                  context,
+                  listen: false,
+                ).currentEmployee;
 
             return MyDrawerWidget(
-              role: '',
+              role: localUser != null ? localUser.role : '',
               action: () {
                 showDialog(
                   context: context,
@@ -286,30 +291,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                   .toDouble(),
                                           secondRow: false,
                                           onSearch: false,
-                                          // filterAction: () {
-                                          //   if (returnReceiptProvider(
-                                          //         context,
-                                          //         listen:
-                                          //             false,
-                                          //       ).isDateSet ||
-                                          //       returnReceiptProvider(
-                                          //         context,
-                                          //         listen:
-                                          //             false,
-                                          //       ).setDate) {
-                                          //     returnReceiptProvider(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     ).clearReceiptDate();
-                                          //   } else {
-                                          //     returnReceiptProvider(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     ).openDatePicker();
-                                          //   }
-                                          // },
                                         );
                                       } else if (snapshot
                                           .hasError) {
@@ -336,30 +317,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                           value2: 0,
                                           secondRow: false,
                                           onSearch: false,
-                                          // filterAction: () {
-                                          //   if (returnReceiptProvider(
-                                          //         context,
-                                          //         listen:
-                                          //             false,
-                                          //       ).isDateSet ||
-                                          //       returnReceiptProvider(
-                                          //         context,
-                                          //         listen:
-                                          //             false,
-                                          //       ).setDate) {
-                                          //     returnReceiptProvider(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     ).clearReceiptDate();
-                                          //   } else {
-                                          //     returnReceiptProvider(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     ).openDatePicker();
-                                          //   }
-                                          // },
                                         );
                                       } else {
                                         List<
@@ -464,17 +421,19 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         MainAxisAlignment
                                             .spaceBetween,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          fontSize: 16,
+                                      Expanded(
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            fontSize: 16,
+                                          ),
+                                          returnReceiptProvider(
+                                                context,
+                                              ).dateSet ??
+                                              'Sales For Today',
                                         ),
-                                        returnReceiptProvider(
-                                              context,
-                                            ).dateSet ??
-                                            'Sales For Today',
                                       ),
                                       MaterialButton(
                                         onPressed: () {

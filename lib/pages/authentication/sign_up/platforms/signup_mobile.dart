@@ -81,8 +81,7 @@ class _SignupMobileState extends State<SignupMobile> {
           );
         },
       );
-    } else if (widget.passwordController.text.length < 6 ||
-        widget.confirmPasswordController.text.length < 6) {
+    } else if (widget.passwordController.text.length < 6) {
       showDialog(
         context: context,
         builder: (context) {
@@ -294,7 +293,7 @@ class _SignupMobileState extends State<SignupMobile> {
                                               .mobileTexts
                                               .b1
                                               .textStyleNormal,
-                                      "Let's create you Account",
+                                      "Let's create your Account",
                                     ),
                                   ],
                                 ),

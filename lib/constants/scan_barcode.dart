@@ -23,7 +23,7 @@ Future<String> scanCode(
       return message;
     } else {
       await playBeep();
-      return res as String;
+      return res!;
     }
   } catch (e) {
     return message;

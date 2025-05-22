@@ -725,8 +725,10 @@ class _ReceiptDetailsContainerState
                                           ),
                                           Visibility(
                                             visible:
-                                                widget
-                                                    .isMain,
+                                                widget.isMain ==
+                                                        true
+                                                    ? false
+                                                    : true,
                                             child: Checkbox(
                                               value: returnSalesProvider(
                                                 context,
