@@ -155,13 +155,59 @@ class MainBottomNav extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(55, 0, 0, 0),
+                  color:
+                      returnNavProvider(
+                                context,
+                              ).currentPage ==
+                              1
+                          ? const Color.fromARGB(0, 0, 0, 0)
+                          : const Color.fromARGB(
+                            55,
+                            0,
+                            0,
+                            0,
+                          ),
                   blurRadius: 5,
                   offset: Offset(0, -1),
                 ),
               ],
+              border: Border.all(
+                color:
+                    returnTheme(
+                      context,
+                    ).lightModeColor.prColor300,
+              ),
             ),
-            child: SvgPicture.asset(makeSalesIconSvg),
+            child: Stack(
+              alignment: Alignment(0, 0),
+              children: [
+                SvgPicture.asset(
+                  makeSalesIconSvg,
+                  color:
+                      returnNavProvider(
+                                context,
+                              ).currentPage ==
+                              1
+                          ? Colors.white
+                          : null,
+                ),
+                Visibility(
+                  visible:
+                      returnNavProvider(
+                        context,
+                      ).currentPage ==
+                      1,
+                  child: SvgPicture.asset(
+                    plusIconSvg,
+                    height: 23,
+                    color:
+                        returnTheme(
+                          context,
+                        ).lightModeColor.prColor300,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

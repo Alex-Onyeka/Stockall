@@ -3,6 +3,7 @@ class TempNotification {
   final String notifId;
   final int shopId;
   final int productId;
+  final String? itemName;
   final String title;
   final String text;
   final DateTime date;
@@ -19,6 +20,7 @@ class TempNotification {
     required this.date,
     required this.isViewed,
     required this.category,
+    this.itemName,
   });
 
   factory TempNotification.fromJson(
@@ -34,6 +36,7 @@ class TempNotification {
       date: DateTime.parse(json['date']),
       isViewed: json['is_viewed'],
       category: json['category'],
+      itemName: json['item_name'],
     );
   }
 }

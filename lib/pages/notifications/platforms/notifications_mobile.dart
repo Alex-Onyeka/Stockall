@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/top_banner.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -85,7 +86,7 @@ class NotificationsMobile extends StatelessWidget {
   }
 }
 
-class NotificatonTileMain extends StatelessWidget {
+class NotificatonTileMain extends StatefulWidget {
   const NotificatonTileMain({
     super.key,
     required this.notif,
@@ -96,17 +97,32 @@ class NotificatonTileMain extends StatelessWidget {
   final ThemeProvider theme;
 
   @override
+  State<NotificatonTileMain> createState() =>
+      _NotificatonTileMainState();
+}
+
+class _NotificatonTileMainState
+    extends State<NotificatonTileMain> {
+  String cutLongText(String text) {
+    if (text.length > 15) {
+      return '${text.substring(0, 15)}...';
+    } else {
+      return text;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Ink(
       decoration: BoxDecoration(
         color:
-            notif.isViewed
+            widget.notif.isViewed
                 ? Colors.grey.shade100
                 : Colors.white,
         borderRadius: BorderRadius.circular(5),
         border: Border.all(
           color:
-              notif.isViewed
+              widget.notif.isViewed
                   ? Colors.grey.shade300
                   : Colors.white,
         ),
@@ -116,13 +132,13 @@ class NotificatonTileMain extends StatelessWidget {
           returnNotificationProvider(
             context,
             listen: false,
-          ).updateNotification(notif.id!);
+          ).updateNotification(widget.notif.id!);
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) {
                 return ProductDetailsPage(
-                  productId: notif.productId,
+                  productId: widget.notif.productId,
                 );
               },
             ),
@@ -132,104 +148,212 @@ class NotificatonTileMain extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(15),
           child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            spacing: 10,
             children: [
-              Row(
-                spacing: 15,
+              Stack(
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey.shade200,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 2.0,
+                      ),
+                      child: Icon(
+                        color:
+                            widget.notif.notifId ==
+                                    'low_stock'
+                                ? widget
+                                    .theme
+                                    .lightModeColor
+                                    .secColor200
+                                : widget.notif.notifId ==
+                                    'out_of_stock'
+                                ? widget
+                                    .theme
+                                    .lightModeColor
+                                    .errorColor200
+                                : widget
+                                    .theme
+                                    .lightModeColor
+                                    .prColor250,
+                        widget.notif.notifId == 'low_stock'
+                            ? Icons.warning_amber_rounded
+                            : widget.notif.notifId ==
+                                'out_of_stock'
+                            ? Icons.dangerous_outlined
+                            : Icons.add_chart_rounded,
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: !widget.notif.isViewed,
+                    child: Positioned(
+                      left: 30,
+                      child: Container(
+                        height: 13,
+                        width: 13,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.grey.shade200,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: 2.0,
-                          ),
-                          child: Icon(
-                            color:
-                                notif.notifId == 'low_stock'
-                                    ? theme
-                                        .lightModeColor
-                                        .secColor200
-                                    : notif.notifId ==
-                                        'out_of_stock'
-                                    ? theme
-                                        .lightModeColor
-                                        .errorColor200
-                                    : theme
-                                        .lightModeColor
-                                        .prColor250,
-                            notif.notifId == 'low_stock'
-                                ? Icons
-                                    .warning_amber_rounded
-                                : notif.notifId ==
-                                    'out_of_stock'
-                                ? Icons.dangerous_outlined
-                                : Icons.add_chart_rounded,
+                          gradient:
+                              widget
+                                  .theme
+                                  .lightModeColor
+                                  .secGradient,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
                           ),
                         ),
                       ),
-                      Visibility(
-                        visible: !notif.isViewed,
-                        child: Positioned(
-                          left: 30,
-                          child: Container(
-                            height: 13,
-                            width: 13,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient:
-                                  theme
-                                      .lightModeColor
-                                      .secGradient,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    spacing: 5,
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          // fontSize:
-                          //     theme
-                          //         .mobileTexts
-                          //         .b2
-                          //         .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        notif.title,
-                      ),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey.shade500,
-                        ),
-                        notif.title,
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-              Icon(
-                size: 20,
-                color: Colors.grey.shade400,
-                Icons.arrow_forward_ios_rounded,
+              Flexible(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            spacing: 5,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  // fontSize:
+                                  //     theme
+                                  //         .mobileTexts
+                                  //         .b2
+                                  //         .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                widget.notif.title,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.normal,
+                                  color:
+                                      Colors.grey.shade500,
+                                ),
+                                widget.notif.text,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          size: 20,
+                          color: Colors.grey.shade400,
+                          Icons.arrow_forward_ios_rounded,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 5),
+                    Divider(),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            spacing: 5,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  color:
+                                      Colors.grey.shade600,
+                                ),
+                                'Item:',
+                              ),
+                              Flexible(
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color:
+                                        widget
+                                            .theme
+                                            .lightModeColor
+                                            .prColor300,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  cutLongText(
+                                    widget.notif.itemName ??
+                                        'Product',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color: Colors.grey.shade600,
+                              ),
+                              'Date:',
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                color:
+                                    widget
+                                        .theme
+                                        .lightModeColor
+                                        .prColor300,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              formatDateWithoutYear(
+                                widget.notif.date,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

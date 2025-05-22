@@ -265,8 +265,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       List<TempCartItem>
                                       items =
                                           returnSalesProvider(
-                                            context,
-                                          ).cartItems;
+                                                context,
+                                              )
+                                              .cartItems
+                                              .reversed
+                                              .toList();
 
                                       if (items.isEmpty) {
                                         return EmptyWidgetDisplay(

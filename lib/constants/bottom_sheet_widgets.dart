@@ -1529,17 +1529,17 @@ class _CustomBottomPanelState
                     theme: theme,
                     action: () {
                       cartItem.quantity = qqty.toDouble();
-                      String result = returnSalesProvider(
+                      returnSalesProvider(
                         context,
                         listen: false,
                       ).addItemToCart(cartItem);
                       Navigator.of(context).pop();
                       closeAction();
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(
-                        SnackBar(content: Text(result)),
-                      );
+                      // ScaffoldMessenger.of(
+                      //   context,
+                      // ).showSnackBar(
+                      //   SnackBar(content: Text(result)),
+                      // );
                     },
                     buttonText: 'Add To Cart',
                   ),
@@ -2603,3 +2603,295 @@ void selectProduct(
     },
   );
 }
+
+// void editProductQuantity(
+//   double productQuantity,
+//   BuildContext context,
+//   Function()? updateAction,
+//   TextEditingController numberController,
+// ) async {
+//   numberController.text = cartItem.quantity.toString();
+//   double qqty = cartItem.quantity.toDouble();
+//   await showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.vertical(
+//         top: Radius.circular(20),
+//       ),
+//     ),
+//     backgroundColor: Colors.white,
+//     builder: (BuildContext context) {
+//       return StatefulBuilder(
+//         builder: (context, setState) {
+//           // double currentValue = 0;
+//           // double qqty =
+//           //     double.tryParse(numberController.text) ??
+//           //     cartItem.quantity.toDouble();
+//           return DraggableScrollableSheet(
+//             expand: false,
+//             initialChildSize: 0.9,
+//             maxChildSize: 0.9,
+//             minChildSize: 0.3,
+//             builder: (context, scrollController) {
+//               var theme = returnTheme(context);
+//               return Container(
+//                 color: Colors.white,
+//                 padding: const EdgeInsets.fromLTRB(
+//                   30,
+//                   15,
+//                   30,
+//                   45,
+//                 ),
+//                 child: Column(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     Center(
+//                       child: Container(
+//                         height: 4,
+//                         width: 70,
+//                         decoration: BoxDecoration(
+//                           borderRadius:
+//                               BorderRadius.circular(5),
+//                           color: Colors.grey.shade400,
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+//                     Row(
+//                       mainAxisAlignment:
+//                           MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         Column(
+//                           crossAxisAlignment:
+//                               CrossAxisAlignment.start,
+//                           children: [
+//                             Text(
+//                               'Edit Number',
+//                               style: TextStyle(
+//                                 fontSize:
+//                                     returnTheme(context)
+//                                         .mobileTexts
+//                                         .b1
+//                                         .fontSize,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                             Text(
+//                               'Enter Item Number to Update',
+//                               style: TextStyle(
+//                                 fontSize:
+//                                     returnTheme(context)
+//                                         .mobileTexts
+//                                         .b2
+//                                         .fontSize,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                         IconButton(
+//                           onPressed: () {
+//                             Navigator.of(context).pop();
+//                             FocusScope.of(
+//                               context,
+//                             ).unfocus();
+//                           },
+//                           icon: Icon(Icons.clear_rounded),
+//                         ),
+//                       ],
+//                     ),
+//                     SizedBox(height: 10),
+//                     Expanded(
+//                       child: Container(
+//                         decoration: BoxDecoration(
+//                           color: Colors.white,
+//                           borderRadius:
+//                               BorderRadius.circular(10),
+//                         ),
+//                         child: Column(
+//                           spacing: 5,
+//                           children: [
+//                             EditCartTextField(
+//                               title: 'Enter Number',
+//                               hint: 'Start Typing',
+//                               controller: numberController,
+//                               theme: theme,
+//                               onChanged: (value) {
+//                                 final parsedValue =
+//                                     double.tryParse(
+//                                       value,
+//                                     ) ??
+//                                     0;
+//                                 if (parsedValue >
+//                                     productQuantity) {
+//                                   showDialog(
+//                                     context: context,
+//                                     builder: (context) {
+//                                       var theme =
+//                                           Provider.of<
+//                                             ThemeProvider
+//                                           >(context);
+//                                       return InfoAlert(
+//                                         theme: theme,
+//                                         message:
+//                                             'Total product quantity can\'t be exceeded',
+//                                         title:
+//                                             'Quantity Exceeded',
+//                                       );
+//                                     },
+//                                   );
+//                                   // Optionally reset to max or previous value
+//                                   setState(() {
+//                                     numberController.text =
+//                                         qqty.toString();
+//                                   });
+//                                 } else {
+//                                   setState(() {
+//                                     qqty = parsedValue;
+//                                   });
+//                                 }
+//                               },
+//                             ),
+//                             SizedBox(height: 20),
+//                             Row(
+//                               mainAxisAlignment:
+//                                   MainAxisAlignment.center,
+//                               spacing: 15,
+//                               children: [
+//                                 Material(
+//                                   color: Colors.transparent,
+//                                   child: Ink(
+//                                     decoration: BoxDecoration(
+//                                       borderRadius:
+//                                           BorderRadius.circular(
+//                                             5,
+//                                           ),
+//                                       color:
+//                                           Colors
+//                                               .grey
+//                                               .shade200,
+//                                     ),
+//                                     child: InkWell(
+//                                       borderRadius:
+//                                           BorderRadius.circular(
+//                                             5,
+//                                           ),
+//                                       onTap: () {
+//                                         setState(() {
+//                                           if (qqty > 1) {
+//                                             qqty--;
+//                                           }
+
+//                                           numberController
+//                                                   .text =
+//                                               qqty.toString();
+//                                         });
+//                                       },
+//                                       child: SizedBox(
+//                                         height: 30,
+//                                         width: 30,
+//                                         child: Icon(
+//                                           Icons.remove,
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                                 Text(
+//                                   qqty.toString(),
+//                                   style: TextStyle(
+//                                     fontSize:
+//                                         theme
+//                                             .mobileTexts
+//                                             .h4
+//                                             .fontSize,
+//                                     fontWeight:
+//                                         FontWeight.bold,
+//                                   ),
+//                                 ),
+//                                 Material(
+//                                   color: Colors.transparent,
+//                                   child: Ink(
+//                                     decoration: BoxDecoration(
+//                                       borderRadius:
+//                                           BorderRadius.circular(
+//                                             5,
+//                                           ),
+//                                       color:
+//                                           Colors
+//                                               .grey
+//                                               .shade200,
+//                                     ),
+//                                     child: InkWell(
+//                                       borderRadius:
+//                                           BorderRadius.circular(
+//                                             5,
+//                                           ),
+//                                       onTap: () {
+//                                         if (qqty >=
+//                                             productQuantity) {
+//                                           showDialog(
+//                                             context:
+//                                                 context,
+//                                             builder: (
+//                                               context,
+//                                             ) {
+//                                               var theme =
+//                                                   Provider.of<
+//                                                     ThemeProvider
+//                                                   >(
+//                                                     context,
+//                                                   );
+//                                               return InfoAlert(
+//                                                 theme:
+//                                                     theme,
+//                                                 message:
+//                                                     'Total product quantity can\'t be exceeded',
+//                                                 title:
+//                                                     'Quantity Exceeded',
+//                                               );
+//                                             },
+//                                           );
+//                                         } else {
+//                                           setState(() {
+//                                             qqty++;
+//                                             numberController
+//                                                     .text =
+//                                                 qqty.toString();
+//                                           });
+//                                         }
+//                                       },
+//                                       child: SizedBox(
+//                                         height: 30,
+//                                         width: 30,
+//                                         child: Center(
+//                                           child: Icon(
+//                                             Icons.add,
+//                                           ),
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                             SizedBox(height: 20),
+//                             MainButtonP(
+//                               themeProvider: theme,
+//                               action: updateAction,
+//                               text: 'Update Quantity',
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             },
+//           );
+//         },
+//       );
+//     },
+//   );
+// }

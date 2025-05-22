@@ -26,7 +26,7 @@ String formatDateTime(DateTime date) {
 }
 
 String formatDateWithoutYear(DateTime date) {
-  return DateFormat('MMM d').format(date);
+  return DateFormat('E, MMM d').format(date);
 }
 
 String formatDateTimeTime(DateTime date) {

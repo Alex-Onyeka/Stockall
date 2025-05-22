@@ -317,6 +317,7 @@ class _AddProductMobileState
                                         context,
                                         'Not Saved',
                                       );
+
                                   setState(() {
                                     barcode = info;
                                     barCodeSet = true;

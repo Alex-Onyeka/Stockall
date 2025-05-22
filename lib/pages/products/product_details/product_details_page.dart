@@ -100,6 +100,7 @@ class _ProductDetailsPageState
               ),
             );
           } else {
+            // var product = snapshot.data!;
             return Center(
               child: Padding(
                 padding: const EdgeInsets.only(

@@ -493,27 +493,15 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       >
                                                       records =
                                                           snapshot.data!;
-                                                      return InkWell(
-                                                        onTap: () {
-                                                          print(
-                                                            returnLocalDatabase(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).currentEmployee!.name,
-                                                          );
-                                                        },
-
-                                                        child: DashboardTotalSalesBanner(
-                                                          theme:
-                                                              theme,
-                                                          value: returnReceiptProvider(
-                                                            context,
-                                                          ).getTotalRevenueForSelectedDay(
-                                                            context,
-                                                            mainReceipts,
-                                                            records,
-                                                          ),
+                                                      return DashboardTotalSalesBanner(
+                                                        theme:
+                                                            theme,
+                                                        value: returnReceiptProvider(
+                                                          context,
+                                                        ).getTotalRevenueForSelectedDay(
+                                                          context,
+                                                          mainReceipts,
+                                                          records,
                                                         ),
                                                       );
                                                     }

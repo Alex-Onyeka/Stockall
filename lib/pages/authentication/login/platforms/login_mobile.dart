@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
@@ -94,10 +96,25 @@ class _LoginMobileState extends State<LoginMobile> {
             });
           });
         }
+      } on SocketException catch (_) {
+        // No internet
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              theme: widget.theme,
+              message:
+                  'No internet connection. Please check your network.',
+              title: 'Authentication Error',
+            );
+          },
+        );
       } on AuthException catch (e) {
         setState(() {
           issLoading = false;
         });
+        print(e.statusCode);
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously
@@ -105,7 +122,8 @@ class _LoginMobileState extends State<LoginMobile> {
           builder: (context) {
             return InfoAlert(
               theme: widget.theme,
-              message: e.message,
+              message:
+                  'An Error occured while tryin to create your account, please check you internet and try again.',
               title: 'Authentication Error',
             );
           },
@@ -114,6 +132,7 @@ class _LoginMobileState extends State<LoginMobile> {
         setState(() {
           issLoading = false;
         });
+
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously

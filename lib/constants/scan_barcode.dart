@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:stockitt/constants/play_sounds.dart';
 
 Future<String> scanCode(
   BuildContext context,
@@ -21,6 +22,7 @@ Future<String> scanCode(
     if (res == '-1') {
       return message;
     } else {
+      await playBeep();
       return res as String;
     }
   } catch (e) {

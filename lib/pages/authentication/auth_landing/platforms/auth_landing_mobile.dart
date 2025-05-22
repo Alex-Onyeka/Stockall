@@ -38,8 +38,8 @@ class AuthLandingMobile extends StatelessWidget {
                         child: Image.asset(
                           logoIconWhite,
                           fit: BoxFit.contain,
-                          width: 200,
-                          height: 200,
+                          width: 170,
+                          height: 170,
                         ),
                       ),
                     ),
@@ -54,7 +54,7 @@ class AuthLandingMobile extends StatelessWidget {
                   ),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 40,
+                      horizontal: 30,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -66,32 +66,38 @@ class AuthLandingMobile extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            Text(
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                height: 0,
-                                color:
-                                    themeProvider
-                                        .lightModeColor
-                                        .shadesColorBlack,
-                                fontSize:
-                                    themeProvider
-                                        .returnPlatform(
-                                          constraints,
-                                          context,
-                                        )
-                                        .h1
-                                        .fontSize,
-                                fontWeight:
-                                    themeProvider
-                                        .returnPlatform(
-                                          constraints,
-                                          context,
-                                        )
-                                        .h1
-                                        .fontWeightBold,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  height: 0,
+                                  color:
+                                      themeProvider
+                                          .lightModeColor
+                                          .shadesColorBlack,
+                                  fontSize:
+                                      themeProvider
+                                          .returnPlatform(
+                                            constraints,
+                                            context,
+                                          )
+                                          .h1
+                                          .fontSize,
+                                  fontWeight:
+                                      themeProvider
+                                          .returnPlatform(
+                                            constraints,
+                                            context,
+                                          )
+                                          .h1
+                                          .fontWeightBold,
+                                ),
+                                'Welcome to Stockitt',
                               ),
-                              'Welcome to Stockitt',
                             ),
                             SizedBox(height: 20),
                             Text(
@@ -106,38 +112,56 @@ class AuthLandingMobile extends StatelessWidget {
                                       )
                                       .b1
                                       .textStyleNormal,
-                              'Lorem ipsum dolor sit amet, consectetur  adipiscing elit ut aliquam, purus sit  amet luctus v magna fringilla urna',
+                              'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀',
                             ),
                             SizedBox(height: 20),
-                            MainButtonP(
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return SignUpPage();
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                              child: Column(
+                                children: [
+                                  MainButtonP(
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return SignUpPage();
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    text:
+                                        'Create an Account',
+                                    themeProvider:
+                                        themeProvider,
+                                  ),
+                                  SizedBox(height: 10),
+                                  MainButtonTransparent(
+                                    text: 'Login',
+                                    themeProvider:
+                                        themeProvider,
+                                    constraints:
+                                        constraints,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return LoginPage();
+                                          },
+                                        ),
+                                      );
                                     },
                                   ),
-                                );
-                              },
-                              text: 'Create an Account',
-                              themeProvider: themeProvider,
-                            ),
-                            SizedBox(height: 10),
-                            MainButtonTransparent(
-                              text: 'Login',
-                              themeProvider: themeProvider,
-                              constraints: constraints,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return LoginPage();
-                                    },
-                                  ),
-                                );
-                              },
+                                ],
+                              ),
                             ),
                           ],
                         ),

@@ -135,7 +135,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                     ],
                   ),
                   Visibility(
-                    visible: widget.isFilter != null,
+                    visible: widget.isFilter ?? false,
                     child: MaterialButton(
                       onPressed: widget.filterAction,
                       child: Row(

@@ -10,6 +10,7 @@ import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
+import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class EmployeePageMobile extends StatefulWidget {
@@ -237,19 +238,48 @@ class DetailsPageContainer extends StatefulWidget {
 
 class _DetailsPageContainerState
     extends State<DetailsPageContainer> {
-  late Future<List<TempMainReceipt>> receiptsFuture;
+  late Future<List<TempMainReceipt>?> receiptsFuture;
 
-  Future<List<TempMainReceipt>> getReceipts() async {
-    var temp = await returnReceiptProvider(
-      context,
-    ).loadReceipts(26);
+  Future<List<TempMainReceipt>?> getReceipts() async {
+    List<TempMainReceipt> temp =
+        await returnReceiptProvider(
+          context,
+        ).loadReceiptsByUserId(
+          shopId:
+              returnShopProvider(
+                context,
+                listen: false,
+              ).userShop!.shopId!,
+          userId: widget.employee.userId!,
+        );
     return temp;
   }
 
+  bool _isInitialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    receiptsFuture = getReceipts();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    compProvider = returnCompProvider(
+      context,
+      listen: false,
+    );
+    if (!_isInitialized) {
+      receiptsFuture = getReceipts();
+      _isInitialized = true;
+    }
+  }
+
+  late CompProvider compProvider;
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      compProvider.swtichTab(
+        0,
+      ); // Safe to notify listeners now
+    });
+    super.dispose();
   }
 
   @override
@@ -423,11 +453,14 @@ class _DetailsPageContainerState
                             context,
                             listen: false,
                           ).showLoader('Loading');
-                        } else if (snapshot
-                                .connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: Text('Empty'),
+                        } else if (snapshot.hasError) {
+                          return EmptyWidgetDisplayOnly(
+                            title: 'Empty List',
+                            subText:
+                                'No sales Record under this category.',
+                            theme: returnTheme(context),
+                            height: 30,
+                            icon: Icons.clear,
                           );
                         } else if (snapshot.data!.isEmpty) {
                           return EmptyWidgetDisplayOnly(
@@ -440,7 +473,8 @@ class _DetailsPageContainerState
                         } else {
                           var receipts = snapshot.data!;
                           return ListView.builder(
-                            itemCount: 2,
+                            itemCount:
+                                snapshot.data!.length,
                             itemBuilder: (context, index) {
                               TempMainReceipt receipt =
                                   receipts[index];

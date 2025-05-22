@@ -89,3 +89,5 @@ const String deleteIconSvg = 'assets/svgs/delete_icon.svg';
 
 const String receiptIconSvg =
     'assets/svgs/receipt_icon.svg';
+
+const String plusIconSvg = 'assets/svgs/plus_icon.svg';

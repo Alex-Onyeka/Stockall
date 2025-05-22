@@ -261,7 +261,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                           ConnectionState
                                               .waiting) {
                                         return ItemsSummary(
-                                          isFilter: true,
                                           isMoney1: true,
                                           mainTitle:
                                               'Sales Record Summary',
@@ -287,38 +286,80 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                   .toDouble(),
                                           secondRow: false,
                                           onSearch: false,
-                                          filterAction: () {
-                                            if (returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).isDateSet ||
-                                                returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setDate) {
-                                              returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).clearReceiptDate();
-                                            } else {
-                                              returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).openDatePicker();
-                                            }
-                                          },
+                                          // filterAction: () {
+                                          //   if (returnReceiptProvider(
+                                          //         context,
+                                          //         listen:
+                                          //             false,
+                                          //       ).isDateSet ||
+                                          //       returnReceiptProvider(
+                                          //         context,
+                                          //         listen:
+                                          //             false,
+                                          //       ).setDate) {
+                                          //     returnReceiptProvider(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     ).clearReceiptDate();
+                                          //   } else {
+                                          //     returnReceiptProvider(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     ).openDatePicker();
+                                          //   }
+                                          // },
                                         );
                                       } else if (snapshot
                                           .hasError) {
-                                        return Container(
-                                          height: 100,
-                                          width: 200,
-                                          color:
+                                        return ItemsSummary(
+                                          isMoney1: true,
+                                          mainTitle:
+                                              'Sales Record Summary',
+                                          subTitle:
+                                              returnReceiptProvider(
+                                                context,
+                                              ).dateSet ??
+                                              'For Today',
+                                          firsRow: true,
+                                          color1:
+                                              Colors.green,
+                                          title1:
+                                              'Sales Revenue',
+                                          value1: 0,
+
+                                          color2:
                                               Colors.amber,
+                                          title2:
+                                              'Sales Number',
+                                          value2: 0,
+                                          secondRow: false,
+                                          onSearch: false,
+                                          // filterAction: () {
+                                          //   if (returnReceiptProvider(
+                                          //         context,
+                                          //         listen:
+                                          //             false,
+                                          //       ).isDateSet ||
+                                          //       returnReceiptProvider(
+                                          //         context,
+                                          //         listen:
+                                          //             false,
+                                          //       ).setDate) {
+                                          //     returnReceiptProvider(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     ).clearReceiptDate();
+                                          //   } else {
+                                          //     returnReceiptProvider(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     ).openDatePicker();
+                                          //   }
+                                          // },
                                         );
                                       } else {
                                         List<
@@ -327,7 +368,15 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         records =
                                             snapshot.data!;
                                         return ItemsSummary(
-                                          isFilter: true,
+                                          isFilter:
+                                              returnLocalDatabase(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .currentEmployee!
+                                                  .role ==
+                                              'Owner',
                                           isMoney1: true,
                                           mainTitle:
                                               'Sales Record Summary',

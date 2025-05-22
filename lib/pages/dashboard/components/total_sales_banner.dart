@@ -25,7 +25,8 @@ class DashboardTotalSalesBanner extends StatelessWidget {
             bottom: 25,
           ),
           decoration: BoxDecoration(
-            gradient: theme.lightModeColor.prGradient,
+            // gradient: theme.lightModeColor.prGradient,
+            color: theme.lightModeColor.prColor300,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(

@@ -170,7 +170,7 @@ class _SignupMobileState extends State<SignupMobile> {
             },
           );
         }
-      } on AuthException catch (e) {
+      } on AuthException catch (_) {
         setState(() {
           isLoading = false;
         });
@@ -181,7 +181,8 @@ class _SignupMobileState extends State<SignupMobile> {
           builder: (context) {
             return InfoAlert(
               theme: widget.theme,
-              message: e.message,
+              message:
+                  'An Error occured while tryin to create your account, please check you internet and try again.',
               title: 'Authentication Error',
             );
           },

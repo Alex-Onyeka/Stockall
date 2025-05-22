@@ -56,6 +56,7 @@ class NotificationProvider with ChangeNotifier {
           text: _notifications[index].text,
           date: _notifications[index].date,
           category: _notifications[index].category,
+          itemName: _notifications[index].itemName,
 
           isViewed: true,
         );

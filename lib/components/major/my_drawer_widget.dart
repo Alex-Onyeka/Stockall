@@ -161,152 +161,162 @@ class MyDrawerWidget extends StatelessWidget {
                         ),
                       );
                     },
-                    child: SizedBox(
-                      height: 50,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Row(
-                              spacing: 10,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.start,
-                              children: [
-                                Stack(
-                                  children: [
-                                    Icon(
+                    child: Visibility(
+                      visible: role == 'Owner',
+                      child: SizedBox(
+                        height: 50,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Row(
+                                spacing: 10,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.start,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Icon(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        size: 22,
+                                        Icons
+                                            .notifications_on_outlined,
+                                      ),
+                                    ],
+                                  ),
+
+                                  Text(
+                                    style: TextStyle(
                                       color:
                                           Colors
                                               .grey
-                                              .shade400,
-                                      size: 22,
-                                      Icons
-                                          .notifications_on_outlined,
+                                              .shade600,
+                                      fontSize: 14,
+                                      fontWeight:
+                                          FontWeight.bold,
                                     ),
-                                  ],
-                                ),
-
-                                Text(
-                                  style: TextStyle(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade600,
-                                    fontSize: 14,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    'Notifications',
                                   ),
-                                  'Notifications',
-                                ),
-                              ],
-                            ),
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    // Provider.of<CompProvider>(
-                                    //   context,
-                                    //   listen: false,
-                                    // ).switchNotif();
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return NotificationsPage(
-                                            notifications:
-                                                notifications,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(
-                                      10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          const Color.fromARGB(
-                                            208,
-                                            245,
-                                            245,
-                                            245,
-                                          ),
-                                      shape:
-                                          BoxShape.circle,
-                                    ),
-                                    child: SvgPicture.asset(
-                                      height: 25,
-                                      width: 25,
-                                      notifIconSvg,
-                                      color:
-                                          notifications
-                                                  .where(
-                                                    (
-                                                      notif,
-                                                    ) =>
-                                                        !notif.isViewed,
-                                                  )
-                                                  .isNotEmpty
-                                              ? null
-                                              : Colors
-                                                  .grey
-                                                  .shade500,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 25,
-                                  left: 32,
-                                  child: Visibility(
-                                    visible:
-                                        notifications
-                                            .where(
-                                              (notif) =>
-                                                  !notif
-                                                      .isViewed,
-                                            )
-                                            .isNotEmpty,
+                                ],
+                              ),
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      // Provider.of<CompProvider>(
+                                      //   context,
+                                      //   listen: false,
+                                      // ).switchNotif();
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return NotificationsPage(
+                                              notifications:
+                                                  notifications,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
                                     child: Container(
                                       padding:
-                                          EdgeInsets.all(6),
+                                          EdgeInsets.all(
+                                            10,
+                                          ),
                                       decoration: BoxDecoration(
+                                        color:
+                                            const Color.fromARGB(
+                                              208,
+                                              245,
+                                              245,
+                                              245,
+                                            ),
                                         shape:
                                             BoxShape.circle,
-                                        gradient:
-                                            theme
-                                                .lightModeColor
-                                                .secGradient,
                                       ),
-                                      child: Center(
-                                        child: Text(
-                                          style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                            fontSize: 14,
-                                            color:
-                                                Colors
-                                                    .white,
+                                      child: SvgPicture.asset(
+                                        height: 25,
+                                        width: 25,
+                                        notifIconSvg,
+                                        color:
+                                            notifications
+                                                    .where(
+                                                      (
+                                                        notif,
+                                                      ) =>
+                                                          !notif.isViewed,
+                                                    )
+                                                    .isNotEmpty
+                                                ? null
+                                                : Colors
+                                                    .grey
+                                                    .shade500,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 25,
+                                    left: 32,
+                                    child: Visibility(
+                                      visible:
+                                          notifications
+                                              .where(
+                                                (notif) =>
+                                                    !notif
+                                                        .isViewed,
+                                              )
+                                              .isNotEmpty,
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.all(
+                                              6,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          shape:
+                                              BoxShape
+                                                  .circle,
+                                          gradient:
+                                              theme
+                                                  .lightModeColor
+                                                  .secGradient,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize: 14,
+                                              color:
+                                                  Colors
+                                                      .white,
+                                            ),
+                                            '${notifications.where((notif) => !notif.isViewed).length}',
                                           ),
-                                          '${notifications.where((notif) => !notif.isViewed).length}',
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
