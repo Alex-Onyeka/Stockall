@@ -4,6 +4,7 @@ import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/progress_bar.dart';
 import 'package:stockitt/components/major/top_banner.dart';
+import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/shop_setup/shop_setup_two.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -136,18 +137,34 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                                 isEmail: true,
                                 controller: emailController,
                               ),
-                              FormFieldShop(
-                                isPhone: true,
-                                isOptional: true,
-                                theme: theme,
-                                hintText:
-                                    'Shop Phone Number',
-                                title: 'Enter Phone',
-                                isEmail: false,
-                                message:
+                              Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  PhoneNumberTextField(
+                                    theme: theme,
+                                    hint:
+                                        'Shop Phone Number',
+                                    title:
+                                        'Enter Phone (Optional)',
+
+                                    controller:
+                                        numberController,
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade600,
+                                      fontSize: 13,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
                                     'Uses your Personal Number if you don\'t set',
-                                controller:
-                                    numberController,
+                                  ),
+                                ],
                               ),
                               SizedBox(height: 5),
                               MainButtonP(

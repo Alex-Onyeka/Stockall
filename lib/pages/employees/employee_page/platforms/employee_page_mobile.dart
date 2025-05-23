@@ -12,6 +12,7 @@ import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dar
 import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class EmployeePageMobile extends StatefulWidget {
   final String employeeId;
@@ -464,8 +465,9 @@ class _DetailsPageContainerState
                           );
                         } else if (snapshot.data!.isEmpty) {
                           return EmptyWidgetDisplayOnly(
-                            title: 'title',
-                            subText: 'subText',
+                            title: 'Empty List',
+                            subText:
+                                'No sales recorded yet',
                             theme: returnTheme(context),
                             height: 30,
                             icon: Icons.clear,
@@ -501,9 +503,11 @@ class _DetailsPageContainerState
               Visibility(
                 visible:
                     returnLocalDatabase(
-                      context,
-                    ).currentEmployee!.role ==
-                    'Owner',
+                          context,
+                        ).currentEmployee!.role ==
+                        'Owner' &&
+                    widget.employee.userId !=
+                        AuthService().currentUser!.id,
                 child: CustomerActionButton(
                   icon: Icons.delete_outline_rounded,
                   color:
@@ -589,7 +593,10 @@ class EmployeeDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: TabBarUserInfoSection(
-                    mainText: employee.phone ?? 'Not Set',
+                    mainText:
+                        employee.phone == null
+                            ? 'Not Set'
+                            : employee.phone!,
                     text: 'Phone Number',
                   ),
                 ),

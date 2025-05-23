@@ -8,6 +8,7 @@ import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockitt/pages/employees/components/employee_tile_main.dart';
 import 'package:stockitt/pages/employees/employee_page/employee_page.dart';
+import 'package:stockitt/services/auth_service.dart';
 
 class EmployeeListMobile extends StatefulWidget {
   final String role;
@@ -59,27 +60,32 @@ class _EmployeeListMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Scaffold(
-      floatingActionButton: FloatingActionButtonMain(
-        theme: theme,
-        action: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AddEmployeePage();
-              },
-            ),
-          ).then((_) {
-            if (mounted) {
-              setState(() {
-                employeesFuture = getEmployees();
-              });
-            }
-          });
-        },
-        color:
-            returnTheme(context).lightModeColor.prColor300,
-        text: 'Add New Employee',
+      floatingActionButton: Visibility(
+        visible: widget.role == 'Owner',
+        child: FloatingActionButtonMain(
+          theme: theme,
+          action: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AddEmployeePage();
+                },
+              ),
+            ).then((_) {
+              if (mounted) {
+                setState(() {
+                  employeesFuture = getEmployees();
+                });
+              }
+            });
+          },
+          color:
+              returnTheme(
+                context,
+              ).lightModeColor.prColor300,
+          text: 'Add New Employee',
+        ),
       ),
       appBar: AppBar(
         toolbarHeight: 60,
@@ -105,7 +111,13 @@ class _EmployeeListMobileState
                 fontSize: theme.mobileTexts.h4.fontSize,
                 fontWeight: FontWeight.bold,
               ),
-              'Your Employees',
+              returnLocalDatabase(
+                        context,
+                        listen: false,
+                      ).currentEmployee!.userId! !=
+                      AuthService().currentUser!.id
+                  ? 'My Account'
+                  : 'Your Employees',
             ),
           ],
         ),
@@ -132,6 +144,12 @@ class _EmployeeListMobileState
             List<TempUserClass> employees =
                 widget.role == 'Owner'
                     ? snapshot.data!
+                        .where(
+                          (emp) =>
+                              emp.userId !=
+                              AuthService().currentUser!.id,
+                        )
+                        .toList()
                     : snapshot.data!
                         .where(
                           (emp) =>

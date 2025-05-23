@@ -138,7 +138,15 @@ class MainBottomNav extends StatelessWidget {
                   listen: false,
                 ).currentPage ==
                 1) {
-              action!();
+              if (returnLocalDatabase(
+                    context,
+                    listen: false,
+                  ).currentEmployee!.role ==
+                  'Cashier') {
+                return;
+              } else {
+                action!();
+              }
             } else {
               Navigator.push(
                 context,
@@ -173,9 +181,14 @@ class MainBottomNav extends StatelessWidget {
               ],
               border: Border.all(
                 color:
-                    returnTheme(
-                      context,
-                    ).lightModeColor.prColor300,
+                    returnNavProvider(
+                              context,
+                            ).currentPage ==
+                            1
+                        ? returnTheme(
+                          context,
+                        ).lightModeColor.prColor300
+                        : Colors.transparent,
               ),
             ),
             child: Stack(

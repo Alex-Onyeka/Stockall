@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class DashboardTotalSalesBanner extends StatelessWidget {
   final double value;
+  final String? currentUser;
   const DashboardTotalSalesBanner({
     super.key,
     required this.theme,
     required this.value,
+    this.currentUser,
   });
 
   final ThemeProvider theme;
@@ -16,13 +19,13 @@ class DashboardTotalSalesBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment(1, 00.5),
+      alignment: Alignment(0.9, 0.1),
       children: [
         Container(
           padding: EdgeInsets.only(
             left: 25,
-            top: 25,
-            bottom: 25,
+            top: 20,
+            bottom: 20,
           ),
           decoration: BoxDecoration(
             // gradient: theme.lightModeColor.prGradient,
@@ -68,12 +71,61 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SizedBox(height: 5),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      // Container(
+                      //   padding: EdgeInsets.all(3),
+                      //   decoration: BoxDecoration(
+                      //     shape: BoxShape.circle,
+                      //     color:
+                      //         theme
+                      //             .lightModeColor
+                      //             .secColor200,
+                      //   ),
+                      // ),
+                      Icon(
+                        size: 14,
+                        color: const Color.fromARGB(
+                          255,
+                          255,
+                          208,
+                          67,
+                        ),
+                        Icons.person,
+                      ),
+                      Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(
+                            255,
+                            255,
+                            208,
+                            67,
+                          ),
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                        ),
+
+                        cutLongText(
+                          currentUser ?? 'Not Set',
+                          15,
+                        ).toUpperCase(),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
           ),
         ),
-        Image.asset(cctvImage, height: 85),
+        Lottie.asset(
+          welcomeLady,
+          height: 90,
+          fit: BoxFit.cover,
+        ),
+        // Image.asset(cctvImage, height: 85),
       ],
     );
   }

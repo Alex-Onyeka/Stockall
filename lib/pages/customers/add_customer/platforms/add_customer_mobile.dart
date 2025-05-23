@@ -557,7 +557,11 @@ class _AddCustomerMobileState
                                     context,
                                     listen: false,
                                   ).userShop!.shopId!,
-                              country: selectedCountryName,
+                              country:
+                                  selectedCountryName ==
+                                          'Select Your Country'
+                                      ? null
+                                      : selectedCountryName,
                               dateAdded: DateTime.now(),
 
                               name:
@@ -576,8 +580,16 @@ class _AddCustomerMobileState
                                   widget
                                       .addressController
                                       .text,
-                              city: selectedCityName,
-                              state: selectedStateName,
+                              city:
+                                  selectedCityName ==
+                                          'Select Your City'
+                                      ? null
+                                      : selectedCityName,
+                              state:
+                                  selectedStateName ==
+                                          'Select Your State'
+                                      ? null
+                                      : selectedStateName,
                             ),
                           );
                         } else {
@@ -608,9 +620,21 @@ class _AddCustomerMobileState
                                   widget
                                       .addressController
                                       .text,
-                              city: selectedCityName,
-                              state: selectedStateName,
-                              country: selectedCountryName,
+                              city:
+                                  selectedCityName ==
+                                          'Select Your City'
+                                      ? null
+                                      : selectedCityName,
+                              state:
+                                  selectedStateName ==
+                                          'Select Your State'
+                                      ? null
+                                      : selectedStateName,
+                              country:
+                                  selectedCountryName ==
+                                          'Select Your Country'
+                                      ? null
+                                      : selectedCountryName,
                               dateAdded:
                                   widget
                                       .customer!

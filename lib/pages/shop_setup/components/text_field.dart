@@ -34,33 +34,13 @@ class FormFieldShop extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              style: TextStyle(
-                color: const Color.fromARGB(
-                  246,
-                  32,
-                  32,
-                  32,
-                ),
-                fontSize: theme.mobileTexts.b1.fontSize,
-                fontWeight:
-                    theme.mobileTexts.b1.fontWeightBold,
-              ),
+              style: theme.mobileTexts.b2.textStyleBold,
               title,
             ),
             Visibility(
               visible: isOptional,
               child: Text(
-                style: TextStyle(
-                  color: const Color.fromARGB(
-                    246,
-                    82,
-                    82,
-                    82,
-                  ),
-                  fontSize: theme.mobileTexts.b2.fontSize,
-                  fontWeight:
-                      theme.mobileTexts.b1.fontWeightBold,
-                ),
+                style: theme.mobileTexts.b2.textStyleBold,
                 '(Optional)',
               ),
             ),
@@ -112,8 +92,8 @@ class FormFieldShop extends StatelessWidget {
               visible: message != null,
               child: Text(
                 style: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
                 message ?? '',

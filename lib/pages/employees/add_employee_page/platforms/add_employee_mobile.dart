@@ -217,18 +217,37 @@ class _AddEmployeeMobileState
                                               SizedBox(
                                                 height: 12,
                                               ),
-                                              EmailTextField(
-                                                controller:
-                                                    widget
-                                                        .emailController,
-                                                theme:
-                                                    theme,
-                                                isEmail:
-                                                    false,
-                                                hint:
-                                                    'Enter Password',
-                                                title:
-                                                    'Password',
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  EmailTextField(
+                                                    isEnabled:
+                                                        false,
+                                                    controller:
+                                                        widget.emailController,
+                                                    theme:
+                                                        theme,
+                                                    isEmail:
+                                                        false,
+                                                    hint:
+                                                        'Enter Password',
+                                                    title:
+                                                        'Password',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          theme.lightModeColor.secColor100,
+                                                    ),
+                                                    'The email is the default password',
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),

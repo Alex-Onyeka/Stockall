@@ -109,24 +109,31 @@ class _TotalProductsPageState
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButtonMain(
-          action: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return AddProduct();
-                },
-              ),
-            ).then((_) {
-              setState(() {
-                _productsFuture = getProductList(context);
+        floatingActionButton: Visibility(
+          visible:
+              returnLocalDatabase(
+                context,
+              ).currentEmployee!.role ==
+              'Owner',
+          child: FloatingActionButtonMain(
+            action: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AddProduct();
+                  },
+                ),
+              ).then((_) {
+                setState(() {
+                  _productsFuture = getProductList(context);
+                });
               });
-            });
-          },
-          color: theme.lightModeColor.secColor100,
-          text: 'Add Products',
-          theme: theme,
+            },
+            color: theme.lightModeColor.secColor100,
+            text: 'Add Products',
+            theme: theme,
+          ),
         ),
         floatingActionButtonLocation:
             FloatingActionButtonLocation.endFloat,

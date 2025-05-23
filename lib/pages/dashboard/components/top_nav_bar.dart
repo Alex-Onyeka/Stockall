@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -12,6 +13,7 @@ class TopNavBar extends StatelessWidget {
   final String subText;
   final Function()? action;
   final ThemeProvider theme;
+
   final String role;
   final Function()? openSideBar;
 
@@ -46,13 +48,17 @@ class TopNavBar extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 5,
             children: [
               InkWell(
                 onTap: openSideBar,
                 child: Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center,
                   children: [
                     Icon(
                       color: Colors.grey.shade700,
@@ -61,12 +67,17 @@ class TopNavBar extends StatelessWidget {
                     ),
                     SizedBox(width: 10),
                     Container(
-                      height: 40,
-                      width: 40,
+                      padding: EdgeInsets.all(3),
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
                         shape: BoxShape.circle,
                       ),
-                      child: Image.asset(profileIconImage),
+                      child: Image.asset(
+                        shopIconImage,
+                        height: 35,
+                        width: 35,
+                      ),
                     ),
                   ],
                 ),
@@ -92,7 +103,7 @@ class TopNavBar extends StatelessWidget {
                                   .fontWeightBold,
                           color: Colors.black,
                         ),
-                        title,
+                        cutLongText(title, 17),
                       ),
                       SizedBox(width: 5),
                       SvgPicture.asset(
@@ -111,7 +122,24 @@ class TopNavBar extends StatelessWidget {
                           theme.lightModeColor.prColor250,
                       fontWeight: FontWeight.w500,
                     ),
-                    subText,
+                    cutLongText(subText, 22),
+                  ),
+                  SizedBox(height: 0),
+                  Row(
+                    spacing: 6,
+                    mainAxisAlignment:
+                        MainAxisAlignment.end,
+                    children: [
+                      // Text(
+                      //   style: TextStyle(
+                      //     fontWeight: FontWeight.bold,
+                      //     fontSize:
+                      //         theme.mobileTexts.b4.fontSize,
+                      //     color: Colors.grey.shade500,
+                      //   ),
+                      //   'User:',
+                      // ),
+                    ],
                   ),
                 ],
               ),

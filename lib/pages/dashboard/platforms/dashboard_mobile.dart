@@ -143,15 +143,31 @@ class _DashboardMobileState extends State<DashboardMobile> {
     return tempUser;
   }
 
-  late Future<String?> shopFuture;
+  late Future<List<TempUserClass>> employeesFuture;
 
-  Future<String?> getShop() async {
-    var tempShop = await returnShopProvider(
+  Future<List<TempUserClass>> getEmployees() async {
+    var tempEmployees =
+        await returnUserProvider(
+          context,
+          listen: false,
+        ).fetchUsers();
+
+    var mainBeans =
+        tempEmployees!
+            .where(
+              (emp) =>
+                  emp.userId !=
+                  AuthService().currentUser!.id,
+            )
+            .toList();
+
+    returnLocalDatabase(
+      // ignore: use_build_context_synchronously
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!.id);
+    ).currentEmployees.addAll(mainBeans);
 
-    return tempShop!.activeEmployee;
+    return mainBeans;
   }
 
   TextEditingController emailController =
@@ -166,7 +182,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProdutRecordsFuture = getProductSalesRecord();
     notificationsFuture = fetchNotifications();
     localUserFuture = getUserEmp();
-    shopFuture = getShop();
+    employeesFuture = getEmployees();
+    // shopFuture = getShop();
     shop =
         returnShopProvider(
           context,
@@ -243,49 +260,56 @@ class _DashboardMobileState extends State<DashboardMobile> {
                       List<TempNotification> notifications =
                           snapshot.data!;
 
-                      return MyDrawerWidget(
-                        role:
-                            localUser != null
-                                ? localUser.role
-                                : '',
-                        action: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ConfirmationAlert(
-                                theme: theme,
-                                message:
-                                    'You are about to Logout',
-                                title: 'Are you Sure?',
-                                action: () async {
-                                  await AuthService()
-                                      .signOut();
+                      return FutureBuilder(
+                        future: getEmployees(),
+                        builder: (context, snapshot) {
+                          return MyDrawerWidget(
+                            role:
+                                localUser != null
+                                    ? localUser.role
+                                    : '',
+                            action: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to Logout',
+                                    title: 'Are you Sure?',
+                                    action: () async {
+                                      await AuthService()
+                                          .signOut();
 
-                                  if (context.mounted) {
-                                    returnLocalDatabase(
-                                      context,
-                                      listen: false,
-                                    ).deleteUser();
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return AuthScreensPage();
-                                        },
-                                      ),
-                                    );
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(0);
-                                  }
+                                      if (context.mounted) {
+                                        returnLocalDatabase(
+                                          context,
+                                          listen: false,
+                                        ).deleteUser();
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return AuthScreensPage();
+                                            },
+                                          ),
+                                        );
+                                        returnNavProvider(
+                                          context,
+                                          listen: false,
+                                        ).navigate(0);
+                                      }
+                                    },
+                                  );
                                 },
                               );
                             },
+                            theme: theme,
+                            notifications: notifications,
                           );
                         },
-                        theme: theme,
-                        notifications: notifications,
                       );
                     }
                   },
@@ -507,6 +531,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       records =
                                                           snapshot.data!;
                                                       return DashboardTotalSalesBanner(
+                                                        currentUser:
+                                                            localUser?.name,
                                                         theme:
                                                             theme,
                                                         value: returnReceiptProvider(
@@ -523,173 +549,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                               }
                                             },
                                           ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Row(
-                                            spacing: 6,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .end,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade500,
-                                                ),
-                                                'Current Staff:',
-                                              ),
-                                              FutureBuilder<
-                                                String?
-                                              >(
-                                                future:
-                                                    shopFuture,
-                                                builder: (
-                                                  context,
-                                                  snapshot,
-                                                ) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState
-                                                          .waiting) {
-                                                    return Shimmer.fromColors(
-                                                      baseColor:
-                                                          Colors.grey.shade300,
-                                                      highlightColor:
-                                                          Colors.white,
-                                                      child: Container(
-                                                        padding: EdgeInsets.symmetric(
-                                                          horizontal:
-                                                              10,
-                                                          vertical:
-                                                              5,
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(
-                                                            2,
-                                                          ),
-                                                          color: const Color.fromARGB(
-                                                            137,
-                                                            245,
-                                                            245,
-                                                            245,
-                                                          ),
-                                                          border: Border.all(
-                                                            color:
-                                                                Colors.grey.shade200,
-                                                          ),
-                                                        ),
-                                                        child: Row(
-                                                          spacing:
-                                                              5,
-                                                          children: [
-                                                            Container(
-                                                              padding: EdgeInsets.all(
-                                                                4,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                                color:
-                                                                    theme.lightModeColor.secColor200,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                                // color:
-                                                                //     theme.lightModeColor.secColor200,
-                                                                fontSize:
-                                                                    theme.mobileTexts.b2.fontSize,
-                                                              ),
-                                                              'Loading',
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  } else if (snapshot
-                                                      .hasError) {
-                                                    return Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        horizontal:
-                                                            10,
-                                                        vertical:
-                                                            6,
-                                                      ),
-                                                      child: Text(
-                                                        'Not Set',
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        horizontal:
-                                                            10,
-                                                        vertical:
-                                                            5,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(
-                                                          2,
-                                                        ),
-                                                        color: const Color.fromARGB(
-                                                          137,
-                                                          245,
-                                                          245,
-                                                          245,
-                                                        ),
-                                                        border: Border.all(
-                                                          color:
-                                                              Colors.grey.shade200,
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        spacing:
-                                                            5,
-                                                        children: [
-                                                          Container(
-                                                            padding: EdgeInsets.all(
-                                                              4,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              color:
-                                                                  theme.lightModeColor.secColor200,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                              // color:
-                                                              //     theme.lightModeColor.secColor200,
-                                                              fontSize:
-                                                                  theme.mobileTexts.b2.fontSize,
-                                                            ),
-                                                            snapshot.data ??
-                                                                'Not Set',
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
+
                                           SizedBox(
                                             height: 20,
                                           ),

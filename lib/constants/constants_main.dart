@@ -15,6 +15,9 @@ const String backGroundImage =
 const String profileIconImage =
     'assets/images/small_images/image_icon.png';
 
+const String shopIconImage =
+    'assets/images/small_images/shop_icon.png';
+
 const String cctvImage =
     'assets/images/small_images/cctv.png';
 
@@ -39,6 +42,11 @@ const String shopSetup =
     'assets/animations/shop_setup_icon.json';
 
 const String profitAnim = 'assets/animations/profit.json';
+
+const String welcomeRobot =
+    'assets/animations/welcome_robot.json';
+
+const String welcomeLady = 'assets/animations/welcome.json';
 
 //
 //

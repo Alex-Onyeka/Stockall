@@ -40,3 +40,10 @@ String formatDateWithDay(DateTime date) {
 String formatTime(DateTime date) {
   return DateFormat('hh:mm a').format(date);
 }
+
+String cutLongText(String text, int length) {
+  if (text.length > length) {
+    return '${text.substring(0, length)}...';
+  }
+  return text;
+}

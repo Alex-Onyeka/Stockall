@@ -593,9 +593,7 @@ class _AddProductMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              formatLargeNumberDouble(
-                                                sellingDiscount,
-                                              ),
+                                              'N${formatLargeNumberDouble(sellingDiscount)}',
                                             ),
                                           ],
                                         ),
@@ -633,9 +631,7 @@ class _AddProductMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              formatLargeNumberDouble(
-                                                costDiscount,
-                                              ),
+                                              'N${formatLargeNumberDouble(costDiscount)}',
                                             ),
                                           ],
                                         ),

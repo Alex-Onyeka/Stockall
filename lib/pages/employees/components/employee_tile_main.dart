@@ -75,7 +75,7 @@ class EmployeeTileMain extends StatelessWidget {
                                   fontSize:
                                       theme
                                           .mobileTexts
-                                          .b1
+                                          .b2
                                           .fontSize,
                                   fontWeight:
                                       FontWeight.bold,
@@ -90,7 +90,7 @@ class EmployeeTileMain extends StatelessWidget {
                                           .lightModeColor
                                           .secColor200,
                                   fontWeight:
-                                      FontWeight.bold,
+                                      FontWeight.normal,
                                   fontSize:
                                       theme
                                           .mobileTexts
@@ -103,24 +103,17 @@ class EmployeeTileMain extends StatelessWidget {
                           ),
                         ],
                       ),
-                      InkWell(
-                        onTap: () {},
-                        child: Container(
-                          decoration: BoxDecoration(
-                            // color:
-                            //     theme.lightModeColor.errorColor100,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            size: 20,
-                            color: Colors.grey,
-                            Icons.arrow_forward_ios_rounded,
-                          ),
-                        ),
+                      Icon(
+                        size: 20,
+                        color: Colors.grey,
+                        Icons.arrow_forward_ios_rounded,
                       ),
                     ],
                   ),
-                  Divider(height: 25),
+                  Divider(
+                    height: 25,
+                    color: Colors.grey.shade200,
+                  ),
                   Row(
                     spacing: 10,
                     children: [
@@ -135,8 +128,8 @@ class EmployeeTileMain extends StatelessWidget {
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: 3,
-                          horizontal: 8,
+                          vertical: 2,
+                          horizontal: 6,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.amber,
@@ -148,7 +141,7 @@ class EmployeeTileMain extends StatelessWidget {
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b3
                                     .fontSize,
                           ),
                           employee.role,

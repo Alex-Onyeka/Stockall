@@ -114,7 +114,7 @@ class _LoginMobileState extends State<LoginMobile> {
         setState(() {
           issLoading = false;
         });
-        print(e.statusCode);
+        print(e);
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously
@@ -123,7 +123,18 @@ class _LoginMobileState extends State<LoginMobile> {
             return InfoAlert(
               theme: widget.theme,
               message:
-                  'An Error occured while tryin to create your account, please check you internet and try again.',
+                  e.statusCode == '400'
+                      ? 'Invalid email or password. Please try again.'
+                      : e.statusCode == '401'
+                      ? 'Invalid email or password. Please try again.'
+                      : e.statusCode == '404'
+                      ? 'User not found. Please check your email and try again.'
+                      : e.statusCode == '500'
+                      ? 'An error occurred on the server. Please try again later.'
+                      : e.statusCode == null
+                      ? 'No internet connection. Please check your network and try again.'
+                      : 'An error occurred. Please try again later.',
+              // 'An Error occured while tryin to create your account, please check you internet and try again.',
               title: 'Authentication Error',
             );
           },

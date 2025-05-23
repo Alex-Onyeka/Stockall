@@ -326,45 +326,51 @@ class MyDrawerWidget extends StatelessWidget {
 
               Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 15.0,
-                    ),
-                    child: NavListTileAlt(
-                      height: 16,
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: theme,
-                              message:
-                                  'You are about to Logout',
-                              title: 'Are you Sure?',
-                              action: () async {
-                                await returnLocalDatabase(
-                                  context,
-                                  listen: false,
-                                ).deleteUser();
-
-                                if (context.mounted) {
-                                  Navigator.popAndPushNamed(
-                                    context,
-                                    '/',
-                                  );
-                                  returnNavProvider(
+                  Visibility(
+                    visible:
+                        returnLocalDatabase(
+                          context,
+                        ).currentEmployees.isNotEmpty,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 15.0,
+                      ),
+                      child: NavListTileAlt(
+                        height: 16,
+                        action: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return ConfirmationAlert(
+                                theme: theme,
+                                message:
+                                    'You are about to Logout',
+                                title: 'Are you Sure?',
+                                action: () async {
+                                  await returnLocalDatabase(
                                     context,
                                     listen: false,
-                                  ).navigate(0);
-                                }
-                              },
-                            );
-                          },
-                        );
-                      },
-                      title: 'Employee Logout',
-                      // svg: reportIconSvg,
-                      icon: Icons.logout_rounded,
+                                  ).deleteUser();
+
+                                  if (context.mounted) {
+                                    Navigator.popAndPushNamed(
+                                      context,
+                                      '/',
+                                    );
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(0);
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        },
+                        title: 'Employee Logout',
+                        // svg: reportIconSvg,
+                        icon: Icons.logout_rounded,
+                      ),
                     ),
                   ),
                   Visibility(

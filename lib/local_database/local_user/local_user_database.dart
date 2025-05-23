@@ -67,6 +67,8 @@ class LocalUserDatabase extends ChangeNotifier {
 
   TempUserClass? currentEmployee;
 
+  List<TempUserClass> currentEmployees = [];
+
   /// Get the first user (there should only be one)
   Future<TempUserClass?> getUser() async {
     try {

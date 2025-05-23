@@ -169,10 +169,11 @@ class _SignupMobileState extends State<SignupMobile> {
             },
           );
         }
-      } on AuthException catch (_) {
+      } on AuthException catch (e) {
         setState(() {
           isLoading = false;
         });
+        print(e);
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously
@@ -181,7 +182,11 @@ class _SignupMobileState extends State<SignupMobile> {
             return InfoAlert(
               theme: widget.theme,
               message:
-                  'An Error occured while tryin to create your account, please check you internet and try again.',
+                  e.statusCode == '422'
+                      ? 'User already exists. Please use a different email, or try to login.'
+                      : e.statusCode == null
+                      ? 'No internet connection. Please check your network and try again.'
+                      : 'An error occurred. Please try again later.',
               title: 'Authentication Error',
             );
           },
@@ -228,7 +233,7 @@ class _SignupMobileState extends State<SignupMobile> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            SizedBox(height: 50),
+                            SizedBox(height: 35),
                             Row(
                               spacing: 10,
                               mainAxisAlignment:
@@ -253,9 +258,9 @@ class _SignupMobileState extends State<SignupMobile> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 15),
                             Column(
-                              spacing: 8,
+                              spacing: 4,
                               children: [
                                 Row(
                                   children: [
@@ -308,7 +313,7 @@ class _SignupMobileState extends State<SignupMobile> {
                               lines: 1,
                               theme: widget.theme,
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 10),
                             EmailTextField(
                               title: 'Set Email Address*',
                               hint: 'Enter Email',
@@ -317,7 +322,7 @@ class _SignupMobileState extends State<SignupMobile> {
                                   widget.emailController,
                               theme: widget.theme,
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 10),
                             EmailTextField(
                               title: 'Set Password*',
                               hint: 'Enter Password',
@@ -326,7 +331,7 @@ class _SignupMobileState extends State<SignupMobile> {
                                   widget.passwordController,
                               theme: widget.theme,
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 10),
                             EmailTextField(
                               title: 'Confirm Password*',
                               hint: 'Confirm Password',
@@ -336,7 +341,7 @@ class _SignupMobileState extends State<SignupMobile> {
                                       .confirmPasswordController,
                               theme: widget.theme,
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 10),
                             PhoneNumberTextField(
                               title: 'Phone Number*',
                               hint:
@@ -346,8 +351,7 @@ class _SignupMobileState extends State<SignupMobile> {
                                       .phoneNumberController,
                               theme: widget.theme,
                             ),
-
-                            SizedBox(height: 20),
+                            SizedBox(height: 15),
                             CheckAgree(
                               onChanged: widget.onChanged,
                               checked: widget.checked,
