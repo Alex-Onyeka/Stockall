@@ -13,29 +13,28 @@ import 'package:stockitt/components/text_fields/money_textfield.dart';
 import 'package:stockitt/components/text_fields/number_textfield.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/calculations.dart';
+import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
 
 class AddProductMobile extends StatefulWidget {
+  final TempProductClass? product;
   final TextEditingController costController;
   final TextEditingController sellingController;
-  final TextEditingController categoryController;
   final TextEditingController nameController;
   final TextEditingController sizeController;
   final TextEditingController quantityController;
   final TextEditingController discountController;
-  final TextEditingController brandController;
 
   const AddProductMobile({
     super.key,
     required this.costController,
     required this.sellingController,
-    required this.categoryController,
     required this.nameController,
-    required this.brandController,
     required this.sizeController,
     required this.quantityController,
     required this.discountController,
+    this.product,
   });
 
   @override
@@ -169,6 +168,7 @@ class _AddProductMobileState
                       dataProvider.startDate ??
                       DateTime.now(),
                   endDate: dataProvider.endDate,
+                  category: dataProvider.selectedCategory,
                 ),
               );
 
@@ -179,8 +179,7 @@ class _AddProductMobileState
 
               // Clear data before popping
               if (safeContext.mounted) {
-                dataProvider.clearEndDate();
-                dataProvider.clearStartDate();
+                dataProvider.clearFields();
               }
 
               Future.delayed(Duration(seconds: 2), () {
@@ -198,14 +197,189 @@ class _AddProductMobileState
     }
   }
 
+  void updateProduct() {
+    final safeContext = context;
+    showDialog(
+      context: safeContext,
+      builder: (context) {
+        var theme = returnTheme(context);
+        return ConfirmationAlert(
+          theme: theme,
+          message:
+              'Are you sure you want to proceed with update?',
+          title: 'Proceed?',
+          action: () async {
+            // ✅ GET THE PROVIDER INSTANCE EARLY
+            final provider = returnData(
+              context,
+              listen: false,
+            );
+
+            if (safeContext.mounted) {
+              Navigator.of(safeContext).pop();
+            }
+
+            setState(() {
+              isLoading = true;
+            });
+
+            await provider.updateProduct(
+              product: TempProductClass(
+                id: widget.product!.id,
+                name: widget.nameController.text,
+                unit: provider.selectedUnit!,
+                isRefundable: provider.isProductRefundable,
+                costPrice: double.parse(
+                  widget.costController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
+                sellingPrice: double.parse(
+                  widget.sellingController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
+                quantity: double.parse(
+                  widget.quantityController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
+                shopId: userShop!.shopId!,
+                barcode: barcode,
+                category: provider.selectedCategory,
+                createdAt: widget.product!.createdAt,
+                discount: double.tryParse(
+                  widget.discountController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
+                ),
+                endDate: provider.endDate,
+                size: widget.sizeController.text,
+                sizeType: provider.selectedSize,
+                startDate: provider.startDate,
+              ),
+            );
+
+            setState(() {
+              isLoading = false;
+              showSuccess = true;
+            });
+
+            if (safeContext.mounted) {
+              provider.clearFields();
+            }
+
+            Future.delayed(Duration(seconds: 2), () {
+              if (safeContext.mounted) {
+                Navigator.of(safeContext).pop();
+              }
+            });
+          },
+        );
+      },
+    );
+  }
+
   //
   @override
   void initState() {
     super.initState();
-    // widget.costController.text = '0';
-    // widget.sellingController.text = '0';
-    // widget.discountController.text = '0';
+
+    WidgetsBinding.instance.addPostFrameCallback((context) {
+      clearFields();
+    });
+
     setShop();
+  }
+
+  Future<void> clearFields() async {
+    await Future.delayed(Duration(microseconds: 500), () {
+      if (context.mounted) {
+        returnData(context, listen: false).clearFields();
+      }
+    });
+    if (widget.product != null && context.mounted) {
+      barcode = widget.product!.barcode;
+      barCodeSet =
+          widget.product!.barcode != null ? true : false;
+      widget.nameController.text = widget.product!.name;
+      widget.costController.text = widget.product!.costPrice
+          .toString()
+          .substring(
+            0,
+            widget.product!.costPrice.toString().length - 1,
+          );
+      widget.sellingController.text = widget
+          .product!
+          .sellingPrice
+          .toString()
+          .substring(
+            0,
+            widget.product!.sellingPrice.toString().length -
+                1,
+          );
+      widget.quantityController.text = widget
+          .product!
+          .quantity
+          .toString()
+          .substring(
+            0,
+            widget.product!.quantity.toString().length - 1,
+          );
+      widget.sizeController.text =
+          widget.product!.size.toString();
+      widget.discountController.text =
+          widget.product!.discount != null
+              ? widget.product!.discount.toString()
+              : '';
+      returnData(
+            context,
+            listen: false,
+          ).isProductRefundable =
+          widget.product!.isRefundable;
+      // returnData(context, listen: false).selectedUnit =
+      //     widget.product!.unit;
+      returnData(
+        context,
+        listen: false,
+      ).selectUnit(widget.product!.unit);
+      // returnData(context, listen: false).selectedSize =
+      //     widget.product!.sizeType ?? '';
+      widget.product!.sizeType != null
+          ? returnData(
+            context,
+            listen: false,
+          ).selectSize(widget.product!.sizeType!)
+          : null;
+      widget.product!.category != null
+          ? returnData(
+            context,
+            listen: false,
+          ).selectCategory(widget.product!.category!)
+          : null;
+      returnData(context, listen: false).setBothDates(
+        widget.product!.startDate,
+        widget.product!.endDate,
+      );
+      // returnData(context, listen: false).toggleRefundable();
+      setState(() {
+        costDiscount =
+            widget.product!.discount != null
+                ? widget.product!.sellingPrice *
+                    (widget.product!.discount! / 100)
+                : costDiscount;
+        sellingDiscount =
+            widget.product!.discount != null
+                ? widget.product!.sellingPrice -
+                    (widget.product!.sellingPrice *
+                        (widget.product!.discount! / 100))
+                : costDiscount;
+      });
+    }
   }
 
   TempShopClass? userShop;
@@ -271,14 +445,18 @@ class _AddProductMobileState
                     fontSize: theme.mobileTexts.h4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  'New Product',
+                  widget.product != null
+                      ? 'Edit Product'
+                      : 'New Product',
                 ),
                 SizedBox(height: 5),
                 Text(
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b2.fontSize,
                   ),
-                  'Add New Product to you Store',
+                  widget.product != null
+                      ? 'Edit product details'
+                      : 'Add a new product to your store.',
                 ),
               ],
             ),
@@ -354,7 +532,7 @@ class _AddProductMobileState
                                       },
                                       theme: theme,
                                       hint:
-                                          'Enter the actual Amount of the Item',
+                                          'Enter Real Cost',
                                       title: 'Cost - Price',
                                       controller:
                                           widget
@@ -382,7 +560,7 @@ class _AddProductMobileState
                                       },
                                       theme: theme,
                                       hint:
-                                          'Enter the Amount you wish to sell this Product',
+                                          'Enter Sale Price',
                                       title:
                                           'Selling - Price',
                                       controller:
@@ -593,7 +771,7 @@ class _AddProductMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'N${formatLargeNumberDouble(sellingDiscount)}',
+                                              '$nairaSymbol${formatLargeNumberDouble(sellingDiscount)}',
                                             ),
                                           ],
                                         ),
@@ -631,7 +809,7 @@ class _AddProductMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'N${formatLargeNumberDouble(costDiscount)}',
+                                              '$nairaSymbol${formatLargeNumberDouble(costDiscount)}',
                                             ),
                                           ],
                                         ),
@@ -866,9 +1044,14 @@ class _AddProductMobileState
                       child: MainButtonP(
                         themeProvider: theme,
                         action: () {
-                          checkFields();
+                          widget.product != null
+                              ? updateProduct()
+                              : checkFields();
                         },
-                        text: 'Create Product',
+                        text:
+                            widget.product != null
+                                ? 'Update Product'
+                                : 'Create Product',
                       ),
                     ),
                   ),
@@ -965,14 +1148,22 @@ class _AddProductMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Creating Product'),
+          ).showLoader(
+            widget.product != null
+                ? 'Updating Product'
+                : 'Creating Product',
+          ),
         ),
         Visibility(
           visible: showSuccess,
           child: returnCompProvider(
             context,
             listen: false,
-          ).showSuccess('Product Created Successfully'),
+          ).showSuccess(
+            widget.product != null
+                ? 'Product Updated Successfully'
+                : 'Product Created Successfully',
+          ),
         ),
       ],
     );

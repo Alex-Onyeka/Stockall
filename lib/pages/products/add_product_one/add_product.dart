@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/pages/products/add_product_one/platforms/add_product_mobile.dart';
 
 class AddProduct extends StatefulWidget {
-  const AddProduct({super.key});
+  final TempProductClass? product;
+  const AddProduct({super.key, this.product});
 
   @override
   State<AddProduct> createState() => _AddProductState();
@@ -11,10 +13,7 @@ class AddProduct extends StatefulWidget {
 class _AddProductState extends State<AddProduct> {
   TextEditingController nameController =
       TextEditingController();
-  TextEditingController brandController =
-      TextEditingController();
-  TextEditingController categoryController =
-      TextEditingController();
+
   TextEditingController costController =
       TextEditingController();
   TextEditingController sellingController =
@@ -29,9 +28,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   void dispose() {
     super.dispose();
-    brandController.dispose();
     nameController.dispose();
-    categoryController.dispose();
     costController.dispose();
     sellingController.dispose();
     discountController.dispose();
@@ -49,13 +46,12 @@ class _AddProductState extends State<AddProduct> {
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return AddProductMobile(
+              product: widget.product,
               discountController: discountController,
               sizeController: sizeController,
               quantityController: quantityController,
-              categoryController: categoryController,
               costController: costController,
               sellingController: sellingController,
-              brandController: brandController,
               nameController: nameController,
             );
           } else {

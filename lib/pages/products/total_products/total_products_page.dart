@@ -12,6 +12,7 @@ import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/products/compnents/product_filter_button.dart';
 import 'package:stockitt/pages/products/compnents/product_tile_main.dart';
 import 'package:stockitt/pages/products/compnents/search_product_tile.dart';
+import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class TotalProductsPage extends StatefulWidget {
@@ -407,6 +408,33 @@ class _TotalProductsPageState
                                                       products[index];
 
                                                   return ProductTileMain(
+                                                    action: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            return ProductDetailsPage(
+                                                              productId:
+                                                                  product.id!,
+                                                            );
+                                                          },
+                                                        ),
+                                                      ).then((
+                                                        _,
+                                                      ) {
+                                                        if (context.mounted) {
+                                                          setState(
+                                                            () {
+                                                              _productsFuture = getProductList(
+                                                                context,
+                                                              );
+                                                            },
+                                                          );
+                                                        }
+                                                      });
+                                                    },
                                                     theme:
                                                         theme,
                                                     product:
@@ -592,6 +620,33 @@ class _TotalProductsPageState
                                                             )
                                                             .toList()[index];
                                                     return SearchProductTile(
+                                                      action: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ProductDetailsPage(
+                                                                productId:
+                                                                    product.id!,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          _,
+                                                        ) {
+                                                          if (context.mounted) {
+                                                            setState(
+                                                              () {
+                                                                _productsFuture = getProductList(
+                                                                  context,
+                                                                );
+                                                              },
+                                                            );
+                                                          }
+                                                        });
+                                                      },
                                                       product:
                                                           product,
                                                     );

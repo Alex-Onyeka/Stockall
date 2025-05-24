@@ -99,3 +99,5 @@ const String receiptIconSvg =
     'assets/svgs/receipt_icon.svg';
 
 const String plusIconSvg = 'assets/svgs/plus_icon.svg';
+
+const String nairaSymbol = '₦';

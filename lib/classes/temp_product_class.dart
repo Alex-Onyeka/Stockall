@@ -3,6 +3,7 @@ class TempProductClass {
   String name;
   final int shopId;
   String? brand;
+  DateTime? createdAt;
   String? category;
   String? barcode;
   String unit;
@@ -35,6 +36,7 @@ class TempProductClass {
     this.endDate,
     required this.quantity,
     required this.shopId,
+    this.createdAt,
   });
 
   factory TempProductClass.fromJson(
@@ -69,6 +71,7 @@ class TempProductClass {
               ? DateTime.parse(json['ending_date'])
               : null,
       quantity: (json['quantity'] as num).toDouble(),
+      createdAt: DateTime.parse(json['created_at']),
     );
   }
 

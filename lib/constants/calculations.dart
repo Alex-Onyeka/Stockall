@@ -29,6 +29,10 @@ String formatDateWithoutYear(DateTime date) {
   return DateFormat('E, MMM d').format(date);
 }
 
+String formatMonthAndDay(DateTime date) {
+  return DateFormat('MMM d').format(date);
+}
+
 String formatDateTimeTime(DateTime date) {
   return DateFormat('E, d : hh:mm a').format(date);
 }

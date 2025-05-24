@@ -42,6 +42,12 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setBothDates(DateTime? start, DateTime? end) {
+    startDate = start;
+    endDate = end;
+    notifyListeners();
+  }
+
   void setDate(DateTime date) {
     if (isStartDate) {
       startDate = date;
@@ -90,15 +96,81 @@ class DataProvider extends ChangeNotifier {
     return tempData.toList();
   }
 
-  Future<void> updateProduct(
-    int productId,
-    Map<String, dynamic> updates,
-  ) async {
+  Future<void> updateProduct({
+    required TempProductClass product,
+  }) async {
     final supabase = Supabase.instance.client;
+
     await supabase
         .from('products')
-        .update(updates)
-        .eq('id', productId);
+        .update(
+          product.toJson(),
+        ) // use the toJson() method of the class
+        .eq(
+          'id',
+          product.id!,
+        ); // use the id from the object
+  }
+
+  Future<bool> updatePrices({
+    required int productId,
+    required double newCostPrice,
+    required double newSellingPrice,
+  }) async {
+    final response =
+        await supabase
+            .from('products')
+            .update({
+              'cost_price': newCostPrice,
+              'selling_price': newSellingPrice,
+            })
+            .eq('id', productId)
+            .maybeSingle(); // this ensures the query actually executes
+
+    // The response is a `PostgrestResponse`, which you can check for errors like this:
+    return response != null;
+  }
+
+  Future<bool> updateQuantity({
+    required int productId,
+    required double newQuantity,
+  }) async {
+    final response =
+        await supabase
+            .from('products')
+            .update({'quantity': newQuantity})
+            .eq('id', productId)
+            .maybeSingle();
+
+    return response != null;
+  }
+
+  Future<bool> updateDiscount({
+    required int productId,
+    required double? newDiscount,
+    DateTime? statDate,
+    DateTime? endDate,
+  }) async {
+    final response =
+        await supabase
+            .from('products')
+            .update({
+              'discount': newDiscount,
+              'starting_date':
+                  startDate
+                      ?.toIso8601String()
+                      .split('T')
+                      .first,
+              'ending_date':
+                  endDate
+                      ?.toIso8601String()
+                      .split('T')
+                      .first,
+            })
+            .eq('id', productId)
+            .maybeSingle();
+
+    return response != null;
   }
 
   Future<void> deleteProductMain(int productId) async {
@@ -407,6 +479,8 @@ class DataProvider extends ChangeNotifier {
     unitValueSet = false;
     colorValueSet = false;
     sizeValueSet = false;
+    clearEndDate();
+    clearStartDate();
     notifyListeners();
   }
 

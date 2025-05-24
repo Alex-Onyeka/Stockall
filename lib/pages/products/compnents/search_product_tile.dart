@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/product_details/product_details_page.dart';
 
 class SearchProductTile extends StatelessWidget {
   final TempProductClass product;
+  final Function() action;
   const SearchProductTile({
     super.key,
     required this.product,
+    required this.action,
   });
 
   @override
@@ -34,18 +35,7 @@ class SearchProductTile extends StatelessWidget {
           ),
         ],
       ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return ProductDetailsPage(
-                productId: product.id!,
-              );
-            },
-          ),
-        );
-      },
+      onTap: action,
       subtitle: Text(
         [
           if (product.color != null) product.color,

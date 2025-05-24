@@ -530,17 +530,22 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       >
                                                       records =
                                                           snapshot.data!;
-                                                      return DashboardTotalSalesBanner(
-                                                        currentUser:
-                                                            localUser?.name,
-                                                        theme:
-                                                            theme,
-                                                        value: returnReceiptProvider(
-                                                          context,
-                                                        ).getTotalRevenueForSelectedDay(
-                                                          context,
-                                                          mainReceipts,
-                                                          records,
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          AuthService().signOut();
+                                                        },
+                                                        child: DashboardTotalSalesBanner(
+                                                          currentUser:
+                                                              localUser?.name,
+                                                          theme:
+                                                              theme,
+                                                          value: returnReceiptProvider(
+                                                            context,
+                                                          ).getTotalRevenueForSelectedDay(
+                                                            context,
+                                                            mainReceipts,
+                                                            records,
+                                                          ),
                                                         ),
                                                       );
                                                     }
