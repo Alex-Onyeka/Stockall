@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
-class DashboardTotalSalesBanner extends StatelessWidget {
-  final double value;
-  final String? currentUser;
+class DashboardTotalSalesBanner extends StatefulWidget {
+  final double? value;
+  final TempUserClass? currentUser;
+  final double? userValue;
   const DashboardTotalSalesBanner({
     super.key,
     required this.theme,
     required this.value,
     this.currentUser,
+    this.userValue,
   });
 
   final ThemeProvider theme;
+
+  @override
+  State<DashboardTotalSalesBanner> createState() =>
+      _DashboardTotalSalesBannerState();
+}
+
+class _DashboardTotalSalesBannerState
+    extends State<DashboardTotalSalesBanner> {
+  String setName() {
+    if (widget.currentUser != null) {
+      return '${cutLongText(widget.currentUser!.name.toUpperCase(), 15)} (${widget.currentUser!.role})';
+    } else {
+      return 'Not Set';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +43,11 @@ class DashboardTotalSalesBanner extends StatelessWidget {
           padding: EdgeInsets.only(
             left: 25,
             top: 20,
-            bottom: 20,
+            bottom: 15,
           ),
           decoration: BoxDecoration(
             // gradient: theme.lightModeColor.prGradient,
-            color: theme.lightModeColor.prColor300,
+            color: widget.theme.lightModeColor.prColor300,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -41,7 +59,11 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                   Text(
                     style: TextStyle(
                       fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                          widget
+                              .theme
+                              .mobileTexts
+                              .b3
+                              .fontSize,
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
@@ -52,7 +74,11 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.h3.fontSize,
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .h3
+                                  .fontSize,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -61,18 +87,26 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.h3.fontSize,
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .h3
+                                  .fontSize,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                         formatLargeNumberDoubleWidgetDecimal(
-                          value,
+                          widget.value != null
+                              ? widget.value!
+                              : 0,
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 5),
                   Row(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     spacing: 5,
                     children: [
                       // Container(
@@ -85,6 +119,50 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                       //             .secColor200,
                       //   ),
                       // ),
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(
+                                255,
+                                255,
+                                208,
+                                67,
+                              ),
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+
+                            setName(),
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(
+                                241,
+                                255,
+                                255,
+                                255,
+                              ),
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+
+                            '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(widget.userValue ?? 0)}',
+                          ),
+                        ],
+                      ),
                       Icon(
                         size: 14,
                         color: const Color.fromARGB(
@@ -94,24 +172,6 @@ class DashboardTotalSalesBanner extends StatelessWidget {
                           67,
                         ),
                         Icons.person,
-                      ),
-                      Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(
-                            255,
-                            255,
-                            208,
-                            67,
-                          ),
-                          fontSize:
-                              theme.mobileTexts.b4.fontSize,
-                        ),
-
-                        cutLongText(
-                          currentUser ?? 'Not Set',
-                          15,
-                        ).toUpperCase(),
                       ),
                     ],
                   ),

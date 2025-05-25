@@ -30,7 +30,8 @@ class TopBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: theme.lightModeColor.prGradient,
+        // gradient: theme.lightModeColor.prGradient,
+        color: theme.lightModeColor.prColor300,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),

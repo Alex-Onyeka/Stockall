@@ -5,6 +5,7 @@ import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
+import 'package:stockitt/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
@@ -102,8 +103,32 @@ class MyDrawerWidget extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) {
                             return EmployeeListPage(
-                              empId: '',
-                              role: '',
+                              empId:
+                                  returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          ).currentEmployee !=
+                                          null
+                                      ? returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentEmployee!
+                                          .userId!
+                                      : '',
+                              role:
+                                  returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          ).currentEmployee !=
+                                          null
+                                      ? returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentEmployee!
+                                          .role
+                                      : '',
                             );
                           },
                         ),
@@ -353,9 +378,15 @@ class MyDrawerWidget extends StatelessWidget {
                                   ).deleteUser();
 
                                   if (context.mounted) {
-                                    Navigator.popAndPushNamed(
+                                    Navigator.pushAndRemoveUntil(
                                       context,
-                                      '/',
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                EmpAuth(),
+                                      ),
+                                      (route) =>
+                                          false, // removes all previous routes
                                     );
                                     returnNavProvider(
                                       context,

@@ -17,38 +17,53 @@ class MainButtonTransparent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        action!();
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 14),
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
         decoration: BoxDecoration(
-          color: Colors.transparent,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: themeProvider.lightModeColor.prColor300,
             width: 1.5,
           ),
         ),
-        child: Center(
-          child: Text(
-            style: TextStyle(
-              color:
-                  themeProvider.lightModeColor.prColor300,
-              fontSize:
-                  themeProvider
-                      .returnPlatform(constraints, context)
-                      .b1
-                      .fontSize,
-              fontWeight:
-                  themeProvider
-                      .returnPlatform(constraints, context)
-                      .b1
-                      .fontWeightRegular,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            action!();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 14),
+
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  color:
+                      themeProvider
+                          .lightModeColor
+                          .prColor300,
+                  fontSize:
+                      themeProvider
+                          .returnPlatform(
+                            constraints,
+                            context,
+                          )
+                          .b1
+                          .fontSize,
+                  fontWeight:
+                      themeProvider
+                          .returnPlatform(
+                            constraints,
+                            context,
+                          )
+                          .b1
+                          .fontWeightRegular,
+                ),
+                text,
+              ),
             ),
-            text,
           ),
         ),
       ),

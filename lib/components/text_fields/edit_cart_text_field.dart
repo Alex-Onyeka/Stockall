@@ -7,6 +7,7 @@ class EditCartTextField extends StatefulWidget {
   final TextEditingController controller;
   final ThemeProvider theme;
   final Function(String)? onChanged;
+  final bool? discount;
 
   const EditCartTextField({
     super.key,
@@ -15,6 +16,7 @@ class EditCartTextField extends StatefulWidget {
     required this.controller,
     required this.theme,
     this.onChanged,
+    this.discount,
   });
 
   @override
@@ -63,7 +65,7 @@ class _EditCartTextFieldState
                     fontWeight: FontWeight.bold,
                     color: Colors.grey,
                   ),
-                  '#',
+                  widget.discount != null ? '%' : '#',
                 ),
               ],
             ),

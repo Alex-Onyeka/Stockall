@@ -300,95 +300,143 @@ class _DetailsPageContainerState
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+          Column(
             children: [
               Row(
-                spacing: 10,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey.shade200,
-                    ),
-                    child: SvgPicture.asset(
-                      customersIconSvg,
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                  Row(
+                    spacing: 10,
                     children: [
-                      SizedBox(
-                        width: 160,
-                        child: Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
-                          ),
-                          widget.employee.name,
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade200,
+                        ),
+                        child: SvgPicture.asset(
+                          customersIconSvg,
                         ),
                       ),
-                      SizedBox(
-                        width: 160,
-                        child: Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 160,
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              widget.employee.name,
+                            ),
                           ),
-                          widget.employee.email,
-                        ),
+                          SizedBox(
+                            width: 160,
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight:
+                                    FontWeight.normal,
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              widget.employee.email,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          color:
+                              widget
+                                  .theme
+                                  .lightModeColor
+                                  .secColor200,
+                        ),
+                        'Employee',
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: Colors.grey.shade300,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
+              SizedBox(height: 10),
+              Divider(color: Colors.grey.shade200),
+              Row(
+                spacing: 3,
+                children: [
+                  Text(
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
                       fontSize:
                           widget
                               .theme
                               .mobileTexts
                               .b3
                               .fontSize,
-                      color:
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade500,
+                    ),
+                    'Todays Sales:',
+                  ),
+                  Text(
+                    style: TextStyle(
+                      fontSize:
                           widget
                               .theme
-                              .lightModeColor
-                              .secColor200,
+                              .mobileTexts
+                              .b2
+                              .fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade900,
                     ),
-                    'Employee',
+                    // returnReceiptProvider(
+                    //                                           context,
+                    //                                         ).getTotalRevenueForSelectedDay(
+                    //                                           context,
+                    //                                           mainReceipts,
+                    //                                           records,
+                    //                                         ),
+                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnLocalDatabase(context).userTotalSale)}',
                   ),
-                ),
+                ],
               ),
+              Divider(color: Colors.grey.shade200),
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: 15,
@@ -441,7 +489,7 @@ class _DetailsPageContainerState
                   child: SizedBox(
                     height:
                         MediaQuery.of(context).size.height -
-                        420,
+                        450,
                     // width:
                     //     MediaQuery.of(context).size.width -
                     //     20,
@@ -474,6 +522,12 @@ class _DetailsPageContainerState
                           );
                         } else {
                           var receipts = snapshot.data!;
+                          returnLocalDatabase(
+                            context,
+                            listen: false,
+                          ).setUserTotalSale(
+                            receipts.length.toDouble(),
+                          );
                           return ListView.builder(
                             itemCount:
                                 snapshot.data!.length,
@@ -550,7 +604,7 @@ class EmployeeDetailsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 420,
+      height: MediaQuery.of(context).size.height - 450,
       child: SingleChildScrollView(
         child: Column(
           children: [

@@ -74,6 +74,7 @@ class _LoginMobileState extends State<LoginMobile> {
         var res = await AuthService().signIn(
           widget.emailController.text,
           widget.passwordController.text,
+          context,
         );
         if (res.user != null && context.mounted) {
           setState(() {

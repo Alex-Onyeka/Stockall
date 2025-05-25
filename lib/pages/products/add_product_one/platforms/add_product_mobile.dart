@@ -4,6 +4,7 @@ import 'package:stockitt/classes/temp_shop_class.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
+import 'package:stockitt/components/buttons/main_button_transparent.dart';
 import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/text_fields/barcode_scanner.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
@@ -365,7 +366,6 @@ class _AddProductMobileState
         widget.product!.startDate,
         widget.product!.endDate,
       );
-      // returnData(context, listen: false).toggleRefundable();
       setState(() {
         costDiscount =
             widget.product!.discount != null
@@ -378,6 +378,9 @@ class _AddProductMobileState
                     (widget.product!.sellingPrice *
                         (widget.product!.discount! / 100))
                 : costDiscount;
+        selling = double.parse(
+          widget.sellingController.text.replaceAll(',', ''),
+        );
       });
     }
   }
@@ -693,13 +696,21 @@ class _AddProductMobileState
                               ),
                               SizedBox(height: 10),
                               EditCartTextField(
+                                discount: true,
                                 onChanged: (value) {
                                   setState(() {
-                                    discount =
-                                        double.tryParse(
-                                          value,
-                                        ) ??
-                                        0;
+                                    if (value
+                                            .toString()
+                                            .length >
+                                        2) {
+                                      discount = 100;
+                                    } else {
+                                      discount =
+                                          double.tryParse(
+                                            value,
+                                          ) ??
+                                          0;
+                                    }
                                   });
                                   checkDiscount();
 
@@ -712,6 +723,19 @@ class _AddProductMobileState
                                       context,
                                       listen: false,
                                     ).clearStartDate();
+                                    widget
+                                        .discountController
+                                        .text = '';
+                                  } else if (int.parse(
+                                        widget
+                                            .discountController
+                                            .text,
+                                      ) >
+                                      99) {
+                                    widget
+                                        .discountController
+                                        .text = '100';
+                                    value = '100';
                                   }
                                 },
                                 theme: theme,
@@ -1067,7 +1091,7 @@ class _AddProductMobileState
                   },
                   child: Container(
                     color: const Color.fromARGB(
-                      32,
+                      60,
                       0,
                       0,
                       0,
@@ -1076,65 +1100,89 @@ class _AddProductMobileState
                         MediaQuery.of(context).size.height,
                     width:
                         MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(
-                                30,
-                                0,
-                                0,
-                                0,
-                              ),
-                              blurRadius: 5,
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 10,
                             ),
-                          ],
-                        ),
-                        height:
-                            MediaQuery.of(
-                              context,
-                            ).size.height -
-                            250,
-                        width:
-                            (MediaQuery.of(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      const Color.fromARGB(
+                                        30,
+                                        0,
+                                        0,
+                                        0,
+                                      ),
+                                  blurRadius: 5,
+                                ),
+                              ],
+                            ),
+                            height:
+                                MediaQuery.of(
                                   context,
-                                ).size.width /
-                                10) *
-                            9.2,
-                        child: CalendarWidget(
-                          isMain: false,
-                          onDaySelected: (
-                            selectedDay,
-                            focusedDay,
-                          ) {
-                            returnData(
-                              context,
-                              listen: false,
-                            ).setDate(selectedDay);
-                            setState(() {
-                              setDate = false;
-                            });
-                          },
-                          actionWeek: (
-                            startOfWeek,
-                            endOfWeek,
-                          ) {
-                            returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).setReceiptWeek(
-                              startOfWeek,
-                              endOfWeek,
-                            );
-                          },
+                                ).size.height -
+                                250,
+                            width:
+                                (MediaQuery.of(
+                                      context,
+                                    ).size.width /
+                                    10) *
+                                9.2,
+                            child: CalendarWidget(
+                              isMain: false,
+                              onDaySelected: (
+                                selectedDay,
+                                focusedDay,
+                              ) {
+                                returnData(
+                                  context,
+                                  listen: false,
+                                ).setDate(selectedDay);
+                                setState(() {
+                                  setDate = false;
+                                });
+                              },
+                              actionWeek: (
+                                startOfWeek,
+                                endOfWeek,
+                              ) {
+                                returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).setReceiptWeek(
+                                  startOfWeek,
+                                  endOfWeek,
+                                );
+                              },
+                            ),
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: 15,
+                            left: 30,
+                            right: 30,
+                          ),
+                          child: MainButtonTransparent(
+                            constraints: BoxConstraints(),
+                            themeProvider: theme,
+                            action: () {
+                              setState(() {
+                                setDate = false;
+                              });
+                            },
+                            text: 'Cancel',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -8,6 +8,7 @@ import 'package:stockitt/components/major/top_banner_two.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/home/home.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class ReceiptPageMobile extends StatelessWidget {
@@ -635,27 +636,27 @@ class _ReceiptDetailsContainerState
                                 ) {
                                   var productRecord =
                                       snapshot.data![index];
-                                  var product = returnData(
-                                        context,
-                                        listen: false,
-                                      )
-                                      .getProducts(
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).userShop!.shopId!,
-                                      )
-                                      .then((products) {
-                                        final product = products
-                                            .firstWhere(
-                                              (product) =>
-                                                  product
-                                                      .id ==
-                                                  productRecord
-                                                      .productId,
-                                            );
-                                        return product;
-                                      });
+                                  // var product = returnData(
+                                  //       context,
+                                  //       listen: false,
+                                  //     )
+                                  //     .getProducts(
+                                  //       returnShopProvider(
+                                  //         context,
+                                  //         listen: false,
+                                  //       ).userShop!.shopId!,
+                                  //     )
+                                  //     .then((products) {
+                                  //       final product = products
+                                  //           .firstWhere(
+                                  //             (product) =>
+                                  //                 product
+                                  //                     .id ==
+                                  //                 productRecord
+                                  //                     .productId,
+                                  //           );
+                                  //       return product;
+                                  //     });
 
                                   return Padding(
                                     padding:
@@ -677,41 +678,13 @@ class _ReceiptDetailsContainerState
                                                   CrossAxisAlignment
                                                       .start,
                                               children: [
-                                                FutureBuilder(
-                                                  future:
-                                                      product,
-                                                  builder: (
-                                                    context,
-                                                    snapshot,
-                                                  ) {
-                                                    if (snapshot.connectionState ==
-                                                        ConnectionState.waiting) {
-                                                      return Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
-                                                        ),
-                                                        'Loading',
-                                                      );
-                                                    } else if (snapshot
-                                                        .hasError) {
-                                                      return Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
-                                                        ),
-                                                        'Loading',
-                                                      );
-                                                    } else {
-                                                      return Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
-                                                        ),
-                                                        snapshot.data!.name,
-                                                      );
-                                                    }
-                                                  },
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b1.fontSize,
+                                                  ),
+                                                  productRecord
+                                                      .productName,
                                                 ),
                                                 Text(
                                                   style: TextStyle(
@@ -824,7 +797,7 @@ class _ReceiptDetailsContainerState
                                     .spaceBetween,
                             children: [
                               Expanded(
-                                flex: 6,
+                                flex: 5,
                                 child: Text(
                                   style: TextStyle(
                                     fontSize:
@@ -863,7 +836,7 @@ class _ReceiptDetailsContainerState
                                     .spaceBetween,
                             children: [
                               Expanded(
-                                flex: 6,
+                                flex: 5,
                                 child: Text(
                                   style: TextStyle(
                                     fontSize:
@@ -902,7 +875,7 @@ class _ReceiptDetailsContainerState
                                     .spaceBetween,
                             children: [
                               Expanded(
-                                flex: 6,
+                                flex: 5,
                                 child: Text(
                                   style: TextStyle(
                                     fontSize:
@@ -929,6 +902,7 @@ class _ReceiptDetailsContainerState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
+
                                   'N${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(snapshot.data!, context))}',
                                 ),
                               ),
@@ -959,12 +933,23 @@ class _ReceiptDetailsContainerState
                             : Icons
                                 .arrow_back_ios_new_rounded,
                     action: () {
-                      widget.isMain
-                          ? Navigator.popUntil(
+                      if (widget.isMain) {
+                        if (Navigator.canPop(context)) {
+                          Navigator.popUntil(
                             context,
                             ModalRoute.withName('/'),
-                          )
-                          : Navigator.of(context).pop();
+                          );
+                        } else {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Home(),
+                            ),
+                          );
+                        }
+                      } else {
+                        Navigator.of(context).pop();
+                      }
                     },
                   ),
                   BottomActionButton(

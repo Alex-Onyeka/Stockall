@@ -747,7 +747,7 @@ class _MakeSalesMobileTwoState
                                           );
                                           if (context
                                               .mounted) {
-                                            Navigator.pushReplacement(
+                                            Navigator.pushAndRemoveUntil(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (
@@ -761,6 +761,8 @@ class _MakeSalesMobileTwoState
                                                   );
                                                 },
                                               ),
+                                              (route) =>
+                                                  false,
                                             );
                                           }
                                           setState(() {

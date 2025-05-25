@@ -3,7 +3,6 @@ import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/money_textfield.dart';
@@ -11,6 +10,7 @@ import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
+import 'package:stockitt/pages/products/product_details/platforms/components/edit_discount_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class ProductDetailsMobile extends StatefulWidget {
@@ -84,6 +84,11 @@ class _ProductDetailsMobileState
 
   @override
   Widget build(BuildContext context) {
+    final localUser =
+        returnLocalDatabase(
+          context,
+          listen: false,
+        ).currentEmployee;
     return FutureBuilder(
       future: productFuture,
       builder: (context, snapshot) {
@@ -150,47 +155,53 @@ class _ProductDetailsMobileState
                     ],
                   ),
                   actions: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return AddProduct(
-                                product: product,
-                              );
-                            },
-                          ),
-                        ).then((context) {
-                          setState(() {
-                            productFuture = getProduct();
-                          });
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(right: 20),
-                        padding: EdgeInsets.only(
-                          right: 20,
-                          left: 20,
-                          top: 5,
-                          bottom: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          // border: Border.all(
-                          //   color: Colors.grey.shade200,
-                          // ),
-                        ),
-                        child: Row(
-                          spacing: 3,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Edit',
+                    Visibility(
+                      visible: localUser!.role == 'Owner',
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return AddProduct(
+                                  product: product,
+                                );
+                              },
                             ),
-                            Icon(Icons.edit_note_rounded),
-                          ],
+                          ).then((context) {
+                            setState(() {
+                              productFuture = getProduct();
+                            });
+                          });
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            right: 20,
+                          ),
+                          padding: EdgeInsets.only(
+                            right: 20,
+                            left: 20,
+                            top: 5,
+                            bottom: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            // border: Border.all(
+                            //   color: Colors.grey.shade200,
+                            // ),
+                          ),
+                          child: Row(
+                            spacing: 3,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Edit',
+                              ),
+                              Icon(Icons.edit_note_rounded),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -310,276 +321,286 @@ class _ProductDetailsMobileState
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 15),
-                                  EditButton(
-                                    theme: widget.theme,
-                                    action: () {
-                                      setState(() {
-                                        sellingController
-                                            .text = product
-                                            .sellingPrice
-                                            .toString()
-                                            .substring(
-                                              0,
-                                              product.sellingPrice
-                                                      .toString()
-                                                      .length -
-                                                  1,
-                                            );
+                                  Visibility(
+                                    visible:
+                                        localUser.role ==
+                                        'Owner',
+                                    child: SizedBox(
+                                      height: 15,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        localUser.role ==
+                                        'Owner',
+                                    child: EditButton(
+                                      theme: widget.theme,
+                                      action: () {
+                                        setState(() {
+                                          sellingController
+                                              .text = product
+                                              .sellingPrice
+                                              .toString()
+                                              .substring(
+                                                0,
+                                                product.sellingPrice
+                                                        .toString()
+                                                        .length -
+                                                    1,
+                                              );
 
-                                        costController
-                                            .text = product
-                                            .costPrice
-                                            .toString()
-                                            .substring(
-                                              0,
-                                              product.costPrice
-                                                      .toString()
-                                                      .length -
-                                                  1,
-                                            );
-                                      });
-                                      showGeneralDialog(
-                                        context: context,
-                                        pageBuilder: (
-                                          context,
-                                          animation,
-                                          secondaryAnimation,
-                                        ) {
-                                          return Material(
-                                            color:
-                                                Colors
-                                                    .transparent,
-                                            child: GestureDetector(
-                                              onTap:
-                                                  () =>
-                                                      FocusManager
-                                                          .instance
-                                                          .primaryFocus
-                                                          ?.unfocus(),
-                                              child: Container(
-                                                decoration:
-                                                    BoxDecoration(
-                                                      color:
-                                                          Colors.white,
+                                          costController
+                                              .text = product
+                                              .costPrice
+                                              .toString()
+                                              .substring(
+                                                0,
+                                                product.costPrice
+                                                        .toString()
+                                                        .length -
+                                                    1,
+                                              );
+                                        });
+                                        showGeneralDialog(
+                                          context: context,
+                                          pageBuilder: (
+                                            context,
+                                            animation,
+                                            secondaryAnimation,
+                                          ) {
+                                            return Material(
+                                              color:
+                                                  Colors
+                                                      .transparent,
+                                              child: GestureDetector(
+                                                onTap:
+                                                    () =>
+                                                        FocusManager.instance.primaryFocus?.unfocus(),
+                                                child: Container(
+                                                  decoration:
+                                                      BoxDecoration(
+                                                        color:
+                                                            Colors.white,
+                                                      ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(
+                                                      left:
+                                                          30.0,
+                                                      top:
+                                                          40,
+                                                      right:
+                                                          30,
                                                     ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(
-                                                    left:
-                                                        30.0,
-                                                    top: 40,
-                                                    right:
-                                                        30,
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Opacity(
-                                                            opacity:
-                                                                0,
-                                                            child: IconButton(
-                                                              onPressed:
-                                                                  () {},
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Opacity(
+                                                              opacity:
+                                                                  0,
+                                                              child: IconButton(
+                                                                onPressed:
+                                                                    () {},
+                                                                icon: Icon(
+                                                                  Icons.clear,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    widget.theme.mobileTexts.b1.fontSize,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              'Edit Prices',
+                                                            ),
+                                                            IconButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop();
+                                                              },
                                                               icon: Icon(
                                                                 Icons.clear,
                                                               ),
                                                             ),
-                                                          ),
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  widget.theme.mobileTexts.b1.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height:
+                                                              15,
+                                                        ),
+                                                        Column(
+                                                          spacing:
+                                                              20,
+                                                          children: [
+                                                            MoneyTextfield(
+                                                              title:
+                                                                  'Cost Price',
+                                                              hint:
+                                                                  'Enter Cost Price',
+                                                              controller:
+                                                                  costController,
+                                                              theme:
+                                                                  widget.theme,
                                                             ),
-                                                            'Edit Prices',
-                                                          ),
-                                                          IconButton(
-                                                            onPressed: () {
+                                                            MoneyTextfield(
+                                                              title:
+                                                                  'Selling Price',
+                                                              hint:
+                                                                  'Enter Selling Price',
+                                                              controller:
+                                                                  sellingController,
+                                                              theme:
+                                                                  widget.theme,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height:
+                                                              20,
+                                                        ),
+                                                        MainButtonP(
+                                                          themeProvider:
+                                                              widget.theme,
+                                                          action: () {
+                                                            final safeContext =
+                                                                context;
+                                                            if (sellingController.text.isNotEmpty ||
+                                                                costController.text.isNotEmpty) {
+                                                              showDialog(
+                                                                context:
+                                                                    safeContext,
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ConfirmationAlert(
+                                                                    theme:
+                                                                        widget.theme,
+                                                                    message:
+                                                                        'Are you sure you want to proceed?',
+                                                                    title:
+                                                                        'Proceed?',
+                                                                    action: () async {
+                                                                      final dataProvider = returnData(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      );
+                                                                      if (safeContext.mounted) {
+                                                                        Navigator.of(
+                                                                          safeContext,
+                                                                        ).pop();
+                                                                      }
+                                                                      setState(
+                                                                        () {
+                                                                          isLoading =
+                                                                              true;
+                                                                        },
+                                                                      );
+                                                                      await dataProvider.updatePrices(
+                                                                        productId:
+                                                                            product.id!,
+                                                                        newCostPrice: double.parse(
+                                                                          costController.text.replaceAll(
+                                                                            ',',
+                                                                            '',
+                                                                          ),
+                                                                        ),
+                                                                        newSellingPrice: double.parse(
+                                                                          sellingController.text.replaceAll(
+                                                                            ',',
+                                                                            '',
+                                                                          ),
+                                                                        ),
+                                                                      );
+
+                                                                      setState(
+                                                                        () {
+                                                                          isLoading =
+                                                                              false;
+                                                                          showSuccess =
+                                                                              true;
+                                                                        },
+                                                                      );
+
+                                                                      if (safeContext.mounted) {
+                                                                        Navigator.of(
+                                                                          safeContext,
+                                                                        ).pop();
+                                                                        setState(
+                                                                          () {
+                                                                            productFuture =
+                                                                                getProduct();
+                                                                          },
+                                                                        );
+                                                                      }
+
+                                                                      setState(
+                                                                        () {
+                                                                          showSuccess =
+                                                                              false;
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+                                                            } else {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return InfoAlert(
+                                                                    theme:
+                                                                        widget.theme,
+                                                                    message:
+                                                                        'Cost price and Selling price must be set.',
+                                                                    title:
+                                                                        'Empty Fields',
+                                                                  );
+                                                                },
+                                                              );
+                                                            }
+                                                          },
+                                                          text:
+                                                              'Update Prices',
+                                                        ),
+                                                        SizedBox(
+                                                          height:
+                                                              15,
+                                                        ),
+                                                        Material(
+                                                          color:
+                                                              Colors.transparent,
+                                                          child: EditButton(
+                                                            text:
+                                                                'Cancel',
+                                                            action: () {
                                                               Navigator.of(
                                                                 context,
                                                               ).pop();
                                                             },
-                                                            icon: Icon(
-                                                              Icons.clear,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(
-                                                        height:
-                                                            15,
-                                                      ),
-                                                      Column(
-                                                        spacing:
-                                                            20,
-                                                        children: [
-                                                          MoneyTextfield(
-                                                            title:
-                                                                'Cost Price',
-                                                            hint:
-                                                                'Enter Cost Price',
-                                                            controller:
-                                                                costController,
                                                             theme:
                                                                 widget.theme,
                                                           ),
-                                                          MoneyTextfield(
-                                                            title:
-                                                                'Selling Price',
-                                                            hint:
-                                                                'Enter Selling Price',
-                                                            controller:
-                                                                sellingController,
-                                                            theme:
-                                                                widget.theme,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(
-                                                        height:
-                                                            20,
-                                                      ),
-                                                      MainButtonP(
-                                                        themeProvider:
-                                                            widget.theme,
-                                                        action: () {
-                                                          final safeContext =
-                                                              context;
-                                                          if (sellingController.text.isNotEmpty ||
-                                                              costController.text.isNotEmpty) {
-                                                            showDialog(
-                                                              context:
-                                                                  safeContext,
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                return ConfirmationAlert(
-                                                                  theme:
-                                                                      widget.theme,
-                                                                  message:
-                                                                      'Are you sure you want to proceed?',
-                                                                  title:
-                                                                      'Proceed?',
-                                                                  action: () async {
-                                                                    final dataProvider = returnData(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    );
-                                                                    if (safeContext.mounted) {
-                                                                      Navigator.of(
-                                                                        safeContext,
-                                                                      ).pop();
-                                                                    }
-                                                                    setState(
-                                                                      () {
-                                                                        isLoading =
-                                                                            true;
-                                                                      },
-                                                                    );
-                                                                    await dataProvider.updatePrices(
-                                                                      productId:
-                                                                          product.id!,
-                                                                      newCostPrice: double.parse(
-                                                                        costController.text.replaceAll(
-                                                                          ',',
-                                                                          '',
-                                                                        ),
-                                                                      ),
-                                                                      newSellingPrice: double.parse(
-                                                                        sellingController.text.replaceAll(
-                                                                          ',',
-                                                                          '',
-                                                                        ),
-                                                                      ),
-                                                                    );
-
-                                                                    setState(
-                                                                      () {
-                                                                        isLoading =
-                                                                            false;
-                                                                        showSuccess =
-                                                                            true;
-                                                                      },
-                                                                    );
-
-                                                                    if (safeContext.mounted) {
-                                                                      Navigator.of(
-                                                                        safeContext,
-                                                                      ).pop();
-                                                                      setState(
-                                                                        () {
-                                                                          productFuture =
-                                                                              getProduct();
-                                                                        },
-                                                                      );
-                                                                    }
-
-                                                                    setState(
-                                                                      () {
-                                                                        showSuccess =
-                                                                            false;
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          } else {
-                                                            showDialog(
-                                                              context:
-                                                                  context,
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                return InfoAlert(
-                                                                  theme:
-                                                                      widget.theme,
-                                                                  message:
-                                                                      'Cost price and Selling price must be set.',
-                                                                  title:
-                                                                      'Empty Fields',
-                                                                );
-                                                              },
-                                                            );
-                                                          }
-                                                        },
-                                                        text:
-                                                            'Update Prices',
-                                                      ),
-                                                      SizedBox(
-                                                        height:
-                                                            15,
-                                                      ),
-                                                      Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: EditButton(
-                                                          text:
-                                                              'Cancel',
-                                                          action: () {
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pop();
-                                                          },
-                                                          theme:
-                                                              widget.theme,
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    text: 'Edit Prices',
+                                            );
+                                          },
+                                        );
+                                      },
+                                      text: 'Edit Prices',
+                                    ),
                                   ),
                                 ],
                               ),
@@ -589,7 +610,7 @@ class _ProductDetailsMobileState
                                   mainAxisAlignment:
                                       MainAxisAlignment
                                           .center,
-                                  spacing: 20,
+                                  spacing: 15,
                                   children: [
                                     Expanded(
                                       child: Column(
@@ -613,266 +634,294 @@ class _ProductDetailsMobileState
                                                       widget
                                                           .theme,
                                                   backGround:
-                                                      const Color.fromARGB(
-                                                        15,
-                                                        207,
-                                                        6,
-                                                        29,
-                                                      ),
+                                                      product.quantity >
+                                                              10
+                                                          ? const Color.fromARGB(
+                                                            18,
+                                                            2,
+                                                            163,
+                                                            31,
+                                                          )
+                                                          : const Color.fromARGB(
+                                                            15,
+                                                            207,
+                                                            6,
+                                                            29,
+                                                          ),
                                                   border:
-                                                      const Color.fromARGB(
-                                                        57,
-                                                        176,
-                                                        4,
-                                                        30,
-                                                      ),
+                                                      product.quantity >
+                                                              10
+                                                          ? const Color.fromARGB(
+                                                            63,
+                                                            2,
+                                                            163,
+                                                            31,
+                                                          )
+                                                          : const Color.fromARGB(
+                                                            57,
+                                                            176,
+                                                            4,
+                                                            30,
+                                                          ),
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
-                                            height: 15,
+                                          Visibility(
+                                            visible:
+                                                localUser
+                                                    .role ==
+                                                'Owner',
+                                            child: SizedBox(
+                                              height: 15,
+                                            ),
                                           ),
-                                          EditButton(
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            action: () {
-                                              setState(() {
-                                                quantityController
-                                                    .text = product
-                                                    .quantity
-                                                    .toString()
-                                                    .substring(
-                                                      0,
-                                                      product.quantity.toString().length -
-                                                          2,
-                                                    );
-                                              });
-                                              showGeneralDialog(
-                                                context:
+                                          Visibility(
+                                            visible:
+                                                localUser
+                                                    .role ==
+                                                'Owner',
+                                            child: EditButton(
+                                              theme:
+                                                  widget
+                                                      .theme,
+                                              action: () {
+                                                setState(() {
+                                                  quantityController
+                                                      .text = product
+                                                      .quantity
+                                                      .toString()
+                                                      .substring(
+                                                        0,
+                                                        product.quantity.toString().length -
+                                                            2,
+                                                      );
+                                                });
+                                                showGeneralDialog(
+                                                  context:
+                                                      context,
+                                                  pageBuilder: (
                                                     context,
-                                                pageBuilder: (
-                                                  context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                ) {
-                                                  return Material(
-                                                    color:
-                                                        Colors.transparent,
-                                                    child: GestureDetector(
-                                                      onTap:
-                                                          () =>
-                                                              FocusManager.instance.primaryFocus?.unfocus(),
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          color:
-                                                              Colors.white,
-                                                        ),
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.only(
-                                                            left:
-                                                                30.0,
-                                                            top:
-                                                                40,
-                                                            right:
-                                                                30,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) {
+                                                    return Material(
+                                                      color:
+                                                          Colors.transparent,
+                                                      child: GestureDetector(
+                                                        onTap:
+                                                            () =>
+                                                                FocusManager.instance.primaryFocus?.unfocus(),
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                            color:
+                                                                Colors.white,
                                                           ),
-                                                          child: Column(
-                                                            children: [
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment.spaceBetween,
-                                                                children: [
-                                                                  Opacity(
-                                                                    opacity:
-                                                                        0,
-                                                                    child: IconButton(
-                                                                      onPressed:
-                                                                          () {},
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.only(
+                                                              left:
+                                                                  30.0,
+                                                              top:
+                                                                  40,
+                                                              right:
+                                                                  30,
+                                                            ),
+                                                            child: Column(
+                                                              children: [
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  children: [
+                                                                    Opacity(
+                                                                      opacity:
+                                                                          0,
+                                                                      child: IconButton(
+                                                                        onPressed:
+                                                                            () {},
+                                                                        icon: Icon(
+                                                                          Icons.clear,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            widget.theme.mobileTexts.b1.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                      'Edit Product Quantity',
+                                                                    ),
+                                                                    IconButton(
+                                                                      onPressed: () {
+                                                                        Navigator.of(
+                                                                          context,
+                                                                        ).pop();
+                                                                      },
                                                                       icon: Icon(
                                                                         Icons.clear,
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          widget.theme.mobileTexts.b1.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.bold,
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                  height:
+                                                                      15,
+                                                                ),
+                                                                Column(
+                                                                  spacing:
+                                                                      20,
+                                                                  children: [
+                                                                    EditCartTextField(
+                                                                      onChanged: (
+                                                                        value,
+                                                                      ) {
+                                                                        if (value.isEmpty) {
+                                                                          setState(
+                                                                            () {
+                                                                              quantityController.text = '0';
+                                                                            },
+                                                                          );
+                                                                        } else if (value.toString()[0] ==
+                                                                            '0') {
+                                                                          setState(
+                                                                            () {
+                                                                              quantityController.text = value.substring(
+                                                                                1,
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                      title:
+                                                                          'Quantity',
+                                                                      hint:
+                                                                          'Enter Quantity Amount',
+                                                                      controller:
+                                                                          quantityController,
+                                                                      theme:
+                                                                          widget.theme,
                                                                     ),
-                                                                    'Edit Product Quantity',
-                                                                  ),
-                                                                  IconButton(
-                                                                    onPressed: () {
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                  height:
+                                                                      20,
+                                                                ),
+                                                                MainButtonP(
+                                                                  themeProvider:
+                                                                      widget.theme,
+                                                                  action: () {
+                                                                    final safeContext =
+                                                                        context;
+
+                                                                    showDialog(
+                                                                      context:
+                                                                          safeContext,
+                                                                      builder: (
+                                                                        context,
+                                                                      ) {
+                                                                        return ConfirmationAlert(
+                                                                          theme:
+                                                                              widget.theme,
+                                                                          message:
+                                                                              quantityController.text.isEmpty
+                                                                                  ? 'You are about to empty your entire product stock, are you sure?'
+                                                                                  : 'Are you sure you want to proceed?',
+                                                                          title:
+                                                                              'Proceed?',
+                                                                          action: () async {
+                                                                            final dataProvider = returnData(
+                                                                              context,
+                                                                              listen:
+                                                                                  false,
+                                                                            );
+                                                                            if (safeContext.mounted) {
+                                                                              Navigator.of(
+                                                                                safeContext,
+                                                                              ).pop();
+                                                                            }
+                                                                            setState(
+                                                                              () {
+                                                                                isLoading =
+                                                                                    true;
+                                                                              },
+                                                                            );
+                                                                            await dataProvider.updateQuantity(
+                                                                              productId:
+                                                                                  product.id!,
+
+                                                                              newQuantity: double.parse(
+                                                                                quantityController.text,
+                                                                              ),
+                                                                            );
+
+                                                                            setState(
+                                                                              () {
+                                                                                isLoading =
+                                                                                    false;
+                                                                                showSuccess =
+                                                                                    true;
+                                                                              },
+                                                                            );
+
+                                                                            if (safeContext.mounted) {
+                                                                              Navigator.of(
+                                                                                safeContext,
+                                                                              ).pop();
+                                                                              setState(
+                                                                                () {
+                                                                                  productFuture =
+                                                                                      getProduct();
+                                                                                },
+                                                                              );
+                                                                            }
+
+                                                                            setState(
+                                                                              () {
+                                                                                showSuccess =
+                                                                                    false;
+                                                                              },
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  text:
+                                                                      'Update Quantity',
+                                                                ),
+                                                                SizedBox(
+                                                                  height:
+                                                                      15,
+                                                                ),
+                                                                Material(
+                                                                  color:
+                                                                      Colors.transparent,
+                                                                  child: EditButton(
+                                                                    text:
+                                                                        'Cancel',
+                                                                    action: () {
                                                                       Navigator.of(
                                                                         context,
                                                                       ).pop();
                                                                     },
-                                                                    icon: Icon(
-                                                                      Icons.clear,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    15,
-                                                              ),
-                                                              Column(
-                                                                spacing:
-                                                                    20,
-                                                                children: [
-                                                                  EditCartTextField(
-                                                                    onChanged: (
-                                                                      value,
-                                                                    ) {
-                                                                      if (value.isEmpty) {
-                                                                        setState(
-                                                                          () {
-                                                                            quantityController.text = '0';
-                                                                          },
-                                                                        );
-                                                                      } else if (value.toString()[0] ==
-                                                                          '0') {
-                                                                        setState(
-                                                                          () {
-                                                                            quantityController.text = value.substring(
-                                                                              1,
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      }
-                                                                    },
-                                                                    title:
-                                                                        'Quantity',
-                                                                    hint:
-                                                                        'Enter Quantity Amount',
-                                                                    controller:
-                                                                        quantityController,
                                                                     theme:
                                                                         widget.theme,
                                                                   ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    20,
-                                                              ),
-                                                              MainButtonP(
-                                                                themeProvider:
-                                                                    widget.theme,
-                                                                action: () {
-                                                                  final safeContext =
-                                                                      context;
-
-                                                                  showDialog(
-                                                                    context:
-                                                                        safeContext,
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ConfirmationAlert(
-                                                                        theme:
-                                                                            widget.theme,
-                                                                        message:
-                                                                            quantityController.text.isEmpty
-                                                                                ? 'You are about to empty your entire product stock, are you sure?'
-                                                                                : 'Are you sure you want to proceed?',
-                                                                        title:
-                                                                            'Proceed?',
-                                                                        action: () async {
-                                                                          final dataProvider = returnData(
-                                                                            context,
-                                                                            listen:
-                                                                                false,
-                                                                          );
-                                                                          if (safeContext.mounted) {
-                                                                            Navigator.of(
-                                                                              safeContext,
-                                                                            ).pop();
-                                                                          }
-                                                                          setState(
-                                                                            () {
-                                                                              isLoading =
-                                                                                  true;
-                                                                            },
-                                                                          );
-                                                                          await dataProvider.updateQuantity(
-                                                                            productId:
-                                                                                product.id!,
-
-                                                                            newQuantity: double.parse(
-                                                                              quantityController.text,
-                                                                            ),
-                                                                          );
-
-                                                                          setState(
-                                                                            () {
-                                                                              isLoading =
-                                                                                  false;
-                                                                              showSuccess =
-                                                                                  true;
-                                                                            },
-                                                                          );
-
-                                                                          if (safeContext.mounted) {
-                                                                            Navigator.of(
-                                                                              safeContext,
-                                                                            ).pop();
-                                                                            setState(
-                                                                              () {
-                                                                                productFuture =
-                                                                                    getProduct();
-                                                                              },
-                                                                            );
-                                                                          }
-
-                                                                          setState(
-                                                                            () {
-                                                                              showSuccess =
-                                                                                  false;
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                text:
-                                                                    'Update Quantity',
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    15,
-                                                              ),
-                                                              Material(
-                                                                color:
-                                                                    Colors.transparent,
-                                                                child: EditButton(
-                                                                  text:
-                                                                      'Cancel',
-                                                                  action: () {
-                                                                    Navigator.of(
-                                                                      context,
-                                                                    ).pop();
-                                                                  },
-                                                                  theme:
-                                                                      widget.theme,
                                                                 ),
-                                                              ),
-                                                            ],
+                                                              ],
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            text:
-                                                'Edit Quantity',
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              text:
+                                                  'Edit Quantity',
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -920,389 +969,51 @@ class _ProductDetailsMobileState
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
-                                            height: 15,
+                                          Visibility(
+                                            visible:
+                                                localUser
+                                                    .role ==
+                                                'Owner',
+                                            child: SizedBox(
+                                              height: 15,
+                                            ),
                                           ),
-                                          EditButton(
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            action: () {
-                                              setState(() {
-                                                discountController
-                                                        .text =
-                                                    product.discount !=
-                                                            null
-                                                        ? product.discount.toString()
-                                                        : '0';
-                                              });
-                                              showGeneralDialog(
-                                                context:
-                                                    context,
-                                                pageBuilder: (
+                                          Visibility(
+                                            visible:
+                                                localUser
+                                                    .role ==
+                                                'Owner',
+                                            child: EditButton(
+                                              theme:
+                                                  widget
+                                                      .theme,
+                                              action: () {
+                                                Navigator.push(
                                                   context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                ) {
-                                                  return Material(
-                                                    color:
-                                                        Colors.transparent,
-                                                    child: GestureDetector(
-                                                      onTap:
-                                                          () =>
-                                                              FocusManager.instance.primaryFocus?.unfocus(),
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          color:
-                                                              Colors.white,
-                                                        ),
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.only(
-                                                            left:
-                                                                30.0,
-                                                            top:
-                                                                40,
-                                                            right:
-                                                                30,
-                                                          ),
-                                                          child: Column(
-                                                            children: [
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment.spaceBetween,
-                                                                children: [
-                                                                  Opacity(
-                                                                    opacity:
-                                                                        0,
-                                                                    child: IconButton(
-                                                                      onPressed:
-                                                                          () {},
-                                                                      icon: Icon(
-                                                                        Icons.clear,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          widget.theme.mobileTexts.b1.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.bold,
-                                                                    ),
-                                                                    'Edit Discount Percentage',
-                                                                  ),
-                                                                  IconButton(
-                                                                    onPressed: () {
-                                                                      Navigator.of(
-                                                                        context,
-                                                                      ).pop();
-                                                                    },
-                                                                    icon: Icon(
-                                                                      Icons.clear,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    15,
-                                                              ),
-                                                              Column(
-                                                                spacing:
-                                                                    20,
-                                                                children: [
-                                                                  EditCartTextField(
-                                                                    onChanged: (
-                                                                      value,
-                                                                    ) {
-                                                                      if (value.isNotEmpty) {
-                                                                        if (int.parse(
-                                                                              value,
-                                                                            ) >
-                                                                            99) {
-                                                                          setState(
-                                                                            () {
-                                                                              discountController.text = '100';
-                                                                            },
-                                                                          );
-                                                                        }
-                                                                      }
-                                                                    },
-                                                                    title:
-                                                                        'Discount',
-                                                                    hint:
-                                                                        'Enter Discount Percentage',
-                                                                    controller:
-                                                                        discountController,
-                                                                    theme:
-                                                                        widget.theme,
-                                                                  ),
-                                                                ],
-                                                              ),
-
-                                                              SizedBox(
-                                                                height:
-                                                                    20,
-                                                              ),
-
-                                                              Visibility(
-                                                                visible:
-                                                                    discountController.text.isNotEmpty,
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.center,
-                                                                  spacing:
-                                                                      10,
-                                                                  children: [
-                                                                    InkWell(
-                                                                      onTap: () {
-                                                                        setState(
-                                                                          () {
-                                                                            setDate =
-                                                                                true;
-                                                                          },
-                                                                        );
-                                                                        returnData(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).changeDateBoolToTrue();
-                                                                        FocusManager.instance.primaryFocus?.unfocus();
-                                                                      },
-                                                                      child: Container(
-                                                                        padding: EdgeInsets.symmetric(
-                                                                          horizontal:
-                                                                              10,
-                                                                          vertical:
-                                                                              5,
-                                                                        ),
-                                                                        decoration: BoxDecoration(
-                                                                          border: Border.all(
-                                                                            color:
-                                                                                Colors.grey.shade200,
-                                                                          ),
-                                                                        ),
-                                                                        child: Row(
-                                                                          spacing:
-                                                                              5,
-                                                                          children: [
-                                                                            Text(
-                                                                              style: TextStyle(
-                                                                                fontSize:
-                                                                                    widget.theme.mobileTexts.b2.fontSize,
-                                                                                fontWeight:
-                                                                                    FontWeight.bold,
-                                                                              ),
-                                                                              formatDateTime(
-                                                                                returnData(
-                                                                                      context,
-                                                                                    ).startDate ??
-                                                                                    DateTime.now(),
-                                                                              ),
-                                                                            ),
-                                                                            Icon(
-                                                                              size:
-                                                                                  20,
-                                                                              Icons.calendar_month_outlined,
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    InkWell(
-                                                                      onTap: () {
-                                                                        setState(
-                                                                          () {
-                                                                            setDate =
-                                                                                true;
-                                                                          },
-                                                                        );
-                                                                        returnData(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).clearEndDate();
-                                                                        returnData(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).changeDateBoolToFalse();
-                                                                        FocusManager.instance.primaryFocus?.unfocus();
-                                                                      },
-                                                                      child: Container(
-                                                                        padding: EdgeInsets.symmetric(
-                                                                          horizontal:
-                                                                              10,
-                                                                          vertical:
-                                                                              5,
-                                                                        ),
-                                                                        decoration: BoxDecoration(
-                                                                          border: Border.all(
-                                                                            color:
-                                                                                Colors.grey.shade200,
-                                                                          ),
-                                                                        ),
-                                                                        child: Row(
-                                                                          spacing:
-                                                                              5,
-                                                                          children: [
-                                                                            Text(
-                                                                              style: TextStyle(
-                                                                                fontSize:
-                                                                                    widget.theme.mobileTexts.b2.fontSize,
-                                                                                fontWeight:
-                                                                                    FontWeight.bold,
-                                                                              ),
-                                                                              returnData(
-                                                                                        context,
-                                                                                      ).endDate !=
-                                                                                      null
-                                                                                  ? formatDateTime(
-                                                                                    returnData(
-                                                                                          context,
-                                                                                        ).endDate ??
-                                                                                        DateTime.now(),
-                                                                                  )
-                                                                                  : 'Set End Date',
-                                                                            ),
-                                                                            Icon(
-                                                                              size:
-                                                                                  20,
-                                                                              Icons.calendar_month_outlined,
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    20,
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    20,
-                                                              ),
-                                                              MainButtonP(
-                                                                themeProvider:
-                                                                    widget.theme,
-                                                                action: () {
-                                                                  final safeContext =
-                                                                      context;
-
-                                                                  showDialog(
-                                                                    context:
-                                                                        safeContext,
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ConfirmationAlert(
-                                                                        theme:
-                                                                            widget.theme,
-                                                                        message:
-                                                                            'Are you sure you want to proceed?',
-                                                                        title:
-                                                                            'Proceed?',
-                                                                        action: () async {
-                                                                          final dataProvider = returnData(
-                                                                            context,
-                                                                            listen:
-                                                                                false,
-                                                                          );
-                                                                          if (safeContext.mounted) {
-                                                                            Navigator.of(
-                                                                              safeContext,
-                                                                            ).pop();
-                                                                          }
-                                                                          setState(
-                                                                            () {
-                                                                              isLoading =
-                                                                                  true;
-                                                                            },
-                                                                          );
-                                                                          await dataProvider.updateDiscount(
-                                                                            productId:
-                                                                                product.id!,
-
-                                                                            newDiscount:
-                                                                                discountController.text.isEmpty
-                                                                                    ? null
-                                                                                    : discountController.text ==
-                                                                                        '0'
-                                                                                    ? null
-                                                                                    : double.parse(
-                                                                                      discountController.text,
-                                                                                    ),
-                                                                          );
-
-                                                                          setState(
-                                                                            () {
-                                                                              isLoading =
-                                                                                  false;
-                                                                              showSuccess =
-                                                                                  true;
-                                                                            },
-                                                                          );
-
-                                                                          if (safeContext.mounted) {
-                                                                            Navigator.of(
-                                                                              safeContext,
-                                                                            ).pop();
-
-                                                                            setState(
-                                                                              () {
-                                                                                productFuture =
-                                                                                    getProduct();
-                                                                              },
-                                                                            );
-                                                                          }
-
-                                                                          setState(
-                                                                            () {
-                                                                              showSuccess =
-                                                                                  false;
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                text:
-                                                                    'Update Discount',
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    15,
-                                                              ),
-                                                              Material(
-                                                                color:
-                                                                    Colors.transparent,
-                                                                child: EditButton(
-                                                                  text:
-                                                                      'Cancel',
-                                                                  action: () {
-                                                                    Navigator.of(
-                                                                      context,
-                                                                    ).pop();
-                                                                  },
-                                                                  theme:
-                                                                      widget.theme,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            text:
-                                                'Edit Discount',
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return EditDiscountPage(
+                                                        product:
+                                                            product,
+                                                        theme:
+                                                            widget.theme,
+                                                        discountController:
+                                                            discountController,
+                                                      );
+                                                    },
+                                                  ),
+                                                ).then((_) {
+                                                  setState(() {
+                                                    productFuture =
+                                                        getProduct();
+                                                  });
+                                                });
+                                              },
+                                              text:
+                                                  'Edit Discount',
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -1450,188 +1161,111 @@ class _ProductDetailsMobileState
                         ),
                       ),
                       SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        spacing: 15,
-                        children: [
-                          Expanded(
-                            child: EditButton(
-                              text: 'Delete Product',
-                              action: () {
-                                final safeContext = context;
-                                showDialog(
-                                  context: safeContext,
-                                  builder: (context) {
-                                    var provider =
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        );
-                                    return ConfirmationAlert(
-                                      theme: returnTheme(
-                                        context,
-                                      ),
-                                      message:
-                                          'Are you sure you want to proceed with action?',
-                                      title:
-                                          'Are you sure?',
-                                      action: () async {
-                                        if (safeContext
-                                            .mounted) {
-                                          Navigator.of(
-                                            safeContext,
-                                          ).pop();
-                                        }
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-                                        await provider
-                                            .deleteProductMain(
-                                              widget
-                                                  .productId,
-                                            );
-
-                                        setState(() {
-                                          isLoading = false;
-                                          showSuccess =
-                                              true;
-                                        });
-                                        Future.delayed(
-                                          Duration(
-                                            seconds: 2,
-                                          ),
-                                          () {
-                                            if (safeContext
-                                                .mounted) {
-                                              Navigator.of(
-                                                safeContext,
-                                              ).pop();
-                                            }
-                                          },
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              theme: returnTheme(context),
-                              icon:
-                                  Icons
-                                      .delete_forever_outlined,
-                              color: Colors.redAccent,
-                            ),
-                          ),
-                          Expanded(
-                            child: EditButton(
-                              text: 'Edit Product',
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
+                      Visibility(
+                        visible: localUser.role == 'Owner',
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          spacing: 15,
+                          children: [
+                            Expanded(
+                              child: EditButton(
+                                text: 'Delete Product',
+                                action: () {
+                                  final safeContext =
+                                      context;
+                                  showDialog(
+                                    context: safeContext,
                                     builder: (context) {
-                                      return AddProduct(
-                                        product: product,
+                                      var provider =
+                                          returnData(
+                                            context,
+                                            listen: false,
+                                          );
+                                      return ConfirmationAlert(
+                                        theme: returnTheme(
+                                          context,
+                                        ),
+                                        message:
+                                            'Are you sure you want to proceed with action?',
+                                        title:
+                                            'Are you sure?',
+                                        action: () async {
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                          setState(() {
+                                            isLoading =
+                                                true;
+                                          });
+                                          await provider
+                                              .deleteProductMain(
+                                                widget
+                                                    .productId,
+                                              );
+
+                                          setState(() {
+                                            isLoading =
+                                                false;
+                                            showSuccess =
+                                                true;
+                                          });
+                                          Future.delayed(
+                                            Duration(
+                                              seconds: 2,
+                                            ),
+                                            () {
+                                              if (safeContext
+                                                  .mounted) {
+                                                Navigator.of(
+                                                  safeContext,
+                                                ).pop();
+                                              }
+                                            },
+                                          );
+                                        },
                                       );
                                     },
-                                  ),
-                                ).then((context) {
-                                  setState(() {
-                                    productFuture =
-                                        getProduct();
-                                  });
-                                });
-                              },
-                              theme: returnTheme(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-
-              Visibility(
-                visible: setDate,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      setDate = false;
-                    });
-                  },
-                  child: Container(
-                    color: const Color.fromARGB(
-                      32,
-                      0,
-                      0,
-                      0,
-                    ),
-                    height:
-                        MediaQuery.of(context).size.height,
-                    width:
-                        MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(
-                                30,
-                                0,
-                                0,
-                                0,
+                                  );
+                                },
+                                theme: returnTheme(context),
+                                icon:
+                                    Icons
+                                        .delete_forever_outlined,
+                                color: Colors.redAccent,
                               ),
-                              blurRadius: 5,
+                            ),
+                            Expanded(
+                              child: EditButton(
+                                text: 'Edit Product',
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return AddProduct(
+                                          product: product,
+                                        );
+                                      },
+                                    ),
+                                  ).then((context) {
+                                    setState(() {
+                                      productFuture =
+                                          getProduct();
+                                    });
+                                  });
+                                },
+                                theme: returnTheme(context),
+                              ),
                             ),
                           ],
                         ),
-                        height:
-                            MediaQuery.of(
-                              context,
-                            ).size.height -
-                            250,
-                        width:
-                            (MediaQuery.of(
-                                  context,
-                                ).size.width /
-                                10) *
-                            9.2,
-                        child: CalendarWidget(
-                          isMain: false,
-                          onDaySelected: (
-                            selectedDay,
-                            focusedDay,
-                          ) {
-                            returnData(
-                              context,
-                              listen: false,
-                            ).setDate(selectedDay);
-                            setState(() {
-                              setDate = false;
-                            });
-                          },
-                          actionWeek: (
-                            startOfWeek,
-                            endOfWeek,
-                          ) {
-                            returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).setReceiptWeek(
-                              startOfWeek,
-                              endOfWeek,
-                            );
-                          },
-                        ),
                       ),
-                    ),
+                      SizedBox(height: 20),
+                    ],
                   ),
                 ),
               ),

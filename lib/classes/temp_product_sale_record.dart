@@ -2,6 +2,7 @@ class TempProductSaleRecord {
   final int? productRecordId;
   final DateTime createdAt;
   final int productId;
+  final String productName;
   final int shopId;
   final String staffId;
   final int? customerId;
@@ -17,6 +18,7 @@ class TempProductSaleRecord {
     this.productRecordId,
     required this.createdAt,
     required this.productId,
+    required this.productName,
     required this.shopId,
     required this.staffId,
     this.customerId,
@@ -38,6 +40,7 @@ class TempProductSaleRecord {
         json['created_at'] as String,
       ),
       productId: json['product_id'] as int,
+      productName: json['product_name'] as String,
       shopId: json['shop_id'] as int,
       staffId: json['staff_id'] as String,
       customerId: json['customer_id'] as int?,
@@ -57,6 +60,7 @@ class TempProductSaleRecord {
     return {
       'created_at': createdAt.toIso8601String(),
       'product_id': productId,
+      'product_name': productName,
       'shop_id': shopId,
       'staff_id': staffId,
       'customer_id': customerId,

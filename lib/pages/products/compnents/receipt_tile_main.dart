@@ -84,30 +84,30 @@ class _ReceiptTileMainState extends State<ReceiptTileMain> {
                   )
                   .toList();
 
-          var firstProductId =
-              productReceipts
-                  .firstWhere(
-                    (test) =>
-                        test.recepitId ==
-                        widget.mainReceipt.id,
-                  )
-                  .productId;
-          var firstProduct = returnData(
-                context,
-                listen: false,
-              )
-              .getProducts(
-                returnShopProvider(
-                  context,
-                  listen: false,
-                ).userShop!.shopId!,
-              )
-              .then((products) {
-                final product = products.firstWhere(
-                  (product) => product.id == firstProductId,
-                );
-                return product;
-              });
+          // var firstProductName =
+          //     productReceipts
+          //         .firstWhere(
+          //           (test) =>
+          //               test.recepitId ==
+          //               widget.mainReceipt.id,
+          //         )
+          //         .productId;
+          // var firstProduct = returnData(
+          //       context,
+          //       listen: false,
+          //     )
+          //     .getProducts(
+          //       returnShopProvider(
+          //         context,
+          //         listen: false,
+          //       ).userShop!.shopId!,
+          //     )
+          //     .then((products) {
+          //       final product = products.firstWhere(
+          //         (product) => product.id == firstProductId,
+          //       );
+          //       return product;
+          //     });
 
           return Padding(
             padding: const EdgeInsets.all(5.0),
@@ -175,36 +175,20 @@ class _ReceiptTileMainState extends State<ReceiptTileMain> {
                                             CrossAxisAlignment
                                                 .start,
                                         children: [
-                                          FutureBuilder(
-                                            future:
-                                                firstProduct,
-                                            builder: (
-                                              context,
-                                              snapshot,
-                                            ) {
-                                              return Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b2
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                snapshot.connectionState ==
-                                                        ConnectionState.waiting
-                                                    ? 'Loading'
-                                                    : snapshot
-                                                        .hasError
-                                                    ? 'Loading'
-                                                    : snapshot
-                                                        .data!
-                                                        .name,
-                                              );
-                                            },
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b2
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            productReceipts[0]
+                                                .productName,
                                           ),
                                           Text(
                                             formatDateTime(

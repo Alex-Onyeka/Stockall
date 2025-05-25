@@ -56,6 +56,7 @@ class SalesProvider extends ChangeNotifier {
           return TempProductSaleRecord(
             createdAt: createdAt,
             productId: product.id!,
+            productName: product.name,
             shopId: product.shopId,
             staffId: staffId,
             customerId: customerId,

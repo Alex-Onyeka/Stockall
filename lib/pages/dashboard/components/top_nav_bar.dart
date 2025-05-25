@@ -5,6 +5,7 @@ import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class TopNavBar extends StatelessWidget {
@@ -32,9 +33,9 @@ class TopNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-        top: 25,
-        bottom: 20,
-        left: 30,
+        top: 0,
+        bottom: 10,
+        left: 0,
         right: 30,
       ),
       decoration: BoxDecoration(
@@ -48,38 +49,42 @@ class TopNavBar extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 5,
             children: [
               InkWell(
                 onTap: openSideBar,
-                child: Row(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      color: Colors.grey.shade700,
-                      size: 28,
-                      Icons.menu_rounded,
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      padding: EdgeInsets.all(3),
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        shape: BoxShape.circle,
+                child: SizedBox(
+                  height: 70,
+                  child: Row(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 30),
+                      Icon(
+                        color: Colors.grey.shade700,
+                        size: 28,
+                        Icons.menu_rounded,
                       ),
-                      child: Image.asset(
-                        shopIconImage,
-                        height: 35,
-                        width: 35,
+                      SizedBox(width: 10),
+                      Container(
+                        padding: EdgeInsets.all(3),
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Image.asset(
+                          shopIconImage,
+                          height: 35,
+                          width: 35,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Column(
@@ -235,9 +240,15 @@ class TopNavBar extends StatelessWidget {
                                 ).deleteUser();
 
                                 if (context.mounted) {
-                                  Navigator.popAndPushNamed(
+                                  Navigator.pushAndRemoveUntil(
                                     context,
-                                    '/',
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              EmpAuth(),
+                                    ),
+                                    (route) =>
+                                        false, // removes all previous routes
                                   );
                                   returnNavProvider(
                                     context,

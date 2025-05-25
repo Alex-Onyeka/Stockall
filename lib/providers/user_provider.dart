@@ -18,7 +18,7 @@ class UserProvider extends ChangeNotifier {
   Future<List<TempUserClass>?> fetchUsers() async {
     final authUser = _supabase.auth.currentUser;
     isLoading = true;
-    // notifyListeners();
+
     if (authUser == null) {
       _currentUser = null;
       return null;
@@ -36,8 +36,13 @@ class UserProvider extends ChangeNotifier {
             )
             .toList();
 
+    _users.sort(
+      (a, b) => a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      ),
+    );
+
     isLoading = false;
-    // notifyListeners();
     return _users;
   }
 
@@ -97,7 +102,7 @@ class UserProvider extends ChangeNotifier {
           await _supabase
               .from('users')
               .select()
-              .eq('email', email)
+              .eq('email', email.toLowerCase())
               .eq('auth_user_id', authId)
               .maybeSingle();
 

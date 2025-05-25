@@ -20,6 +20,12 @@ class LocalUserDatabase extends ChangeNotifier {
     return _database!;
   }
 
+  double userTotalSale = 0;
+  void setUserTotalSale(double value) {
+    userTotalSale = value;
+    notifyListeners();
+  }
+
   /// Initialize SQLite database
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();

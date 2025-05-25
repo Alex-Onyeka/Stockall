@@ -8,6 +8,7 @@ class PhoneNumberTextField extends StatefulWidget {
   final ThemeProvider theme;
   final String title;
   final String hint;
+  final bool? isEnabled;
 
   const PhoneNumberTextField({
     super.key,
@@ -15,6 +16,7 @@ class PhoneNumberTextField extends StatefulWidget {
     required this.theme,
     required this.title,
     required this.hint,
+    this.isEnabled,
   });
 
   @override
@@ -37,6 +39,7 @@ class _PhoneNumberTextFieldState
         ),
         SizedBox(height: 10),
         IntlPhoneField(
+          enabled: widget.isEnabled ?? true,
           disableLengthCheck: false,
           controller: widget.controller,
           pickerDialogStyle: PickerDialogStyle(

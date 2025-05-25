@@ -79,13 +79,68 @@ class AuthService extends ChangeNotifier {
   Future<AuthResponse> signIn(
     String email,
     String password,
-  ) {
-    switchLoader();
-    return _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    BuildContext context,
+  ) async {
+    switchLoader(); // Start loader
+
+    try {
+      // 1. Sign in via Supabase Auth
+      final authResponse = await _client.auth
+          .signInWithPassword(
+            email: email,
+            password: password,
+          );
+
+      final user = authResponse.user;
+      if (user == null) {
+        throw Exception("No user returned from sign-in.");
+      }
+
+      final userId = user.id;
+
+      // 2. Query the 'users' table using the auth_user_id
+      final response =
+          await _client
+              .from('users')
+              .select()
+              .eq('user_id', userId)
+              .single();
+
+      // 3. Convert Supabase response into TempUserClass
+      final tempUser = TempUserClass.fromJson({
+        ...response,
+        'password':
+            password, // Optional: if you're keeping it
+      });
+
+      // 4. Store the user in local DB
+      await returnLocalDatabase(
+        context,
+        listen: false,
+      ).insertUser(tempUser);
+
+      print(
+        "✅ User signed in and saved locally: ${tempUser.email}",
+      );
+      return authResponse;
+    } catch (e) {
+      print("❌ Sign-in failed: $e");
+      rethrow;
+    } finally {
+      switchLoader(); // Stop loader
+    }
   }
+
+  // Future<AuthResponse> signIn(
+  //   String email,
+  //   String password,
+  // ) {
+  //   switchLoader();
+  //   return _client.auth.signInWithPassword(
+  //     email: email,
+  //     password: password,
+  //   );
+  // }
 
   Future<void> signOut() async {
     await _client.auth.signOut();

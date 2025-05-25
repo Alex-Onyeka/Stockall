@@ -47,11 +47,6 @@ class TempUserClass {
     if (includeUserId && userId != null) {
       map['user_id'] = userId;
     }
-
-    // if (authUserId != null) {
-    //   map['auth_user_id'] = authUserId;
-    // }
-
     if (createdAt != null) {
       map['created_at'] = createdAt!.toIso8601String();
     }

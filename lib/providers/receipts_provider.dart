@@ -331,6 +331,7 @@ class ReceiptsProvider extends ChangeNotifier {
       productRecordId: 1,
       createdAt: DateTime(2025, 5, 1, 10, 30),
       productId: 1,
+      productName: '',
       shopId: 1,
       staffId: 'staff001',
       customerId: 1,
@@ -346,6 +347,7 @@ class ReceiptsProvider extends ChangeNotifier {
       productRecordId: 2,
       createdAt: DateTime(2025, 5, 3, 14, 15),
       productId: 2,
+      productName: '',
       shopId: 1,
       staffId: 'staff002',
       customerId: 1,
@@ -361,6 +363,7 @@ class ReceiptsProvider extends ChangeNotifier {
       productRecordId: 3,
       createdAt: DateTime(2025, 5, 5, 9, 0),
       productId: 3,
+      productName: '',
       shopId: 2,
       staffId: 'staff003',
       customerId: 2,
@@ -416,6 +419,7 @@ class ReceiptsProvider extends ChangeNotifier {
         ).cartItems) {
       productSaleRecords.add(
         TempProductSaleRecord(
+          productName: '',
           discount: item.discount,
           originalCost: item.totalCost(),
           customerId: customerId,

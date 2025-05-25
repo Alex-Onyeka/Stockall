@@ -1341,7 +1341,7 @@ class _CustomBottomPanelState
                       onChanged: (value) {
                         double entered =
                             double.tryParse(value) ?? 0;
-                        if (entered >
+                        if ((entered + cartItem.quantity) >
                             cartItem.item.quantity) {
                           showDialog(
                             context: context,
@@ -1362,16 +1362,16 @@ class _CustomBottomPanelState
                                 qqty = 1;
                                 quantityController.text =
                                     '1';
-                                cartItem.quantity = 1;
                               });
                             },
                           );
+
                           return;
                         }
 
                         setState(() {
                           qqty = entered;
-                          cartItem.quantity = qqty;
+                          // cartItem.quantity = qqty;
                         });
                       },
 
@@ -1490,7 +1490,8 @@ class _CustomBottomPanelState
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap: () {
-                              if (qqty >=
+                              if (qqty +
+                                      cartItem.quantity >=
                                   cartItem.item.quantity) {
                                 showDialog(
                                   context: context,
@@ -1535,11 +1536,6 @@ class _CustomBottomPanelState
                       ).addItemToCart(cartItem);
                       Navigator.of(context).pop();
                       closeAction();
-                      // ScaffoldMessenger.of(
-                      //   context,
-                      // ).showSnackBar(
-                      //   SnackBar(content: Text(result)),
-                      // );
                     },
                     buttonText: 'Add To Cart',
                   ),
@@ -1550,14 +1546,14 @@ class _CustomBottomPanelState
         );
       },
     ).then((value) {
-      qqty = 1;
-      quantityController.text = '1';
+      qqty = 0;
+      quantityController.text = '0';
     });
   }
 
   TextEditingController quantityController =
-      TextEditingController(text: '1');
-  double qqty = 1;
+      TextEditingController(text: '0');
+  double qqty = 0;
   List productResults = [];
   String? scanResult;
   String? searchResult;
@@ -1812,6 +1808,41 @@ class _CustomBottomPanelState
                                         );
                                       },
                                     );
+                                  } else if (returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).cartItems
+                                      .where(
+                                        (item) =>
+                                            item.item.id! ==
+                                            product.id,
+                                      )
+                                      .isNotEmpty) {
+                                    selectProduct(
+                                      theme,
+                                      TempCartItem(
+                                        discount:
+                                            product
+                                                .discount,
+                                        item: product,
+                                        quantity:
+                                            returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).cartItems
+                                                .firstWhere(
+                                                  (item) =>
+                                                      item
+                                                          .item
+                                                          .id! ==
+                                                      product
+                                                          .id!,
+                                                )
+                                                .quantity,
+                                      ),
+                                      widget.close,
+                                    );
                                   } else {
                                     selectProduct(
                                       theme,
@@ -1894,6 +1925,41 @@ class _CustomBottomPanelState
                                               'Product out of Stock',
                                         );
                                       },
+                                    );
+                                  } else if (returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).cartItems
+                                      .where(
+                                        (item) =>
+                                            item.item.id! ==
+                                            product.id,
+                                      )
+                                      .isNotEmpty) {
+                                    selectProduct(
+                                      theme,
+                                      TempCartItem(
+                                        discount:
+                                            product
+                                                .discount,
+                                        item: product,
+                                        quantity:
+                                            returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).cartItems
+                                                .firstWhere(
+                                                  (item) =>
+                                                      item
+                                                          .item
+                                                          .id! ==
+                                                      product
+                                                          .id!,
+                                                )
+                                                .quantity,
+                                      ),
+                                      widget.close,
                                     );
                                   } else {
                                     selectProduct(
@@ -2130,7 +2196,7 @@ void editCartItemBottomSheet(
                                       },
                                       child: SizedBox(
                                         height: 30,
-                                        width: 30,
+                                        width: 50,
                                         child: Icon(
                                           Icons.remove,
                                         ),
@@ -2204,7 +2270,7 @@ void editCartItemBottomSheet(
                                       },
                                       child: SizedBox(
                                         height: 30,
-                                        width: 30,
+                                        width: 50,
                                         child: Center(
                                           child: Icon(
                                             Icons.add,
