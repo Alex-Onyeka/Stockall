@@ -50,21 +50,40 @@
 //   }
 // }
 
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:stockitt/constants/play_sounds.dart';
 
-class BarcodeScannerPage extends StatefulWidget {
+class BarcodeScannerPage extends StatelessWidget {
   const BarcodeScannerPage({super.key});
 
   @override
-  State<BarcodeScannerPage> createState() =>
-      _BarcodeScannerPageState();
+  Widget build(BuildContext context) {
+    if (kIsWeb ||
+        !(defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS)) {
+      return const UnsupportedScanner();
+    } else {
+      return const MobileBarcodeScanner();
+    }
+  }
 }
 
-class _BarcodeScannerPageState
-    extends State<BarcodeScannerPage> {
-  MobileScannerController controller =
+/// ========== Mobile Scanner ==========
+class MobileBarcodeScanner extends StatefulWidget {
+  const MobileBarcodeScanner({super.key});
+
+  @override
+  State<MobileBarcodeScanner> createState() =>
+      _MobileBarcodeScannerState();
+}
+
+class _MobileBarcodeScannerState
+    extends State<MobileBarcodeScanner> {
+  final MobileScannerController controller =
       MobileScannerController(
         formats: [
           BarcodeFormat.code128,
@@ -80,18 +99,21 @@ class _BarcodeScannerPageState
   bool _isScanned = false;
 
   void _onDetect(BarcodeCapture capture) async {
-    if (_isScanned) return; // Avoid multiple pops
+    if (_isScanned) return;
 
     final Barcode? barcode = capture.barcodes.first;
     if (barcode?.rawValue == null) return;
 
-    _isScanned = true; // Set flag so it doesn’t pop again
-
+    _isScanned = true;
     final String code = barcode!.rawValue!;
     await playBeep();
-    if (context.mounted) {
-      Navigator.of(context).pop(code);
-    }
+    Navigator.of(context).pop(code);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -135,7 +157,7 @@ class _BarcodeScannerPageState
             ),
           ),
 
-          // Optional: Border around the scanning square
+          // Border around scanning area
           Align(
             alignment: Alignment.center,
             child: Container(
@@ -151,7 +173,7 @@ class _BarcodeScannerPageState
             ),
           ),
 
-          // Optional: back button
+          // Back button
           Positioned(
             top: 40,
             left: 20,
@@ -164,6 +186,26 @@ class _BarcodeScannerPageState
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// ========== Fallback for Unsupported Platforms ==========
+class UnsupportedScanner extends StatelessWidget {
+  const UnsupportedScanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Scanner Not Supported'),
+      ),
+      body: const Center(
+        child: Text(
+          'Barcode scanning is only supported on mobile devices.',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
