@@ -61,7 +61,7 @@ class AuthLandingMobile extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(
-                        top: 50.0,
+                        top: 20.0,
                       ),
                       child: SingleChildScrollView(
                         child: Column(

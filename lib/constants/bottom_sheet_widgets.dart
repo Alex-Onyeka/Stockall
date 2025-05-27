@@ -15,7 +15,6 @@ import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
 import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/dashboard/employee_auth_page/barcode_page.dart';
 import 'package:stockitt/pages/products/add_product_one/add_product.dart';
 import 'package:stockitt/pages/products/compnents/edit_product_tile.dart';
 import 'package:stockitt/pages/products/compnents/product_tile_cart_search.dart';
@@ -1695,39 +1694,20 @@ class _CustomBottomPanelState
                     onPressedScan: () async {
                       productResults.clear();
                       searchResult = null;
-                      // String? result = await scanCode(
-                      //   context,
-                      //   'Failed',
-                      // );
-
-                      String? result = await Navigator.push(
+                      String? result = await scanCode(
                         context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  const BarcodeScannerPage(),
-                        ),
+                        'Failed',
                       );
-
-                      if (result != null) {
-                        widget.searchController.text =
-                            result;
-                        setState(() {
-                          scanResult = result;
-                          productResults.addAll(
-                            widget.products.where(
-                              (product) =>
-                                  product.barcode == result,
-                            ),
-                          );
-                        });
-                      } else {
-                        widget.searchController.text =
-                            'Failed';
-                        // setState(() {
-                        //   scanResult = 'Failed';
-                        // });
-                      }
+                      widget.searchController.text = result;
+                      setState(() {
+                        scanResult = result;
+                        productResults.addAll(
+                          widget.products.where(
+                            (product) =>
+                                product.barcode == result,
+                          ),
+                        );
+                      });
                     },
                   ),
                 ),

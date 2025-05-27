@@ -684,6 +684,9 @@ class _ProductDetailsMobileState
                                                   widget
                                                       .theme,
                                               action: () {
+                                                print(
+                                                  'Button Pressed',
+                                                );
                                                 setState(() {
                                                   quantityController
                                                       .text = product
@@ -695,6 +698,9 @@ class _ProductDetailsMobileState
                                                             2,
                                                       );
                                                 });
+                                                print(
+                                                  'Button Pressed Final',
+                                                );
                                                 showGeneralDialog(
                                                   context:
                                                       context,
