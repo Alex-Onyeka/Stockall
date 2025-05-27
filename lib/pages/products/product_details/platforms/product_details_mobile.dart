@@ -832,100 +832,124 @@ class _ProductDetailsMobileState
                                                                         spacing:
                                                                             10,
                                                                         children: [
-                                                                          InkWell(
-                                                                            onTap: () {
-                                                                              setState(
-                                                                                () {
-                                                                                  isAddToQuantity =
-                                                                                      true;
-                                                                                },
-                                                                              );
-                                                                            },
-                                                                            child: Row(
-                                                                              spacing:
-                                                                                  10,
-                                                                              children: [
-                                                                                Container(
-                                                                                  decoration: BoxDecoration(
-                                                                                    border: Border.all(
-                                                                                      color:
-                                                                                          !isAddToQuantity
-                                                                                              ? Colors.grey
-                                                                                              : Colors.transparent,
+                                                                          Material(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            child: InkWell(
+                                                                              onTap: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    isAddToQuantity =
+                                                                                        true;
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              child: Container(
+                                                                                padding: EdgeInsets.symmetric(
+                                                                                  horizontal:
+                                                                                      10,
+                                                                                  vertical:
+                                                                                      10,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  spacing:
+                                                                                      10,
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      decoration: BoxDecoration(
+                                                                                        border: Border.all(
+                                                                                          color:
+                                                                                              !isAddToQuantity
+                                                                                                  ? Colors.grey
+                                                                                                  : Colors.transparent,
+                                                                                        ),
+                                                                                        color:
+                                                                                            isAddToQuantity
+                                                                                                ? widget.theme.lightModeColor.prColor250
+                                                                                                : Colors.transparent,
+                                                                                        shape:
+                                                                                            BoxShape.circle,
+                                                                                      ),
+                                                                                      child: Icon(
+                                                                                        size:
+                                                                                            16,
+                                                                                        color:
+                                                                                            Colors.white,
+                                                                                        Icons.check,
+                                                                                      ),
                                                                                     ),
-                                                                                    color:
-                                                                                        isAddToQuantity
-                                                                                            ? widget.theme.lightModeColor.prColor250
-                                                                                            : Colors.transparent,
-                                                                                    shape:
-                                                                                        BoxShape.circle,
-                                                                                  ),
-                                                                                  child: Icon(
-                                                                                    size:
-                                                                                        16,
-                                                                                    color:
-                                                                                        Colors.white,
-                                                                                    Icons.check,
-                                                                                  ),
+                                                                                    Text(
+                                                                                      style: TextStyle(
+                                                                                        fontSize:
+                                                                                            widget.theme.mobileTexts.b3.fontSize,
+                                                                                        fontWeight:
+                                                                                            FontWeight.bold,
+                                                                                      ),
+                                                                                      'Add to Quantity',
+                                                                                    ),
+                                                                                  ],
                                                                                 ),
-                                                                                Text(
-                                                                                  style: TextStyle(
-                                                                                    fontSize:
-                                                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                                                    fontWeight:
-                                                                                        FontWeight.bold,
-                                                                                  ),
-                                                                                  'Add to Quantity',
-                                                                                ),
-                                                                              ],
+                                                                              ),
                                                                             ),
                                                                           ),
-                                                                          InkWell(
-                                                                            onTap: () {
-                                                                              setState(
-                                                                                () {
-                                                                                  isAddToQuantity =
-                                                                                      false;
-                                                                                },
-                                                                              );
-                                                                            },
-                                                                            child: Row(
-                                                                              spacing:
-                                                                                  5,
-                                                                              children: [
-                                                                                Container(
-                                                                                  decoration: BoxDecoration(
-                                                                                    border: Border.all(
-                                                                                      color:
-                                                                                          isAddToQuantity
-                                                                                              ? Colors.grey
-                                                                                              : Colors.transparent,
+                                                                          Material(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            child: InkWell(
+                                                                              onTap: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    isAddToQuantity =
+                                                                                        false;
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              child: Container(
+                                                                                padding: EdgeInsets.symmetric(
+                                                                                  vertical:
+                                                                                      10,
+                                                                                  horizontal:
+                                                                                      10,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  spacing:
+                                                                                      5,
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      decoration: BoxDecoration(
+                                                                                        border: Border.all(
+                                                                                          color:
+                                                                                              isAddToQuantity
+                                                                                                  ? Colors.grey
+                                                                                                  : Colors.transparent,
+                                                                                        ),
+                                                                                        color:
+                                                                                            !isAddToQuantity
+                                                                                                ? widget.theme.lightModeColor.prColor250
+                                                                                                : Colors.transparent,
+                                                                                        shape:
+                                                                                            BoxShape.circle,
+                                                                                      ),
+                                                                                      child: Icon(
+                                                                                        size:
+                                                                                            16,
+                                                                                        color:
+                                                                                            Colors.white,
+                                                                                        Icons.check,
+                                                                                      ),
                                                                                     ),
-                                                                                    color:
-                                                                                        !isAddToQuantity
-                                                                                            ? widget.theme.lightModeColor.prColor250
-                                                                                            : Colors.transparent,
-                                                                                    shape:
-                                                                                        BoxShape.circle,
-                                                                                  ),
-                                                                                  child: Icon(
-                                                                                    size:
-                                                                                        16,
-                                                                                    color:
-                                                                                        Colors.white,
-                                                                                    Icons.check,
-                                                                                  ),
+                                                                                    Text(
+                                                                                      style: TextStyle(
+                                                                                        fontSize:
+                                                                                            widget.theme.mobileTexts.b3.fontSize,
+                                                                                        fontWeight:
+                                                                                            FontWeight.bold,
+                                                                                      ),
+                                                                                      'Replace Qauntity',
+                                                                                    ),
+                                                                                  ],
                                                                                 ),
-                                                                                Text(
-                                                                                  style: TextStyle(
-                                                                                    fontSize:
-                                                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                                                    fontWeight:
-                                                                                        FontWeight.bold,
-                                                                                  ),
-                                                                                  'Replace Qauntity',
-                                                                                ),
-                                                                              ],
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                         ],

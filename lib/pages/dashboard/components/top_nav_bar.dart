@@ -205,7 +205,17 @@ class TopNavBar extends StatelessWidget {
                           child: Text(
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize:
+                                  notifications
+                                              .where(
+                                                (notif) =>
+                                                    !notif
+                                                        .isViewed,
+                                              )
+                                              .length ==
+                                          2
+                                      ? 12
+                                      : 14,
                               color: Colors.white,
                             ),
                             '${notifications.where((notif) => !notif.isViewed).length}',
