@@ -169,35 +169,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             ),
           ],
         ),
-        // floatingActionButton: Visibility(
-        //   visible: !showBottomPanel,
-        //   child: FloatingActionButtonMain(
-        //     theme: theme,
-        //     action: () {
-        //       showGeneralDialog(
-        //         context: context,
-        //         pageBuilder: (
-        //           context,
-        //           animation,
-        //           secondaryAnimation,
-        //         ) {
-        //           return CustomBottomPanel(
-        //             searchController:
-        //                 widget.searchController,
-        //             close: () {
-        //               // Navigator.of(
-        //               //   context,
-        //               // ).pop();
-        //             },
-        //             products: products,
-        //           );
-        //         },
-        //       );
-        //     },
-        //     color: theme.lightModeColor.prColor300,
-        //     text: 'Add Item',
-        //   ),
-        // ),
         body: FutureBuilder(
           future: _productsFuture,
           builder: (context, snapshot) {
@@ -339,6 +310,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           Navigator.of(
                                                             context,
                                                           ).pop();
+                                                          widget.searchController.clear();
                                                         },
                                                         products:
                                                             products,
