@@ -812,6 +812,15 @@ class _ProductDetailsMobileState
                                                                   height:
                                                                       20,
                                                                 ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.center,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Row(),
+                                                                  ],
+                                                                ),
                                                                 MainButtonP(
                                                                   themeProvider:
                                                                       widget.theme,
@@ -855,9 +864,11 @@ class _ProductDetailsMobileState
                                                                               productId:
                                                                                   product.id!,
 
-                                                                              newQuantity: double.parse(
-                                                                                quantityController.text,
-                                                                              ),
+                                                                              newQuantity:
+                                                                                  double.parse(
+                                                                                    quantityController.text,
+                                                                                  ) +
+                                                                                  product.quantity,
                                                                             );
 
                                                                             setState(
@@ -921,7 +932,14 @@ class _ProductDetailsMobileState
                                                       ),
                                                     );
                                                   },
-                                                );
+                                                ).then((
+                                                  context,
+                                                ) {
+                                                  setState(() {
+                                                    quantityController
+                                                        .clear();
+                                                  });
+                                                });
                                               },
                                               text:
                                                   'Edit Quantity',

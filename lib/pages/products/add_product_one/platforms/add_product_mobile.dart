@@ -323,14 +323,9 @@ class _AddProductMobileState
             widget.product!.sellingPrice.toString().length -
                 1,
           );
-      widget.quantityController.text = widget
-          .product!
-          .quantity
-          .toString()
-          .substring(
-            0,
-            widget.product!.quantity.toString().length - 1,
-          );
+      widget.quantityController.text =
+          widget.product!.quantity.toString();
+
       widget.sizeController.text =
           widget.product!.size.toString();
       widget.discountController.text =
