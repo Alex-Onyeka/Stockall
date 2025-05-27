@@ -10,7 +10,7 @@ Future<String> scanCode(
     String? res = await SimpleBarcodeScanner.scanBarcode(
       context,
       barcodeAppBar: const BarcodeAppBar(
-        appBarTitle: 'Test',
+        appBarTitle: 'Scan Barcode',
         centerTitle: false,
         enableBackButton: true,
         backButtonIcon: Icon(Icons.arrow_back_ios),
