@@ -97,8 +97,8 @@ class _TotalSalesMobileState
             },
             icon: Padding(
               padding: const EdgeInsets.only(
-                left: 20.0,
-                right: 10,
+                left: 10.0,
+                right: 5,
               ),
               child: Icon(Icons.arrow_back_ios_new_rounded),
             ),
@@ -110,11 +110,11 @@ class _TotalSalesMobileState
             children: [
               Text(
                 style: TextStyle(
-                  fontSize: theme.mobileTexts.h4.fontSize,
+                  fontSize: theme.mobileTexts.b1.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 returnReceiptProvider(context).dateSet ??
-                    'Todays Sales Receipts',
+                    'Todays Sales',
               ),
             ],
           ),
@@ -134,7 +134,7 @@ class _TotalSalesMobileState
                 subText:
                     'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
                 theme: theme,
-                height: 35,
+                height: 30,
               );
             } else {
               var mainReceipts = returnReceiptProvider(
@@ -497,8 +497,8 @@ class ValueSummaryTabSmall extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 15,
+          horizontal: 10,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_notification.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
@@ -11,8 +13,9 @@ import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/pages/report/report_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
+import 'package:stockitt/services/auth_service.dart';
 
-class MyDrawerWidget extends StatelessWidget {
+class MyDrawerWidget extends StatefulWidget {
   final ThemeProvider theme;
   final Function()? action;
   final List<TempNotification> notifications;
@@ -24,6 +27,45 @@ class MyDrawerWidget extends StatelessWidget {
     required this.action,
     required this.role,
   });
+
+  @override
+  State<MyDrawerWidget> createState() =>
+      _MyDrawerWidgetState();
+}
+
+class _MyDrawerWidgetState extends State<MyDrawerWidget> {
+  late Future<List<TempUserClass>> employeesFuture;
+
+  Future<List<TempUserClass>> getEmployees() async {
+    var tempEmployees =
+        await returnUserProvider(
+          context,
+          listen: false,
+        ).fetchUsers();
+
+    var mainBeans =
+        tempEmployees!
+            .where(
+              (emp) =>
+                  emp.userId !=
+                  AuthService().currentUser!.id,
+            )
+            .toList();
+
+    returnLocalDatabase(
+      // ignore: use_build_context_synchronously
+      context,
+      listen: false,
+    ).currentEmployees.addAll(mainBeans);
+
+    return mainBeans;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    employeesFuture = getEmployees();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +85,13 @@ class MyDrawerWidget extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  SizedBox(height: 60),
+                  SizedBox(
+                    height:
+                        MediaQuery.of(context).size.height <
+                                680
+                            ? 35
+                            : 60,
+                  ),
                   Row(
                     spacing: 10,
                     mainAxisAlignment:
@@ -53,14 +101,24 @@ class MyDrawerWidget extends StatelessWidget {
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.h3.fontSize,
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .h3
+                                  .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         'Stockitt',
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(
+                    height:
+                        MediaQuery.of(context).size.height <
+                                680
+                            ? 10
+                            : 20,
+                  ),
                   NavListTile(
                     thisIndex: 0,
                     title: 'Home',
@@ -169,7 +227,11 @@ class MyDrawerWidget extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Divider(
-                    height: 30,
+                    height:
+                        MediaQuery.of(context).size.height <
+                                680
+                            ? 15
+                            : 30,
                     color: Colors.grey.shade200,
                   ),
                   InkWell(
@@ -180,14 +242,15 @@ class MyDrawerWidget extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) {
                             return NotificationsPage(
-                              notifications: notifications,
+                              notifications:
+                                  widget.notifications,
                             );
                           },
                         ),
                       );
                     },
                     child: Visibility(
-                      visible: role == 'Owner',
+                      visible: widget.role == 'Owner',
                       child: SizedBox(
                         height: 50,
                         child: Padding(
@@ -253,7 +316,8 @@ class MyDrawerWidget extends StatelessWidget {
                                           ) {
                                             return NotificationsPage(
                                               notifications:
-                                                  notifications,
+                                                  widget
+                                                      .notifications,
                                             );
                                           },
                                         ),
@@ -280,7 +344,7 @@ class MyDrawerWidget extends StatelessWidget {
                                         width: 25,
                                         notifIconSvg,
                                         color:
-                                            notifications
+                                            widget.notifications
                                                     .where(
                                                       (
                                                         notif,
@@ -300,7 +364,8 @@ class MyDrawerWidget extends StatelessWidget {
                                     left: 32,
                                     child: Visibility(
                                       visible:
-                                          notifications
+                                          widget
+                                              .notifications
                                               .where(
                                                 (notif) =>
                                                     !notif
@@ -317,7 +382,8 @@ class MyDrawerWidget extends StatelessWidget {
                                               BoxShape
                                                   .circle,
                                           gradient:
-                                              theme
+                                              widget
+                                                  .theme
                                                   .lightModeColor
                                                   .secGradient,
                                         ),
@@ -332,7 +398,7 @@ class MyDrawerWidget extends StatelessWidget {
                                                   Colors
                                                       .white,
                                             ),
-                                            '${notifications.where((notif) => !notif.isViewed).length}',
+                                            '${widget.notifications.where((notif) => !notif.isViewed).length}',
                                           ),
                                         ),
                                       ),
@@ -351,68 +417,127 @@ class MyDrawerWidget extends StatelessWidget {
 
               Column(
                 children: [
-                  Visibility(
-                    visible:
-                        returnLocalDatabase(
-                          context,
-                        ).currentEmployees.isNotEmpty,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 15.0,
-                      ),
-                      child: NavListTileAlt(
-                        height: 16,
-                        action: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ConfirmationAlert(
-                                theme: theme,
-                                message:
-                                    'You are about to Logout',
-                                title: 'Are you Sure?',
-                                action: () async {
-                                  await returnLocalDatabase(
-                                    context,
-                                    listen: false,
-                                  ).deleteUser();
-
-                                  if (context.mounted) {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) =>
-                                                EmpAuth(),
-                                      ),
-                                      (route) =>
-                                          false, // removes all previous routes
-                                    );
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(0);
-                                  }
+                  FutureBuilder(
+                    future: employeesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 15.0,
+                            ),
+                            child: Container(
+                              color: const Color.fromARGB(
+                                255,
+                                225,
+                                225,
+                                225,
+                              ),
+                              child: NavListTileAlt(
+                                height: 16,
+                                action: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: widget.theme,
+                                        message:
+                                            'You are about to Logout',
+                                        title:
+                                            'Are you Sure?',
+                                        action: () async {},
+                                      );
+                                    },
+                                  );
                                 },
-                              );
-                            },
-                          );
-                        },
-                        title: 'Employee Logout',
-                        // svg: reportIconSvg,
-                        icon: Icons.logout_rounded,
-                      ),
-                    ),
+                                title: 'Employee Logout',
+                                // svg: reportIconSvg,
+                                icon: Icons.logout_rounded,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Container(height: 20);
+                      } else {
+                        var employees = snapshot.data!;
+                        return Visibility(
+                          visible: employees.isNotEmpty,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 15.0,
+                            ),
+                            child: NavListTileAlt(
+                              height: 16,
+                              action: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: widget.theme,
+                                      message:
+                                          'You are about to Logout',
+                                      title:
+                                          'Are you Sure?',
+                                      action: () async {
+                                        await returnLocalDatabase(
+                                          context,
+                                          listen: false,
+                                        ).deleteUser();
+
+                                        if (context
+                                            .mounted) {
+                                          Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (
+                                                    context,
+                                                  ) =>
+                                                      EmpAuth(),
+                                            ),
+                                            (route) =>
+                                                false, // removes all previous routes
+                                          );
+                                          returnNavProvider(
+                                            context,
+                                            listen: false,
+                                          ).navigate(0);
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              title: 'Employee Logout',
+                              // svg: reportIconSvg,
+                              icon: Icons.logout_rounded,
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   Visibility(
-                    visible: role == 'Owner',
+                    visible: widget.role == 'Owner',
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 30.0,
-                      ),
+                      padding:
+                          MediaQuery.of(
+                                    context,
+                                  ).size.height <
+                                  680
+                              ? const EdgeInsets.only(
+                                bottom: 15.0,
+                              )
+                              : const EdgeInsets.only(
+                                bottom: 30.0,
+                              ),
                       child: NavListTileAlt(
                         height: 16,
-                        action: action,
+                        action: widget.action,
                         title: 'Logout',
                         // svg: reportIconSvg,
                         icon: Icons.logout_rounded,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/local_database/local_user/local_user_database.dart';
 import 'package:stockitt/pages/authentication/base_page/base_page.dart';
 import 'package:stockitt/pages/authentication/launch_screen/launch_screen.dart';
@@ -32,6 +34,8 @@ void main() async {
     ),
   );
 
+  Hive.registerAdapter(TempUserClassAdapter());
+  await LocalUserDatabase().init();
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
     anonKey:

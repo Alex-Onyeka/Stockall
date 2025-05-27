@@ -73,9 +73,9 @@ class _ItemsSummaryState extends State<ItemsSummary> {
         widget.value2.toString().length > 6 ||
         widget.value3.toString().length > 6 ||
         widget.value4.toString().length > 6) {
-      return 15;
+      return 17;
     } else {
-      return 20;
+      return 10;
     }
   }
 
@@ -85,7 +85,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
     var receiptProvider = returnReceiptProvider(context);
     var theme = returnTheme(context);
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 15),
       padding: EdgeInsets.all(returnDouble()),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
@@ -195,68 +195,65 @@ class _ItemsSummaryState extends State<ItemsSummary> {
               SizedBox(height: 10),
               Visibility(
                 visible: widget.firsRow,
-                child: SizedBox(
-                  width:
-                      MediaQuery.of(context).size.width -
-                      ((returnDouble() * 2) + 40),
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      Row(
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    Row(
+                      spacing: 10,
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ProductSummaryTab(
+                            isMoney: widget.isMoney1,
+                            color:
+                                widget.color1 ??
+                                Colors.amber,
+                            title: widget.title1 ?? '',
+                            value: widget.value1 ?? 0,
+                          ),
+                        ),
+                        Expanded(
+                          child: ProductSummaryTab(
+                            isMoney: widget.isMoney2,
+                            color:
+                                widget.color2 ??
+                                Colors.amber,
+                            title: widget.title2 ?? '',
+                            value: widget.value2 ?? 0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Visibility(
+                      visible: widget.secondRow,
+                      child: Row(
                         spacing: 10,
                         children: [
                           Expanded(
                             child: ProductSummaryTab(
-                              isMoney: widget.isMoney1,
+                              isMoney: widget.isMoney3,
                               color:
-                                  widget.color1 ??
+                                  widget.color3 ??
                                   Colors.amber,
-                              title: widget.title1 ?? '',
-                              value: widget.value1 ?? 0,
+                              title: widget.title3 ?? '',
+                              value: widget.value3 ?? 0,
                             ),
                           ),
                           Expanded(
                             child: ProductSummaryTab(
-                              isMoney: widget.isMoney2,
+                              isMoney: widget.isMoney4,
                               color:
-                                  widget.color2 ??
+                                  widget.color4 ??
                                   Colors.amber,
-                              title: widget.title2 ?? '',
-                              value: widget.value2 ?? 0,
+                              title: widget.title4 ?? '',
+                              value: widget.value4 ?? 0,
                             ),
                           ),
                         ],
                       ),
-                      Visibility(
-                        visible: widget.secondRow,
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            Expanded(
-                              child: ProductSummaryTab(
-                                isMoney: widget.isMoney3,
-                                color:
-                                    widget.color3 ??
-                                    Colors.amber,
-                                title: widget.title3 ?? '',
-                                value: widget.value3 ?? 0,
-                              ),
-                            ),
-                            Expanded(
-                              child: ProductSummaryTab(
-                                isMoney: widget.isMoney4,
-                                color:
-                                    widget.color4 ??
-                                    Colors.amber,
-                                title: widget.title4 ?? '',
-                                value: widget.value4 ?? 0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -36,7 +36,7 @@ class TopNavBar extends StatelessWidget {
         top: 0,
         bottom: 10,
         left: 0,
-        right: 30,
+        right: 15,
       ),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -63,7 +63,7 @@ class TopNavBar extends StatelessWidget {
                     crossAxisAlignment:
                         CrossAxisAlignment.center,
                     children: [
-                      SizedBox(width: 30),
+                      SizedBox(width: 15),
                       Icon(
                         color: Colors.grey.shade700,
                         size: 28,

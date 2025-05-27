@@ -45,10 +45,10 @@ class TopBanner extends StatelessWidget {
             Padding(
               padding:
                   isMain != null
-                      ? const EdgeInsets.only(right: 40.0)
+                      ? const EdgeInsets.only(right: 20.0)
                       : const EdgeInsets.only(
-                        right: 40.0,
-                        left: 40,
+                        right: 20.0,
+                        left: 20,
                       ),
               child: Row(
                 mainAxisAlignment:
@@ -70,7 +70,7 @@ class TopBanner extends StatelessWidget {
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                 vertical: 10,
-                                horizontal: 20,
+                                horizontal: 10,
                               ),
                               child: Icon(
                                 Icons
@@ -93,12 +93,12 @@ class TopBanner extends StatelessWidget {
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .h3
+                                      .h4
                                       .fontSize,
                               fontWeight:
                                   theme
                                       .mobileTexts
-                                      .h3
+                                      .h4
                                       .fontWeightBold,
                             ),
                             title,
@@ -109,7 +109,7 @@ class TopBanner extends StatelessWidget {
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b2
+                                      .b3
                                       .fontSize,
                             ),
                             subTitle,
@@ -119,8 +119,8 @@ class TopBanner extends StatelessWidget {
                     ],
                   ),
                   Container(
-                    height: 50,
-                    width: 50,
+                    height: 40,
+                    width: 40,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
@@ -136,9 +136,9 @@ class TopBanner extends StatelessWidget {
                                         .lightModeColor
                                         .prColor300,
                                 iconSvg ?? productIconSvg,
-                                height: 22,
+                                height: 18,
                               )
-                              : Icon(iconData),
+                              : Icon(size: 22, iconData),
                     ),
                   ),
                 ],

@@ -29,8 +29,8 @@ class _ProductSummaryTabState
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal:
-            widget.value.toString().length < 6 ? 15 : 10,
-        vertical: 15,
+            widget.value.toString().length < 5 ? 10 : 7,
+        vertical: 10,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -43,11 +43,11 @@ class _ProductSummaryTabState
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
-            spacing: 8,
+            spacing: 5,
             children: [
               Container(
-                height: 10,
-                width: 10,
+                height: 7,
+                width: 7,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: widget.color,
@@ -56,7 +56,7 @@ class _ProductSummaryTabState
               Text(
                 style: TextStyle(
                   color: Colors.grey.shade600,
-                  fontSize: 13,
+                  fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
                 widget.title,

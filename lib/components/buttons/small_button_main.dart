@@ -25,12 +25,12 @@ class SmallButtonMain extends StatelessWidget {
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: 30,
+            horizontal: 20,
             vertical: 10,
           ),
 
           child: Row(
-            spacing: 10,
+            spacing: 5,
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -38,7 +38,8 @@ class SmallButtonMain extends StatelessWidget {
               Text(
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
+                  fontSize: theme.mobileTexts.b2.fontSize,
                 ),
                 buttonText,
               ),

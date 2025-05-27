@@ -110,7 +110,7 @@ class _EmployeePageMobileState
                             TempUserClass employee =
                                 snapshot.data!;
                             return Positioned(
-                              top: 110,
+                              top: 90,
                               child: DetailsPageContainer(
                                 editAction: () {
                                   Navigator.push(
@@ -286,7 +286,8 @@ class _DetailsPageContainerState
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width - 40,
+      width: MediaQuery.of(context).size.width - 20,
+      height: MediaQuery.of(context).size.height - 150,
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
@@ -323,36 +324,29 @@ class _DetailsPageContainerState
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 160,
-                            child: Text(
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                              ),
-                              widget.employee.name,
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
                             ),
+                            widget.employee.name,
                           ),
-                          SizedBox(
-                            width: 160,
-                            child: Text(
-                              style: TextStyle(
-                                fontWeight:
-                                    FontWeight.normal,
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                              ),
-                              widget.employee.email,
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
                             ),
+                            widget.employee.email,
                           ),
                         ],
                       ),
@@ -393,106 +387,100 @@ class _DetailsPageContainerState
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(color: Colors.grey.shade200),
-              Row(
-                spacing: 3,
-                children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b3
-                              .fontSize,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade500,
-                    ),
-                    'Todays Sales:',
-                  ),
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b2
-                              .fontSize,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade900,
-                    ),
-                    // returnReceiptProvider(
-                    //                                           context,
-                    //                                         ).getTotalRevenueForSelectedDay(
-                    //                                           context,
-                    //                                           mainReceipts,
-                    //                                           records,
-                    //                                         ),
-                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnLocalDatabase(context).userTotalSale)}',
-                  ),
-                ],
-              ),
-              Divider(color: Colors.grey.shade200),
+              // SizedBox(height: 10),
+              // Divider(color: Colors.grey.shade200),
+              // Row(
+              //   spacing: 3,
+              //   children: [
+              //     Text(
+              //       style: TextStyle(
+              //         fontSize:
+              //             widget
+              //                 .theme
+              //                 .mobileTexts
+              //                 .b3
+              //                 .fontSize,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.grey.shade500,
+              //       ),
+              //       'Todays Sales:',
+              //     ),
+              //     Text(
+              //       style: TextStyle(
+              //         fontSize:
+              //             widget
+              //                 .theme
+              //                 .mobileTexts
+              //                 .b2
+              //                 .fontSize,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.grey.shade900,
+              //       ),
+              //       // returnReceiptProvider(
+              //       //                                           context,
+              //       //                                         ).getTotalRevenueForSelectedDay(
+              //       //                                           context,
+              //       //                                           mainReceipts,
+              //       //                                           records,
+              //       //                                         ),
+              //       '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnLocalDatabase(context).userTotalSale)}',
+              //     ),
+              //   ],
+              // ),
+              // Divider(color: Colors.grey.shade200),
             ],
           ),
           SizedBox(height: 10),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 20,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(
-                color: Colors.grey.shade200,
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 20,
               ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TabBarTabButton(
-                        index: 0,
-                        text: 'Basic Information',
-                        theme: widget.theme,
-                      ),
-                    ),
-                    Expanded(
-                      child: TabBarTabButton(
-                        index: 1,
-                        text: 'Sales',
-                        theme: widget.theme,
-                      ),
-                    ),
-                  ],
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color: Colors.grey.shade200,
                 ),
-                SizedBox(height: 20),
-                Visibility(
-                  visible:
-                      returnCompProvider(
-                        context,
-                      ).activeTab ==
-                      0,
-                  child: EmployeeDetailsContainer(
-                    employee: widget.employee,
-                    theme: widget.theme,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TabBarTabButton(
+                          index: 0,
+                          text: 'Basic Info',
+                          theme: widget.theme,
+                        ),
+                      ),
+                      Expanded(
+                        child: TabBarTabButton(
+                          index: 1,
+                          text: 'Sales',
+                          theme: widget.theme,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Visibility(
-                  visible:
-                      returnCompProvider(
-                        context,
-                      ).activeTab ==
-                      1,
-                  child: SizedBox(
-                    height:
-                        MediaQuery.of(context).size.height -
-                        450,
-                    // width:
-                    //     MediaQuery.of(context).size.width -
-                    //     20,
+                  SizedBox(height: 20),
+                  Visibility(
+                    visible:
+                        returnCompProvider(
+                          context,
+                        ).activeTab ==
+                        0,
+                    child: EmployeeDetailsContainer(
+                      employee: widget.employee,
+                      theme: widget.theme,
+                    ),
+                  ),
+                  Visibility(
+                    visible:
+                        returnCompProvider(
+                          context,
+                        ).activeTab ==
+                        1,
                     child: FutureBuilder(
                       future: receiptsFuture,
                       builder: (context, snapshot) {
@@ -528,25 +516,30 @@ class _DetailsPageContainerState
                           ).setUserTotalSale(
                             receipts.length.toDouble(),
                           );
-                          return ListView.builder(
-                            itemCount:
-                                snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              TempMainReceipt receipt =
-                                  receipts[index];
+                          return Expanded(
+                            child: ListView.builder(
+                              itemCount:
+                                  snapshot.data!.length,
+                              itemBuilder: (
+                                context,
+                                index,
+                              ) {
+                                TempMainReceipt receipt =
+                                    receipts[index];
 
-                              return ReceiptTileMain(
-                                theme: widget.theme,
-                                mainReceipt: receipt,
-                              );
-                            },
+                                return ReceiptTileMain(
+                                  theme: widget.theme,
+                                  mainReceipt: receipt,
+                                );
+                              },
+                            ),
                           );
                         }
                       },
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(height: 20),
@@ -585,6 +578,7 @@ class _DetailsPageContainerState
               ),
             ],
           ),
+          SizedBox(height: 10),
         ],
       ),
     );

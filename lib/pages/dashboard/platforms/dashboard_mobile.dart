@@ -6,7 +6,6 @@ import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/my_drawer_widget.dart';
@@ -62,7 +61,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     notificationsFuture = fetchNotifications();
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
-    employeesFuture = getEmployees();
     // shopFuture = getShop();
     shop =
         returnShopProvider(
@@ -126,33 +124,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
         .toList();
   }
 
-  late Future<List<TempUserClass>> employeesFuture;
-
-  Future<List<TempUserClass>> getEmployees() async {
-    var tempEmployees =
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchUsers();
-
-    var mainBeans =
-        tempEmployees!
-            .where(
-              (emp) =>
-                  emp.userId !=
-                  AuthService().currentUser!.id,
-            )
-            .toList();
-
-    returnLocalDatabase(
-      // ignore: use_build_context_synchronously
-      context,
-      listen: false,
-    ).currentEmployees.addAll(mainBeans);
-
-    return mainBeans;
-  }
-
   TextEditingController emailController =
       TextEditingController();
   TextEditingController passwordController =
@@ -164,7 +135,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     notificationsFuture = fetchNotifications();
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
-    employeesFuture = getEmployees();
     // shopFuture = getShop();
     shop =
         returnShopProvider(
@@ -218,54 +188,48 @@ class _DashboardMobileState extends State<DashboardMobile> {
                 List<TempNotification> notifications =
                     snapshot.data!;
 
-                return FutureBuilder(
-                  future: getEmployees(),
-                  builder: (context, snapshot) {
-                    return MyDrawerWidget(
-                      role:
-                          localUser != null
-                              ? localUser.role
-                              : '',
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: theme,
-                              message:
-                                  'You are about to Logout',
-                              title: 'Are you Sure?',
-                              action: () async {
-                                await AuthService()
-                                    .signOut();
+                return MyDrawerWidget(
+                  role:
+                      localUser != null
+                          ? localUser.role
+                          : '',
+                  action: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to Logout',
+                          title: 'Are you Sure?',
+                          action: () async {
+                            await AuthService().signOut();
 
-                                if (context.mounted) {
-                                  returnLocalDatabase(
-                                    context,
-                                    listen: false,
-                                  ).deleteUser();
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AuthScreensPage();
-                                      },
-                                    ),
-                                  );
-                                  returnNavProvider(
-                                    context,
-                                    listen: false,
-                                  ).navigate(0);
-                                }
-                              },
-                            );
+                            if (context.mounted) {
+                              returnLocalDatabase(
+                                context,
+                                listen: false,
+                              ).deleteUser();
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return AuthScreensPage();
+                                  },
+                                ),
+                              );
+                              returnNavProvider(
+                                context,
+                                listen: false,
+                              ).navigate(0);
+                            }
                           },
                         );
                       },
-                      theme: theme,
-                      notifications: notifications,
                     );
                   },
+                  theme: theme,
+                  notifications: notifications,
                 );
               }
             },
@@ -285,7 +249,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
                   subText:
                       'Check you device Internet connection and try again',
                   theme: theme,
-                  height: 35,
+                  height: 30,
+                  icon: Icons.clear,
                 );
               } else {
                 var mainReceipts = returnReceiptProvider(
@@ -399,7 +364,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(
-                                      horizontal: 30.0,
+                                      horizontal: 15.0,
                                     ),
                                 child: Column(
                                   children: [
@@ -420,15 +385,14 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 DashboardTotalSalesBanner(
                                                   theme:
                                                       theme,
-                                                  value:
-                                                      1000,
+                                                  value: 0,
                                                 ),
                                           );
                                         } else if (snapshot
                                             .hasError) {
                                           return DashboardTotalSalesBanner(
                                             theme: theme,
-                                            value: 0000,
+                                            value: 0,
                                           );
                                         } else {
                                           // return Container();
@@ -450,16 +414,14 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 return DashboardTotalSalesBanner(
                                                   theme:
                                                       theme,
-                                                  value:
-                                                      1000,
+                                                  value: 0,
                                                 );
                                               } else if (snapshot
                                                   .hasError) {
                                                 return DashboardTotalSalesBanner(
                                                   theme:
                                                       theme,
-                                                  value:
-                                                      0000,
+                                                  value: 0,
                                                 );
                                               } else {
                                                 List<
@@ -665,149 +627,313 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           width:
                                               double
                                                   .infinity,
-                                          child: Wrap(
-                                            alignment:
-                                                WrapAlignment
-                                                    .center,
-                                            runAlignment:
-                                                WrapAlignment
-                                                    .center,
-                                            direction:
-                                                Axis.horizontal,
-                                            runSpacing: 15,
-                                            spacing: 15,
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment
-                                                    .center,
-                                            children: [
-                                              ButtonTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    productIconSvg,
-                                                title:
-                                                    'Products',
-                                                action: () {
-                                                  Provider.of<
-                                                    NavProvider
-                                                  >(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).navigate(
-                                                    1,
-                                                  );
-                                                },
-                                              ),
-                                              ButtonTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    salesIconSvg,
-                                                title:
-                                                    'Sales',
-                                                action: () {
-                                                  returnNavProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).navigate(
-                                                    2,
-                                                  );
-                                                },
-                                              ),
-                                              ButtonTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    custBookIconSvg,
-                                                title:
-                                                    'Customers',
-                                                action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return CustomerList();
-                                                      },
+                                          child: LayoutBuilder(
+                                            builder: (
+                                              context,
+                                              constraints,
+                                            ) {
+                                              if (constraints
+                                                      .maxWidth >
+                                                  320) {
+                                                return Column(
+                                                  spacing:
+                                                      15,
+                                                  children: [
+                                                    Row(
+                                                      spacing:
+                                                          15,
+                                                      children: [
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              productIconSvg,
+                                                          title:
+                                                              'Products',
+                                                          action: () {
+                                                            Provider.of<
+                                                              NavProvider
+                                                            >(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).navigate(
+                                                              1,
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              salesIconSvg,
+                                                          title:
+                                                              'Sales',
+                                                          action: () {
+                                                            returnNavProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).navigate(
+                                                              2,
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              custBookIconSvg,
+                                                          title:
+                                                              'Customers',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return CustomerList();
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
                                                     ),
-                                                  );
-                                                },
-                                              ),
-                                              ButtonTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    employeesIconSvg,
-                                                title:
-                                                    'Employees',
-                                                action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return EmployeeListPage(
-                                                          empId:
-                                                              localUser !=
-                                                                      null
-                                                                  ? localUser.userId!
-                                                                  : '',
-                                                          role:
-                                                              localUser !=
-                                                                      null
-                                                                  ? localUser.role
-                                                                  : '',
-                                                        );
-                                                      },
+                                                    Row(
+                                                      spacing:
+                                                          15,
+                                                      children: [
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              employeesIconSvg,
+                                                          title:
+                                                              'Employees',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return EmployeeListPage(
+                                                                    empId:
+                                                                        localUser !=
+                                                                                null
+                                                                            ? localUser.userId!
+                                                                            : '',
+                                                                    role:
+                                                                        localUser !=
+                                                                                null
+                                                                            ? localUser.role
+                                                                            : '',
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              expensesIconSvg,
+                                                          title:
+                                                              'Expenses',
+                                                          action: () async {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ExpensesPage();
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              reportIconSvg,
+                                                          title:
+                                                              'Report',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ReportPage();
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
                                                     ),
-                                                  );
-                                                },
-                                              ),
-                                              ButtonTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    expensesIconSvg,
-                                                title:
-                                                    'Expenses',
-                                                action: () async {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return ExpensesPage();
-                                                      },
+                                                  ],
+                                                );
+                                              } else {
+                                                return Column(
+                                                  spacing:
+                                                      15,
+                                                  children: [
+                                                    Row(
+                                                      spacing:
+                                                          15,
+                                                      children: [
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              productIconSvg,
+                                                          title:
+                                                              'Products',
+                                                          action: () {
+                                                            Provider.of<
+                                                              NavProvider
+                                                            >(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).navigate(
+                                                              1,
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              salesIconSvg,
+                                                          title:
+                                                              'Sales',
+                                                          action: () {
+                                                            returnNavProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).navigate(
+                                                              2,
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
                                                     ),
-                                                  );
-                                                },
-                                              ),
-                                              ButtonTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    reportIconSvg,
-                                                title:
-                                                    'Report',
-                                                action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return ReportPage();
-                                                      },
+                                                    Row(
+                                                      spacing:
+                                                          15,
+                                                      children: [
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              custBookIconSvg,
+                                                          title:
+                                                              'Customers',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return CustomerList();
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              employeesIconSvg,
+                                                          title:
+                                                              'Employees',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return EmployeeListPage(
+                                                                    empId:
+                                                                        localUser !=
+                                                                                null
+                                                                            ? localUser.userId!
+                                                                            : '',
+                                                                    role:
+                                                                        localUser !=
+                                                                                null
+                                                                            ? localUser.role
+                                                                            : '',
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
                                                     ),
-                                                  );
-                                                },
-                                              ),
-                                            ],
+                                                    Row(
+                                                      spacing:
+                                                          15,
+                                                      children: [
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              expensesIconSvg,
+                                                          title:
+                                                              'Expenses',
+                                                          action: () async {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ExpensesPage();
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                        ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              reportIconSvg,
+                                                          title:
+                                                              'Report',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return ReportPage();
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                );
+                                              }
+                                            },
                                           ),
                                         ),
                                       ],

@@ -70,9 +70,9 @@ class _EditDiscountPageState
               ),
               child: Padding(
                 padding: const EdgeInsets.only(
-                  left: 30.0,
+                  left: 15,
                   top: 40,
-                  right: 30,
+                  right: 15,
                 ),
                 child: Column(
                   children: [
@@ -97,7 +97,7 @@ class _EditDiscountPageState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          'Edit Discount Percentage',
+                          'Discount Percentage',
                         ),
                         IconButton(
                           onPressed: () {
@@ -201,7 +201,7 @@ class _EditDiscountPageState
                                               ).startDate ??
                                               DateTime.now(),
                                         )
-                                        : 'Set Start Date',
+                                        : 'Start Date',
                                   ),
                                   Icon(
                                     size: 20,
@@ -265,7 +265,7 @@ class _EditDiscountPageState
                                               ).endDate ??
                                               DateTime.now(),
                                         )
-                                        : 'Set End Date',
+                                        : 'End Date',
                                   ),
                                   Icon(
                                     size: 20,
@@ -523,7 +523,7 @@ class _EditDiscountPageState
                     Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: 20,
+                          vertical: 10,
                           horizontal: 10,
                         ),
                         decoration: BoxDecoration(
@@ -544,7 +544,7 @@ class _EditDiscountPageState
                             MediaQuery.of(
                               context,
                             ).size.height -
-                            250,
+                            150,
                         width:
                             (MediaQuery.of(
                                   context,

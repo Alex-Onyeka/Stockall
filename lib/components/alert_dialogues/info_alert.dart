@@ -16,6 +16,11 @@ class InfoAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 0,
+      ), // 🔧 Control outer padding
+      contentPadding: EdgeInsets.all(15),
       backgroundColor: Colors.white,
       content: SizedBox(
         width: BoxConstraints().maxWidth < 400 ? 350 : 500,
@@ -69,21 +74,33 @@ class InfoAlert extends StatelessWidget {
                 ),
               ),
 
-              Text(
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.h3.fontSize,
-                  fontWeight:
-                      theme.mobileTexts.h3.fontWeightBold,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 600),
+                child: Column(
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.h3.fontSize,
+                        fontWeight:
+                            theme
+                                .mobileTexts
+                                .h3
+                                .fontWeightBold,
+                      ),
+                      title,
+                    ),
+                    Text(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b1.fontSize,
+                      ),
+                      message,
+                    ),
+                  ],
                 ),
-                title,
-              ),
-              Text(
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b1.fontSize,
-                ),
-                message,
               ),
               SizedBox(height: 5),
               Padding(

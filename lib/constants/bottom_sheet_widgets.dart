@@ -9,6 +9,7 @@ import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/general_textfield.dart';
+import 'package:stockitt/components/text_fields/general_textfield_only.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -264,7 +265,7 @@ void categoriesBottomSheet(
                           Center(
                             child: Container(
                               height: 4,
-                              width: 70,
+                              width: 80,
                               decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.circular(
@@ -384,7 +385,7 @@ void categoriesBottomSheet(
                                         theme: returnTheme(
                                           context,
                                         ),
-                                        height: 35,
+                                        height: 30,
                                         icon:
                                             Icons
                                                 .book_outlined,
@@ -1323,6 +1324,13 @@ class _CustomBottomPanelState
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 20,
+              ),
               backgroundColor: Colors.white,
               title: Text(
                 'Enter Product Quantity',
@@ -1547,12 +1555,12 @@ class _CustomBottomPanelState
       },
     ).then((value) {
       qqty = 0;
-      quantityController.text = '0';
+      quantityController.text = '';
     });
   }
 
   TextEditingController quantityController =
-      TextEditingController(text: '0');
+      TextEditingController(text: '');
   double qqty = 0;
   List productResults = [];
   String? scanResult;
@@ -1633,7 +1641,7 @@ class _CustomBottomPanelState
                             ),
                           ),
                           Text(
-                            'Search For products to Add to Cart',
+                            'Search For products',
                             style: TextStyle(
                               fontSize:
                                   returnTheme(
@@ -2196,7 +2204,7 @@ void editCartItemBottomSheet(
                                       },
                                       child: SizedBox(
                                         height: 30,
-                                        width: 50,
+                                        width: 60,
                                         child: Icon(
                                           Icons.remove,
                                         ),
@@ -2270,7 +2278,7 @@ void editCartItemBottomSheet(
                                       },
                                       child: SizedBox(
                                         height: 30,
-                                        width: 50,
+                                        width: 60,
                                         child: Center(
                                           child: Icon(
                                             Icons.add,
@@ -2670,294 +2678,245 @@ void selectProduct(
   );
 }
 
-// void editProductQuantity(
-//   double productQuantity,
-//   BuildContext context,
-//   Function()? updateAction,
-//   TextEditingController numberController,
-// ) async {
-//   numberController.text = cartItem.quantity.toString();
-//   double qqty = cartItem.quantity.toDouble();
-//   await showModalBottomSheet(
-//     context: context,
-//     isScrollControlled: true,
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.vertical(
-//         top: Radius.circular(20),
-//       ),
-//     ),
-//     backgroundColor: Colors.white,
-//     builder: (BuildContext context) {
-//       return StatefulBuilder(
-//         builder: (context, setState) {
-//           // double currentValue = 0;
-//           // double qqty =
-//           //     double.tryParse(numberController.text) ??
-//           //     cartItem.quantity.toDouble();
-//           return DraggableScrollableSheet(
-//             expand: false,
-//             initialChildSize: 0.9,
-//             maxChildSize: 0.9,
-//             minChildSize: 0.3,
-//             builder: (context, scrollController) {
-//               var theme = returnTheme(context);
-//               return Container(
-//                 color: Colors.white,
-//                 padding: const EdgeInsets.fromLTRB(
-//                   30,
-//                   15,
-//                   30,
-//                   45,
-//                 ),
-//                 child: Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   children: [
-//                     Center(
-//                       child: Container(
-//                         height: 4,
-//                         width: 70,
-//                         decoration: BoxDecoration(
-//                           borderRadius:
-//                               BorderRadius.circular(5),
-//                           color: Colors.grey.shade400,
-//                         ),
-//                       ),
-//                     ),
-//                     SizedBox(height: 20),
-//                     Row(
-//                       mainAxisAlignment:
-//                           MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         Column(
-//                           crossAxisAlignment:
-//                               CrossAxisAlignment.start,
-//                           children: [
-//                             Text(
-//                               'Edit Number',
-//                               style: TextStyle(
-//                                 fontSize:
-//                                     returnTheme(context)
-//                                         .mobileTexts
-//                                         .b1
-//                                         .fontSize,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             Text(
-//                               'Enter Item Number to Update',
-//                               style: TextStyle(
-//                                 fontSize:
-//                                     returnTheme(context)
-//                                         .mobileTexts
-//                                         .b2
-//                                         .fontSize,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                         IconButton(
-//                           onPressed: () {
-//                             Navigator.of(context).pop();
-//                             FocusScope.of(
-//                               context,
-//                             ).unfocus();
-//                           },
-//                           icon: Icon(Icons.clear_rounded),
-//                         ),
-//                       ],
-//                     ),
-//                     SizedBox(height: 10),
-//                     Expanded(
-//                       child: Container(
-//                         decoration: BoxDecoration(
-//                           color: Colors.white,
-//                           borderRadius:
-//                               BorderRadius.circular(10),
-//                         ),
-//                         child: Column(
-//                           spacing: 5,
-//                           children: [
-//                             EditCartTextField(
-//                               title: 'Enter Number',
-//                               hint: 'Start Typing',
-//                               controller: numberController,
-//                               theme: theme,
-//                               onChanged: (value) {
-//                                 final parsedValue =
-//                                     double.tryParse(
-//                                       value,
-//                                     ) ??
-//                                     0;
-//                                 if (parsedValue >
-//                                     productQuantity) {
-//                                   showDialog(
-//                                     context: context,
-//                                     builder: (context) {
-//                                       var theme =
-//                                           Provider.of<
-//                                             ThemeProvider
-//                                           >(context);
-//                                       return InfoAlert(
-//                                         theme: theme,
-//                                         message:
-//                                             'Total product quantity can\'t be exceeded',
-//                                         title:
-//                                             'Quantity Exceeded',
-//                                       );
-//                                     },
-//                                   );
-//                                   // Optionally reset to max or previous value
-//                                   setState(() {
-//                                     numberController.text =
-//                                         qqty.toString();
-//                                   });
-//                                 } else {
-//                                   setState(() {
-//                                     qqty = parsedValue;
-//                                   });
-//                                 }
-//                               },
-//                             ),
-//                             SizedBox(height: 20),
-//                             Row(
-//                               mainAxisAlignment:
-//                                   MainAxisAlignment.center,
-//                               spacing: 15,
-//                               children: [
-//                                 Material(
-//                                   color: Colors.transparent,
-//                                   child: Ink(
-//                                     decoration: BoxDecoration(
-//                                       borderRadius:
-//                                           BorderRadius.circular(
-//                                             5,
-//                                           ),
-//                                       color:
-//                                           Colors
-//                                               .grey
-//                                               .shade200,
-//                                     ),
-//                                     child: InkWell(
-//                                       borderRadius:
-//                                           BorderRadius.circular(
-//                                             5,
-//                                           ),
-//                                       onTap: () {
-//                                         setState(() {
-//                                           if (qqty > 1) {
-//                                             qqty--;
-//                                           }
+class CountryBottomSheet extends StatefulWidget {
+  final TextEditingController searchController;
+  final VoidCallback close;
+  final String currentSetting;
+  // final List<String>? list;
+  final Future future;
+  const CountryBottomSheet({
+    super.key,
+    required this.searchController,
+    required this.close,
+    required this.future,
+    required this.currentSetting,
+  });
 
-//                                           numberController
-//                                                   .text =
-//                                               qqty.toString();
-//                                         });
-//                                       },
-//                                       child: SizedBox(
-//                                         height: 30,
-//                                         width: 30,
-//                                         child: Icon(
-//                                           Icons.remove,
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                                 Text(
-//                                   qqty.toString(),
-//                                   style: TextStyle(
-//                                     fontSize:
-//                                         theme
-//                                             .mobileTexts
-//                                             .h4
-//                                             .fontSize,
-//                                     fontWeight:
-//                                         FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 Material(
-//                                   color: Colors.transparent,
-//                                   child: Ink(
-//                                     decoration: BoxDecoration(
-//                                       borderRadius:
-//                                           BorderRadius.circular(
-//                                             5,
-//                                           ),
-//                                       color:
-//                                           Colors
-//                                               .grey
-//                                               .shade200,
-//                                     ),
-//                                     child: InkWell(
-//                                       borderRadius:
-//                                           BorderRadius.circular(
-//                                             5,
-//                                           ),
-//                                       onTap: () {
-//                                         if (qqty >=
-//                                             productQuantity) {
-//                                           showDialog(
-//                                             context:
-//                                                 context,
-//                                             builder: (
-//                                               context,
-//                                             ) {
-//                                               var theme =
-//                                                   Provider.of<
-//                                                     ThemeProvider
-//                                                   >(
-//                                                     context,
-//                                                   );
-//                                               return InfoAlert(
-//                                                 theme:
-//                                                     theme,
-//                                                 message:
-//                                                     'Total product quantity can\'t be exceeded',
-//                                                 title:
-//                                                     'Quantity Exceeded',
-//                                               );
-//                                             },
-//                                           );
-//                                         } else {
-//                                           setState(() {
-//                                             qqty++;
-//                                             numberController
-//                                                     .text =
-//                                                 qqty.toString();
-//                                           });
-//                                         }
-//                                       },
-//                                       child: SizedBox(
-//                                         height: 30,
-//                                         width: 30,
-//                                         child: Center(
-//                                           child: Icon(
-//                                             Icons.add,
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                             SizedBox(height: 20),
-//                             MainButtonP(
-//                               themeProvider: theme,
-//                               action: updateAction,
-//                               text: 'Update Quantity',
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               );
-//             },
-//           );
-//         },
-//       );
-//     },
-//   );
-// }
+  @override
+  State<CountryBottomSheet> createState() =>
+      _CountryBottomSheetState();
+}
+
+class _CountryBottomSheetState
+    extends State<CountryBottomSheet> {
+  //
+  //
+  //
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Material(
+      color: Colors.transparent,
+      // elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: Ink(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(55, 0, 0, 0),
+                blurRadius: 5,
+              ),
+            ],
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          child: Container(
+            height:
+                MediaQuery.of(context).size.height * 0.9,
+
+            padding: const EdgeInsets.fromLTRB(
+              15,
+              15,
+              15,
+              45,
+            ),
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        15,
+                      ),
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Select Your ${widget.currentSetting}',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b1.fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Search For ${widget.currentSetting} to Select',
+                            style: TextStyle(
+                              fontSize:
+                                  returnTheme(
+                                    context,
+                                  ).mobileTexts.b2.fontSize,
+                            ),
+                          ),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () {
+                          widget.close();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade800,
+                          ),
+                          child: Icon(
+                            color: Colors.white,
+                            Icons.clear_rounded,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  child: GeneralTextfieldOnly(
+                    hint:
+                        'Search for ${widget.currentSetting.toLowerCase()} names',
+                    lines: 1,
+                    theme: theme,
+                    controller: widget.searchController,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: FutureBuilder(
+                    future: widget.future,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Scaffold(
+                          body: returnCompProvider(
+                            context,
+                            listen: false,
+                          ).showLoader('Loading'),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Scaffold(
+                          body: EmptyWidgetDisplay(
+                            title: 'An Error Occured',
+                            subText:
+                                'Please check your internet and try again.',
+                            buttonText: 'Close',
+                            theme: theme,
+                            height: 30,
+                            action: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: Icons.clear,
+                          ),
+                        );
+                      } else {
+                        var items = snapshot.data!;
+                        if (items.isEmpty) {
+                          return Scaffold(
+                            body: EmptyWidgetDisplay(
+                              title: 'Empty List',
+                              subText:
+                                  'There are no results for this Location.',
+                              buttonText: 'Close',
+                              theme: theme,
+                              height: 30,
+                              action: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: Icons.clear,
+                            ),
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemBuilder: (context, index) {
+                              var item = items[index];
+                              return Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade300,
+                                    ),
+                                  ),
+                                ),
+                                child: Material(
+                                  color: Colors.white,
+                                  child: ListTile(
+                                    title: Text(item),
+                                    onTap: () {},
+                                    trailing: Checkbox(
+                                      shape: CircleBorder(
+                                        side: BorderSide(),
+                                      ),
+                                      side: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 1.2,
+                                      ),
+                                      activeColor:
+                                          returnTheme(
+                                                context,
+                                              )
+                                              .lightModeColor
+                                              .prColor250,
+                                      value: true,
+                                      onChanged: (value) {},
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

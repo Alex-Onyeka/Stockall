@@ -74,7 +74,7 @@ class _MakeSalesMobileTwoState
               },
               icon: Padding(
                 padding: const EdgeInsets.only(
-                  left: 20.0,
+                  left: 10,
                   right: 10,
                 ),
                 child: Icon(
@@ -89,7 +89,7 @@ class _MakeSalesMobileTwoState
               children: [
                 Text(
                   style: TextStyle(
-                    fontSize: theme.mobileTexts.h4.fontSize,
+                    fontSize: theme.mobileTexts.b1.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                   'Select Payment Method',

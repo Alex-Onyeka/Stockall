@@ -27,8 +27,8 @@ class MainInfoTab extends StatelessWidget {
       child: Container(
         // width: 300,
         padding: EdgeInsets.symmetric(
-          horizontal: 15,
-          vertical: 15,
+          horizontal: 10,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
           // color: Colors.grey.shade100,
@@ -42,25 +42,33 @@ class MainInfoTab extends StatelessWidget {
             Row(
               spacing: 10,
               children: [
-                Container(
-                  height: 25,
-                  width: 25,
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey.shade100,
+                Visibility(
+                  visible:
+                      MediaQuery.of(context).size.width >
+                      335,
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey.shade100,
+                    ),
+                    child: SvgPicture.asset(icon),
                   ),
-                  child: SvgPicture.asset(icon),
                 ),
                 Text(
                   style: TextStyle(
                     color:
                         theme.lightModeColor.greyColor200,
-                    fontSize: theme.mobileTexts.b2.fontSize,
+                    fontSize:
+                        MediaQuery.of(context).size.width <
+                                335
+                            ? theme.mobileTexts.b3.fontSize
+                            : theme.mobileTexts.b2.fontSize,
                     fontWeight:
                         MediaQuery.of(context).size.width <
-                                    384 &&
-                                title.length > 11
+                                335
                             ? theme
                                 .mobileTexts
                                 .b3
@@ -71,10 +79,7 @@ class MainInfoTab extends StatelessWidget {
                                 .fontWeightBold,
                   ),
 
-                  MediaQuery.of(context).size.width < 384 &&
-                          title.length > 11
-                      ? '${title.substring(0, title.length - 5)}...'
-                      : title,
+                  title,
                 ),
               ],
             ),

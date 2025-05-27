@@ -95,8 +95,8 @@ class _EmployeeListMobileState
           },
           icon: Padding(
             padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 10,
+              left: 10.0,
+              right: 5,
             ),
             child: Icon(Icons.arrow_back_ios_new_rounded),
           ),
@@ -169,7 +169,7 @@ class _EmployeeListMobileState
                       buttonText: 'Create Employee',
                       svg: productIconSvg,
                       theme: theme,
-                      height: 35,
+                      height: 30,
                       action: () {
                         Navigator.push(
                           context,
@@ -189,7 +189,7 @@ class _EmployeeListMobileState
                   } else {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
+                        horizontal: 15.0,
                       ),
                       child: Column(
                         children: [

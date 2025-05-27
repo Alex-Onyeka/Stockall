@@ -1107,7 +1107,7 @@ class _AddProductMobileState
                         Center(
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                              vertical: 20,
+                              vertical: 10,
                               horizontal: 10,
                             ),
                             decoration: BoxDecoration(
@@ -1129,7 +1129,7 @@ class _AddProductMobileState
                                 MediaQuery.of(
                                   context,
                                 ).size.height -
-                                250,
+                                180,
                             width:
                                 (MediaQuery.of(
                                       context,

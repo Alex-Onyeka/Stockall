@@ -28,73 +28,79 @@ class EmptyWidgetDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 60.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.all(30),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.grey.shade300,
-              ),
-            ),
-            child: colorWidget(
-              Stack(
-                children: [
-                  Visibility(
-                    visible: svg != null,
-                    child: SvgPicture.asset(
-                      svg ?? '',
-                      height: height,
-                    ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.grey.shade300,
                   ),
-                  Visibility(
-                    visible: icon != null,
-                    child: Icon(
-                      icon,
-                      size: height,
-                      color: Colors.white,
-                    ),
+                ),
+                child: colorWidget(
+                  Stack(
+                    children: [
+                      Visibility(
+                        visible: svg != null,
+                        child: SvgPicture.asset(
+                          svg ?? '',
+                          height: 25,
+                        ),
+                      ),
+                      Visibility(
+                        visible: icon != null,
+                        child: Icon(
+                          icon,
+                          size: 25,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                  true,
+                  context,
+                ),
               ),
-              true,
-              context,
-            ),
-          ),
 
-          SizedBox(height: 15),
-          Text(
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b1.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-            title,
+              SizedBox(height: 15),
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b1.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+                title,
+              ),
+              SizedBox(height: 5),
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+                subText,
+              ),
+              SizedBox(height: 20),
+              Material(
+                child: SmallButtonMain(
+                  theme: theme,
+                  action: action,
+                  buttonText: buttonText,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 5),
-          Text(
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b2.fontSize,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-            subText,
-          ),
-          SizedBox(height: 20),
-          Material(
-            child: SmallButtonMain(
-              theme: theme,
-              action: action,
-              buttonText: buttonText,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

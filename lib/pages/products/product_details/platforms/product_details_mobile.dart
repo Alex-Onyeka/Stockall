@@ -126,8 +126,8 @@ class _ProductDetailsMobileState
                     },
                     icon: Padding(
                       padding: const EdgeInsets.only(
-                        left: 20.0,
-                        right: 10,
+                        left: 10.0,
+                        right: 5,
                       ),
                       child: Icon(
                         Icons.arrow_back_ios_new_rounded,
@@ -175,12 +175,10 @@ class _ProductDetailsMobileState
                           });
                         },
                         child: Container(
-                          margin: EdgeInsets.only(
-                            right: 20,
-                          ),
+                          margin: EdgeInsets.only(right: 5),
                           padding: EdgeInsets.only(
-                            right: 20,
-                            left: 20,
+                            right: 15,
+                            left: 15,
                             top: 5,
                             bottom: 5,
                           ),
@@ -209,7 +207,7 @@ class _ProductDetailsMobileState
                 ),
                 body: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0,
+                    horizontal: 15.0,
                   ),
                   child: Column(
                     children: [
@@ -252,7 +250,7 @@ class _ProductDetailsMobileState
                                               .lightModeColor
                                               .secColor200,
                                       fontWeight:
-                                          FontWeight.bold,
+                                          FontWeight.normal,
                                     ),
                                     'Date Created: ${formatDateTime(product.createdAt!)}',
                                   ),
@@ -750,7 +748,7 @@ class _ProductDetailsMobileState
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                       ),
-                                                                      'Edit Product Quantity',
+                                                                      'Edit Quantity',
                                                                     ),
                                                                     IconButton(
                                                                       onPressed: () {
@@ -1054,7 +1052,7 @@ class _ProductDetailsMobileState
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(
-                                      horizontal: 20.0,
+                                      horizontal: 10.0,
                                     ),
                                 child: Column(
                                   spacing: 10,
@@ -1082,7 +1080,7 @@ class _ProductDetailsMobileState
                                                 )
                                                 : 'Not Set',
                                         text:
-                                            'Discount Start Date',
+                                            'Discount Start',
                                       ),
                                     ),
                                     Visibility(
@@ -1100,7 +1098,7 @@ class _ProductDetailsMobileState
                                                 )
                                                 : 'Not Set',
                                         text:
-                                            'Discount End Date',
+                                            'Discount End',
                                       ),
                                     ),
                                     BottomInfoSection(
@@ -1403,7 +1401,7 @@ class TabContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: backGround,
@@ -1415,6 +1413,7 @@ class TabContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.normal,
@@ -1422,6 +1421,7 @@ class TabContainer extends StatelessWidget {
                 text,
               ),
               Text(
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b1.fontSize,
                   fontWeight: FontWeight.bold,

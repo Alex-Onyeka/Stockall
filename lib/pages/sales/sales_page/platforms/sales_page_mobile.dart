@@ -229,7 +229,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                       Material(
                         color: Colors.transparent,
                         child: SizedBox(
-                          height: 300,
+                          height: 230,
                           child: Stack(
                             children: [
                               TopBanner(
@@ -237,7 +237,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                     'Data of All Sales Records',
                                 title: 'Sales',
                                 theme: theme,
-                                bottomSpace: 100,
+                                bottomSpace: 80,
                                 topSpace: 20,
                                 iconSvg: salesIconSvg,
                               ),
@@ -268,7 +268,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         return ItemsSummary(
                                           isMoney1: true,
                                           mainTitle:
-                                              'Sales Record Summary',
+                                              'Sales Summary',
                                           subTitle:
                                               returnReceiptProvider(
                                                 context,
@@ -297,7 +297,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         return ItemsSummary(
                                           isMoney1: true,
                                           mainTitle:
-                                              'Sales Record Summary',
+                                              'Sales Summary',
                                           subTitle:
                                               returnReceiptProvider(
                                                 context,
@@ -336,7 +336,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                               'Owner',
                                           isMoney1: true,
                                           mainTitle:
-                                              'Sales Record Summary',
+                                              'Sales Summary',
                                           subTitle:
                                               returnReceiptProvider(
                                                 context,
@@ -405,16 +405,16 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                             padding:
                                 const EdgeInsets.fromLTRB(
                                   10.0,
-                                  15,
                                   10,
-                                  15,
+                                  10,
+                                  10,
                                 ),
                             child: Column(
                               children: [
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(
-                                        horizontal: 20.0,
+                                        horizontal: 10.0,
                                       ),
                                   child: Row(
                                     mainAxisAlignment:

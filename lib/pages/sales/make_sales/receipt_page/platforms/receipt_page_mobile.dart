@@ -696,51 +696,51 @@ class _ReceiptDetailsContainerState
                                               ],
                                             ),
                                           ),
-                                          Visibility(
-                                            visible:
-                                                widget.isMain ==
-                                                        true
-                                                    ? false
-                                                    : true,
-                                            child: Checkbox(
-                                              value: returnSalesProvider(
-                                                context,
-                                              ).productIdsToRefund.contains(
-                                                productRecord
-                                                    .productRecordId,
-                                              ),
-                                              onChanged: (
-                                                value,
-                                              ) {
-                                                if (returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).productIdsToRefund.contains(
-                                                  productRecord
-                                                      .productRecordId,
-                                                )) {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).removeProductIdFromRefund(
-                                                    productRecord
-                                                        .productRecordId!,
-                                                  );
-                                                } else {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).addproductIdToRefund(
-                                                    productRecord
-                                                        .productRecordId!,
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ),
+                                          // Visibility(
+                                          //   visible:
+                                          //       widget.isMain ==
+                                          //               true
+                                          //           ? false
+                                          //           : true,
+                                          //   child: Checkbox(
+                                          //     value: returnSalesProvider(
+                                          //       context,
+                                          //     ).productIdsToRefund.contains(
+                                          //       productRecord
+                                          //           .productRecordId,
+                                          //     ),
+                                          //     onChanged: (
+                                          //       value,
+                                          //     ) {
+                                          //       if (returnSalesProvider(
+                                          //         context,
+                                          //         listen:
+                                          //             false,
+                                          //       ).productIdsToRefund.contains(
+                                          //         productRecord
+                                          //             .productRecordId,
+                                          //       )) {
+                                          //         returnSalesProvider(
+                                          //           context,
+                                          //           listen:
+                                          //               false,
+                                          //         ).removeProductIdFromRefund(
+                                          //           productRecord
+                                          //               .productRecordId!,
+                                          //         );
+                                          //       } else {
+                                          //         returnSalesProvider(
+                                          //           context,
+                                          //           listen:
+                                          //               false,
+                                          //         ).addproductIdToRefund(
+                                          //           productRecord
+                                          //               .productRecordId!,
+                                          //         );
+                                          //       }
+                                          //     },
+                                          //   ),
+                                          // ),
                                           Expanded(
                                             flex: 3,
                                             child: Column(
@@ -922,7 +922,7 @@ class _ReceiptDetailsContainerState
                   BottomActionButton(
                     text:
                         widget.isMain
-                            ? 'Finish'
+                            ? 'Finish Sale'
                             : 'Go Back',
                     color: Colors.grey.shade600,
                     iconSize: 20,
@@ -952,23 +952,23 @@ class _ReceiptDetailsContainerState
                       }
                     },
                   ),
-                  BottomActionButton(
-                    text:
-                        widget.isMain ? 'Print' : 'Refund',
-                    color: Colors.grey.shade600,
-                    iconSize: 23,
-                    theme: widget.theme,
-                    icon:
-                        widget.isMain
-                            ? Icons.print_outlined
-                            : Icons
-                                .settings_backup_restore_rounded,
-                    action: () {
-                      if (widget.isMain) {
-                        return;
-                      } else {}
-                    },
-                  ),
+                  // BottomActionButton(
+                  //   text:
+                  //       widget.isMain ? 'Print' : 'Refund',
+                  //   color: Colors.grey.shade600,
+                  //   iconSize: 23,
+                  //   theme: widget.theme,
+                  //   icon:
+                  //       widget.isMain
+                  //           ? Icons.print_outlined
+                  //           : Icons
+                  //               .settings_backup_restore_rounded,
+                  //   action: () {
+                  //     if (widget.isMain) {
+                  //       return;
+                  //     } else {}
+                  //   },
+                  // ),
                 ],
               ),
             ],
@@ -1007,8 +1007,8 @@ class BottomActionButton extends StatelessWidget {
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          height: 35,
-          width: 100,
+          height: 40,
+          width: 150,
           padding: EdgeInsets.symmetric(
             vertical: 7,
             horizontal: 10,
@@ -1019,8 +1019,8 @@ class BottomActionButton extends StatelessWidget {
           ),
           child: Center(
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceAround,
+              spacing: 15,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   style: TextStyle(

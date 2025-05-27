@@ -76,7 +76,7 @@ class _TextFieldBarcodeState
                   ),
         ),
         contentPadding: EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 15,
           vertical: 10,
         ),
         prefixIcon: Icon(
@@ -90,7 +90,7 @@ class _TextFieldBarcodeState
         hintText: 'Search Name or Scan Barcode',
         hintStyle: TextStyle(
           color: Colors.grey,
-          fontSize: 16,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
         enabledBorder: OutlineInputBorder(

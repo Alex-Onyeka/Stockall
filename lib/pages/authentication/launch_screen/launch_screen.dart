@@ -12,14 +12,14 @@ class _LaunchScreenState extends State<LaunchScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (context.mounted) {
         Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (_) => const BasePage(),
-          ), // Replace with your actual home screen
+          ),
         );
       }
     });

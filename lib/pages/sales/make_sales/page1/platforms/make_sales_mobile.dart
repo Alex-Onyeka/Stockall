@@ -82,8 +82,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             },
             icon: Padding(
               padding: const EdgeInsets.only(
-                left: 20.0,
-                right: 10,
+                left: 10.0,
+                right: 5,
               ),
               child: Icon(Icons.arrow_back_ios_new_rounded),
             ),
@@ -131,10 +131,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                 },
                 child: Container(
                   height: 35,
-                  margin: EdgeInsets.only(right: 20),
+                  margin: EdgeInsets.only(right: 10),
                   padding: EdgeInsets.only(
                     // vertical: 10,
-                    left: 15,
+                    left: 10,
                     right: 5,
                   ),
                   decoration: BoxDecoration(
@@ -210,7 +210,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             } else if (snapshot.hasError) {
               return Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
+                  horizontal: 10.0,
                 ),
                 child: EmptyWidgetDisplayOnly(
                   title: 'An Error Occoured',
@@ -224,36 +224,56 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             } else {
               var products = snapshot.data!;
               if (products.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
-                  child: EmptyWidgetDisplay(
-                    title: 'No products',
+                if (returnLocalDatabase(
+                      context,
+                      listen: false,
+                    ).currentEmployee!.role ==
+                    'Cashier') {
+                  return EmptyWidgetDisplayOnly(
+                    title: 'No Products',
                     subText:
-                        'Your currently do not have have any product. add products to start making sales.',
+                        'No Products have been added to your stock.',
                     theme: theme,
                     height: 30,
-                    svg: productIconSvg,
-                    buttonText: 'Add Product',
-                    action: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return AddProduct();
+                    icon: Icons.clear,
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        EmptyWidgetDisplay(
+                          title: 'No products',
+                          subText:
+                              'You currently do not have have any product. Add products to start making sales.',
+                          theme: theme,
+                          height: 30,
+                          svg: productIconSvg,
+                          buttonText: 'Add Product',
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return AddProduct();
+                                },
+                              ),
+                            ).then((_) {
+                              setState(() {
+                                _productsFuture =
+                                    getProductList(context);
+                              });
+                            });
                           },
                         ),
-                      ).then((_) {
-                        setState(() {
-                          _productsFuture = getProductList(
-                            context,
-                          );
-                        });
-                      });
-                    },
-                  ),
-                );
+                      ],
+                    ),
+                  );
+                }
               } else {
                 return Stack(
                   children: [
@@ -268,7 +288,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
+                                    horizontal: 10.0,
                                   ),
                               child: Column(
                                 children: [
@@ -286,40 +306,48 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 .toList();
 
                                         if (items.isEmpty) {
-                                          return EmptyWidgetDisplay(
-                                            title:
-                                                'Cart List Empty',
-                                            subText:
-                                                'Start Adding Items to Cart To make Sales',
-                                            buttonText:
-                                                'Add Item',
-                                            svg:
-                                                productIconSvg,
-                                            theme: theme,
-                                            height: 40,
-                                            action: () {
-                                              showGeneralDialog(
-                                                context:
-                                                    context,
-                                                pageBuilder: (
-                                                  context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                ) {
-                                                  return CustomBottomPanel(
-                                                    searchController:
-                                                        widget.searchController,
-                                                    close: () {
-                                                      Navigator.of(
+                                          return Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              EmptyWidgetDisplay(
+                                                title:
+                                                    'Cart List Empty',
+                                                subText:
+                                                    'Start Adding Items to Cart To make Sales',
+                                                buttonText:
+                                                    'Add Item',
+                                                svg:
+                                                    productIconSvg,
+                                                theme:
+                                                    theme,
+                                                height: 40,
+                                                action: () {
+                                                  showGeneralDialog(
+                                                    context:
                                                         context,
-                                                      ).pop();
+                                                    pageBuilder: (
+                                                      context,
+                                                      animation,
+                                                      secondaryAnimation,
+                                                    ) {
+                                                      return CustomBottomPanel(
+                                                        searchController:
+                                                            widget.searchController,
+                                                        close: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
+                                                        products:
+                                                            products,
+                                                      );
                                                     },
-                                                    products:
-                                                        products,
                                                   );
                                                 },
-                                              );
-                                            },
+                                              ),
+                                            ],
                                           );
                                         } else {
                                           return ListView.builder(

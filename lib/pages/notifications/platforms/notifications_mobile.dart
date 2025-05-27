@@ -35,7 +35,7 @@ class NotificationsMobile extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 30.0,
+                horizontal: 15.0,
               ),
               child: Builder(
                 builder: (context) {
@@ -48,7 +48,7 @@ class NotificationsMobile extends StatelessWidget {
                         child: EmptyWidgetDisplayOnly(
                           title: 'No New Notifications',
                           subText:
-                              'Your currently don\'t any new notifications. Check back later when you do.',
+                              'Your currently don\'t have any new notification. Check back later when you do.',
                           theme: theme,
                           height: 30,
                           icon:
@@ -59,6 +59,7 @@ class NotificationsMobile extends StatelessWidget {
                     );
                   } else {
                     return ListView.builder(
+                      padding: EdgeInsets.only(top: 20),
                       itemCount: notificationss.length,
                       itemBuilder: (context, index) {
                         TempNotification notif =
@@ -326,41 +327,24 @@ class _NotificatonTileMainState
                             ],
                           ),
                         ),
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                color: Colors.grey.shade600,
-                              ),
-                              'Date:',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                                color:
-                                    widget
-                                        .theme
-                                        .lightModeColor
-                                        .prColor300,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              formatDateWithoutYear(
-                                widget.notif.date,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            color:
+                                widget
+                                    .theme
+                                    .lightModeColor
+                                    .prColor300,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatDateWithoutYear(
+                            widget.notif.date,
+                          ),
                         ),
                       ],
                     ),

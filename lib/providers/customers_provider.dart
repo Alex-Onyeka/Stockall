@@ -22,7 +22,7 @@ class CustomersProvider extends ChangeNotifier {
         .from('customers')
         .select()
         .eq('shop_id', shopId)
-        .order('date_added', ascending: false);
+        .order('name', ascending: true);
 
     _customers =
         (data as List)

@@ -97,8 +97,8 @@ class _CustomerListMobileState
           },
           icon: Padding(
             padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 10,
+              left: 10.0,
+              right: 0,
             ),
             child: Icon(Icons.arrow_back_ios_new_rounded),
           ),
@@ -129,7 +129,7 @@ class _CustomerListMobileState
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0,
+                    horizontal: 15.0,
                   ),
                   child: GeneralTextfieldOnly(
                     hint: 'Search Customer Name',
@@ -149,7 +149,7 @@ class _CustomerListMobileState
                           height: 70,
                           margin: EdgeInsets.symmetric(
                             vertical: 5,
-                            horizontal: 30,
+                            horizontal: 15,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.grey.shade300,
@@ -208,7 +208,7 @@ class _CustomerListMobileState
                   } else {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
+                        horizontal: 15.0,
                       ),
                       child: Column(
                         children: [

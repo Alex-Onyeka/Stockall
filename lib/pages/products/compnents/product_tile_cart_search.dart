@@ -29,7 +29,7 @@ class _ProductTileCartSearchState
       padding: const EdgeInsets.all(5.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           color: Colors.white,
           boxShadow: [
             BoxShadow(
@@ -44,24 +44,24 @@ class _ProductTileCartSearchState
           ],
         ),
         child: Material(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           elevation: 0,
           color: Colors.white,
           child: InkWell(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
             onTap: widget.action,
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 10,
+                horizontal: 10,
+                vertical: 5,
               ),
 
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    height: 60,
-                    width: 60,
+                    height: 50,
+                    width: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(
                         5,

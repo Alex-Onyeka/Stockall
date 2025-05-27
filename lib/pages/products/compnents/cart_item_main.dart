@@ -32,7 +32,7 @@ class _CartItemMainState extends State<CartItemMain> {
       padding: const EdgeInsets.all(5.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           color: Colors.white,
           boxShadow: [
             BoxShadow(
@@ -47,13 +47,13 @@ class _CartItemMainState extends State<CartItemMain> {
           ],
         ),
         child: Material(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           elevation: 0,
           color: Colors.white,
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 10,
+              horizontal: 10,
+              vertical: 5,
             ),
 
             child: Row(

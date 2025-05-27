@@ -54,7 +54,7 @@ class NavButton extends StatelessWidget {
                           199,
                         )
                         : Colors.grey,
-                fontSize: index == currentPage ? 13 : 12,
+                fontSize: index == currentPage ? 12 : 11,
                 fontWeight:
                     index == currentPage
                         ? FontWeight.bold

@@ -180,7 +180,7 @@ class MobileTexts {
   H h1 = H(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 34.0,
+    fontSize: 30.0,
     letterSpacing: 0,
     lineHeight: 36,
   );
@@ -188,7 +188,7 @@ class MobileTexts {
   H h2 = H(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 28.0,
+    fontSize: 25.0,
     letterSpacing: 0,
     lineHeight: 30,
   );
@@ -196,7 +196,7 @@ class MobileTexts {
   H h3 = H(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 24.0,
+    fontSize: 22.0,
     letterSpacing: 0,
     lineHeight: 24,
   );
@@ -204,7 +204,7 @@ class MobileTexts {
   H h4 = H(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 20.0,
+    fontSize: 18.0,
     letterSpacing: 0,
     lineHeight: 24,
   );
@@ -212,16 +212,16 @@ class MobileTexts {
   B1 b1 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 16.0,
+    fontSize: 14.0,
     letterSpacing: 0,
     lineHeight: 24,
     textStyleBold: TextStyle(
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -230,16 +230,16 @@ class MobileTexts {
   B1 b2 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 14.0,
+    fontSize: 13.0,
     letterSpacing: 0,
     lineHeight: 21,
     textStyleBold: TextStyle(
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -248,16 +248,16 @@ class MobileTexts {
   B1 b3 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 12.0,
+    fontSize: 11.0,
     letterSpacing: 0,
     lineHeight: 18,
     textStyleBold: TextStyle(
-      fontSize: 12,
+      fontSize: 11,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 12,
+      fontSize: 11,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -266,16 +266,16 @@ class MobileTexts {
   B1 b4 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 10.0,
+    fontSize: 9.0,
     letterSpacing: 0,
     lineHeight: 15,
     textStyleBold: TextStyle(
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),

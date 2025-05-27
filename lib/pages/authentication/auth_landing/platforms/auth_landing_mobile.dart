@@ -172,7 +172,10 @@ class AuthLandingMobile extends StatelessWidget {
               ),
             ],
           ),
-          Image.asset(appMockUp),
+          Align(
+            alignment: Alignment(0, -1),
+            child: Image.asset(appMockUp, height: 450),
+          ),
         ],
       ),
     );

@@ -4,6 +4,7 @@ import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_class.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
+import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/items_summary.dart';
 import 'package:stockitt/components/major/my_drawer_widget.dart';
 import 'package:stockitt/components/major/top_banner.dart';
@@ -191,7 +192,7 @@ class _ProductPageMobileState
             return Column(
               children: [
                 SizedBox(
-                  height: 320,
+                  height: 280,
                   child: Stack(
                     children: [
                       TopBanner(
@@ -347,7 +348,7 @@ class _ProductPageMobileState
                 Column(
                   children: [
                     SizedBox(
-                      height: 320,
+                      height: 280,
                       child: Stack(
                         children: [
                           TopBanner(
@@ -435,43 +436,64 @@ class _ProductPageMobileState
                         child: Builder(
                           builder: (context) {
                             if (products.isEmpty) {
-                              return Center(
-                                child: SingleChildScrollView(
-                                  child: EmptyWidgetDisplay(
-                                    buttonText:
-                                        'Add Product',
-                                    subText:
-                                        'Click on the button below to start adding Products to your store.',
-                                    title:
-                                        'You have no Products Yet',
-                                    svg: productIconSvg,
-                                    height: 35,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return AddProduct();
-                                          },
-                                        ),
-                                      ).then((_) {
-                                        if (context
-                                            .mounted) {
-                                          setState(() {
-                                            _productsFuture =
-                                                getProductList(
-                                                  context,
-                                                );
-                                          });
-                                        }
-                                      });
-                                    },
-                                    theme: widget.theme,
+                              if (returnLocalDatabase(
+                                    context,
+                                    listen: false,
+                                  ).currentEmployee!.role ==
+                                  'Cashier') {
+                                return Center(
+                                  child: SingleChildScrollView(
+                                    child: EmptyWidgetDisplayOnly(
+                                      subText:
+                                          'No Product has been added to this store yet.',
+                                      title:
+                                          'You have no Products Yet',
+                                      height: 35,
+                                      icon: Icons.clear,
+
+                                      theme: widget.theme,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                return Center(
+                                  child: SingleChildScrollView(
+                                    child: EmptyWidgetDisplay(
+                                      buttonText:
+                                          'Add Product',
+                                      subText:
+                                          'Click on the button below to start adding Products to your store.',
+                                      title:
+                                          'You have no Products Yet',
+                                      svg: productIconSvg,
+                                      height: 35,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return AddProduct();
+                                            },
+                                          ),
+                                        ).then((_) {
+                                          if (context
+                                              .mounted) {
+                                            setState(() {
+                                              _productsFuture =
+                                                  getProductList(
+                                                    context,
+                                                  );
+                                            });
+                                          }
+                                        });
+                                      },
+                                      theme: widget.theme,
+                                    ),
+                                  ),
+                                );
+                              }
                             } else {
                               return Padding(
                                 padding:

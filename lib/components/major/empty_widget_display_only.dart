@@ -22,61 +22,67 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 60.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.grey.shade300,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: svg != null,
+                      child: SvgPicture.asset(
+                        svg ?? '',
+                        height: height,
+                      ),
+                    ),
+                    Visibility(
+                      visible: icon != null,
+                      child: Icon(
+                        icon,
+                        size: height,
+                        color:
+                            theme.lightModeColor.prColor300,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            child: Stack(
-              children: [
-                Visibility(
-                  visible: svg != null,
-                  child: SvgPicture.asset(
-                    svg ?? '',
-                    height: height,
-                  ),
-                ),
-                Visibility(
-                  visible: icon != null,
-                  child: Icon(
-                    icon,
-                    size: height,
-                    color: theme.lightModeColor.prColor300,
-                  ),
-                ),
-              ],
-            ),
-          ),
 
-          SizedBox(height: 15),
-          Text(
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b1.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-            title,
+              SizedBox(height: 15),
+              Text(
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b1.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+                title,
+              ),
+              SizedBox(height: 5),
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+                subText,
+              ),
+            ],
           ),
-          SizedBox(height: 5),
-          Text(
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b2.fontSize,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-            subText,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

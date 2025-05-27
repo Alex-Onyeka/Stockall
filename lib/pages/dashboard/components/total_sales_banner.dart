@@ -37,13 +37,13 @@ class _DashboardTotalSalesBannerState
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment(0.9, 0.1),
+      alignment: Alignment(0.9, 0.0),
       children: [
         Container(
           padding: EdgeInsets.only(
-            left: 25,
-            top: 20,
-            bottom: 15,
+            left: 15,
+            top: 15,
+            bottom: 10,
           ),
           decoration: BoxDecoration(
             // gradient: theme.lightModeColor.prGradient,

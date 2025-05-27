@@ -89,8 +89,8 @@ class _TotalProductsPageState
             },
             icon: Padding(
               padding: const EdgeInsets.only(
-                left: 20.0,
-                right: 10,
+                left: 10.0,
+                right: 0,
               ),
               child: Icon(Icons.arrow_back_ios_new_rounded),
             ),

@@ -123,12 +123,18 @@ class _SignupMobileState extends State<SignupMobile> {
       try {
         var res = await AuthService().signUpAndCreateUser(
           context: context,
-          email: widget.emailController.text,
+          email:
+              widget.emailController.text
+                  .toLowerCase()
+                  .trim(),
           password: widget.passwordController.text,
           user: TempUserClass(
             createdAt: DateTime.now(),
             name: widget.nameController.text.trim(),
-            email: widget.emailController.text.trim(),
+            email:
+                widget.emailController.text
+                    .toLowerCase()
+                    .trim(),
             phone: widget.phoneNumberController.text.trim(),
             role: 'Owner',
             password: widget.passwordController.text,
