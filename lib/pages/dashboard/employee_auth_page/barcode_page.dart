@@ -1,61 +1,8 @@
-// import 'package:flutter/material.dart';
-// import 'package:mobile_scanner/mobile_scanner.dart';
-
-// class BarcodeScannerPage extends StatefulWidget {
-//   const BarcodeScannerPage({Key? key}) : super(key: key);
-
-//   @override
-//   State<BarcodeScannerPage> createState() =>
-//       _BarcodeScannerPageState();
-// }
-
-// class _BarcodeScannerPageState
-//     extends State<BarcodeScannerPage> {
-//   late MobileScannerController controller;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     controller = MobileScannerController();
-//   }
-
-//   @override
-//   void dispose() {
-//     controller.dispose();
-//     super.dispose();
-//   }
-
-//   void _onDetect(BarcodeCapture capture) {
-//     final List<Barcode> barcodes = capture.barcodes;
-//     final String? code = barcodes.first.rawValue;
-
-//     if (code != null) {
-//       controller.stop(); // stop the scanner
-//       Navigator.pop(
-//         context,
-//         code,
-//       ); // return the scanned value
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Scan Barcode")),
-//       body: MobileScanner(
-//         controller: controller,
-//         onDetect: _onDetect,
-//       ),
-//     );
-//   }
-// }
-
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:stockitt/constants/play_sounds.dart';
+import 'package:stockitt/pages/dashboard/employee_auth_page/web_barcode_scanner.dart';
 
 class BarcodeScannerPage extends StatelessWidget {
   const BarcodeScannerPage({super.key});
@@ -65,7 +12,15 @@ class BarcodeScannerPage extends StatelessWidget {
     if (kIsWeb ||
         !(defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS)) {
-      return const UnsupportedScanner();
+      return WebBarcodeScanner(
+        onScanned: (code) async {
+          await playBeep(); // your beep function
+          if (context.mounted) {
+            Navigator.of(context).pop(code);
+          }
+          // return scanned barcode
+        },
+      );
     } else {
       return const MobileBarcodeScanner();
     }
@@ -191,22 +146,22 @@ class _MobileBarcodeScannerState
   }
 }
 
-/// ========== Fallback for Unsupported Platforms ==========
-class UnsupportedScanner extends StatelessWidget {
-  const UnsupportedScanner({super.key});
+// /// ========== Fallback for Unsupported Platforms ==========
+// class UnsupportedScanner extends StatelessWidget {
+//   const UnsupportedScanner({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scanner Not Supported'),
-      ),
-      body: const Center(
-        child: Text(
-          'Barcode scanning is only supported on mobile devices.',
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Scanner Not Supported'),
+//       ),
+//       body: const Center(
+//         child: Text(
+//           'Barcode scanning is only supported on mobile devices.',
+//           textAlign: TextAlign.center,
+//         ),
+//       ),
+//     );
+//   }
+// }
