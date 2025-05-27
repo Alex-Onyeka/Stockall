@@ -21,6 +21,8 @@ import 'package:stockitt/providers/user_provider.dart';
 import 'package:stockitt/providers/validate_input_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +35,10 @@ void main() async {
       statusBarBrightness: Brightness.light, // for iOS
     ),
   );
+
+  setUrlStrategy(
+    PathUrlStrategy(),
+  ); // Optional: For clean URLs
 
   Hive.registerAdapter(TempUserClassAdapter());
   await LocalUserDatabase().init();

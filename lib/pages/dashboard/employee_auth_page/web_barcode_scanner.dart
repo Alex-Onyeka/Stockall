@@ -1,12 +1,11 @@
-// lib/web_barcode_scanner.dart
-// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'dart:html' as html;
-import 'dart:ui' as ui; // ignore: undefined_prefixed_name
+import 'dart:js' as js; // <---- Add this import
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class WebBarcodeScanner extends StatefulWidget {
-  final void Function(String code) onScanned;
+  final void Function(String) onScanned;
   const WebBarcodeScanner({
     super.key,
     required this.onScanned,
@@ -19,53 +18,55 @@ class WebBarcodeScanner extends StatefulWidget {
 
 class _WebBarcodeScannerState
     extends State<WebBarcodeScanner> {
-  final viewId = 'web-barcode-scanner';
+  final String viewId = 'html5-qrcode-scanner';
 
   @override
   void initState() {
     super.initState();
 
     if (kIsWeb) {
-      // Register the HTML element
+      // Register the view factory once
       // ignore: undefined_prefixed_name
-      ui.platformViewRegistry.registerViewFactory(
-        viewId,
-        (int _) => html.DivElement()..id = viewId,
-      );
+      ui.platformViewRegistry.registerViewFactory(viewId, (
+        int viewId,
+      ) {
+        final element =
+            html.DivElement()
+              ..id = 'scanner-div'
+              ..style.width = '100%'
+              ..style.height = '100%';
+        return element;
+      });
 
-      // Inject JS script only once
-      final script =
-          html.ScriptElement()
-            ..src = 'https://unpkg.com/html5-qrcode'
-            ..type = 'application/javascript'
-            ..defer = true;
+      Future.delayed(Duration(milliseconds: 100), () {
+        js.context.callMethod('eval', [
+          """
+          new Html5Qrcode("scanner-div").start(
+            { facingMode: "environment" },
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 }
+            },
+            qrCodeMessage => {
+              window.dispatchEvent(new CustomEvent('qrResult', { detail: qrCodeMessage }));
+            },
+            errorMessage => {
+              console.log("QR Error", errorMessage);
+            }
+          );
+        """,
+        ]);
+      });
 
-      html.document.body!.append(script);
-
-      // Wait a bit and initialize
-      Future.delayed(const Duration(seconds: 1), () {
-        html.window.console.log(
-          "Initializing barcode scanner",
-        );
-
-        html.window.dispatchEvent(
-          html.CustomEvent('initScanner'),
-        );
-
-        html.window.addEventListener('barcodeScanned', (
-          event,
-        ) {
-          final result = (event as html.CustomEvent).detail;
-          widget.onScanned(result);
-        });
+      html.window.addEventListener('qrResult', (event) {
+        final result = (event as html.CustomEvent).detail;
+        widget.onScanned(result);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const HtmlElementView(
-      viewType: 'web-barcode-scanner',
-    );
+    return HtmlElementView(viewType: viewId);
   }
 }
