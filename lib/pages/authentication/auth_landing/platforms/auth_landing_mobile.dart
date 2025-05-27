@@ -160,6 +160,7 @@ class AuthLandingMobile extends StatelessWidget {
                                       );
                                     },
                                   ),
+                                  SizedBox(height: 20),
                                 ],
                               ),
                             ),
@@ -174,7 +175,7 @@ class AuthLandingMobile extends StatelessWidget {
           ),
           Align(
             alignment: Alignment(0, -1),
-            child: Image.asset(appMockUp, height: 450),
+            child: Image.asset(appMockUp, height: 420),
           ),
         ],
       ),
