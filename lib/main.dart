@@ -276,10 +276,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: "/launch",
+      initialRoute: "/",
       routes: {
-        '/': (context) => BasePage(),
-        '/launch': (context) => LaunchScreen(),
+        '/base': (context) => BasePage(),
+        '/': (context) => LaunchScreen(),
         "/splash": (context) => SplashScreen(),
       },
       //

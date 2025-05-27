@@ -111690,7 +111690,7 @@ $1(a){return new A.kO(B.cA,B.bZ,B.ba,this.a,null,null).a3e(0,a)},
 $S:690}
 A.XX.prototype={
 D(a){var s=null
-return new A.Ix(A.at(["/",new A.auo(),"/launch",new A.aup(),"/splash",new A.auq()],t.N,t.Ab),"/launch",A.CA(A.bbC(s,s,B.o,!0,0,s,s,s,s,s,s,new A.l7(s,s,s,s,s,s,s,!0),s,s,80,s),s,s,"Plus Jakarta Sans",B.K0,B.o,s),!1,s)}}
+return new A.Ix(A.at(["/base",new A.auo(),"/",new A.aup(),"/splash",new A.auq()],t.N,t.Ab),"/",A.CA(A.bbC(s,s,B.o,!0,0,s,s,s,s,s,s,new A.l7(s,s,s,s,s,s,s,!0),s,s,80,s),s,s,"Plus Jakarta Sans",B.K0,B.o,s),!1,s)}}
 A.auo.prototype={
 $1(a){return new A.uF(null)},
 $S:278}
