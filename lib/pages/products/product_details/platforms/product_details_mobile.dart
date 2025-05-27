@@ -684,23 +684,23 @@ class _ProductDetailsMobileState
                                                   widget
                                                       .theme,
                                               action: () {
-                                                print(
-                                                  'Button Pressed',
-                                                );
-                                                setState(() {
-                                                  quantityController
-                                                      .text = product
-                                                      .quantity
-                                                      .toString()
-                                                      .substring(
-                                                        0,
-                                                        product.quantity.toString().length -
-                                                            2,
-                                                      );
-                                                });
-                                                print(
-                                                  'Button Pressed Final',
-                                                );
+                                                // print(
+                                                //   'Button Pressed',
+                                                // );
+                                                // setState(() {
+                                                //   quantityController
+                                                //       .text = product
+                                                //       .quantity
+                                                //       .toString()
+                                                //       .substring(
+                                                //         0,
+                                                //         product.quantity.toString().length -
+                                                //             2,
+                                                //       );
+                                                // });
+                                                // print(
+                                                //   'Button Pressed Final',
+                                                // );
                                                 showGeneralDialog(
                                                   context:
                                                       context,

@@ -19,165 +19,158 @@ class AuthLandingMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(25, 43, 117, 1),
-      body: Stack(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Opacity(
-                    opacity: 0.1,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                      ),
-                      child: SizedBox(
-                        child: Image.asset(
-                          logoIconWhite,
-                          fit: BoxFit.contain,
-                          width: 170,
-                          height: 170,
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height:
+                  MediaQuery.of(context).size.height * 0.52,
+              color: Color.fromRGBO(25, 43, 117, 1),
+              child: Stack(
+                alignment: Alignment(0, 0.3),
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Opacity(
+                      opacity: 0.1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                        ),
+                        child: SizedBox(
+                          child: Image.asset(
+                            logoIconWhite,
+                            fit: BoxFit.contain,
+                            width: 200,
+                            height: 200,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                  Positioned(
+                    top: 20,
+                    child: Image.asset(
+                      appMockUp,
+                      height: 420,
+                    ),
                   ),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 30,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 20.0,
+                ],
+              ),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 30,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 50.0,
+                        ),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            height: 0,
+                            color:
+                                themeProvider
+                                    .lightModeColor
+                                    .shadesColorBlack,
+                            fontSize:
+                                themeProvider
+                                    .returnPlatform(
+                                      constraints,
+                                      context,
+                                    )
+                                    .h1
+                                    .fontSize,
+                            fontWeight:
+                                themeProvider
+                                    .returnPlatform(
+                                      constraints,
+                                      context,
+                                    )
+                                    .h1
+                                    .fontWeightBold,
+                          ),
+                          'Welcome to Stockitt',
+                        ),
                       ),
-                      child: SingleChildScrollView(
+                      SizedBox(height: 20),
+                      Text(
+                        textAlign: TextAlign.center,
+                        style:
+                            Provider.of<ThemeProvider>(
+                                  context,
+                                )
+                                .returnPlatform(
+                                  constraints,
+                                  context,
+                                )
+                                .b1
+                                .textStyleNormal,
+                        'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀',
+                      ),
+                      SizedBox(height: 20),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                        ),
                         child: Column(
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                              child: Text(
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  height: 0,
-                                  color:
-                                      themeProvider
-                                          .lightModeColor
-                                          .shadesColorBlack,
-                                  fontSize:
-                                      themeProvider
-                                          .returnPlatform(
-                                            constraints,
-                                            context,
-                                          )
-                                          .h1
-                                          .fontSize,
-                                  fontWeight:
-                                      themeProvider
-                                          .returnPlatform(
-                                            constraints,
-                                            context,
-                                          )
-                                          .h1
-                                          .fontWeightBold,
-                                ),
-                                'Welcome to Stockitt',
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Text(
-                              textAlign: TextAlign.center,
-                              style:
-                                  Provider.of<
-                                        ThemeProvider
-                                      >(context)
-                                      .returnPlatform(
-                                        constraints,
-                                        context,
-                                      )
-                                      .b1
-                                      .textStyleNormal,
-                              'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀',
-                            ),
-                            SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                              child: Column(
-                                children: [
-                                  MainButtonP(
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return SignUpPage();
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    text:
-                                        'Create an Account',
-                                    themeProvider:
-                                        themeProvider,
-                                  ),
-                                  SizedBox(height: 10),
-                                  MainButtonTransparent(
-                                    text: 'Login',
-                                    themeProvider:
-                                        themeProvider,
-                                    constraints:
-                                        constraints,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return LoginPage();
-                                          },
-                                        ),
-                                      );
+                            MainButtonP(
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SignUpPage();
                                     },
                                   ),
-                                  SizedBox(height: 20),
-                                ],
-                              ),
+                                );
+                              },
+                              text: 'Create an Account',
+                              themeProvider: themeProvider,
+                            ),
+                            SizedBox(height: 10),
+                            MainButtonTransparent(
+                              text: 'Login',
+                              themeProvider: themeProvider,
+                              constraints: constraints,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return LoginPage();
+                                    },
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-          Align(
-            alignment: Alignment(0, -1),
-            child: Image.asset(appMockUp, height: 420),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
