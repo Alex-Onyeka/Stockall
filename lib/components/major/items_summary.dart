@@ -31,8 +31,12 @@ class ItemsSummary extends StatefulWidget {
   final bool? isMoney4;
   final bool? isFilter;
   final Function()? filterAction;
+  final bool? isDateSet;
+  final bool? setDate;
 
   const ItemsSummary({
+    this.isDateSet,
+    this.setDate,
     this.searchController,
     this.searchAction,
     super.key,
@@ -82,7 +86,6 @@ class _ItemsSummaryState extends State<ItemsSummary> {
   bool isFocus = false;
   @override
   Widget build(BuildContext context) {
-    var receiptProvider = returnReceiptProvider(context);
     var theme = returnTheme(context);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15),
@@ -151,8 +154,12 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade700,
                             ),
-                            receiptProvider.isDateSet ||
-                                    receiptProvider.setDate
+                            (widget.isDateSet != null &&
+                                        widget
+                                            .isDateSet!) ||
+                                    (widget.setDate !=
+                                            null &&
+                                        widget.setDate!)
                                 ? 'Clear Date'
                                 : 'Set Date',
                           ),
@@ -162,8 +169,12 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                 theme
                                     .lightModeColor
                                     .secColor100,
-                            receiptProvider.isDateSet ||
-                                    receiptProvider.setDate
+                            (widget.isDateSet != null &&
+                                        widget
+                                            .isDateSet!) ||
+                                    (widget.setDate !=
+                                            null &&
+                                        widget.setDate!)
                                 ? Icons.clear
                                 : Icons.date_range_outlined,
                           ),

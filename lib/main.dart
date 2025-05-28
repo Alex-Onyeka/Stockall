@@ -11,6 +11,7 @@ import 'package:stockitt/pages/authentication/splash_screens/splash_screen.dart'
 import 'package:stockitt/providers/comp_provider.dart';
 import 'package:stockitt/providers/customers_provider.dart';
 import 'package:stockitt/providers/data_provider.dart';
+import 'package:stockitt/providers/expenses_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/notifications_provider.dart';
 import 'package:stockitt/providers/receipts_provider.dart';
@@ -21,8 +22,6 @@ import 'package:stockitt/providers/user_provider.dart';
 import 'package:stockitt/providers/validate_input_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-// ignore: depend_on_referenced_packages
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,10 +34,6 @@ void main() async {
       statusBarBrightness: Brightness.light, // for iOS
     ),
   );
-
-  setUrlStrategy(
-    PathUrlStrategy(),
-  ); // Optional: For clean URLs
 
   Hive.registerAdapter(TempUserClassAdapter());
   await LocalUserDatabase().init();
@@ -90,6 +85,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => NotificationProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ExpensesProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -112,6 +110,16 @@ int shopId(BuildContext context) {
       ).userShop!.shopId!;
 
   return tempId;
+}
+
+ExpensesProvider returnExpensesProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ExpensesProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 AuthService returnAuth(
@@ -278,8 +286,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: "/",
       routes: {
-        '/base': (context) => BasePage(),
-        '/': (context) => LaunchScreen(),
+        '/': (context) => BasePage(),
+        '/launch': (context) => LaunchScreen(),
         "/splash": (context) => SplashScreen(),
       },
       //

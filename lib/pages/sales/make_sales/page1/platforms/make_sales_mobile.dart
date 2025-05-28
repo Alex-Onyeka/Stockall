@@ -468,7 +468,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             );
                                           },
                                           buttonText:
-                                              'Add Item',
+                                              'Add New Item',
                                         ),
                                       ),
                                       SizedBox(height: 5),

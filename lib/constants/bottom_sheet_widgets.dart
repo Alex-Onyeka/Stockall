@@ -1377,6 +1377,12 @@ class _CustomBottomPanelState
                           return;
                         }
 
+                        if (value.isEmpty) {
+                          setState(() {
+                            quantityController.text = '0';
+                          });
+                        }
+
                         setState(() {
                           qqty = entered;
                           // cartItem.quantity = qqty;
@@ -1465,7 +1471,7 @@ class _CustomBottomPanelState
                                 BorderRadius.circular(5),
                             onTap: () {
                               setState(() {
-                                if (qqty > 1) qqty--;
+                                if (qqty > 0) qqty--;
                                 quantityController.text =
                                     qqty.toString();
                               });
@@ -1534,18 +1540,41 @@ class _CustomBottomPanelState
                     ),
                   ),
                   SizedBox(height: 20),
-                  SmallButtonMain(
-                    theme: theme,
-                    action: () {
-                      cartItem.quantity = qqty.toDouble();
-                      returnSalesProvider(
-                        context,
-                        listen: false,
-                      ).addItemToCart(cartItem);
-                      Navigator.of(context).pop();
-                      closeAction();
-                    },
-                    buttonText: 'Add To Cart',
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    spacing: 5,
+                    children: [
+                      MaterialButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          quantityController.clear();
+                          qqty = 0;
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      SmallButtonMain(
+                        theme: theme,
+                        action: () {
+                          if (quantityController
+                                  .text
+                                  .isEmpty ||
+                              qqty == 0) {
+                            Navigator.of(context).pop();
+                          } else {
+                            cartItem.quantity =
+                                qqty.toDouble();
+                            returnSalesProvider(
+                              context,
+                              listen: false,
+                            ).addItemToCart(cartItem);
+                            Navigator.of(context).pop();
+                            closeAction();
+                          }
+                        },
+                        buttonText: 'Add To Cart',
+                      ),
+                    ],
                   ),
                 ],
               ),

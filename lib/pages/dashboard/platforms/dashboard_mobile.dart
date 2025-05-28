@@ -750,7 +750,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return ExpensesPage();
+                                                                  return ExpensesPage(
+                                                                    isMain:
+                                                                        true,
+                                                                  );
                                                                 },
                                                               ),
                                                             );
@@ -902,7 +905,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return ExpensesPage();
+                                                                  return ExpensesPage(
+                                                                    isMain:
+                                                                        true,
+                                                                  );
                                                                 },
                                                               ),
                                                             );

@@ -34,7 +34,14 @@ class SmallButtonMain extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(color: Colors.white, Icons.add_rounded),
+              Visibility(
+                visible:
+                    MediaQuery.of(context).size.width > 300,
+                child: Icon(
+                  color: Colors.white,
+                  Icons.add_rounded,
+                ),
+              ),
               Text(
                 style: TextStyle(
                   color: Colors.white,

@@ -118,6 +118,10 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var receiptProvider = returnReceiptProvider(
+      context,
+      listen: false,
+    );
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -229,7 +233,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                       Material(
                         color: Colors.transparent,
                         child: SizedBox(
-                          height: 230,
+                          height: 250,
                           child: Stack(
                             children: [
                               TopBanner(
@@ -364,6 +368,12 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                   .toDouble(),
                                           secondRow: false,
                                           onSearch: false,
+                                          isDateSet:
+                                              receiptProvider
+                                                  .isDateSet,
+                                          setDate:
+                                              receiptProvider
+                                                  .setDate,
                                           filterAction: () {
                                             if (returnReceiptProvider(
                                                   context,

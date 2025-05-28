@@ -1,50 +1,657 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:stockitt/classes/temp_expenses_class.dart';
+import 'package:stockitt/components/buttons/floating_action_butto.dart';
+import 'package:stockitt/components/calendar/calendar_widget.dart';
+import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
+import 'package:stockitt/components/major/items_summary.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:stockitt/pages/expenses/components/expenses_tile.dart';
+import 'package:stockitt/pages/expenses/single_expense/expense_details.dart';
+import 'package:stockitt/pages/expenses/total_expenses/total_expenses.dart';
 
-class ExpensesMoblie extends StatelessWidget {
-  const ExpensesMoblie({super.key});
+class ExpensesMoblie extends StatefulWidget {
+  final bool? isMain;
+  const ExpensesMoblie({super.key, this.isMain});
+
+  @override
+  State<ExpensesMoblie> createState() =>
+      _ExpensesMoblieState();
+}
+
+class _ExpensesMoblieState extends State<ExpensesMoblie> {
+  late Future<List<TempExpensesClass>> expensesFuture;
+
+  Future<List<TempExpensesClass>> getExpenses() async {
+    var tempExp = await returnExpensesProvider(
+      context,
+      listen: false,
+    ).getExpenses(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempExp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      clearDate();
+    });
+
+    expensesFuture = getExpenses();
+  }
+
+  void clearDate() {
+    returnExpensesProvider(
+      context,
+      listen: false,
+    ).clearExpenseDate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    expensesFuture = getExpenses();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var expenseProvider = returnExpensesProvider(
+      context,
+      listen: false,
+    );
     var theme = returnTheme(context);
-    return Scaffold(
-      body: Column(
-        children: [
-          TopBanner(
-            subTitle: 'Manage your business expenses',
-            title: 'Expenses',
-            theme: theme,
-            bottomSpace: 40,
-            topSpace: 30,
-            isMain: true,
-            iconSvg: expensesIconSvg,
+    return FutureBuilder(
+      future: expensesFuture,
+      builder: (context, snapshot) {
+        return Scaffold(
+          floatingActionButton: Builder(
+            builder: (context) {
+              if (snapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return Container();
+              } else if (snapshot.hasError) {
+                return Container();
+              } else {
+                var expenses = snapshot.data;
+                return Visibility(
+                  visible:
+                      returnLocalDatabase(
+                            context,
+                          ).currentEmployee!.role ==
+                          'Owner' &&
+                      expenses!.isNotEmpty,
+                  child: FloatingActionButtonMain(
+                    action: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return AddExpenses();
+                          },
+                        ),
+                      ).then((_) {
+                        setState(() {
+                          expensesFuture = getExpenses();
+                        });
+                      });
+                    },
+                    color: theme.lightModeColor.secColor100,
+                    text: 'Add Expenses',
+                    theme: theme,
+                  ),
+                );
+              }
+            },
           ),
-          Expanded(
+          body: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
             child: Stack(
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 30.0,
+                Column(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: SizedBox(
+                        height: 260,
+                        child: Stack(
+                          children: [
+                            TopBanner(
+                              subTitle:
+                                  'Data of All Expenses Records',
+                              title: 'Expenses',
+                              theme: theme,
+                              bottomSpace: 80,
+                              topSpace: 20,
+                              iconSvg: salesIconSvg,
+                              isMain: widget.isMain,
+                            ),
+
+                            Builder(
+                              builder: (context) {
+                                if (snapshot
+                                        .connectionState ==
+                                    ConnectionState
+                                        .waiting) {
+                                  return Align(
+                                    alignment: Alignment(
+                                      0,
+                                      1,
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {},
+                                      child: ItemsSummary(
+                                        isFilter: true,
+                                        isMoney1: true,
+                                        mainTitle:
+                                            'Expenses Summary',
+                                        subTitle:
+                                            returnExpensesProvider(
+                                              context,
+                                            ).dateSet ??
+                                            'For Today',
+                                        firsRow: true,
+                                        color1:
+                                            Colors.green,
+                                        title1:
+                                            'Expenses Revenue',
+                                        value1: 0,
+                                        color2:
+                                            Colors.amber,
+                                        title2:
+                                            'Expenses Number',
+                                        value2: 0,
+                                        secondRow: false,
+                                        onSearch: false,
+                                        isDateSet: false,
+                                        setDate: false,
+                                        filterAction: () {},
+                                      ),
+                                    ),
+                                  );
+                                } else if (snapshot
+                                    .hasError) {
+                                  return Align(
+                                    alignment: Alignment(
+                                      0,
+                                      1,
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {},
+                                      child: ItemsSummary(
+                                        isFilter: true,
+                                        isMoney1: true,
+                                        mainTitle:
+                                            'Expenses Summary',
+                                        subTitle:
+                                            returnExpensesProvider(
+                                              context,
+                                            ).dateSet ??
+                                            'For Today',
+                                        firsRow: true,
+                                        color1:
+                                            Colors.green,
+                                        title1:
+                                            'Expenses Revenue',
+                                        value1: 0,
+                                        color2:
+                                            Colors.amber,
+                                        title2:
+                                            'Expenses Number',
+                                        value2: 0,
+                                        secondRow: false,
+                                        onSearch: false,
+                                        isDateSet: false,
+                                        setDate: false,
+                                        filterAction: () {},
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  var expenses =
+                                      returnExpensesProvider(
+                                        context,
+                                        listen: false,
+                                      ).returnExpensesByDayOrWeek(
+                                        context,
+                                        snapshot.data!,
+                                      );
+
+                                  double getTotalAmount() {
+                                    double tempAmount = 0;
+                                    for (var item
+                                        in expenses) {
+                                      tempAmount +=
+                                          item.amount;
+                                    }
+                                    return tempAmount;
+                                  }
+
+                                  return Align(
+                                    alignment: Alignment(
+                                      0,
+                                      1,
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        returnExpensesProvider(
+                                          context,
+                                          listen: false,
+                                        ).clearExpenseDate();
+                                      },
+                                      child: ItemsSummary(
+                                        isFilter:
+                                            returnLocalDatabase(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .currentEmployee!
+                                                .role ==
+                                            'Owner',
+                                        isMoney1: true,
+                                        mainTitle:
+                                            'Expenses Summary',
+                                        subTitle:
+                                            returnExpensesProvider(
+                                              context,
+                                            ).dateSet ??
+                                            'For Today',
+                                        firsRow: true,
+                                        color1:
+                                            Colors.green,
+                                        title1:
+                                            'Expenses Revenue',
+                                        value1:
+                                            getTotalAmount(),
+                                        color2:
+                                            Colors.amber,
+                                        title2:
+                                            'Expenses Number',
+                                        value2:
+                                            expenses.length
+                                                .toDouble(),
+                                        secondRow: false,
+                                        onSearch: false,
+                                        isDateSet:
+                                            expenseProvider
+                                                .isDateSet,
+                                        setDate:
+                                            expenseProvider
+                                                .setDate,
+                                        filterAction: () {
+                                          if (returnExpensesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).isDateSet ||
+                                              returnExpensesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).setDate) {
+                                            returnExpensesProvider(
+                                              context,
+                                              listen: false,
+                                            ).clearExpenseDate();
+                                          } else {
+                                            returnExpensesProvider(
+                                              context,
+                                              listen: false,
+                                            ).openExpenseDatePicker();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            //
+                          ],
+                        ),
+                      ),
                     ),
-                    child: EmptyWidgetDisplayOnly(
-                      title: 'Comming Soon',
-                      subText:
-                          'This feature is not yet available... Our group of dedicated professional engineers are working on it.',
-                      theme: theme,
-                      height: 30,
-                      icon: Icons.clear,
+                    Expanded(
+                      child: SizedBox(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(
+                                10.0,
+                                10,
+                                10,
+                                10,
+                              ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                    ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      returnExpensesProvider(
+                                            context,
+                                          ).dateSet ??
+                                          'Expenses For Today',
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return TotalExpenses();
+                                            },
+                                          ),
+                                        ).then((_) {
+                                          setState(() {
+                                            expensesFuture =
+                                                getExpenses();
+                                          });
+                                        });
+                                      },
+                                      child: Row(
+                                        spacing: 5,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .secColor100,
+                                            ),
+                                            'See All',
+                                          ),
+                                          Icon(
+                                            size: 16,
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .secColor100,
+                                            Icons
+                                                .arrow_forward_ios_rounded,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Builder(
+                                builder: (context) {
+                                  if (snapshot
+                                          .connectionState ==
+                                      ConnectionState
+                                          .waiting) {
+                                    return Expanded(
+                                      child: ListView.builder(
+                                        itemCount: 4,
+                                        itemBuilder: (
+                                          context,
+                                          index,
+                                        ) {
+                                          return Shimmer.fromColors(
+                                            baseColor:
+                                                Colors
+                                                    .grey
+                                                    .shade300,
+                                            highlightColor:
+                                                Colors
+                                                    .white,
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                vertical: 5,
+                                                horizontal:
+                                                    15,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      5,
+                                                    ),
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                              ),
+                                              height: 150,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  } else if (snapshot
+                                      .hasError) {
+                                    return SizedBox(
+                                      height:
+                                          MediaQuery.of(
+                                            context,
+                                          ).size.height -
+                                          400,
+                                      child: Center(
+                                        child: EmptyWidgetDisplayOnly(
+                                          title:
+                                              'An Error Occured',
+                                          subText:
+                                              'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
+                                          theme: theme,
+                                          height: 30,
+                                          icon: Icons.clear,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    var expenses =
+                                        returnExpensesProvider(
+                                          context,
+                                          listen: false,
+                                        ).returnExpensesByDayOrWeek(
+                                          context,
+                                          snapshot.data!,
+                                        );
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal:
+                                                10.0,
+                                          ),
+                                      child: Builder(
+                                        builder: (context) {
+                                          if (expenses
+                                              .isEmpty) {
+                                            return SizedBox(
+                                              height:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.height -
+                                                  400,
+                                              child: Center(
+                                                child: EmptyWidgetDisplay(
+                                                  buttonText:
+                                                      'Create Expenses',
+                                                  subText:
+                                                      'Click on the button below Record an Expense.',
+                                                  title:
+                                                      'No Expenses Recorded Yet',
+                                                  svg:
+                                                      expensesIconSvg,
+                                                  height:
+                                                      35,
+                                                  action: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return AddExpenses();
+                                                        },
+                                                      ),
+                                                    );
+                                                  },
+                                                  theme:
+                                                      theme,
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            return SizedBox(
+                                              height: 400,
+                                              child: ListView.builder(
+                                                itemCount:
+                                                    expenses
+                                                        .length,
+                                                itemBuilder: (
+                                                  context,
+                                                  index,
+                                                ) {
+                                                  TempExpensesClass
+                                                  expense =
+                                                      expenses[index];
+                                                  return ExpensesTile(
+                                                    action: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            return ExpenseDetails(
+                                                              expenseId:
+                                                                  expense.id!,
+                                                            );
+                                                          },
+                                                        ),
+                                                      ).then((
+                                                        context,
+                                                      ) {
+                                                        setState(() {
+                                                          expensesFuture =
+                                                              getExpenses();
+                                                        });
+                                                      });
+                                                    },
+                                                    expense:
+                                                        expense,
+                                                    key: ValueKey(
+                                                      expense
+                                                          .id!,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (returnExpensesProvider(context).setDate)
+                  Positioned(
+                    top: 190,
+                    left: 0,
+                    right: 0,
+                    child: Material(
+                      child: Ink(
+                        color: Colors.white,
+                        child: Container(
+                          padding: EdgeInsets.only(
+                            top: 40,
+                            bottom: 40,
+                          ),
+                          color: Colors.white,
+                          child: Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 15.0,
+                                  ),
+                              child: Container(
+                                height: 430,
+                                width: 380,
+                                padding: EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                child: CalendarWidget(
+                                  onDaySelected: (
+                                    selectedDay,
+                                    focusedDay,
+                                  ) {
+                                    returnExpensesProvider(
+                                      context,
+                                      listen: false,
+                                    ).setExpenseDay(
+                                      selectedDay,
+                                    );
+                                  },
+                                  actionWeek: (
+                                    startOfWeek,
+                                    endOfWeek,
+                                  ) {
+                                    returnExpensesProvider(
+                                      context,
+                                      listen: false,
+                                    ).setExpenseWeek(
+                                      startOfWeek,
+                                      endOfWeek,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

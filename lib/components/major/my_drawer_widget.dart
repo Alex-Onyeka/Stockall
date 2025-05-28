@@ -202,7 +202,9 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return ExpensesPage();
+                            return ExpensesPage(
+                              isMain: true,
+                            );
                           },
                         ),
                       );

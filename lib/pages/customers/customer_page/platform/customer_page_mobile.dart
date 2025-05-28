@@ -255,22 +255,28 @@ class DetailsPageContainer extends StatelessWidget {
                                 listen: false,
                               ).showLoader('Loading');
                             } else if (snapshot.hasError) {
-                              return EmptyWidgetDisplayOnly(
-                                title: 'An Error Occured',
-                                subText:
-                                    'An error occured. Please check your internet and try again.',
-                                theme: theme,
-                                height: 35,
+                              return SizedBox(
+                                width: 300,
+                                child: EmptyWidgetDisplayOnly(
+                                  title: 'An Error Occured',
+                                  subText:
+                                      'An error occured. Please check your internet and try again.',
+                                  theme: theme,
+                                  height: 30,
+                                ),
                               );
                             } else {
                               if (snapshot.data!.isEmpty) {
-                                return EmptyWidgetDisplayOnly(
-                                  title: 'Empty List',
-                                  subText:
-                                      'This customer has not made any purchases from you yet.',
-                                  theme: theme,
-                                  height: 35,
-                                  icon: Icons.clear,
+                                return SizedBox(
+                                  width: 300,
+                                  child: EmptyWidgetDisplayOnly(
+                                    title: 'Empty List',
+                                    subText:
+                                        'This customer has not made any purchases from you yet.',
+                                    theme: theme,
+                                    height: 30,
+                                    icon: Icons.clear,
+                                  ),
                                 );
                               } else {
                                 var tempReceipts =
