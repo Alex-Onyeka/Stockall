@@ -3,6 +3,7 @@ class TempExpensesClass {
   final DateTime? createdDate;
   final int shopId;
   final String name;
+  final String creator;
   final String? description;
   final double amount;
   final double? quantity;
@@ -13,6 +14,7 @@ class TempExpensesClass {
     required this.name,
     this.description,
     required this.amount,
+    required this.creator,
     this.quantity,
     this.unit,
     required this.shopId,
@@ -40,6 +42,7 @@ class TempExpensesClass {
               : null,
       unit: json['unit'],
       userId: json['user_id'],
+      creator: json['creator'],
     );
   }
 
@@ -52,6 +55,7 @@ class TempExpensesClass {
       'quantity': quantity,
       'unit': unit,
       'user_id': userId,
+      'creator': creator,
     };
   }
 }

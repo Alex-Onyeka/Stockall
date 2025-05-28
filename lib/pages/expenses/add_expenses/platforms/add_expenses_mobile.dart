@@ -102,6 +102,8 @@ class _AddExpensesMobileState
               if (widget.expenses == null) {
                 await expensesProvider.addExpense(
                   TempExpensesClass(
+                    creator:
+                        localProvider.currentEmployee!.name,
                     userId:
                         localProvider
                             .currentEmployee!
@@ -131,6 +133,8 @@ class _AddExpensesMobileState
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(
+                    creator:
+                        localProvider.currentEmployee!.name,
                     userId:
                         localProvider
                             .currentEmployee!

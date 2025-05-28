@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockitt/classes/temp_expenses_class.dart';
 import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
@@ -44,7 +45,7 @@ class ExpenseDetailsMobile extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: 110,
+                    top: 90,
                     child: DetailsPageContainer(
                       theme: theme,
                       expenseId: expenseId,
@@ -112,10 +113,18 @@ class _DetailsPageContainerState
       builder: (context, snapshot) {
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
-          return returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader('Loading');
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.white,
+            child: Container(
+              height:
+                  MediaQuery.of(context).size.height - 300,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.grey,
+              ),
+            ),
+          );
         } else if (snapshot.hasError) {
           return EmptyWidgetDisplayOnly(
             title: 'An Error Occured',
@@ -350,11 +359,12 @@ class ExpenseDetailsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 420,
+      height: MediaQuery.of(context).size.height - 350,
       child: SingleChildScrollView(
         child: Column(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 15,
               mainAxisAlignment:
                   MainAxisAlignment.spaceBetween,
@@ -377,8 +387,9 @@ class ExpenseDetailsContainer extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 15,
               mainAxisAlignment:
                   MainAxisAlignment.spaceBetween,
@@ -400,6 +411,31 @@ class ExpenseDetailsContainer extends StatelessWidget {
                             )
                             : 'Not Set',
                     text: 'Quantity',
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: TabBarUserInfoSection(
+                    mainText: expense.creator,
+                    text: 'Expense Creator',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText: formatDateWithDay(
+                      expense.createdDate!,
+                    ),
+                    text: 'Created Date',
                   ),
                 ),
               ],
@@ -529,7 +565,7 @@ class TabBarUserInfoSection extends StatelessWidget {
     var theme = returnTheme(context);
     return SizedBox(
       child: Column(
-        spacing: 8,
+        spacing: 5,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(text),

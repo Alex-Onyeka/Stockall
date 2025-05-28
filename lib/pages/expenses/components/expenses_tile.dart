@@ -35,30 +35,6 @@ class _ExpensesTileState extends State<ExpensesTile> {
     }
   }
 
-  // late Future<TempExpensesClass> expenseFuture;
-
-  // Future<TempExpensesClass> getExpense() async {
-  //   var tempExpense = await returnExpensesProvider(
-  //     context,
-  //     listen: false,
-  //   ).getExpenses(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ).userShop!.shopId!,
-  //   );
-
-  //   return tempExpense.firstWhere(
-  //     (exp) => exp.id! == widget.expenseId,
-  //   );
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   expenseFuture = getExpense();
-  // }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -202,6 +178,28 @@ class _ExpensesTileState extends State<ExpensesTile> {
                   ),
                 ),
                 SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'Expense Creator: ',
+                    ),
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        color: Colors.grey.shade900,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      cutLongText(widget.expense.creator),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

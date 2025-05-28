@@ -7,6 +7,8 @@ import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:stockitt/pages/expenses/components/expenses_tile.dart';
+import 'package:stockitt/pages/expenses/single_expense/expense_details.dart';
 
 class TotalExpensesMobile extends StatefulWidget {
   const TotalExpensesMobile({super.key});
@@ -287,17 +289,25 @@ class _TotalExpensesMobileState
                                   ) {
                                     var expense =
                                         expenses[index];
-                                    return ListTile(
-                                      title: Text(
-                                        expense.name,
-                                      ),
+                                    return ExpensesTile(
+                                      expense: expense,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ExpenseDetails(
+                                                expenseId:
+                                                    expense
+                                                        .id!,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
                                     );
-                                    // MainReceiptTile(
-                                    //   key: ValueKey(
-                                    //     receipt.id,
-                                    //   ),
-                                    //   mainReceipt: receipt,
-                                    // );
                                   },
                                 );
                               }
