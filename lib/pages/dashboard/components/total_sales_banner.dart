@@ -82,7 +82,7 @@ class _DashboardTotalSalesBannerState
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
-                        'N',
+                        nairaSymbol,
                       ),
                       Text(
                         style: TextStyle(

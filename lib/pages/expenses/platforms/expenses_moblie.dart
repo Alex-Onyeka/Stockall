@@ -522,7 +522,11 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                             );
                                           } else {
                                             return SizedBox(
-                                              height: 400,
+                                              height:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.height -
+                                                  350,
                                               child: ListView.builder(
                                                 itemCount:
                                                     expenses
