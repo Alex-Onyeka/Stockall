@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stockitt/classes/temp_expenses_class.dart';
 import 'package:stockitt/classes/temp_user_class.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class DashboardTotalSalesBanner extends StatefulWidget {
@@ -32,6 +34,28 @@ class _DashboardTotalSalesBannerState
     } else {
       return 'Not Set';
     }
+  }
+
+  late Future<List<TempExpensesClass>> expensesFuture;
+
+  Future<List<TempExpensesClass>> getExpenses() {
+    var tempExp = returnExpensesProvider(
+      context,
+      listen: false,
+    ).getExpenses(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempExp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    expensesFuture = getExpenses();
   }
 
   @override
@@ -77,7 +101,7 @@ class _DashboardTotalSalesBannerState
                               widget
                                   .theme
                                   .mobileTexts
-                                  .h3
+                                  .h2
                                   .fontSize,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -90,7 +114,7 @@ class _DashboardTotalSalesBannerState
                               widget
                                   .theme
                                   .mobileTexts
-                                  .h3
+                                  .h2
                                   .fontSize,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -104,6 +128,410 @@ class _DashboardTotalSalesBannerState
                     ],
                   ),
                   SizedBox(height: 5),
+                  FutureBuilder(
+                    future: expensesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          spacing: 15,
+                          children: [
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Expenses:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol 0',
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Profit:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol 0',
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          spacing: 15,
+                          children: [
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Expenses:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol 0',
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Profit:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol 0',
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else if (snapshot.data == null) {
+                        return Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          spacing: 15,
+                          children: [
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Expenses:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol 0',
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Profit:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol 0',
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else {
+                        var expenses = snapshot.data!;
+                        List<TempExpensesClass>
+                        getTodaysExpenses() {
+                          return returnExpensesProvider(
+                            context,
+                            listen: false,
+                          ).returnExpensesByDayOrWeek(
+                            context,
+                            expenses,
+                          );
+                        }
+
+                        double getTotal() {
+                          double tempTotal = 0;
+
+                          for (var item
+                              in getTodaysExpenses()) {
+                            tempTotal += item.amount;
+                          }
+                          return tempTotal;
+                        }
+
+                        double getProfit() {
+                          return widget.value! - getTotal();
+                        }
+
+                        return Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          spacing: 15,
+                          children: [
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  'Expenses:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol ${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.w500,
+                                  ),
+
+                                  getProfit().isNegative
+                                      ? 'Loss:'
+                                      : 'Profit:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          241,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                  ),
+
+                                  '$nairaSymbol ${formatLargeNumberDoubleWidgetDecimal(getProfit())}',
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  SizedBox(height: 10),
                   Row(
                     crossAxisAlignment:
                         CrossAxisAlignment.start,
@@ -180,10 +608,13 @@ class _DashboardTotalSalesBannerState
             ],
           ),
         ),
-        Lottie.asset(
-          welcomeLady,
-          height: 90,
-          fit: BoxFit.cover,
+        Positioned(
+          top: 30,
+          child: Lottie.asset(
+            welcomeLady,
+            height: 100,
+            fit: BoxFit.cover,
+          ),
         ),
         // Image.asset(cctvImage, height: 85),
       ],

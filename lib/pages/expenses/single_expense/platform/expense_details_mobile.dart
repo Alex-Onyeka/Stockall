@@ -136,6 +136,7 @@ class _DetailsPageContainerState
           var expense = snapshot.data!;
 
           return Container(
+            margin: EdgeInsets.only(bottom: 30),
             width: MediaQuery.of(context).size.width - 40,
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
@@ -330,7 +331,7 @@ class _DetailsPageContainerState
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
               ],
             ),
           );
@@ -355,7 +356,7 @@ class ExpenseDetailsContainer extends StatelessWidget {
     return SizedBox(
       height:
           MediaQuery.of(context).size.height -
-          (MediaQuery.of(context).size.height * 0.36),
+          (MediaQuery.of(context).size.height * 0.41),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -422,7 +423,7 @@ class ExpenseDetailsContainer extends StatelessWidget {
                   flex: 9,
                   child: TabBarUserInfoSection(
                     mainText: expense.creator,
-                    text: 'Expense Creator',
+                    text: 'Created By: ',
                   ),
                 ),
                 Expanded(

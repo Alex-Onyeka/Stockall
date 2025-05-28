@@ -133,9 +133,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
   void initState() {
     super.initState();
     notificationsFuture = fetchNotifications();
-    mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
-    // shopFuture = getShop();
     shop =
         returnShopProvider(
           context,
@@ -756,6 +754,17 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   );
                                                                 },
                                                               ),
+                                                            ).then(
+                                                              (
+                                                                _,
+                                                              ) {
+                                                                setState(
+                                                                  () {
+                                                                    mainReceiptFuture =
+                                                                        getMainReceipts();
+                                                                  },
+                                                                );
+                                                              },
                                                             );
                                                           },
                                                         ),

@@ -185,12 +185,12 @@ class _ExpensesTileState extends State<ExpensesTile> {
                         color: Colors.grey.shade600,
                         fontWeight: FontWeight.bold,
                       ),
-                      'Expense Creator: ',
+                      'Created By: ',
                     ),
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b2.fontSize,
+                            theme.mobileTexts.b3.fontSize,
                         color: Colors.grey.shade900,
                         fontWeight: FontWeight.bold,
                       ),

@@ -207,7 +207,9 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             );
                           },
                         ),
-                      );
+                      ).then((_) {
+                        setState(() {});
+                      });
                     },
                     title: 'Expenses',
                     svg: expensesIconSvg,
