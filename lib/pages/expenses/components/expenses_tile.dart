@@ -28,10 +28,10 @@ class _ExpensesTileState extends State<ExpensesTile> {
   }
 
   String cutLongText2(String text) {
-    if (text.length < 8) {
+    if (text.length < 20) {
       return text;
     } else {
-      return '${text.substring(0, 8)}...';
+      return '${text.substring(0, 20)}...';
     }
   }
 
@@ -133,10 +133,8 @@ class _ExpensesTileState extends State<ExpensesTile> {
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            cutLongText(
-                              cutLongText(
-                                widget.expense.name,
-                              ),
+                            cutLongText2(
+                              widget.expense.name,
                             ),
                           ),
                         ],
@@ -196,7 +194,7 @@ class _ExpensesTileState extends State<ExpensesTile> {
                         color: Colors.grey.shade900,
                         fontWeight: FontWeight.bold,
                       ),
-                      cutLongText(widget.expense.creator),
+                      cutLongText2(widget.expense.creator),
                     ),
                   ],
                 ),

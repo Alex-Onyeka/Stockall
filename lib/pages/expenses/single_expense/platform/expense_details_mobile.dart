@@ -25,9 +25,7 @@ class ExpenseDetailsMobile extends StatelessWidget {
       child: Scaffold(
         body: Column(
           children: [
-            SizedBox(
-              height:
-                  MediaQuery.of(context).size.height - 50,
+            Expanded(
               child: Stack(
                 alignment: Alignment(0, 1),
                 children: [
@@ -44,12 +42,9 @@ class ExpenseDetailsMobile extends StatelessWidget {
                       iconSvg: expensesIconSvg,
                     ),
                   ),
-                  Positioned(
-                    top: 90,
-                    child: DetailsPageContainer(
-                      theme: theme,
-                      expenseId: expenseId,
-                    ),
+                  DetailsPageContainer(
+                    theme: theme,
+                    expenseId: expenseId,
                   ),
                 ],
               ),
@@ -117,8 +112,11 @@ class _DetailsPageContainerState
             baseColor: Colors.grey.shade300,
             highlightColor: Colors.white,
             child: Container(
+              width: MediaQuery.of(context).size.width - 40,
               height:
-                  MediaQuery.of(context).size.height - 300,
+                  MediaQuery.of(context).size.height -
+                  (MediaQuery.of(context).size.height *
+                      0.25),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 color: Colors.grey,
@@ -151,6 +149,7 @@ class _DetailsPageContainerState
               ],
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   mainAxisAlignment:
@@ -175,37 +174,30 @@ class _DetailsPageContainerState
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              width: 160,
-                              child: Text(
-                                style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.normal,
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                ),
-                                'Expense Name',
+                            Text(
+                              style: TextStyle(
+                                fontWeight:
+                                    FontWeight.normal,
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
                               ),
+                              'Expense Name',
                             ),
-                            SizedBox(
-                              width: 160,
-                              child: Text(
-                                style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                ),
-                                expense.name,
+                            Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
                               ),
+                              expense.name,
                             ),
                           ],
                         ),
@@ -263,6 +255,7 @@ class _DetailsPageContainerState
                   mainAxisAlignment:
                       MainAxisAlignment.center,
                   children: [
+                    SizedBox(height: 15),
                     CustomerActionButton(
                       icon: Icons.delete_outline_rounded,
                       color:
@@ -337,6 +330,7 @@ class _DetailsPageContainerState
                     ),
                   ],
                 ),
+                SizedBox(height: 20),
               ],
             ),
           );
@@ -359,7 +353,9 @@ class ExpenseDetailsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 320,
+      height:
+          MediaQuery.of(context).size.height -
+          (MediaQuery.of(context).size.height * 0.36),
       child: SingleChildScrollView(
         child: Column(
           children: [
