@@ -570,68 +570,86 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                   if (returnReceiptProvider(
                     context,
                   ).setDate)
-                    Positioned(
-                      top: 190,
-                      left: 0,
-                      right: 0,
+                    GestureDetector(
+                      onTap: () {
+                        returnReceiptProvider(
+                          context,
+                          listen: false,
+                        ).clearReceiptDate();
+                      },
                       child: Material(
-                        child: Ink(
-                          color: Colors.white,
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              top: 40,
-                              bottom: 40,
-                            ),
-                            color: Colors.white,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 15.0,
-                                    ),
-                                child: Container(
-                                  height: 430,
-                                  width: 380,
-                                  padding: EdgeInsets.all(
-                                    15,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          10,
+                        color: const Color.fromARGB(
+                          100,
+                          0,
+                          0,
+                          0,
+                        ),
+                        child: SizedBox(
+                          height:
+                              MediaQuery.of(
+                                context,
+                              ).size.height,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(
+                                        context,
+                                      ).size.height *
+                                      0.15,
+                                ),
+                                Center(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 15.0,
                                         ),
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      color: Colors.grey,
+                                    child: Container(
+                                      height: 500,
+                                      width: 400,
+                                      padding:
+                                          EdgeInsets.all(
+                                            20,
+                                          ),
+                                      color: Colors.white,
+
+                                      child: CalendarWidget(
+                                        onDaySelected: (
+                                          selectedDay,
+                                          focusedDay,
+                                        ) {
+                                          returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).setReceiptDay(
+                                            selectedDay,
+                                          );
+                                        },
+                                        actionWeek: (
+                                          startOfWeek,
+                                          endOfWeek,
+                                        ) {
+                                          returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).setReceiptWeek(
+                                            startOfWeek,
+                                            endOfWeek,
+                                          );
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                  child: CalendarWidget(
-                                    onDaySelected: (
-                                      selectedDay,
-                                      focusedDay,
-                                    ) {
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).setReceiptDay(
-                                        selectedDay,
-                                      );
-                                    },
-                                    actionWeek: (
-                                      startOfWeek,
-                                      endOfWeek,
-                                    ) {
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).setReceiptWeek(
-                                        startOfWeek,
-                                        endOfWeek,
-                                      );
-                                    },
                                   ),
                                 ),
-                              ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(
+                                        context,
+                                      ).size.height *
+                                      0.3,
+                                ),
+                              ],
                             ),
                           ),
                         ),

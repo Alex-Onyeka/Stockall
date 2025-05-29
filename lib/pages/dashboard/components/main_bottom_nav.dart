@@ -68,6 +68,10 @@ class MainBottomNav extends StatelessWidget {
                     context,
                     listen: false,
                   ).setSettings();
+                  returnReceiptProvider(
+                    context,
+                    listen: false,
+                  ).clearReceiptDate();
                   globalKey.currentState?.openDrawer();
                 },
                 child: SizedBox(
@@ -157,6 +161,10 @@ class MainBottomNav extends StatelessWidget {
                 ),
               );
             }
+            returnReceiptProvider(
+              context,
+              listen: false,
+            ).clearReceiptDate();
           },
           child: Container(
             decoration: BoxDecoration(

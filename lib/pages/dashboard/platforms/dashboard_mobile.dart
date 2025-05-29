@@ -920,6 +920,17 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   );
                                                                 },
                                                               ),
+                                                            ).then(
+                                                              (
+                                                                _,
+                                                              ) {
+                                                                setState(
+                                                                  () {
+                                                                    mainReceiptFuture =
+                                                                        getMainReceipts();
+                                                                  },
+                                                                );
+                                                              },
                                                             );
                                                           },
                                                         ),

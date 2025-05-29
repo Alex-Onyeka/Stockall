@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/constants/calculations.dart';
+import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
 
 class ProductSummaryTab extends StatefulWidget {
@@ -76,7 +77,7 @@ class _ProductSummaryTabState
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
                   ),
-                  "N",
+                  nairaSymbol,
                 ),
               ),
               SizedBox(width: 2),

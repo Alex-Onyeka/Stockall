@@ -436,9 +436,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    formatLargeNumberDouble(
-                                      getTotal(),
-                                    ),
+                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
                                   ),
                                 ],
                               ),

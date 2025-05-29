@@ -320,68 +320,141 @@ class _TotalExpensesMobileState
                   if (returnExpensesProvider(
                     context,
                   ).setDate)
-                    Positioned(
-                      top: 40,
-                      left: 0,
-                      right: 0,
-                      child: Material(
-                        child: Ink(
-                          color: Colors.white,
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              top: 40,
-                              bottom: 40,
-                            ),
-                            color: Colors.white,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 15.0,
-                                    ),
-                                child: Container(
-                                  height: 430,
-                                  width: 380,
-                                  padding: EdgeInsets.all(
-                                    15,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          10,
+                    Material(
+                      color: const Color.fromARGB(
+                        75,
+                        0,
+                        0,
+                        0,
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          returnExpensesProvider(
+                            context,
+                            listen: false,
+                          ).clearExpenseDate();
+                        },
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                ),
+                            child: Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(
+                                        context,
+                                      ).size.height *
+                                      0.05,
+                                ),
+                                Ink(
+                                  color: Colors.white,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.only(
+                                          top: 20,
+                                          bottom: 20,
                                         ),
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      color: Colors.grey,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            10,
+                                          ),
+                                      color: Colors.white,
                                     ),
-                                  ),
-                                  child: CalendarWidget(
-                                    onDaySelected: (
-                                      selectedDay,
-                                      focusedDay,
-                                    ) {
-                                      returnExpensesProvider(
-                                        context,
-                                        listen: false,
-                                      ).setExpenseDay(
-                                        selectedDay,
-                                      );
-                                    },
-                                    actionWeek: (
-                                      startOfWeek,
-                                      endOfWeek,
-                                    ) {
-                                      returnExpensesProvider(
-                                        context,
-                                        listen: false,
-                                      ).setExpenseWeek(
-                                        startOfWeek,
-                                        endOfWeek,
-                                      );
-                                    },
+                                    child: Center(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal:
+                                                  5.0,
+                                            ),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: 100,
+                                              height: 4,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade400,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      5,
+                                                    ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            Container(
+                                              height: 480,
+                                              width: 380,
+                                              padding:
+                                                  EdgeInsets.all(
+                                                    15,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      10,
+                                                    ),
+                                                color:
+                                                    Colors
+                                                        .white,
+                                                // border: Border.all(
+                                                //   color:
+                                                //       Colors
+                                                //           .grey,
+                                                // ),
+                                              ),
+                                              child: CalendarWidget(
+                                                onDaySelected: (
+                                                  selectedDay,
+                                                  focusedDay,
+                                                ) {
+                                                  returnExpensesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).setExpenseDay(
+                                                    selectedDay,
+                                                  );
+                                                },
+                                                actionWeek: (
+                                                  startOfWeek,
+                                                  endOfWeek,
+                                                ) {
+                                                  returnExpensesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).setExpenseWeek(
+                                                    startOfWeek,
+                                                    endOfWeek,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(
+                                        context,
+                                      ).size.height *
+                                      0.4,
+                                ),
+                              ],
                             ),
                           ),
                         ),

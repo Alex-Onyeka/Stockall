@@ -123,54 +123,151 @@ class _EmpAuthState extends State<EmpAuth> {
 
                           SizedBox(
                             width: double.infinity,
-                            child: Wrap(
-                              alignment:
-                                  WrapAlignment.center,
-                              runAlignment:
-                                  WrapAlignment.center,
-                              direction: Axis.horizontal,
-                              runSpacing: 15,
-                              spacing: 15,
-                              crossAxisAlignment:
-                                  WrapCrossAlignment.center,
-                              children: [
-                                ButtonTab(
-                                  theme: theme,
-                                  icon: productIconSvg,
-                                  title: 'Products',
-                                  action: () {},
-                                ),
-                                ButtonTab(
-                                  theme: theme,
-                                  icon: salesIconSvg,
-                                  title: 'Sales',
-                                  action: () {},
-                                ),
-                                ButtonTab(
-                                  theme: theme,
-                                  icon: custBookIconSvg,
-                                  title: 'Customers',
-                                  action: () {},
-                                ),
-                                ButtonTab(
-                                  theme: theme,
-                                  icon: employeesIconSvg,
-                                  title: 'Employees',
-                                  action: () {},
-                                ),
-                                ButtonTab(
-                                  theme: theme,
-                                  icon: expensesIconSvg,
-                                  title: 'Expenses',
-                                  action: () async {},
-                                ),
-                                ButtonTab(
-                                  theme: theme,
-                                  icon: reportIconSvg,
-                                  title: 'Report',
-                                  action: () {},
-                                ),
-                              ],
+                            child: LayoutBuilder(
+                              builder: (
+                                context,
+                                constraints,
+                              ) {
+                                if (constraints.maxWidth >
+                                    320) {
+                                  return Column(
+                                    spacing: 15,
+                                    children: [
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                productIconSvg,
+                                            title:
+                                                'Products',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                salesIconSvg,
+                                            title: 'Sales',
+                                            action: () {
+                                              returnNavProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).navigate(2);
+                                            },
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                custBookIconSvg,
+                                            title:
+                                                'Customers',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                employeesIconSvg,
+                                            title:
+                                                'Employees',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                expensesIconSvg,
+                                            title:
+                                                'Expenses',
+                                            action:
+                                                () async {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                reportIconSvg,
+                                            title: 'Report',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return Column(
+                                    spacing: 15,
+                                    children: [
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                productIconSvg,
+                                            title:
+                                                'Products',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                salesIconSvg,
+                                            title: 'Sales',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                custBookIconSvg,
+                                            title:
+                                                'Customers',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                employeesIconSvg,
+                                            title:
+                                                'Employees',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                expensesIconSvg,
+                                            title:
+                                                'Expenses',
+                                            action:
+                                                () async {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                reportIconSvg,
+                                            title: 'Report',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
                             ),
                           ),
                         ],
@@ -204,159 +301,237 @@ class _EmpAuthState extends State<EmpAuth> {
                       0,
                       0,
                     ),
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width:
-                              MediaQuery.of(
-                                context,
-                              ).size.width *
-                              0.85,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(5),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(
-                                  31,
-                                  0,
-                                  0,
-                                  0,
-                                ),
-                                blurRadius: 5,
-                              ),
-                            ],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height:
+                                MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.25,
                           ),
-                          padding:
-                              EdgeInsetsDirectional.symmetric(
-                                horizontal: 30,
-                                vertical: 20,
-                              ),
-                          child: Column(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .h2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                          Container(
+                            width:
+                                MediaQuery.of(
+                                  context,
+                                ).size.width *
+                                0.85,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      const Color.fromARGB(
+                                        31,
+                                        0,
+                                        0,
+                                        0,
+                                      ),
+                                  blurRadius: 5,
+                                ),
+                              ],
+                            ),
+                            padding:
+                                EdgeInsetsDirectional.symmetric(
+                                  horizontal: 30,
+                                  vertical: 20,
+                                ),
+                            child: Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .h2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Login',
                                     ),
-                                    'Login',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.normal,
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                      ),
+                                      'This is your staff account Login',
                                     ),
-                                    'This is your staff account Login',
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 15),
-                              EmailTextField(
-                                controller: emailController,
-                                theme: theme,
-                                isEmail: true,
-                                hint: 'Enter Email',
-                                title: 'Email',
-                              ),
+                                  ],
+                                ),
+                                SizedBox(height: 15),
+                                EmailTextField(
+                                  controller:
+                                      emailController,
+                                  theme: theme,
+                                  isEmail: true,
+                                  hint: 'Enter Email',
+                                  title: 'Email',
+                                ),
 
-                              SizedBox(height: 20),
-                              EmailTextField(
-                                controller:
-                                    passwordController,
-                                theme: theme,
-                                isEmail: false,
-                                hint: 'Enter Password',
-                                title: 'Password',
-                              ),
-                              SizedBox(height: 30),
-                              MainButtonP(
-                                themeProvider: theme,
-                                action: () async {
-                                  bool isValidEmail(
-                                    String email,
-                                  ) {
-                                    final emailRegex = RegExp(
-                                      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                    );
-                                    return emailRegex
-                                        .hasMatch(email);
-                                  }
+                                SizedBox(height: 20),
+                                EmailTextField(
+                                  controller:
+                                      passwordController,
+                                  theme: theme,
+                                  isEmail: false,
+                                  hint: 'Enter Password',
+                                  title: 'Password',
+                                ),
+                                SizedBox(height: 30),
+                                MainButtonP(
+                                  themeProvider: theme,
+                                  action: () async {
+                                    bool isValidEmail(
+                                      String email,
+                                    ) {
+                                      final emailRegex = RegExp(
+                                        r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                                      );
+                                      return emailRegex
+                                          .hasMatch(email);
+                                    }
 
-                                  if (passwordController
-                                          .text
-                                          .isEmpty ||
-                                      emailController
-                                          .text
-                                          .isEmpty) {
-                                    if (context.mounted) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoAlert(
-                                            theme: theme,
-                                            message:
-                                                'Email and Password fields must be set.',
-                                            title:
-                                                'Empty Fields',
-                                          );
-                                        },
-                                      );
-                                    }
-                                  } else if (!isValidEmail(
-                                    emailController.text,
-                                  )) {
-                                    if (context.mounted) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoAlert(
-                                            theme: theme,
-                                            message:
-                                                'Your email is not valid. Please check and try again.',
-                                            title:
-                                                'Invalid email',
-                                          );
-                                        },
-                                      );
-                                    }
-                                  } else {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    TempUserClass? user =
-                                        await fetchUserFromDatabase(
-                                          emailController
-                                              .text,
-                                          AuthService()
-                                              .currentUser!
-                                              .id,
+                                    if (passwordController
+                                            .text
+                                            .isEmpty ||
+                                        emailController
+                                            .text
+                                            .isEmpty) {
+                                      if (context.mounted) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Email and Password fields must be set.',
+                                              title:
+                                                  'Empty Fields',
+                                            );
+                                          },
                                         );
+                                      }
+                                    } else if (!isValidEmail(
+                                      emailController.text,
+                                    )) {
+                                      if (context.mounted) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Your email is not valid. Please check and try again.',
+                                              title:
+                                                  'Invalid email',
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      TempUserClass? user =
+                                          await fetchUserFromDatabase(
+                                            emailController
+                                                .text,
+                                            AuthService()
+                                                .currentUser!
+                                                .id,
+                                          );
 
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    if (user != null) {
-                                      if (user.password !=
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                      if (user != null) {
+                                        if (user.password !=
+                                            passwordController
+                                                .text
+                                                .trim()) {
+                                          if (context
+                                              .mounted) {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return InfoAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'Your password is not correct. Check it and try again.',
+                                                  title:
+                                                      'Incorrect Password',
+                                                );
+                                              },
+                                            );
+                                          }
+                                        } else {
+                                          setState(() {
+                                            showSuccess =
+                                                true;
+                                          });
+                                          await Future.delayed(
+                                            Duration(
+                                              seconds: 2,
+                                            ),
+                                          );
+                                          if (context
+                                              .mounted) {
+                                            await returnLocalDatabase(
+                                              context,
+                                              listen: false,
+                                            ).insertUser(
+                                              user,
+                                            );
+                                            if (context
+                                                .mounted) {
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (
+                                                        context,
+                                                      ) =>
+                                                          Home(),
+                                                ),
+                                                (route) =>
+                                                    false, // removes all previous routes
+                                              );
+                                            }
+                                          }
+                                          emailController
+                                              .clear();
                                           passwordController
-                                              .text
-                                              .trim()) {
+                                              .clear();
+                                          setState(() {
+                                            showSuccess =
+                                                false;
+                                          });
+                                        }
+                                      } else {
                                         if (context
                                             .mounted) {
                                           showDialog(
@@ -369,84 +544,32 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 theme:
                                                     theme,
                                                 message:
-                                                    'Your password is not correct. Check it and try again.',
+                                                    'Email address not registered with shop. Check the email and try again.',
                                                 title:
-                                                    'Incorrect Password',
+                                                    'Email not found',
                                               );
                                             },
                                           );
                                         }
-                                      } else {
-                                        setState(() {
-                                          showSuccess =
-                                              true;
-                                        });
-                                        await Future.delayed(
-                                          Duration(
-                                            seconds: 2,
-                                          ),
-                                        );
-                                        if (context
-                                            .mounted) {
-                                          await returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          ).insertUser(
-                                            user,
-                                          );
-                                          if (context
-                                              .mounted) {
-                                            Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (
-                                                      context,
-                                                    ) =>
-                                                        Home(),
-                                              ),
-                                              (route) =>
-                                                  false, // removes all previous routes
-                                            );
-                                          }
-                                        }
-                                        emailController
-                                            .clear();
-                                        passwordController
-                                            .clear();
-                                        setState(() {
-                                          showSuccess =
-                                              false;
-                                        });
-                                      }
-                                    } else {
-                                      if (context.mounted) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'Email address not registered with shop. Check the email and try again.',
-                                              title:
-                                                  'Email not found',
-                                            );
-                                          },
-                                        );
                                       }
                                     }
-                                  }
-                                },
+                                  },
 
-                                text: 'Login',
-                              ),
-                              SizedBox(height: 20),
-                            ],
+                                  text: 'Login',
+                                ),
+                                SizedBox(height: 20),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            height:
+                                MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.5,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

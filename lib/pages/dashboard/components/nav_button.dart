@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 
 class NavButton extends StatelessWidget {
@@ -24,6 +25,15 @@ class NavButton extends StatelessWidget {
           context,
           listen: false,
         ).navigate(index);
+        returnExpensesProvider(
+          context,
+          listen: false,
+        ).clearExpenseDate();
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).clearReceiptDate();
+        returnData(context, listen: false).clearFields();
       },
       child: SizedBox(
         height: 42,

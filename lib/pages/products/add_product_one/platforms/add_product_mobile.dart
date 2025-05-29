@@ -1086,7 +1086,7 @@ class _AddProductMobileState
                   },
                   child: Container(
                     color: const Color.fromARGB(
-                      60,
+                      100,
                       0,
                       0,
                       0,
@@ -1095,89 +1095,101 @@ class _AddProductMobileState
                         MediaQuery.of(context).size.height,
                     width:
                         MediaQuery.of(context).size.width,
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color.fromARGB(
-                                        30,
-                                        0,
-                                        0,
-                                        0,
-                                      ),
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
                             height:
                                 MediaQuery.of(
                                   context,
-                                ).size.height -
-                                180,
-                            width:
-                                (MediaQuery.of(
-                                      context,
-                                    ).size.width /
-                                    10) *
-                                9.2,
-                            child: CalendarWidget(
-                              isMain: false,
-                              onDaySelected: (
-                                selectedDay,
-                                focusedDay,
-                              ) {
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).setDate(selectedDay);
+                                ).size.height *
+                                0.02,
+                          ),
+                          Center(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        const Color.fromARGB(
+                                          30,
+                                          0,
+                                          0,
+                                          0,
+                                        ),
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              ),
+                              height: 480,
+                              width:
+                                  (MediaQuery.of(
+                                        context,
+                                      ).size.width /
+                                      10) *
+                                  9.2,
+                              child: CalendarWidget(
+                                isMain: false,
+                                onDaySelected: (
+                                  selectedDay,
+                                  focusedDay,
+                                ) {
+                                  returnData(
+                                    context,
+                                    listen: false,
+                                  ).setDate(selectedDay);
+                                  setState(() {
+                                    setDate = false;
+                                  });
+                                },
+                                actionWeek: (
+                                  startOfWeek,
+                                  endOfWeek,
+                                ) {
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).setReceiptWeek(
+                                    startOfWeek,
+                                    endOfWeek,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: 15,
+                              left: 30,
+                              right: 30,
+                            ),
+                            child: MainButtonTransparent(
+                              constraints: BoxConstraints(),
+                              themeProvider: theme,
+                              action: () {
                                 setState(() {
                                   setDate = false;
                                 });
                               },
-                              actionWeek: (
-                                startOfWeek,
-                                endOfWeek,
-                              ) {
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).setReceiptWeek(
-                                  startOfWeek,
-                                  endOfWeek,
-                                );
-                              },
+                              text: 'Cancel',
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 15,
-                            left: 30,
-                            right: 30,
+                          SizedBox(
+                            height:
+                                MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.4,
                           ),
-                          child: MainButtonTransparent(
-                            constraints: BoxConstraints(),
-                            themeProvider: theme,
-                            action: () {
-                              setState(() {
-                                setDate = false;
-                              });
-                            },
-                            text: 'Cancel',
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
