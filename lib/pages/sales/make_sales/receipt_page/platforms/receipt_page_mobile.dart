@@ -747,7 +747,7 @@ class _ReceiptDetailsContainerState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  '$nairaSymbol${formatLargeNumberDouble(productRecord.revenue)}',
+                                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.revenue)}',
                                                 ),
                                                 Visibility(
                                                   visible:
@@ -763,7 +763,7 @@ class _ReceiptDetailsContainerState
                                                       fontWeight:
                                                           FontWeight.normal,
                                                     ),
-                                                    '$nairaSymbol${formatLargeNumberDouble(productRecord.originalCost!)}',
+                                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.originalCost!)}',
                                                   ),
                                                 ),
                                               ],
@@ -816,7 +816,7 @@ class _ReceiptDetailsContainerState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  '$nairaSymbol${formatLargeNumberDouble(returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, snapshot.data!))}',
+                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, snapshot.data!))}',
                                 ),
                               ),
                             ],

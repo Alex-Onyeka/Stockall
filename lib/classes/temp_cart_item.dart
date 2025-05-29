@@ -26,4 +26,12 @@ class TempCartItem {
   double revenue() {
     return totalCost() - discountCost();
   }
+
+  double costPrice() {
+    return item.costPrice * quantity;
+  }
+
+  double profitOrLoss() {
+    return (item.sellingPrice - item.costPrice) * quantity;
+  }
 }

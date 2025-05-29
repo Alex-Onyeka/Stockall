@@ -67,6 +67,7 @@ class SalesProvider extends ChangeNotifier {
             discountedAmount: cartItem.discountCost(),
             originalCost: cartItem.totalCost(),
             discount: cartItem.discount,
+            costPrice: cartItem.costPrice(),
           );
         }).toList();
 

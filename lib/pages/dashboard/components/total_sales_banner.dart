@@ -11,12 +11,14 @@ class DashboardTotalSalesBanner extends StatefulWidget {
   final double? value;
   final TempUserClass? currentUser;
   final double? userValue;
+  final List<TempExpensesClass>? expenses;
   const DashboardTotalSalesBanner({
     super.key,
     required this.theme,
     required this.value,
     this.currentUser,
     this.userValue,
+    this.expenses,
   });
 
   final ThemeProvider theme;
@@ -36,26 +38,9 @@ class _DashboardTotalSalesBannerState
     }
   }
 
-  late Future<List<TempExpensesClass>> expensesFuture;
-
-  Future<List<TempExpensesClass>> getExpenses() {
-    var tempExp = returnExpensesProvider(
-      context,
-      listen: false,
-    ).getExpenses(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-
-    return tempExp;
-  }
-
   @override
   void initState() {
     super.initState();
-    expensesFuture = getExpenses();
   }
 
   @override
@@ -128,61 +113,45 @@ class _DashboardTotalSalesBannerState
                     ],
                   ),
                   SizedBox(height: 0),
-                  FutureBuilder(
-                    future: expensesFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return ExpensesAndProfitValues(
-                          widget: widget,
-                        );
-                      } else if (snapshot.hasError) {
-                        return ExpensesAndProfitValues(
-                          widget: widget,
-                        );
-                      } else if (snapshot.data == null) {
-                        return ExpensesAndProfitValues(
-                          widget: widget,
-                        );
-                      } else {
-                        var expenses = snapshot.data!;
-                        List<TempExpensesClass>
-                        getTodaysExpenses() {
-                          return returnExpensesProvider(
-                            context,
-                            listen: false,
-                          ).returnExpensesByDayOrWeek(
-                            context,
-                            expenses,
-                          );
-                        }
-
-                        double getTotal() {
-                          double tempTotal = 0;
-
-                          for (var item
-                              in getTodaysExpenses()) {
-                            tempTotal += item.amount;
-                          }
-                          return tempTotal;
-                        }
-
-                        double getProfit() {
-                          return widget.value! - getTotal();
-                        }
-
-                        return ExpensesAndProfitValues(
-                          widget: widget,
-                          expenses:
-                              formatLargeNumberDoubleWidgetDecimal(
-                                getTotal(),
-                              ),
-                          profit:
-                              formatLargeNumberDoubleWidgetDecimal(
-                                getProfit(),
-                              ),
+                  Builder(
+                    builder: (context) {
+                      var expenses = widget.expenses;
+                      List<TempExpensesClass>
+                      getTodaysExpenses() {
+                        return returnExpensesProvider(
+                          context,
+                          listen: false,
+                        ).returnExpensesByDayOrWeek(
+                          context,
+                          expenses ?? [],
                         );
                       }
+
+                      double getTotal() {
+                        double tempTotal = 0;
+
+                        for (var item
+                            in getTodaysExpenses()) {
+                          tempTotal += item.amount;
+                        }
+                        return tempTotal;
+                      }
+
+                      double getProfit() {
+                        return widget.value! - getTotal();
+                      }
+
+                      return ExpensesAndProfitValues(
+                        widget: widget,
+                        expenses:
+                            formatLargeNumberDoubleWidgetDecimal(
+                              getTotal(),
+                            ),
+                        profit:
+                            formatLargeNumberDoubleWidgetDecimal(
+                              getProfit(),
+                            ),
+                      );
                     },
                   ),
                   SizedBox(height: 10),

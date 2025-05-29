@@ -24,7 +24,7 @@ class MainBottomNav extends StatelessWidget {
         Container(
           height: 80,
           color: Colors.white,
-          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment:

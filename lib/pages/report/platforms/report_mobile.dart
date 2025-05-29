@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
+import 'package:stockitt/pages/report/general_report/general_report_page.dart';
+import 'package:stockitt/providers/theme_provider.dart';
 
 class ReportMobile extends StatelessWidget {
   const ReportMobile({super.key});
@@ -22,28 +24,167 @@ class ReportMobile extends StatelessWidget {
             isMain: true,
             iconSvg: reportIconSvg,
           ),
-          Expanded(
-            child: Stack(
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+            ),
+            child: Column(
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 30.0,
-                    ),
-                    child: EmptyWidgetDisplayOnly(
-                      title: 'Comming Soon',
-                      subText:
-                          'This feature is not yet available... Our group of dedicated professional engineers are working on it.',
-                      theme: theme,
-                      height: 30,
-                      icon: Icons.clear,
-                    ),
+                Row(children: [Text('Reports List:')]),
+                SizedBox(height: 15),
+                SingleChildScrollView(
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      ReportListTile(
+                        theme: theme,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return GeneralReportPage();
+                              },
+                            ),
+                          );
+                        },
+                        subText:
+                            'Veiw A Summary of your business Report',
+                        title: 'General Overview',
+                      ),
+                      ReportListTile(
+                        theme: theme,
+                        action: () {},
+                        subText:
+                            'Veiw A Summary of your business Report',
+                        title: 'Sales and Revenue',
+                      ),
+                      ReportListTile(
+                        theme: theme,
+                        action: () {},
+                        subText:
+                            'Veiw A Summary of your business Report',
+                        title: 'General Overview',
+                      ),
+                      ReportListTile(
+                        theme: theme,
+                        action: () {},
+                        subText:
+                            'Veiw A Summary of your business Report',
+                        title: 'General Overview',
+                      ),
+                      ReportListTile(
+                        theme: theme,
+                        action: () {},
+                        subText:
+                            'Veiw A Summary of your business Report',
+                        title: 'General Overview',
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ReportListTile extends StatelessWidget {
+  final ThemeProvider theme;
+  final String title;
+  final String subText;
+  final Function() action;
+
+  const ReportListTile({
+    super.key,
+    required this.theme,
+    required this.title,
+    required this.subText,
+    required this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Ink(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(22, 0, 0, 0),
+            blurRadius: 10,
+          ),
+        ],
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(5),
+        onTap: action,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
+          child: Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                spacing: 10,
+                children: [
+                  // Container(
+                  //   padding: EdgeInsets.all(
+                  //     10,
+                  //   ),
+                  //   decoration:
+                  //       BoxDecoration(
+                  //         shape:
+                  //             BoxShape
+                  //                 .circle,
+                  //         color:
+                  //             Colors
+                  //                 .grey
+                  //                 .shade100,
+                  //       ),
+                  //   child:
+                  SvgPicture.asset(receiptIconSvg),
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        title,
+                      ),
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          color: Colors.grey,
+                          // fontWeight:
+                          //     FontWeight.bold,
+                        ),
+                        subText,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Icon(
+                color: Colors.grey.shade400,
+                size: 20,
+                Icons.arrow_forward_ios_rounded,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

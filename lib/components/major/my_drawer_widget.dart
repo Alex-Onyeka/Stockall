@@ -11,7 +11,7 @@ import 'package:stockitt/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
-import 'package:stockitt/pages/report/report_page.dart';
+import 'package:stockitt/pages/report/general_report/general_report_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
 
@@ -221,7 +221,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return ReportPage();
+                            return GeneralReportPage();
                           },
                         ),
                       );

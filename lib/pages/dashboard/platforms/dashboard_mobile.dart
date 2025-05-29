@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:stockitt/classes/temp_expenses_class.dart';
 import 'package:stockitt/classes/temp_main_receipt.dart';
 import 'package:stockitt/classes/temp_notification.dart';
 import 'package:stockitt/classes/temp_product_sale_record.dart';
@@ -21,7 +22,7 @@ import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
-import 'package:stockitt/pages/report/report_page.dart';
+import 'package:stockitt/pages/report/general_report/general_report_page.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
 
@@ -61,6 +62,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     notificationsFuture = fetchNotifications();
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
+    expensesFuture = getExpenses();
     // shopFuture = getShop();
     shop =
         returnShopProvider(
@@ -69,6 +71,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
         ).userShop!;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
+      returnExpensesProvider(
+        context,
+        listen: false,
+      ).clearExpenseDate();
     });
   }
 
@@ -79,6 +85,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
       context,
       listen: false,
     ).clearReceiptDate();
+
+    returnData(context, listen: false).clearFields();
   }
 
   late Future<List<TempNotification>> notificationsFuture;
@@ -124,6 +132,22 @@ class _DashboardMobileState extends State<DashboardMobile> {
         .toList();
   }
 
+  late Future<List<TempExpensesClass>> expensesFuture;
+
+  Future<List<TempExpensesClass>> getExpenses() {
+    var tempExp = returnExpensesProvider(
+      context,
+      listen: false,
+    ).getExpenses(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return tempExp;
+  }
+
   TextEditingController emailController =
       TextEditingController();
   TextEditingController passwordController =
@@ -134,6 +158,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     super.initState();
     notificationsFuture = fetchNotifications();
     getProdutRecordsFuture = getProductSalesRecord();
+    expensesFuture = getExpenses();
     shop =
         returnShopProvider(
           context,
@@ -430,33 +455,49 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         .data!;
                                                 return Column(
                                                   children: [
-                                                    DashboardTotalSalesBanner(
-                                                      userValue: returnReceiptProvider(
+                                                    FutureBuilder(
+                                                      future:
+                                                          expensesFuture,
+                                                      builder: (
                                                         context,
-                                                      ).getTotalRevenueForSelectedDay(
-                                                        context,
-                                                        mainReceipts
-                                                            .where(
-                                                              (
-                                                                emp,
-                                                              ) =>
-                                                                  emp.staffName ==
-                                                                  localUser?.name,
-                                                            )
-                                                            .toList(),
-                                                        records,
-                                                      ),
-                                                      currentUser:
-                                                          localUser,
-                                                      theme:
-                                                          theme,
-                                                      value: returnReceiptProvider(
-                                                        context,
-                                                      ).getTotalRevenueForSelectedDay(
-                                                        context,
-                                                        mainReceipts,
-                                                        records,
-                                                      ),
+                                                        snapshot,
+                                                      ) {
+                                                        return DashboardTotalSalesBanner(
+                                                          expenses:
+                                                              snapshot.connectionState ==
+                                                                      ConnectionState.waiting
+                                                                  ? []
+                                                                  : snapshot.hasError
+                                                                  ? []
+                                                                  : snapshot.data,
+                                                          userValue: returnReceiptProvider(
+                                                            context,
+                                                          ).getTotalRevenueForSelectedDay(
+                                                            context,
+                                                            mainReceipts
+                                                                .where(
+                                                                  (
+                                                                    emp,
+                                                                  ) =>
+                                                                      emp.staffName ==
+                                                                      localUser?.name,
+                                                                )
+                                                                .toList(),
+                                                            records,
+                                                          ),
+                                                          currentUser:
+                                                              localUser,
+                                                          theme:
+                                                              theme,
+                                                          value: returnReceiptProvider(
+                                                            context,
+                                                          ).getTotalRevenueForSelectedDay(
+                                                            context,
+                                                            mainReceipts,
+                                                            records,
+                                                          ),
+                                                        );
+                                                      },
                                                     ),
                                                     // SizedBox(
                                                     //   height:
@@ -756,12 +797,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                               ),
                                                             ).then(
                                                               (
-                                                                _,
+                                                                context,
                                                               ) {
                                                                 setState(
                                                                   () {
-                                                                    mainReceiptFuture =
-                                                                        getMainReceipts();
+                                                                    expensesFuture =
+                                                                        getExpenses();
                                                                   },
                                                                 );
                                                               },
@@ -782,7 +823,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return ReportPage();
+                                                                  return GeneralReportPage();
                                                                 },
                                                               ),
                                                             );
@@ -948,7 +989,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return ReportPage();
+                                                                  return GeneralReportPage();
                                                                 },
                                                               ),
                                                             );
