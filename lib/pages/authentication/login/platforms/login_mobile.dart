@@ -115,7 +115,6 @@ class _LoginMobileState extends State<LoginMobile> {
         setState(() {
           issLoading = false;
         });
-        print(e);
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously
@@ -166,6 +165,64 @@ class _LoginMobileState extends State<LoginMobile> {
     return Stack(
       children: [
         Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            backgroundColor: Colors.white,
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 0,
+                ),
+                child: Icon(
+                  color: Colors.grey,
+                  Icons.arrow_back_ios_new_rounded,
+                ),
+              ),
+            ),
+            leadingWidth: 10,
+            centerTitle: true,
+            title: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Row(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(mainLogoIcon, height: 20),
+                  Text(
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 25,
+                      fontWeight:
+                          widget
+                              .theme
+                              .mobileTexts
+                              .h3
+                              .fontWeightBold,
+                    ),
+                    'Stockitt',
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              Opacity(
+                opacity: 0.0,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20.0,
+                  ),
+                  child: Icon(Icons.clear),
+                ),
+              ),
+            ],
+          ),
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -179,31 +236,6 @@ class _LoginMobileState extends State<LoginMobile> {
                   child: Column(
                     children: [
                       SizedBox(height: 60),
-                      Row(
-                        spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            mainLogoIcon,
-                            height: 20,
-                          ),
-                          Text(
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 25,
-                              fontWeight:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .h3
-                                      .fontWeightBold,
-                            ),
-                            'Stockitt',
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 30),
                       Column(
                         spacing: 8,
                         children: [

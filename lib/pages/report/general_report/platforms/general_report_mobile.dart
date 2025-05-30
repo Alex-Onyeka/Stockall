@@ -44,7 +44,12 @@ class _GeneralReportMobileState
         listen: false,
       ).userShop!.shopId!,
     );
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnReportProvider(
+        context,
+        listen: false,
+      ).clearDate(context);
+    });
     return tempEx;
   }
 
@@ -96,6 +101,7 @@ class _GeneralReportMobileState
       children: [
         Scaffold(
           appBar: AppBar(
+            scrolledUnderElevation: 0,
             leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -672,6 +678,269 @@ class _GeneralReportMobileState
                                                                             Colors.redAccent,
                                                                       ),
                                                                       '$nairaSymbol ${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
+                                                                    );
+                                                                  }
+                                                                },
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Divider(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade500,
+                                              height: 30,
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                              ),
+                                              'Revenue Minus Expenses',
+                                            ),
+                                            Divider(
+                                              height: 10,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade300,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Row(
+                                                  spacing:
+                                                      10,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      flex:
+                                                          6,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.normal,
+                                                            ),
+                                                            '(Total Revenue - Expenses)',
+                                                          ),
+                                                          Builder(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              if (receiptSnapshot.connectionState ==
+                                                                      ConnectionState.waiting ||
+                                                                  expensesSnapshot.connectionState ==
+                                                                      ConnectionState.waiting) {
+                                                                return Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b2.fontSize,
+                                                                    color:
+                                                                        Colors.grey.shade700,
+                                                                    fontWeight:
+                                                                        FontWeight.w700,
+                                                                  ),
+                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                );
+                                                              } else if (receiptSnapshot.hasError ||
+                                                                  expensesSnapshot.hasError) {
+                                                                return Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b2.fontSize,
+                                                                    color:
+                                                                        Colors.grey.shade700,
+                                                                    fontWeight:
+                                                                        FontWeight.w700,
+                                                                  ),
+                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                );
+                                                              } else {
+                                                                var receipts = returnReceiptProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).returnOwnReceiptsByDayOrWeek(
+                                                                  context,
+                                                                  receiptSnapshot.data!,
+                                                                );
+                                                                var total = returnReceiptProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).getTotalRevenueForSelectedDay(
+                                                                  context,
+                                                                  receipts,
+                                                                  productRecordSnapShot.connectionState ==
+                                                                          ConnectionState.waiting
+                                                                      ? []
+                                                                      : productRecordSnapShot.data!,
+                                                                );
+
+                                                                double totalExpenses() {
+                                                                  double temp =
+                                                                      0;
+                                                                  for (var item in expensesSnapshot.data!) {
+                                                                    temp +=
+                                                                        item.amount;
+                                                                  }
+                                                                  return temp;
+                                                                }
+
+                                                                return Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b2.fontSize,
+                                                                    color:
+                                                                        Colors.grey.shade700,
+                                                                    fontWeight:
+                                                                        FontWeight.w700,
+                                                                  ),
+                                                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total)} - $nairaSymbol${formatLargeNumberDoubleWidgetDecimal(totalExpenses())}',
+                                                                );
+                                                              }
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex:
+                                                          4,
+                                                      child: Column(
+                                                        spacing:
+                                                            10,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b3.fontSize,
+                                                                  fontWeight:
+                                                                      FontWeight.normal,
+                                                                ),
+                                                                'Total Amount:',
+                                                              ),
+
+                                                              Builder(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  if (receiptSnapshot.connectionState ==
+                                                                          ConnectionState.waiting ||
+                                                                      expensesSnapshot.connectionState ==
+                                                                          ConnectionState.waiting) {
+                                                                    return Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b2.fontSize,
+                                                                        color:
+                                                                            Colors.grey.shade700,
+                                                                        fontWeight:
+                                                                            FontWeight.w700,
+                                                                      ),
+                                                                      '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                    );
+                                                                  } else if (receiptSnapshot.hasError ||
+                                                                      expensesSnapshot.hasError) {
+                                                                    return Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b2.fontSize,
+                                                                        color:
+                                                                            Colors.grey.shade700,
+                                                                        fontWeight:
+                                                                            FontWeight.w700,
+                                                                      ),
+                                                                      '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                    );
+                                                                  } else {
+                                                                    var receipts = returnReceiptProvider(
+                                                                      context,
+                                                                      listen:
+                                                                          false,
+                                                                    ).returnOwnReceiptsByDayOrWeek(
+                                                                      context,
+                                                                      receiptSnapshot.data!,
+                                                                    );
+                                                                    var total = returnReceiptProvider(
+                                                                      context,
+                                                                      listen:
+                                                                          false,
+                                                                    ).getTotalRevenueForSelectedDay(
+                                                                      context,
+                                                                      receipts,
+                                                                      productRecordSnapShot.connectionState ==
+                                                                              ConnectionState.waiting
+                                                                          ? []
+                                                                          : productRecordSnapShot.data!,
+                                                                    );
+
+                                                                    double totalExpenses() {
+                                                                      double temp =
+                                                                          0;
+                                                                      for (var item in expensesSnapshot.data!) {
+                                                                        temp +=
+                                                                            item.amount;
+                                                                      }
+                                                                      return temp;
+                                                                    }
+
+                                                                    return Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b1.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            (total -
+                                                                                        totalExpenses())
+                                                                                    .isNegative
+                                                                                ? Colors.redAccent
+                                                                                : total -
+                                                                                        totalExpenses() ==
+                                                                                    0
+                                                                                ? Colors.grey
+                                                                                : const Color.fromARGB(
+                                                                                  255,
+                                                                                  45,
+                                                                                  137,
+                                                                                  48,
+                                                                                ),
+                                                                      ),
+                                                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total - totalExpenses())}',
                                                                     );
                                                                   }
                                                                 },
@@ -1395,9 +1664,35 @@ class _GeneralReportMobileState
                                                           0,
                                                     )
                                                     .length;
-                                            // var productRecord =
-                                            //     productRecordSnapShot
-                                            //         .data!;
+                                            var productRecord =
+                                                returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).returnproductsRecordByDayOrWeek(
+                                                  context,
+                                                  productRecordSnapShot
+                                                      .data!,
+                                                );
+
+                                            var items = returnReportProvider(
+                                              context,
+                                              listen: false,
+                                            ).getTopThreeProductsByQuantity(
+                                              products,
+                                              productRecord,
+                                            );
+
+                                            var leastItems =
+                                                returnReportProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).getBottomThreeProductsByQuantity(
+                                                  products,
+                                                  productRecord,
+                                                );
+
                                             return StockSummaryContainer(
                                               theme: theme,
                                               inStock:
@@ -1407,6 +1702,44 @@ class _GeneralReportMobileState
                                               total:
                                                   products
                                                       .length,
+                                              bestSelling:
+                                                  items ==
+                                                          null
+                                                      ? 0
+                                                      : items
+                                                          .isEmpty
+                                                      ? 0
+                                                      : items[0]
+                                                          .totalQuantity
+                                                          .toInt(),
+                                              bestName:
+                                                  items ==
+                                                          null
+                                                      ? ''
+                                                      : items
+                                                          .isEmpty
+                                                      ? ''
+                                                      : items[0]
+                                                          .productName,
+                                              leastSelling:
+                                                  leastItems ==
+                                                          null
+                                                      ? 0
+                                                      : leastItems
+                                                          .isEmpty
+                                                      ? 0
+                                                      : leastItems[0]
+                                                          .totalQuantity
+                                                          .toInt(),
+                                              leastName:
+                                                  leastItems ==
+                                                          null
+                                                      ? ''
+                                                      : leastItems
+                                                          .isEmpty
+                                                      ? ''
+                                                      : leastItems[0]
+                                                          .productName,
                                             );
                                           }
                                         },
@@ -1563,6 +1896,10 @@ class StockSummaryContainer extends StatelessWidget {
   final int? inStock;
   final int? outOfStock;
   final int? total;
+  final int? bestSelling;
+  final int? leastSelling;
+  final String? bestName;
+  final String? leastName;
 
   const StockSummaryContainer({
     super.key,
@@ -1570,6 +1907,10 @@ class StockSummaryContainer extends StatelessWidget {
     this.inStock,
     this.outOfStock,
     this.total,
+    this.bestSelling,
+    this.leastSelling,
+    this.bestName,
+    this.leastName,
   });
 
   @override
@@ -1745,17 +2086,78 @@ class StockSummaryContainer extends StatelessWidget {
                           ),
                           'Best Selling Product:',
                         ),
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
-                            color: Colors.grey.shade700,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          '0',
+                        Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          spacing: 0,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              bestName ?? '',
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade700,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                    'Sold Total of ',
+                                  ),
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b1
+                                            .fontSize,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                    fontWeight:
+                                        FontWeight.w700,
+                                  ),
+                                  '(${bestSelling?.toString() ?? '0'})',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade700,
+                                    fontWeight:
+                                        FontWeight.normal,
+                                  ),
+                                  ' Items',
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -1782,17 +2184,84 @@ class StockSummaryContainer extends StatelessWidget {
                               ),
                               'Least Selling Product',
                             ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade700,
-                              ),
-                              '0',
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              spacing: 0,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b1
+                                            .fontSize,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade700,
+                                    fontWeight:
+                                        FontWeight.w700,
+                                  ),
+                                  leastName ?? '',
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade700,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        'Sold Total of ',
+                                      ),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                        fontWeight:
+                                            FontWeight.w700,
+                                      ),
+                                      '(${leastSelling?.toString() ?? '0'})',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                      ),
+                                      ' Items',
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ],
                         ),

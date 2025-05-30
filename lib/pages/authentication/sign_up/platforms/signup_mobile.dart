@@ -222,6 +222,62 @@ class _SignupMobileState extends State<SignupMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
+        leading: InkWell(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 20.0,
+              right: 10,
+            ),
+            child: Icon(
+              color: Colors.grey,
+              Icons.arrow_back_ios_new_rounded,
+            ),
+          ),
+        ),
+        leadingWidth: 10,
+        centerTitle: true,
+        title: InkWell(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: Row(
+            spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(mainLogoIcon, height: 20),
+              Text(
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 25,
+                  fontWeight:
+                      widget
+                          .theme
+                          .mobileTexts
+                          .h3
+                          .fontWeightBold,
+                ),
+                'Stockitt',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Opacity(
+            opacity: 0.0,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: Icon(Icons.clear),
+            ),
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           SafeArea(
@@ -239,31 +295,6 @@ class _SignupMobileState extends State<SignupMobile> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            SizedBox(height: 35),
-                            Row(
-                              spacing: 10,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  mainLogoIcon,
-                                  height: 20,
-                                ),
-                                Text(
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 25,
-                                    fontWeight:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .h3
-                                            .fontWeightBold,
-                                  ),
-                                  'Stockitt',
-                                ),
-                              ],
-                            ),
                             SizedBox(height: 15),
                             Column(
                               spacing: 4,
@@ -375,15 +406,27 @@ class _SignupMobileState extends State<SignupMobile> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: 35.0,
                   ),
-                  child: MainButtonP(
-                    themeProvider: widget.theme,
-                    action: () {
-                      checkInputs();
-                    },
-                    text: 'Create Account',
+                  child: Column(
+                    children: [
+                      MainButtonP(
+                        themeProvider: widget.theme,
+                        action: () {
+                          checkInputs();
+                        },
+                        text: 'Create Account',
+                      ),
+                      SizedBox(height: 15),
+                      // MainButtonTransparent(
+                      //   themeProvider: widget.theme,
+                      //   constraints: BoxConstraints(),
+                      //   text: 'Go Back',
+                      //   action: () {
+                      //     Navigator.of(context).pop();
+                      //   },
+                      // ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 15),
               ],
             ),
           ),

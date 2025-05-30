@@ -531,6 +531,48 @@ class ReceiptsProvider extends ChangeNotifier {
     }).toList();
   }
 
+  List<TempProductSaleRecord>
+  returnproductsRecordByDayOrWeek(
+    BuildContext context,
+    List<TempProductSaleRecord> records,
+  ) {
+    if (weekStartDate != null) {
+      final weekStartUtc = weekStartDate!.toUtc();
+      final weekEndUtc = weekStartUtc.add(
+        const Duration(days: 7),
+      ); // end exclusive
+
+      return records.where((record) {
+        final created = record.createdAt.toUtc();
+        return created.isAfter(
+              weekStartUtc.subtract(
+                const Duration(seconds: 1),
+              ),
+            ) &&
+            created.isBefore(weekEndUtc);
+      }).toList();
+    }
+
+    final targetDate =
+        (singleDay ?? DateTime.now()).toUtc();
+    final startOfDay = DateTime.utc(
+      targetDate.year,
+      targetDate.month,
+      targetDate.day,
+    );
+    final endOfDay = startOfDay.add(
+      const Duration(days: 1),
+    );
+
+    return records.where((record) {
+      final created = record.createdAt.toUtc();
+      return created.isAfter(
+            startOfDay.subtract(const Duration(seconds: 1)),
+          ) &&
+          created.isBefore(endOfDay);
+    }).toList();
+  }
+
   double getTotalRevenueForSelectedDay(
     BuildContext context,
     List<TempMainReceipt> receiptss,
