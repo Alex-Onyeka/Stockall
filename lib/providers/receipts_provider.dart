@@ -142,60 +142,60 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<TempMainReceipt>> loadReceiptsByDayOrWeek({
-    required int shopId,
-    // DateTime? singleDay,
-    // DateTime? weekStartDate,
-  }) async {
-    try {
-      final now = DateTime.now();
-      late final List data;
+  // Future<List<TempMainReceipt>> loadReceiptsByDayOrWeek({
+  //   required int shopId,
+  //   // DateTime? singleDay,
+  //   // DateTime? weekStartDate,
+  // }) async {
+  //   try {
+  //     final now = DateTime.now();
+  //     late final List data;
 
-      if (weekStartDate != null) {
-        final weekEndDate = weekStartDate!.add(
-          const Duration(days: 6),
-        );
+  //     if (weekStartDate != null) {
+  //       final weekEndDate = weekStartDate!.add(
+  //         const Duration(days: 6),
+  //       );
 
-        data = await supabase
-            .from('receipts')
-            .select()
-            .eq('shop_id', shopId)
-            .gte(
-              'created_at',
-              weekStartDate!.toIso8601String(),
-            )
-            .lte(
-              'created_at',
-              weekEndDate.toIso8601String(),
-            )
-            .order('created_at', ascending: false);
-      } else {
-        final targetDate = singleDay ?? now;
-        final startOfDay = DateTime(
-          targetDate.year,
-          targetDate.month,
-          targetDate.day,
-        );
-        final endOfDay = startOfDay.add(
-          const Duration(days: 1),
-        );
+  //       data = await supabase
+  //           .from('receipts')
+  //           .select()
+  //           .eq('shop_id', shopId)
+  //           .gte(
+  //             'created_at',
+  //             weekStartDate!.toIso8601String(),
+  //           )
+  //           .lte(
+  //             'created_at',
+  //             weekEndDate.toIso8601String(),
+  //           )
+  //           .order('created_at', ascending: false);
+  //     } else {
+  //       final targetDate = singleDay ?? now;
+  //       final startOfDay = DateTime(
+  //         targetDate.year,
+  //         targetDate.month,
+  //         targetDate.day,
+  //       );
+  //       final endOfDay = startOfDay.add(
+  //         const Duration(days: 1),
+  //       );
 
-        data = await supabase
-            .from('receipts')
-            .select()
-            .eq('shop_id', shopId)
-            .gte('created_at', startOfDay.toIso8601String())
-            .lt('created_at', endOfDay.toIso8601String())
-            .order('created_at', ascending: false);
-      }
+  //       data = await supabase
+  //           .from('receipts')
+  //           .select()
+  //           .eq('shop_id', shopId)
+  //           .gte('created_at', startOfDay.toIso8601String())
+  //           .lt('created_at', endOfDay.toIso8601String())
+  //           .order('created_at', ascending: false);
+  //     }
 
-      return data
-          .map((json) => TempMainReceipt.fromJson(json))
-          .toList();
-    } catch (e) {
-      return [];
-    }
-  }
+  //     return data
+  //         .map((json) => TempMainReceipt.fromJson(json))
+  //         .toList();
+  //   } catch (e) {
+  //     return [];
+  //   }
+  // }
 
   //
   //
@@ -555,6 +555,32 @@ class ReceiptsProvider extends ChangeNotifier {
     }
 
     return tempTotalRevenue;
+  }
+
+  double getTotalCostPriceForSelectedDay(
+    BuildContext context,
+    List<TempMainReceipt> receiptss,
+    List<TempProductSaleRecord> productSalesRecords,
+  ) {
+    double tempTotalCostPrice = 0;
+
+    for (var receipt in returnOwnReceiptsByDayOrWeek(
+      context,
+      receiptss,
+    )) {
+      var productRecords =
+          productSalesRecords
+              .where(
+                (record) => record.recepitId == receipt.id,
+              )
+              .toList();
+
+      for (var record in productRecords) {
+        tempTotalCostPrice += record.costPrice ?? 0;
+      }
+    }
+
+    return tempTotalCostPrice;
   }
 
   List<TempMainReceipt> returnOwnReceipts(

@@ -15,6 +15,7 @@ import 'package:stockitt/providers/expenses_provider.dart';
 import 'package:stockitt/providers/nav_provider.dart';
 import 'package:stockitt/providers/notifications_provider.dart';
 import 'package:stockitt/providers/receipts_provider.dart';
+import 'package:stockitt/providers/report_provider.dart';
 import 'package:stockitt/providers/sales_provider.dart';
 import 'package:stockitt/providers/shop_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -88,6 +89,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => ExpensesProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ReportProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -110,6 +114,16 @@ int shopId(BuildContext context) {
       ).userShop!.shopId!;
 
   return tempId;
+}
+
+ReportProvider returnReportProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ReportProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 ExpensesProvider returnExpensesProvider(

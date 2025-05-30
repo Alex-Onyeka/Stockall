@@ -133,76 +133,98 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 Visibility(
                   visible:
                       widget.isMain == null ? true : false,
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .prColor300,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        isWeekMode
-                            ? "Switch to Days"
-                            : "Switch to Weeks",
-                      ),
-                      SizedBox(width: 10),
-                      Ink(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(20),
-                          color:
-                              !isWeekMode
-                                  ? Colors.grey.shade400
-                                  : theme
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isWeekMode = !isWeekMode;
+                        calendarFormat =
+                            CalendarFormat.month;
+                      });
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              color:
+                                  theme
                                       .lightModeColor
                                       .prColor300,
-                          border: Border.all(
-                            color:
-                                !isWeekMode
-                                    ? Colors.grey.shade600
-                                    : Colors.white,
-                          ),
-                        ),
-                        child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(20),
-                          onTap: () {
-                            setState(() {
-                              isWeekMode = !isWeekMode;
-                              calendarFormat =
-                                  CalendarFormat.month;
-                            });
-                          },
-                          child: Container(
-                            height: 25,
-                            width: 50,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 5,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
                             ),
-                            child: Align(
-                              alignment: Alignment(
-                                isWeekMode ? 1 : -1,
-                                0,
+                            isWeekMode
+                                ? "Switch to Days"
+                                : "Switch to Weeks",
+                          ),
+                          SizedBox(width: 10),
+                          Ink(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(20),
+                              color:
+                                  !isWeekMode
+                                      ? Colors.grey.shade400
+                                      : theme
+                                          .lightModeColor
+                                          .prColor300,
+                              border: Border.all(
+                                color:
+                                    !isWeekMode
+                                        ? Colors
+                                            .grey
+                                            .shade600
+                                        : Colors.white,
                               ),
+                            ),
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(20),
+                              onTap: () {
+                                setState(() {
+                                  isWeekMode = !isWeekMode;
+                                  calendarFormat =
+                                      CalendarFormat.month;
+                                });
+                              },
                               child: Container(
-                                height: 12,
-                                width: 12,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
+                                height: 25,
+                                width: 50,
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                child: Align(
+                                  alignment: Alignment(
+                                    isWeekMode ? 1 : -1,
+                                    0,
+                                  ),
+                                  child: Container(
+                                    height: 12,
+                                    width: 12,
+                                    decoration:
+                                        BoxDecoration(
+                                          shape:
+                                              BoxShape
+                                                  .circle,
+                                          color:
+                                              Colors.white,
+                                        ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockitt/constants/constants_main.dart';
+import 'package:stockitt/main.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class TopBanner extends StatelessWidget {
@@ -65,6 +66,10 @@ class TopBanner extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.circular(10),
                             onTap: () {
+                              returnExpensesProvider(
+                                context,
+                                listen: false,
+                              ).clearExpenseDate();
                               Navigator.of(context).pop();
                             },
                             child: Container(

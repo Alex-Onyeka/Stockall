@@ -513,7 +513,14 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                                           return AddExpenses();
                                                         },
                                                       ),
-                                                    );
+                                                    ).then((
+                                                      _,
+                                                    ) {
+                                                      setState(() {
+                                                        expensesFuture =
+                                                            getExpenses();
+                                                      });
+                                                    });
                                                   },
                                                   theme:
                                                       theme,
