@@ -44,7 +44,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
         ).fetchUsers();
 
     var mainBeans =
-        tempEmployees!
+        tempEmployees
             .where(
               (emp) =>
                   emp.userId !=

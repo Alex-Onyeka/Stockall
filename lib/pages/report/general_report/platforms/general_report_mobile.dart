@@ -2111,7 +2111,7 @@ class StockSummaryContainer extends StatelessWidget {
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b3
                                               .fontSize,
                                       color:
                                           Colors
@@ -2120,7 +2120,7 @@ class StockSummaryContainer extends StatelessWidget {
                                       fontWeight:
                                           FontWeight.normal,
                                     ),
-                                    'Sold Total of ',
+                                    'Sold ',
                                   ),
                                 ),
                                 Text(
@@ -2128,7 +2128,7 @@ class StockSummaryContainer extends StatelessWidget {
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b1
+                                            .b2
                                             .fontSize,
                                     color:
                                         theme
@@ -2144,7 +2144,7 @@ class StockSummaryContainer extends StatelessWidget {
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b2
+                                            .b3
                                             .fontSize,
                                     color:
                                         Colors
@@ -2223,7 +2223,7 @@ class StockSummaryContainer extends StatelessWidget {
                                               FontWeight
                                                   .normal,
                                         ),
-                                        'Sold Total of ',
+                                        'Sold ',
                                       ),
                                     ),
                                     Text(
@@ -2269,235 +2269,6 @@ class StockSummaryContainer extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ReportContainer extends StatelessWidget {
-  final ThemeProvider theme;
-  final Color? color;
-  final String mainTitle;
-  final String subTitle1;
-  final String subTitle2;
-  final double value1;
-  final double value2;
-  final String? nameOfProduct;
-
-  const ReportContainer({
-    super.key,
-    required this.theme,
-    required this.mainTitle,
-    required this.subTitle1,
-    required this.subTitle2,
-    required this.value1,
-    required this.value2,
-    this.color,
-    this.nameOfProduct,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(20, 0, 0, 0),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: theme.lightModeColor.secColor200,
-            ),
-            mainTitle,
-          ),
-          Divider(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      '$subTitle1:',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      formatLargeNumberDouble(value1),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      '$subTitle2:',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        color:
-                            color ?? Colors.grey.shade600,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      nameOfProduct ??
-                          '$nairaSymbol ${formatLargeNumberDouble(value2)}',
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ReportProfitContainer extends StatelessWidget {
-  final ThemeProvider theme;
-  final Color? color;
-  final String mainTitle;
-  final String subTitle1;
-  final String subTitle2;
-  final double costValue1;
-  final double costValue2;
-  final double value2;
-
-  const ReportProfitContainer({
-    super.key,
-    required this.theme,
-    required this.mainTitle,
-    required this.subTitle1,
-    required this.subTitle2,
-    required this.costValue1,
-    required this.costValue2,
-    required this.value2,
-    this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(20, 0, 0, 0),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: theme.lightModeColor.secColor200,
-            ),
-            mainTitle,
-          ),
-          Divider(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      '$subTitle1:',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      '$nairaSymbol${formatLargeNumberDouble(costValue1)} - $nairaSymbol${formatLargeNumberDouble(costValue2)}',
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      '$subTitle2:',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        color:
-                            color ?? Colors.grey.shade600,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      '$nairaSymbol ${formatLargeNumberDoubleWidgetDecimal(value2)}',
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

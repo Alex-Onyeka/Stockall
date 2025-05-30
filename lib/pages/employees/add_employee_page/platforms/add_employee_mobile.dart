@@ -96,10 +96,20 @@ class _AddEmployeeMobileState
   ];
   //
   //
+  late Future<List<TempUserClass>> usersFuture;
+  Future<List<TempUserClass>> getUsers() {
+    var tempUsers =
+        returnUserProvider(
+          context,
+          listen: false,
+        ).fetchUsers();
+    return tempUsers;
+  }
 
   @override
   void initState() {
     super.initState();
+    usersFuture = getUsers();
     if (widget.employee != null) {
       widget.emailController.text = widget.employee!.email;
       widget.phoneController.text =
@@ -463,330 +473,395 @@ class _AddEmployeeMobileState
                     padding: const EdgeInsets.symmetric(
                       horizontal: 30.0,
                     ),
-                    child: MainButtonP(
-                      themeProvider: theme,
-                      action: () {
-                        if (widget.employee == null) {
-                          if (widget
-                                  .nameController
-                                  .text
-                                  .isEmpty ||
-                              widget
-                                  .emailController
-                                  .text
-                                  .isEmpty ||
-                              widget
-                                  .phoneController
-                                  .text
-                                  .isEmpty ||
-                              currentSelected == null) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return InfoAlert(
-                                  theme: theme,
-                                  message:
-                                      'Name, email, phone number and Staff Role must be set.',
-                                  title: 'Fields not set',
-                                );
-                              },
-                            );
-                          } else if (!isValidEmail(
-                            widget.emailController.text,
-                          )) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return InfoAlert(
-                                  theme: theme,
-                                  message:
-                                      'Please enter a valid Email Address',
-                                  title: 'Email Invalid',
-                                );
-                              },
-                            );
-                          } else {
-                            final safeContext = context;
-                            showDialog(
-                              context: safeContext,
-                              builder: (context) {
-                                return ConfirmationAlert(
-                                  theme: theme,
-                                  message:
-                                      'You are about to create an employee with the role of a ${employees[currentSelected!]['position']}, do you want to proceed?',
-                                  title: 'Procced?',
-                                  action: () async {
-                                    if (safeContext
-                                        .mounted) {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                    }
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    await returnUserProvider(
-                                      context,
-                                      listen: false,
-                                    ).addEmployee(
-                                      TempUserClass(
-                                        name:
-                                            widget
-                                                .nameController
-                                                .text
-                                                .trim(),
-                                        email:
-                                            widget
-                                                .emailController
-                                                .text
-                                                .trim()
-                                                .toLowerCase(),
-                                        role:
-                                            employees[currentSelected!]['position'],
-                                        authUserId:
-                                            AuthService()
-                                                .currentUser!
-                                                .id,
-                                        password:
-                                            widget
-                                                .emailController
-                                                .text
-                                                .trim()
-                                                .toLowerCase(),
-                                        phone:
-                                            widget
-                                                .phoneController
-                                                .text,
-                                      ),
+                    child: FutureBuilder(
+                      future: usersFuture,
+                      builder: (context, snapshot) {
+                        return MainButtonP(
+                          themeProvider: theme,
+                          action: () {
+                            if (widget.employee == null) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState
+                                          .waiting ||
+                                  snapshot.hasError) {
+                                return;
+                              } else {
+                                var users = snapshot.data!;
+                                List<String> userEmails() {
+                                  List<String> tempEmails =
+                                      [];
+                                  for (var item in users) {
+                                    tempEmails.add(
+                                      item.email,
                                     );
+                                  }
+                                  return tempEmails;
+                                }
 
-                                    setState(() {
-                                      isLoading = false;
-                                      showSuccess = true;
-                                    });
-
-                                    await Future.delayed(
-                                      Duration(seconds: 2),
-                                    );
-
-                                    if (safeContext
-                                        .mounted) {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          }
-                        } else {
-                          final safeContext = context;
-                          if (widget
-                              .newPasswordController
-                              .text
-                              .isEmpty) {
-                            showDialog(
-                              context: safeContext,
-                              builder: (context) {
-                                return ConfirmationAlert(
-                                  theme: theme,
-                                  message:
-                                      'You are about to update details, do you want to proceed?',
-                                  title: 'Procced?',
-                                  action: () async {
-                                    if (safeContext
-                                        .mounted) {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                    }
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    await returnUserProvider(
-                                      context,
-                                      listen: false,
-                                    ).updateUser(
-                                      TempUserClass(
-                                        userId:
-                                            widget
-                                                .employee!
-                                                .userId,
-                                        name:
-                                            widget
-                                                .nameController
-                                                .text
-                                                .trim(),
-                                        email:
-                                            widget
-                                                .emailController
-                                                .text
-                                                .trim()
-                                                .toLowerCase(),
-                                        role:
-                                            employees[currentSelected!]['position'],
-
-                                        password:
-                                            widget
-                                                    .newPasswordController
-                                                    .text
-                                                    .isNotEmpty
-                                                ? widget
-                                                    .newPasswordController
-                                                    .text
-                                                : widget
-                                                    .passwordController
-                                                    .text,
-                                        phone:
-                                            widget
-                                                .phoneController
-                                                .text,
-                                      ),
-                                      context,
-                                    );
-
-                                    setState(() {
-                                      isLoading = false;
-                                      showSuccess = true;
-                                    });
-
-                                    await Future.delayed(
-                                      Duration(seconds: 2),
-                                    );
-
-                                    if (safeContext
-                                        .mounted) {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          } else {
-                            if (widget
-                                    .passwordController
-                                    .text !=
-                                widget.employee!.password) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        'Old Password Incorrect, please check and try again later.',
-                                    title:
-                                        'Incorrect Old Password',
-                                  );
-                                },
-                              );
-                            } else {
-                              showDialog(
-                                context: safeContext,
-                                builder: (context) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        'You are about to update details, do you want to proceed?',
-                                    title: 'Procced?',
-                                    action: () async {
-                                      if (safeContext
-                                          .mounted) {
-                                        Navigator.of(
-                                          safeContext,
-                                        ).pop();
-                                      }
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      await returnUserProvider(
-                                        context,
-                                        listen: false,
-                                      ).updateUser(
-                                        TempUserClass(
-                                          userId:
-                                              widget
-                                                  .employee!
-                                                  .userId,
-                                          name:
-                                              widget
-                                                  .nameController
-                                                  .text
-                                                  .trim(),
-                                          email:
-                                              widget
-                                                  .emailController
-                                                  .text
-                                                  .trim(),
-                                          role:
-                                              employees[currentSelected!]['position'],
-
-                                          password:
-                                              widget
-                                                      .newPasswordController
-                                                      .text
-                                                      .isNotEmpty
-                                                  ? widget
-                                                      .newPasswordController
-                                                      .text
-                                                  : widget
-                                                      .passwordController
-                                                      .text,
-                                          phone:
-                                              widget
-                                                  .phoneController
-                                                  .text,
-                                        ),
-                                        context,
+                                if (widget
+                                        .nameController
+                                        .text
+                                        .isEmpty ||
+                                    widget
+                                        .emailController
+                                        .text
+                                        .isEmpty ||
+                                    widget
+                                        .phoneController
+                                        .text
+                                        .isEmpty ||
+                                    currentSelected ==
+                                        null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Name, email, phone number and Staff Role must be set.',
+                                        title:
+                                            'Fields not set',
                                       );
-
-                                      setState(() {
-                                        isLoading = false;
-                                        showSuccess = true;
-                                      });
-
-                                      await Future.delayed(
-                                        Duration(
-                                          seconds: 2,
-                                        ),
-                                      );
-
-                                      if (safeContext
-                                          .mounted) {
-                                        Navigator.of(
-                                          safeContext,
-                                        ).pop();
-                                      }
                                     },
                                   );
-                                },
-                              );
+                                } else if (userEmails()
+                                    .contains(
+                                      widget
+                                          .emailController
+                                          .text
+                                          .toLowerCase(),
+                                    )) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Email already in use. Please Select a different email, or Log into the account.',
+                                        title:
+                                            'Email Already Registered',
+                                      );
+                                    },
+                                  );
+                                } else if (!isValidEmail(
+                                  widget
+                                      .emailController
+                                      .text,
+                                )) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Please enter a valid Email Address',
+                                        title:
+                                            'Email Invalid',
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  final safeContext =
+                                      context;
+                                  showDialog(
+                                    context: safeContext,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'You are about to create an employee with the role of a ${employees[currentSelected!]['position']}, do you want to proceed?',
+                                        title: 'Procced?',
+                                        action: () async {
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                          setState(() {
+                                            isLoading =
+                                                true;
+                                          });
+                                          await returnUserProvider(
+                                            context,
+                                            listen: false,
+                                          ).addEmployee(
+                                            TempUserClass(
+                                              name:
+                                                  widget
+                                                      .nameController
+                                                      .text
+                                                      .trim(),
+                                              email:
+                                                  widget
+                                                      .emailController
+                                                      .text
+                                                      .trim()
+                                                      .toLowerCase(),
+                                              role:
+                                                  employees[currentSelected!]['position'],
+                                              authUserId:
+                                                  AuthService()
+                                                      .currentUser!
+                                                      .id,
+                                              password:
+                                                  widget
+                                                      .emailController
+                                                      .text
+                                                      .trim()
+                                                      .toLowerCase(),
+                                              phone:
+                                                  widget
+                                                      .phoneController
+                                                      .text,
+                                            ),
+                                          );
+
+                                          setState(() {
+                                            isLoading =
+                                                false;
+                                            showSuccess =
+                                                true;
+                                          });
+
+                                          await Future.delayed(
+                                            Duration(
+                                              seconds: 2,
+                                            ),
+                                          );
+
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                              }
+                            } else {
+                              final safeContext = context;
+                              if (widget
+                                  .newPasswordController
+                                  .text
+                                  .isEmpty) {
+                                showDialog(
+                                  context: safeContext,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to update details, do you want to proceed?',
+                                      title: 'Procced?',
+                                      action: () async {
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        await returnUserProvider(
+                                          context,
+                                          listen: false,
+                                        ).updateUser(
+                                          TempUserClass(
+                                            userId:
+                                                widget
+                                                    .employee!
+                                                    .userId,
+                                            name:
+                                                widget
+                                                    .nameController
+                                                    .text
+                                                    .trim(),
+                                            email:
+                                                widget
+                                                    .emailController
+                                                    .text
+                                                    .trim()
+                                                    .toLowerCase(),
+                                            role:
+                                                employees[currentSelected!]['position'],
+
+                                            password:
+                                                widget
+                                                        .newPasswordController
+                                                        .text
+                                                        .isNotEmpty
+                                                    ? widget
+                                                        .newPasswordController
+                                                        .text
+                                                    : widget
+                                                        .passwordController
+                                                        .text,
+                                            phone:
+                                                widget
+                                                    .phoneController
+                                                    .text,
+                                          ),
+                                          context,
+                                        );
+
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess =
+                                              true;
+                                        });
+
+                                        await Future.delayed(
+                                          Duration(
+                                            seconds: 2,
+                                          ),
+                                        );
+
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              } else {
+                                if (widget
+                                        .passwordController
+                                        .text !=
+                                    widget
+                                        .employee!
+                                        .password) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Old Password Incorrect, please check and try again later.',
+                                        title:
+                                            'Incorrect Old Password',
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: safeContext,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'You are about to update details, do you want to proceed?',
+                                        title: 'Procced?',
+                                        action: () async {
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                          setState(() {
+                                            isLoading =
+                                                true;
+                                          });
+                                          await returnUserProvider(
+                                            context,
+                                            listen: false,
+                                          ).updateUser(
+                                            TempUserClass(
+                                              userId:
+                                                  widget
+                                                      .employee!
+                                                      .userId,
+                                              name:
+                                                  widget
+                                                      .nameController
+                                                      .text
+                                                      .trim(),
+                                              email:
+                                                  widget
+                                                      .emailController
+                                                      .text
+                                                      .trim(),
+                                              role:
+                                                  employees[currentSelected!]['position'],
+
+                                              password:
+                                                  widget
+                                                          .newPasswordController
+                                                          .text
+                                                          .isNotEmpty
+                                                      ? widget
+                                                          .newPasswordController
+                                                          .text
+                                                      : widget
+                                                          .passwordController
+                                                          .text,
+                                              phone:
+                                                  widget
+                                                      .phoneController
+                                                      .text,
+                                            ),
+                                            context,
+                                          );
+
+                                          setState(() {
+                                            isLoading =
+                                                false;
+                                            showSuccess =
+                                                true;
+                                          });
+
+                                          await Future.delayed(
+                                            Duration(
+                                              seconds: 2,
+                                            ),
+                                          );
+
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                              }
                             }
-                          }
-                        }
+                          },
+                          text:
+                              widget.employee != null &&
+                                      returnLocalDatabase(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .currentEmployee!
+                                              .role ==
+                                          'Owner'
+                                  ? 'Update Details'
+                                  : widget.employee !=
+                                          null &&
+                                      returnLocalDatabase(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .currentEmployee!
+                                              .role !=
+                                          'Owner'
+                                  ? 'Save New Password'
+                                  : 'Add Employee',
+                        );
                       },
-                      text:
-                          widget.employee != null &&
-                                  returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentEmployee!
-                                          .role ==
-                                      'Owner'
-                              ? 'Update Details'
-                              : widget.employee != null &&
-                                  returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentEmployee!
-                                          .role !=
-                                      'Owner'
-                              ? 'Save New Password'
-                              : 'Add Employee',
                     ),
                   ),
                 ),

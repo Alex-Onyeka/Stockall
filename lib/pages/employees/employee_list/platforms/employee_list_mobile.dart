@@ -46,7 +46,7 @@ class _EmployeeListMobileState
           listen: false,
         ).fetchUsers();
 
-    return tempEmp!;
+    return tempEmp;
   }
 
   // @override

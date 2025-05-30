@@ -15,19 +15,19 @@ class UserProvider extends ChangeNotifier {
 
   bool isLoading = false;
 
-  Future<List<TempUserClass>?> fetchUsers() async {
+  Future<List<TempUserClass>> fetchUsers() async {
     final authUser = _supabase.auth.currentUser;
     isLoading = true;
 
-    if (authUser == null) {
-      _currentUser = null;
-      return null;
-    }
+    // if (authUser == null) {
+    //   _currentUser = null;
+    //   return null;
+    // }
 
     final data = await _supabase
         .from('users')
         .select()
-        .eq('auth_user_id', authUser.id);
+        .eq('auth_user_id', authUser!.id);
 
     _users =
         data
