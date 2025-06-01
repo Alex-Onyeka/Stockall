@@ -36,6 +36,12 @@ void main() async {
     ),
   );
 
+  // Lock to portrait only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   Hive.registerAdapter(TempUserClassAdapter());
   await LocalUserDatabase().init();
   await Supabase.initialize(

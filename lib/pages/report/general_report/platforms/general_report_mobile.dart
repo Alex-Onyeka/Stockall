@@ -101,6 +101,7 @@ class _GeneralReportMobileState
       children: [
         Scaffold(
           appBar: AppBar(
+            toolbarHeight: 50,
             scrolledUnderElevation: 0,
             leading: IconButton(
               onPressed: () {
@@ -117,25 +118,12 @@ class _GeneralReportMobileState
               ),
             ),
             centerTitle: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.h4.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'General Report',
-                ),
-                SizedBox(height: 5),
-                Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                  ),
-                  'Summary of General Report',
-                ),
-              ],
+            title: Text(
+              style: TextStyle(
+                fontSize: theme.mobileTexts.h4.fontSize,
+                fontWeight: FontWeight.bold,
+              ),
+              'General Report',
             ),
           ),
           body: Padding(

@@ -12,6 +12,7 @@ import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/pages/profile/profile_page.dart';
+import 'package:stockitt/pages/referrals/referrals.dart';
 import 'package:stockitt/pages/report/general_report/general_report_page.dart';
 import 'package:stockitt/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
@@ -484,7 +485,16 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             NavListTileAlt(
                               height: 20,
-                              action: () {},
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return Referrals();
+                                    },
+                                  ),
+                                );
+                              },
                               title: 'Referrals',
                               icon:
                                   Icons

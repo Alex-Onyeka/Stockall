@@ -309,7 +309,7 @@ class _LoginMobileState extends State<LoginMobile> {
                         },
                         text: 'Login',
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 60),
                     ],
                   ),
                 ),
