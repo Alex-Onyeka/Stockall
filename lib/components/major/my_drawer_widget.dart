@@ -527,9 +527,14 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                         return Visibility(
                           visible: employees.isNotEmpty,
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 5.0,
-                            ),
+                            padding:
+                                widget.role == 'Owner'
+                                    ? const EdgeInsets.only(
+                                      bottom: 2,
+                                    )
+                                    : const EdgeInsets.only(
+                                      bottom: 20,
+                                    ),
                             child: NavListTileAlt(
                               height: 20,
                               action: () {
