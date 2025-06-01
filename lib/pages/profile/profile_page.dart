@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/notifications/platforms/notifications_mobile.dart';
+import 'package:stockitt/pages/profile/platforms/profile_page_mobile.dart';
 
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
-          return NotificationsMobile();
+          return ProfilePageMobile();
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {
           return Scaffold();

@@ -22,14 +22,14 @@ class MainButtonTransparent extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           border: Border.all(
             color: themeProvider.lightModeColor.prColor300,
             width: 1.5,
           ),
         ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           onTap: () {
             action!();
             FocusManager.instance.primaryFocus?.unfocus();

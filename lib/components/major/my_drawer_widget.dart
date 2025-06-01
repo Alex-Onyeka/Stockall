@@ -11,6 +11,7 @@ import 'package:stockitt/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockitt/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
+import 'package:stockitt/pages/profile/profile_page.dart';
 import 'package:stockitt/pages/report/general_report/general_report_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
@@ -77,346 +78,414 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 25.0,
+            horizontal: 15.0,
           ),
           child: Column(
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                children: [
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.height <
-                                680
-                            ? 35
-                            : 60,
-                  ),
-                  Row(
-                    spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.start,
-                    children: [
-                      Image.asset(mainLogoIcon, height: 22),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .h3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        'Stockitt',
+              Expanded(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height:
+                          MediaQuery.of(
+                                    context,
+                                  ).size.height <
+                                  680
+                              ? 35
+                              : 50,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10.0,
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.height <
-                                680
-                            ? 10
-                            : 20,
-                  ),
-                  NavListTile(
-                    thisIndex: 0,
-                    title: 'Home',
-                    icon: Icons.home_rounded,
-                  ),
-                  NavListTile(
-                    thisIndex: 1,
-                    title: 'Products',
-                    // icon: Icons.home_rounded,
-                    svg: productIconSvg,
-                    height: 16,
-                  ),
-                  NavListTile(
-                    thisIndex: 2,
-                    title: 'Sales',
-                    // icon: Icons.home_rounded,
-                    svg: salesIconSvg,
-                    height: 16,
-                  ),
-                  NavListTileAlt(
-                    height: 16,
-                    action: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return CustomerList();
-                          },
-                        ),
-                      );
-                    },
-                    title: 'Customers',
-                    svg: custBookIconSvg,
-                  ),
-                  NavListTileAlt(
-                    height: 16,
-                    action: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return EmployeeListPage(
-                              empId:
-                                  returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          ).currentEmployee !=
-                                          null
-                                      ? returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentEmployee!
-                                          .userId!
-                                      : '',
-                              role:
-                                  returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          ).currentEmployee !=
-                                          null
-                                      ? returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentEmployee!
-                                          .role
-                                      : '',
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    title: 'Empolyees',
-                    svg: employeesIconSvg,
-                  ),
-                  NavListTileAlt(
-                    height: 16,
-                    action: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ExpensesPage(
-                              isMain: true,
-                            );
-                          },
-                        ),
-                      ).then((_) {
-                        setState(() {});
-                      });
-                    },
-                    title: 'Expenses',
-                    svg: expensesIconSvg,
-                  ),
-                  NavListTileAlt(
-                    height: 16,
-                    action: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return GeneralReportPage();
-                          },
-                        ),
-                      );
-                    },
-                    title: 'Report',
-                    svg: reportIconSvg,
-                  ),
-                  SizedBox(height: 10),
-                  Divider(
-                    height:
-                        MediaQuery.of(context).size.height <
-                                680
-                            ? 15
-                            : 30,
-                    color: Colors.grey.shade200,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return NotificationsPage(
-                              notifications:
-                                  widget.notifications,
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    child: Visibility(
-                      visible: widget.role == 'Owner',
-                      child: SizedBox(
-                        height: 50,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 20.0,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Row(
-                                spacing: 10,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.start,
-                                children: [
-                                  Stack(
-                                    children: [
-                                      Icon(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
-                                        size: 22,
-                                        Icons
-                                            .notifications_on_outlined,
-                                      ),
-                                    ],
-                                  ),
-
-                                  Text(
-                                    style: TextStyle(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
-                                      fontSize: 14,
-                                      fontWeight:
-                                          FontWeight.bold,
+                      child: Row(
+                        spacing: 10,
+                        mainAxisAlignment:
+                            MainAxisAlignment.start,
+                        children: [
+                          Image.asset(
+                            mainLogoIcon,
+                            height: 22,
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Stockitt',
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height:
+                          MediaQuery.of(
+                                    context,
+                                  ).size.height <
+                                  680
+                              ? 10
+                              : 20,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Visibility(
+                              visible:
+                                  widget.role == 'Owner',
+                              child: NavListTileAlt(
+                                height: 20,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ProfilePage();
+                                      },
                                     ),
-                                    'Notifications',
-                                  ),
-                                ],
+                                  );
+                                },
+                                title: 'Profile',
+                                icon: Icons.person,
                               ),
-                              Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      // Provider.of<CompProvider>(
-                                      //   context,
-                                      //   listen: false,
-                                      // ).switchNotif();
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return NotificationsPage(
-                                              notifications:
-                                                  widget
-                                                      .notifications,
-                                            );
-                                          },
-                                        ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget.role == 'Owner',
+                              child: NavListTileAlt(
+                                height: 20,
+                                action: () {},
+                                title: 'Manage Shop',
+                                icon: Icons.home_filled,
+                              ),
+                            ),
+                            // NavListTile(
+                            //   thisIndex: 0,
+                            //   title: 'Home',
+                            //   icon: Icons.home_rounded,
+                            // ),
+                            // NavListTile(
+                            //   thisIndex: 1,
+                            //   title: 'Products',
+                            //   // icon: Icons.home_rounded,
+                            //   svg: productIconSvg,
+                            //   height: 16,
+                            // ),
+                            // NavListTile(
+                            //   thisIndex: 2,
+                            //   title: 'Sales',
+                            //   // icon: Icons.home_rounded,
+                            //   svg: salesIconSvg,
+                            //   height: 16,
+                            // ),
+                            NavListTileAlt(
+                              height: 16,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return CustomerList();
+                                    },
+                                  ),
+                                );
+                              },
+                              title: 'Customers',
+                              svg: custBookIconSvg,
+                            ),
+                            NavListTileAlt(
+                              height: 16,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return EmployeeListPage(
+                                        empId:
+                                            returnLocalDatabase(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).currentEmployee !=
+                                                    null
+                                                ? returnLocalDatabase(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).currentEmployee!.userId!
+                                                : '',
+                                        role:
+                                            returnLocalDatabase(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).currentEmployee !=
+                                                    null
+                                                ? returnLocalDatabase(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).currentEmployee!.role
+                                                : '',
                                       );
                                     },
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.all(
-                                            10,
-                                          ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            const Color.fromARGB(
-                                              208,
-                                              245,
-                                              245,
-                                              245,
+                                  ),
+                                );
+                              },
+                              title: 'Empolyees',
+                              svg: employeesIconSvg,
+                            ),
+                            NavListTileAlt(
+                              height: 16,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return ExpensesPage(
+                                        isMain: true,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  setState(() {});
+                                });
+                              },
+                              title: 'Expenses',
+                              svg: expensesIconSvg,
+                            ),
+                            NavListTileAlt(
+                              height: 16,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return GeneralReportPage();
+                                    },
+                                  ),
+                                );
+                              },
+                              title: 'Report',
+                              svg: reportIconSvg,
+                            ),
+                            SizedBox(height: 5),
+                            Divider(
+                              height:
+                                  MediaQuery.of(
+                                            context,
+                                          ).size.height <
+                                          680
+                                      ? 15
+                                      : 20,
+                              color: Colors.grey.shade200,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return NotificationsPage();
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Visibility(
+                                visible:
+                                    widget.role == 'Owner',
+                                child: SizedBox(
+                                  height: 50,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 20.0,
+                                        ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Row(
+                                          spacing: 10,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Stack(
+                                              children: [
+                                                Icon(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade400,
+                                                  size: 22,
+                                                  Icons
+                                                      .notifications_on_outlined,
+                                                ),
+                                              ],
                                             ),
-                                        shape:
-                                            BoxShape.circle,
-                                      ),
-                                      child: SvgPicture.asset(
-                                        height: 25,
-                                        width: 25,
-                                        notifIconSvg,
-                                        color:
-                                            widget.notifications
-                                                    .where(
-                                                      (
-                                                        notif,
-                                                      ) =>
-                                                          !notif.isViewed,
-                                                    )
-                                                    .isNotEmpty
-                                                ? null
-                                                : Colors
-                                                    .grey
-                                                    .shade500,
-                                      ),
+
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade900,
+                                                fontSize:
+                                                    14,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              'Notifications',
+                                            ),
+                                          ],
+                                        ),
+                                        Stack(
+                                          clipBehavior:
+                                              Clip.none,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                // Provider.of<CompProvider>(
+                                                //   context,
+                                                //   listen: false,
+                                                // ).switchNotif();
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return NotificationsPage();
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.all(
+                                                      10,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      const Color.fromARGB(
+                                                        208,
+                                                        245,
+                                                        245,
+                                                        245,
+                                                      ),
+                                                  shape:
+                                                      BoxShape
+                                                          .circle,
+                                                ),
+                                                child: SvgPicture.asset(
+                                                  height:
+                                                      25,
+                                                  width: 25,
+                                                  notifIconSvg,
+                                                  color:
+                                                      widget.notifications
+                                                              .where(
+                                                                (
+                                                                  notif,
+                                                                ) =>
+                                                                    !notif.isViewed,
+                                                              )
+                                                              .isNotEmpty
+                                                          ? null
+                                                          : Colors.grey.shade500,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              bottom: 25,
+                                              left: 32,
+                                              child: Visibility(
+                                                visible:
+                                                    widget
+                                                        .notifications
+                                                        .where(
+                                                          (
+                                                            notif,
+                                                          ) =>
+                                                              !notif.isViewed,
+                                                        )
+                                                        .isNotEmpty,
+                                                child: Container(
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        6,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    shape:
+                                                        BoxShape.circle,
+                                                    gradient:
+                                                        widget.theme.lightModeColor.secGradient,
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize:
+                                                            14,
+                                                        color:
+                                                            Colors.white,
+                                                      ),
+                                                      '${widget.notifications.where((notif) => !notif.isViewed).length}',
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Positioned(
-                                    bottom: 25,
-                                    left: 32,
-                                    child: Visibility(
-                                      visible:
-                                          widget
-                                              .notifications
-                                              .where(
-                                                (notif) =>
-                                                    !notif
-                                                        .isViewed,
-                                              )
-                                              .isNotEmpty,
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.all(
-                                              6,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          shape:
-                                              BoxShape
-                                                  .circle,
-                                          gradient:
-                                              widget
-                                                  .theme
-                                                  .lightModeColor
-                                                  .secGradient,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            style: TextStyle(
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              fontSize: 14,
-                                              color:
-                                                  Colors
-                                                      .white,
-                                            ),
-                                            '${widget.notifications.where((notif) => !notif.isViewed).length}',
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                            NavListTileAlt(
+                              height: 20,
+                              action: () {},
+                              title: 'Contact Us',
+                              icon: Icons.phone,
+                            ),
+                            NavListTileAlt(
+                              height: 20,
+                              action: () {},
+                              title:
+                                  'Privacy P. & Terms/C.',
+                              icon: Icons.menu_book_rounded,
+                            ),
+                            NavListTileAlt(
+                              height: 20,
+                              action: () {},
+                              title: 'Referrals',
+                              icon:
+                                  Icons
+                                      .card_giftcard_rounded,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               Column(
@@ -429,40 +498,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                         return Shimmer.fromColors(
                           baseColor: Colors.grey.shade300,
                           highlightColor: Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 15.0,
-                            ),
-                            child: Container(
-                              color: const Color.fromARGB(
-                                255,
-                                225,
-                                225,
-                                225,
-                              ),
-                              child: NavListTileAlt(
-                                height: 16,
-                                action: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return ConfirmationAlert(
-                                        theme: widget.theme,
-                                        message:
-                                            'You are about to Logout',
-                                        title:
-                                            'Are you Sure?',
-                                        action: () async {},
-                                      );
-                                    },
-                                  );
-                                },
-                                title: 'Employee Logout',
-                                // svg: reportIconSvg,
-                                icon: Icons.logout_rounded,
-                              ),
-                            ),
-                          ),
+                          child: Container(height: 20),
                         );
                       } else if (snapshot.hasError) {
                         return Container(height: 20);
@@ -472,10 +508,10 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                           visible: employees.isNotEmpty,
                           child: Padding(
                             padding: const EdgeInsets.only(
-                              bottom: 15.0,
+                              bottom: 5.0,
                             ),
                             child: NavListTileAlt(
-                              height: 16,
+                              height: 20,
                               action: () {
                                 showDialog(
                                   context: context,
@@ -518,7 +554,9 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               },
                               title: 'Employee Logout',
                               // svg: reportIconSvg,
-                              icon: Icons.logout_rounded,
+                              icon:
+                                  Icons
+                                      .person_remove_alt_1_outlined,
                             ),
                           ),
                         );
@@ -537,12 +575,12 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                 bottom: 15.0,
                               )
                               : const EdgeInsets.only(
-                                bottom: 30.0,
+                                bottom: 20.0,
                               ),
                       child: NavListTileAlt(
-                        height: 16,
+                        height: 20,
                         action: widget.action,
-                        title: 'Logout',
+                        title: 'Main Logout',
                         // svg: reportIconSvg,
                         icon: Icons.logout_rounded,
                       ),
@@ -646,27 +684,6 @@ class NavListTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Icon(
-                  //   color:
-                  //       returnNavProvider(
-                  //                 context,
-                  //               ).currentPage ==
-                  //               thisIndex
-                  //           ? const Color.fromARGB(
-                  //             255,
-                  //             4,
-                  //             49,
-                  //             199,
-                  //           )
-                  //           : Colors.grey,
-                  //   size:
-                  //       returnNavProvider(
-                  //                 context,
-                  //               ).currentPage ==
-                  //               thisIndex
-                  //           ? 22
-                  //           : 18,
-                  //   icon,
                   // ),
                   Text(
                     style: TextStyle(
@@ -678,7 +695,7 @@ class NavListTile extends StatelessWidget {
                               ? theme
                                   .lightModeColor
                                   .secColor200
-                              : Colors.grey.shade600,
+                              : Colors.grey.shade900,
                       fontSize:
                           returnNavProvider(
                                     context,
@@ -691,8 +708,8 @@ class NavListTile extends StatelessWidget {
                                     context,
                                   ).currentPage ==
                                   thisIndex
-                              ? FontWeight.w800
-                              : FontWeight.bold,
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                     ),
                     title,
                   ),
@@ -706,7 +723,7 @@ class NavListTile extends StatelessWidget {
                             ).currentPage ==
                             thisIndex
                         ? theme.lightModeColor.secColor200
-                        : Colors.grey.shade600,
+                        : Colors.grey.shade900,
                 size:
                     returnNavProvider(
                               context,
@@ -750,7 +767,7 @@ class NavListTileAlt extends StatelessWidget {
         action!();
       },
       child: SizedBox(
-        height: 50,
+        height: 45,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 20.0,
@@ -763,34 +780,39 @@ class NavListTileAlt extends StatelessWidget {
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Stack(
-                    children: [
-                      Visibility(
-                        visible: icon != null,
-                        child: Icon(
-                          color: Colors.grey.shade600,
-                          size: height,
-                          icon ??
-                              Icons
-                                  .arrow_forward_ios_rounded,
-                        ),
+                  SizedBox(
+                    width: 20,
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          Visibility(
+                            visible: icon != null,
+                            child: Icon(
+                              color: Colors.grey.shade600,
+                              size: height,
+                              icon ??
+                                  Icons
+                                      .arrow_forward_ios_rounded,
+                            ),
+                          ),
+                          Visibility(
+                            visible: svg != null,
+                            child: SvgPicture.asset(
+                              color: Colors.grey.shade600,
+                              svg ?? '',
+                              height: height,
+                            ),
+                          ),
+                        ],
                       ),
-                      Visibility(
-                        visible: svg != null,
-                        child: SvgPicture.asset(
-                          color: Colors.grey.shade600,
-                          svg ?? '',
-                          height: height,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
 
                   Text(
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: Colors.grey.shade900,
                       fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                     ),
                     title,
                   ),

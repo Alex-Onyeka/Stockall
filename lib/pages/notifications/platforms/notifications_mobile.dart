@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stockitt/classes/temp_notification.dart';
+import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/major/top_banner.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/products/product_details/product_details_page.dart';
+import 'package:stockitt/providers/notifications_provider.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 
 class NotificationsMobile extends StatelessWidget {
-  final List<TempNotification> notifications;
-  const NotificationsMobile({
-    super.key,
-    required this.notifications,
-  });
+  const NotificationsMobile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +71,33 @@ class NotificationsMobile extends StatelessWidget {
                           child: NotificatonTileMain(
                             notif: notif,
                             theme: theme,
+                            action: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'Are you sure you want to proceed with delete?',
+                                    title:
+                                        'Delete Notification?',
+                                    action: () {
+                                      Provider.of<
+                                        NotificationProvider
+                                      >(
+                                        context,
+                                        listen: false,
+                                      ).deleteNotification(
+                                        notif,
+                                      );
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    },
+                                  );
+                                },
+                              );
+                            },
                           ),
                         );
                       },
@@ -92,10 +118,12 @@ class NotificatonTileMain extends StatefulWidget {
     super.key,
     required this.notif,
     required this.theme,
+    required this.action,
   });
 
   final TempNotification notif;
   final ThemeProvider theme;
+  final Function() action;
 
   @override
   State<NotificatonTileMain> createState() =>
@@ -278,31 +306,19 @@ class _NotificatonTileMainState
                     ),
                     SizedBox(height: 5),
                     Divider(),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            spacing: 5,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  color:
-                                      Colors.grey.shade600,
-                                ),
-                                'Item:',
-                              ),
-                              Flexible(
-                                child: Text(
+                    InkWell(
+                      onTap: widget.action,
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              spacing: 5,
+                              children: [
+                                Text(
                                   style: TextStyle(
                                     fontSize:
                                         widget
@@ -311,42 +327,73 @@ class _NotificatonTileMainState
                                             .b3
                                             .fontSize,
                                     color:
-                                        widget
-                                            .theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                        Colors
+                                            .grey
+                                            .shade600,
                                   ),
-                                  cutLongText(
-                                    widget.notif.itemName ??
-                                        'Product',
+                                  'Item:',
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      color:
+                                          widget
+                                              .theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    cutLongText(
+                                      widget
+                                              .notif
+                                              .itemName ??
+                                          'Product',
+                                    ),
                                   ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            spacing: 3,
+                            children: [
+                              Icon(
+                                size: 20,
+                                color: Colors.grey,
+                                Icons
+                                    .delete_outline_rounded,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                formatDateWithoutYear(
+                                  widget.notif.date,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
-                            color:
-                                widget
-                                    .theme
-                                    .lightModeColor
-                                    .prColor300,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          formatDateWithoutYear(
-                            widget.notif.date,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

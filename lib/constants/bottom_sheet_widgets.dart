@@ -1436,15 +1436,12 @@ class _CustomBottomPanelState
                           ),
                           formatLargeNumberDouble(
                             qqty *
-                                (cartItem
-                                        .item
-                                        .sellingPrice -
-                                    returnSalesProvider(
-                                      context,
-                                      listen: false,
-                                    ).discountCheck(
-                                      cartItem.item,
-                                    )),
+                                (returnSalesProvider(
+                                  context,
+                                  listen: false,
+                                ).discountCheck(
+                                  cartItem.item,
+                                )),
                           ),
                         ),
                       ],

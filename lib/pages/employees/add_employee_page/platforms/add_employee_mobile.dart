@@ -492,7 +492,8 @@ class _AddEmployeeMobileState
                                       [];
                                   for (var item in users) {
                                     tempEmails.add(
-                                      item.email,
+                                      item.email
+                                          .toLowerCase(),
                                     );
                                   }
                                   return tempEmails;

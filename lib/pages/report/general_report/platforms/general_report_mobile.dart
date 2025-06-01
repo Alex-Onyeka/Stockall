@@ -807,7 +807,14 @@ class _GeneralReportMobileState
                                                                 double totalExpenses() {
                                                                   double temp =
                                                                       0;
-                                                                  for (var item in expensesSnapshot.data!) {
+                                                                  for (var item in returnExpensesProvider(
+                                                                    context,
+                                                                    listen:
+                                                                        false,
+                                                                  ).returnExpensesByDayOrWeek(
+                                                                    context,
+                                                                    expensesSnapshot.data!,
+                                                                  )) {
                                                                     temp +=
                                                                         item.amount;
                                                                   }
@@ -911,7 +918,14 @@ class _GeneralReportMobileState
                                                                     double totalExpenses() {
                                                                       double temp =
                                                                           0;
-                                                                      for (var item in expensesSnapshot.data!) {
+                                                                      for (var item in returnExpensesProvider(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      ).returnExpensesByDayOrWeek(
+                                                                        context,
+                                                                        expensesSnapshot.data!,
+                                                                      )) {
                                                                         temp +=
                                                                             item.amount;
                                                                       }
@@ -1713,7 +1727,10 @@ class _GeneralReportMobileState
                                                           .totalQuantity
                                                           .toInt(),
                                               bestName:
-                                                  items ==
+                                                  productRecord
+                                                          .isEmpty
+                                                      ? 'No Sales Yet'
+                                                      : items ==
                                                           null
                                                       ? ''
                                                       : items
@@ -1732,7 +1749,10 @@ class _GeneralReportMobileState
                                                           .totalQuantity
                                                           .toInt(),
                                               leastName:
-                                                  leastItems ==
+                                                  productRecord
+                                                          .isEmpty
+                                                      ? 'No Sales Yet'
+                                                      : leastItems ==
                                                           null
                                                       ? ''
                                                       : leastItems
@@ -2086,78 +2106,88 @@ class StockSummaryContainer extends StatelessWidget {
                           ),
                           'Best Selling Product:',
                         ),
-                        Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          spacing: 0,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              bestName ?? '',
-                            ),
-                            Row(
+                        Builder(
+                          builder: (context) {
+                            return Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              spacing: 0,
                               children: [
-                                Flexible(
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
-                                      fontWeight:
-                                          FontWeight.normal,
-                                    ),
-                                    'Sold ',
-                                  ),
-                                ),
                                 Text(
                                   style: TextStyle(
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                    fontWeight:
-                                        FontWeight.w700,
-                                  ),
-                                  '(${bestSelling?.toString() ?? '0'})',
-                                ),
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
+                                            .b1
                                             .fontSize,
                                     color:
                                         Colors
                                             .grey
                                             .shade700,
                                     fontWeight:
-                                        FontWeight.normal,
+                                        FontWeight.w700,
                                   ),
-                                  ' Items',
+                                  bestName ?? '',
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade700,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        'Sold ',
+                                      ),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                        fontWeight:
+                                            FontWeight.w700,
+                                      ),
+                                      '(${bestSelling?.toString() ?? '0'})',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                      ),
+                                      ' Items',
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ],
                     ),

@@ -131,16 +131,43 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  // Future<AuthResponse> signIn(
-  //   String email,
-  //   String password,
-  // ) {
-  //   switchLoader();
-  //   return _client.auth.signInWithPassword(
-  //     email: email,
-  //     password: password,
-  //   );
-  // }
+  Future<void> changePasswordAndUpdateLocal({
+    required String newPassword,
+    required BuildContext context,
+  }) async {
+    try {
+      // 🔐 Step 1: Change in Supabase Auth
+      final response = await _client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      final user = response.user;
+      if (user == null) {
+        throw Exception(
+          "Password update failed: No user returned.",
+        );
+      }
+
+      print(
+        "🔐 Password successfully updated in Supabase Auth for ${user.email}",
+      );
+
+      // ✅ Step 2: Update password in your 'users' table
+      final updateResponse =
+          await _client
+              .from('users')
+              .update({'password': newPassword})
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+      print(
+        "✅ Password updated in 'users' table: $updateResponse",
+      );
+    } catch (e) {
+      print("❌ Error changing password: $e");
+      rethrow;
+    }
+  }
 
   Future<void> signOut() async {
     await _client.auth.signOut();

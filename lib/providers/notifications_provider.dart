@@ -10,6 +10,11 @@ class NotificationProvider with ChangeNotifier {
   List<TempNotification> get notifications =>
       _notifications;
 
+  void deleteNotification(TempNotification notif) {
+    notifications.remove(notif);
+    notifyListeners();
+  }
+
   Future<List<TempNotification>> fetchRecentNotifications(
     int shopId,
   ) async {
@@ -17,13 +22,15 @@ class NotificationProvider with ChangeNotifier {
         .from('notifications')
         .select()
         .eq('shop_id', shopId)
+        .order('is_viewed', ascending: true)
         .order('date', ascending: false)
-        .limit(10);
+        .limit(5);
 
     _notifications =
         (response as List)
             .map((item) => TempNotification.fromJson(item))
             .toList();
+
     notifyListeners();
     return _notifications;
   }

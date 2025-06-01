@@ -8,6 +8,7 @@ import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/small_button_main.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
+import 'package:stockitt/constants/app_bar.dart';
 import 'package:stockitt/constants/bottom_sheet_widgets.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
@@ -74,100 +75,70 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               FocusManager.instance.primaryFocus?.unfocus(),
 
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 60,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.maybePop(context);
-            },
-            icon: Padding(
-              padding: const EdgeInsets.only(
-                left: 10.0,
-                right: 5,
-              ),
-              child: Icon(Icons.arrow_back_ios_new_rounded),
-            ),
-          ),
-          centerTitle: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.h4.fontSize,
-                  fontWeight: FontWeight.bold,
+        appBar: appBar(
+          context: context,
+          title: 'Cart Items',
+          widget: Visibility(
+            visible:
+                returnSalesProvider(
+                  context,
+                ).cartItems.isNotEmpty,
+            child: InkWell(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message:
+                          'You are about to clear the items in your cart, are you sure you want to proceed?',
+                      title: 'Are you sure?',
+                      action: () {
+                        returnSalesProvider(
+                          context,
+                          listen: false,
+                        ).clearCart();
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                );
+              },
+              child: Container(
+                height: 35,
+                margin: EdgeInsets.only(right: 10),
+                padding: EdgeInsets.only(
+                  // vertical: 10,
+                  left: 10,
+                  right: 5,
                 ),
-                'Cart Items',
-              ),
-            ],
-          ),
-          actions: [
-            Visibility(
-              visible:
-                  returnSalesProvider(
-                    context,
-                  ).cartItems.isNotEmpty,
-              child: InkWell(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message:
-                            'You are about to clear the items in your cart, are you sure you want to proceed?',
-                        title: 'Are you sure?',
-                        action: () {
-                          returnSalesProvider(
-                            context,
-                            listen: false,
-                          ).clearCart();
-                          Navigator.of(context).pop();
-                        },
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  height: 35,
-                  margin: EdgeInsets.only(right: 10),
-                  padding: EdgeInsets.only(
-                    // vertical: 10,
-                    left: 10,
-                    right: 5,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey.shade100,
                   ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey.shade100,
-                    ),
-                  ),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          'Clear Cart',
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Icon(
-                          size: 18,
-                          color: Colors.grey.shade600,
-                          Icons.clear,
-                        ),
-                      ],
-                    ),
+                        'Clear Cart',
+                      ),
+                      Icon(
+                        size: 18,
+                        color: Colors.grey.shade600,
+                        Icons.clear,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
         body: FutureBuilder(
           future: _productsFuture,

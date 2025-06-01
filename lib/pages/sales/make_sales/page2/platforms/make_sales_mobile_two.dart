@@ -6,6 +6,7 @@ import 'package:stockitt/components/alert_dialogues/info_alert.dart';
 import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/buttons/payment_type_button.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockitt/constants/app_bar.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
@@ -66,36 +67,9 @@ class _MakeSalesMobileTwoState
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 60,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Padding(
-                padding: const EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                ),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                ),
-              ),
-            ),
-            centerTitle: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b1.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'Select Payment Method',
-                ),
-              ],
-            ),
+          appBar: appBar(
+            context: context,
+            title: 'Select Payment Method',
           ),
           body: FutureBuilder(
             future: localUserFuture,

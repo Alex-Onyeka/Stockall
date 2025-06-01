@@ -7,6 +7,7 @@ import 'package:stockitt/components/buttons/main_button_p.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockitt/components/text_fields/money_textfield.dart';
+import 'package:stockitt/constants/app_bar.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/main.dart';
@@ -120,92 +121,56 @@ class _ProductDetailsMobileState
           return Stack(
             children: [
               Scaffold(
-                appBar: AppBar(
-                  toolbarHeight: 60,
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10.0,
-                        right: 5,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                      ),
-                    ),
-                  ),
-                  centerTitle: true,
-                  title: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b1
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        'Product Details',
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    Visibility(
-                      visible: localUser!.role == 'Owner',
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return AddProduct(
-                                  product: product,
-                                );
-                              },
-                            ),
-                          ).then((context) {
-                            setState(() {
-                              productFuture = getProduct();
-                            });
+                appBar: appBar(
+                  context: context,
+                  title: 'Product Details',
+                  widget: Visibility(
+                    visible: localUser!.role == 'Owner',
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AddProduct(
+                                product: product,
+                              );
+                            },
+                          ),
+                        ).then((context) {
+                          setState(() {
+                            productFuture = getProduct();
                           });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(right: 5),
-                          padding: EdgeInsets.only(
-                            right: 15,
-                            left: 15,
-                            top: 5,
-                            bottom: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            // border: Border.all(
-                            //   color: Colors.grey.shade200,
-                            // ),
-                          ),
-                          child: Row(
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Edit',
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right: 5),
+                        padding: EdgeInsets.only(
+                          right: 15,
+                          left: 15,
+                          top: 5,
+                          bottom: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          // border: Border.all(
+                          //   color: Colors.grey.shade200,
+                          // ),
+                        ),
+                        child: Row(
+                          spacing: 3,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
-                              Icon(Icons.edit_note_rounded),
-                            ],
-                          ),
+                              'Edit',
+                            ),
+                            Icon(Icons.edit_note_rounded),
+                          ],
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 body: Padding(
                   padding: const EdgeInsets.symmetric(

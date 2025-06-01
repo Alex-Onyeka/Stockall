@@ -343,10 +343,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        return NotificationsPage(
-                                          notifications:
-                                              notifications,
-                                        );
+                                        return NotificationsPage();
                                       },
                                     ),
                                   ).then((_) {

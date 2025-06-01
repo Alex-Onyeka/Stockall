@@ -49,12 +49,12 @@ class UserProvider extends ChangeNotifier {
   TempUserClass? _currentUser;
   TempUserClass? get currentUserMain => _currentUser;
 
-  Future<void> fetchCurrentUser() async {
+  Future<TempUserClass?> fetchCurrentUser() async {
     final authUser = _supabase.auth.currentUser;
 
     if (authUser == null) {
       _currentUser = null;
-      return;
+      return null;
     }
 
     final data =
@@ -66,6 +66,7 @@ class UserProvider extends ChangeNotifier {
 
     _currentUser = TempUserClass.fromJson(data);
     notifyListeners();
+    return _currentUser;
   }
 
   Future<TempUserClass> fetchUserById(String userId) async {
@@ -79,6 +80,23 @@ class UserProvider extends ChangeNotifier {
     var user = TempUserClass.fromJson(data);
     notifyListeners();
     return user;
+  }
+
+  Future<void> updatePasswordInSupabase({
+    required String userId,
+    required String newPassword,
+  }) async {
+    try {
+      await _supabase
+          .from('users')
+          .update({'password': newPassword})
+          .eq('auth_user_id', userId)
+          .single();
+
+      print("✅ Password updated on Supabase");
+    } catch (e) {
+      print("❌ Failed to update password: $e");
+    }
   }
 
   // TempUserClass? currentUserEmp;

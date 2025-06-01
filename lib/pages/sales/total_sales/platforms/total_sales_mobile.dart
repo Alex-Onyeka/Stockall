@@ -5,6 +5,7 @@ import 'package:stockitt/components/calendar/calendar_widget.dart';
 import 'package:stockitt/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
+import 'package:stockitt/constants/app_bar.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/main.dart';
 import 'package:stockitt/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -89,35 +90,9 @@ class _TotalSalesMobileState
         ).clearReceiptDate();
       },
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 60,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Padding(
-              padding: const EdgeInsets.only(
-                left: 10.0,
-                right: 5,
-              ),
-              child: Icon(Icons.arrow_back_ios_new_rounded),
-            ),
-          ),
-          centerTitle: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b1.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                returnReceiptProvider(context).dateSet ??
-                    'Todays Sales',
-              ),
-            ],
-          ),
+        appBar: appBar(
+          context: context,
+          title: 'All Sales',
         ),
         body: FutureBuilder(
           future: mainReceiptFuture,

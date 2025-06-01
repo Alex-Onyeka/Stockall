@@ -115,10 +115,11 @@ class SalesProvider extends ChangeNotifier {
 
   double discountCheck(TempProductClass product) {
     double tempValue = 0;
-    if (product.discount == null) {
+    if (product.discount == null || product.discount == 0) {
       tempValue = product.sellingPrice;
     } else {
       tempValue =
+          product.sellingPrice -
           (product.sellingPrice *
               (product.discount! / 100));
     }

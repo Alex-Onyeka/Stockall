@@ -4,6 +4,7 @@ import 'package:stockitt/components/buttons/floating_action_butto.dart';
 import 'package:stockitt/components/major/empty_widget_display.dart';
 import 'package:stockitt/components/major/empty_widget_display_only.dart';
 import 'package:stockitt/components/text_fields/text_field_barcode.dart';
+import 'package:stockitt/constants/app_bar.dart';
 import 'package:stockitt/constants/calculations.dart';
 import 'package:stockitt/constants/constants_main.dart';
 import 'package:stockitt/constants/scan_barcode.dart';
@@ -81,34 +82,9 @@ class _TotalProductsPageState
           () =>
               FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 60,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Padding(
-              padding: const EdgeInsets.only(
-                left: 10.0,
-                right: 0,
-              ),
-              child: Icon(Icons.arrow_back_ios_new_rounded),
-            ),
-          ),
-          centerTitle: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.h4.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                'All Products',
-              ),
-            ],
-          ),
+        appBar: appBar(
+          context: context,
+          title: 'All Products',
         ),
         floatingActionButton: Visibility(
           visible:
