@@ -38,9 +38,9 @@ class _DashboardState extends State<Dashboard> {
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 500) {
+          if (constraints.maxWidth < 550) {
             return DashboardMobile();
-          } else if (constraints.maxWidth > 500 &&
+          } else if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {
             return DashboardTablet();
           } else {

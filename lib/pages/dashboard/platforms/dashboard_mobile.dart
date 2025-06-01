@@ -56,27 +56,27 @@ class _DashboardMobileState extends State<DashboardMobile> {
   bool isLoading = false;
   bool showSuccess = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    notificationsFuture = fetchNotifications();
-    mainReceiptFuture = getMainReceipts();
-    getProdutRecordsFuture = getProductSalesRecord();
-    expensesFuture = getExpenses();
-    // shopFuture = getShop();
-    shop =
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      clearDate();
-      returnExpensesProvider(
-        context,
-        listen: false,
-      ).clearExpenseDate();
-    });
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   notificationsFuture = fetchNotifications();
+  //   mainReceiptFuture = getMainReceipts();
+  //   getProdutRecordsFuture = getProductSalesRecord();
+  //   expensesFuture = getExpenses();
+  //   // shopFuture = getShop();
+  //   shop =
+  //       returnShopProvider(
+  //         context,
+  //         listen: false,
+  //       ).userShop!;
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     clearDate();
+  //     returnExpensesProvider(
+  //       context,
+  //       listen: false,
+  //     ).clearExpenseDate();
+  //   });
+  // }
 
   late Future<List<TempMainReceipt>> mainReceiptFuture;
 
@@ -158,14 +158,31 @@ class _DashboardMobileState extends State<DashboardMobile> {
     super.initState();
     notificationsFuture = fetchNotifications();
     getProdutRecordsFuture = getProductSalesRecord();
+    mainReceiptFuture = getMainReceipts();
     expensesFuture = getExpenses();
-    shop =
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       clearDate();
+
+      final provider = returnShopProvider(
+        context,
+        listen: false,
+      );
+
+      if (provider.userShop != null) {
+        shop = provider.userShop!;
+      } else {
+        final fetchedShop = await provider.getUserShop(
+          AuthService().currentUser!.id,
+        );
+        if (fetchedShop != null) {
+          shop = fetchedShop;
+        }
+      }
+
+      setState(
+        () {},
+      ); // Update the UI once shop is assigned
     });
   }
 
@@ -304,10 +321,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 },
                                 theme: theme,
                                 notifications: [],
-                                subText:
-                                    shop.shopAddress ??
-                                    shop.email,
-                                title: shop.name,
                               );
                             } else if (snapshot.hasError) {
                               return TopNavBar(
@@ -323,10 +336,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 },
                                 theme: theme,
                                 notifications: [],
-                                subText:
-                                    shop.shopAddress ??
-                                    shop.email,
-                                title: shop.name,
                               );
                             } else {
                               List<TempNotification>
@@ -364,15 +373,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 theme: theme,
                                 notifications:
                                     notifications,
-                                subText:
-                                    shop.shopAddress == null
-                                        ? shop.email
-                                        : shop
-                                            .shopAddress!
-                                            .isEmpty
-                                        ? shop.email
-                                        : shop.shopAddress!,
-                                title: shop.name,
                               );
                             }
                           },

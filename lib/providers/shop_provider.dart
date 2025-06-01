@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockitt/classes/temp_shop_class.dart';
+import 'package:stockitt/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShopProvider extends ChangeNotifier {
@@ -29,6 +30,68 @@ class ShopProvider extends ChangeNotifier {
     }
 
     return TempShopClass.fromJson(response);
+  }
+
+  Future<void> updateShopContactDetails({
+    required int shopId,
+    required String name,
+    required String email,
+    required String? phoneNumber,
+  }) async {
+    try {
+      await supabase
+          .from('shops')
+          .update({
+            'name': name,
+            'email': email,
+            'phone_number': phoneNumber,
+          })
+          .eq('shop_id', shopId)
+          .maybeSingle();
+
+      final response = await getUserShop(
+        AuthService().currentUser!.id,
+      );
+
+      if (response != null) {
+        setShop(response);
+        notifyListeners();
+      }
+    } catch (e) {
+      print("❌ Failed to update contact details: $e");
+    }
+  }
+
+  Future<void> updateShopLocation({
+    required int shopId,
+    required String country,
+    required String state,
+    required String city,
+    required String? address,
+  }) async {
+    try {
+      final response =
+          await supabase
+              .from('shops')
+              .update({
+                'country': country,
+                'state': state,
+                'city': city,
+                'shop_address': address,
+              })
+              .eq('shop_id', shopId)
+              .maybeSingle();
+      final shop = await getUserShop(
+        AuthService().currentUser!.id,
+      );
+
+      if (response != null) {
+        setShop(shop!);
+        notifyListeners();
+      }
+    } catch (e) {
+      print("❌ Failed to update location: $e");
+    }
   }
 
   Future<List<String>> fetchShopCategories(

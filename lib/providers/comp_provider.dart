@@ -58,7 +58,9 @@ class CompProvider extends ChangeNotifier {
                       child: SizedBox(
                         width: 180,
                         child: Lottie.asset(
-                          mainLoader,
+                          mainLoader.isEmpty
+                              ? 'assets/animations/main_loader.json'
+                              : mainLoader,
                           height: 80,
                         ),
                       ),
@@ -115,7 +117,11 @@ class CompProvider extends ChangeNotifier {
                       alignment: Alignment(0, -0.2),
                       child: SizedBox(
                         width: 180,
-                        child: Lottie.asset(successAnim),
+                        child: Lottie.asset(
+                          successAnim.isEmpty
+                              ? 'assets/animations/check_animation.json'
+                              : successAnim,
+                        ),
                       ),
                     ),
                     Align(

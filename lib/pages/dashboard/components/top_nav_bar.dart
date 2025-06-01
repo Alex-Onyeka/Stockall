@@ -10,8 +10,8 @@ import 'package:stockitt/providers/theme_provider.dart';
 
 class TopNavBar extends StatelessWidget {
   final List<TempNotification> notifications;
-  final String title;
-  final String subText;
+  final String? title;
+  final String? subText;
   final Function()? action;
   final ThemeProvider theme;
 
@@ -21,8 +21,8 @@ class TopNavBar extends StatelessWidget {
   const TopNavBar({
     super.key,
     required this.notifications,
-    required this.title,
-    required this.subText,
+    this.title,
+    this.subText,
     required this.theme,
     required this.openSideBar,
     this.action,
@@ -108,7 +108,13 @@ class TopNavBar extends StatelessWidget {
                                   .fontWeightBold,
                           color: Colors.black,
                         ),
-                        cutLongText(title, 17),
+                        cutLongText(
+                          title ??
+                              returnShopProvider(
+                                context,
+                              ).userShop!.name,
+                          17,
+                        ),
                       ),
                       SizedBox(width: 5),
                       SvgPicture.asset(
@@ -127,7 +133,13 @@ class TopNavBar extends StatelessWidget {
                           theme.lightModeColor.prColor250,
                       fontWeight: FontWeight.w500,
                     ),
-                    cutLongText(subText, 22),
+                    cutLongText(
+                      subText ??
+                          returnShopProvider(
+                            context,
+                          ).userShop!.email,
+                      22,
+                    ),
                   ),
                   SizedBox(height: 0),
                   Row(

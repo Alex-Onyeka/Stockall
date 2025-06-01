@@ -13,6 +13,7 @@ import 'package:stockitt/pages/expenses/expenses_page.dart';
 import 'package:stockitt/pages/notifications/notifications_page.dart';
 import 'package:stockitt/pages/profile/profile_page.dart';
 import 'package:stockitt/pages/report/general_report/general_report_page.dart';
+import 'package:stockitt/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockitt/providers/theme_provider.dart';
 import 'package:stockitt/services/auth_service.dart';
 
@@ -161,7 +162,16 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                   widget.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 20,
-                                action: () {},
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ShopPage();
+                                      },
+                                    ),
+                                  );
+                                },
                                 title: 'Manage Shop',
                                 icon: Icons.home_filled,
                               ),

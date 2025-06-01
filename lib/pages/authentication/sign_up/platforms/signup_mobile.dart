@@ -156,6 +156,10 @@ class _SignupMobileState extends State<SignupMobile> {
                 builder: (context) => ShopBannerScreen(),
               ),
             );
+            setState(() {
+              isLoading = false;
+              showSuccess = false;
+            });
           });
         } else {
           setState(() {
@@ -179,7 +183,7 @@ class _SignupMobileState extends State<SignupMobile> {
         setState(() {
           isLoading = false;
         });
-        print(e);
+        // print(e);
         if (!context.mounted) return;
         showDialog(
           // ignore: use_build_context_synchronously
@@ -221,66 +225,68 @@ class _SignupMobileState extends State<SignupMobile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
-        leading: InkWell(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 10,
-            ),
-            child: Icon(
-              color: Colors.grey,
-              Icons.arrow_back_ios_new_rounded,
-            ),
-          ),
-        ),
-        leadingWidth: 10,
-        centerTitle: true,
-        title: InkWell(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Row(
-            spacing: 10,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(mainLogoIcon, height: 20),
-              Text(
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 25,
-                  fontWeight:
-                      widget
-                          .theme
-                          .mobileTexts
-                          .h3
-                          .fontWeightBold,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            backgroundColor: Colors.white,
+            leading: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 10,
                 ),
-                'Stockitt',
+                child: Icon(
+                  color: Colors.grey,
+                  Icons.arrow_back_ios_new_rounded,
+                ),
+              ),
+            ),
+            leadingWidth: 10,
+            centerTitle: true,
+            title: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Row(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(mainLogoIcon, height: 20),
+                  Text(
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 25,
+                      fontWeight:
+                          widget
+                              .theme
+                              .mobileTexts
+                              .h3
+                              .fontWeightBold,
+                    ),
+                    'Stockitt',
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              Opacity(
+                opacity: 0.0,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20.0,
+                  ),
+                  child: Icon(Icons.clear),
+                ),
               ),
             ],
           ),
-        ),
-        actions: [
-          Opacity(
-            opacity: 0.0,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: Icon(Icons.clear),
-            ),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          SafeArea(
+          body: SafeArea(
             child: Column(
               children: [
                 Expanded(
@@ -430,22 +436,22 @@ class _SignupMobileState extends State<SignupMobile> {
               ],
             ),
           ),
-          Visibility(
-            visible: isLoading,
-            child: Provider.of<CompProvider>(
-              context,
-              listen: false,
-            ).showLoader('Loading'),
-          ),
-          Visibility(
-            visible: showSuccess,
-            child: Provider.of<CompProvider>(
-              context,
-              listen: false,
-            ).showSuccess('Account Created Successfully'),
-          ),
-        ],
-      ),
+        ),
+        Visibility(
+          visible: isLoading,
+          child: Provider.of<CompProvider>(
+            context,
+            listen: false,
+          ).showLoader('Loading'),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: Provider.of<CompProvider>(
+            context,
+            listen: false,
+          ).showSuccess('Account Created Successfully'),
+        ),
+      ],
     );
   }
 }

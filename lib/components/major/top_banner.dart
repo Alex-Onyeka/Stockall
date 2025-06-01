@@ -55,73 +55,85 @@ class TopBanner extends StatelessWidget {
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Visibility(
-                        visible:
-                            isMain != null ? true : false,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            onTap: () {
-                              returnExpensesProvider(
-                                context,
-                                listen: false,
-                              ).clearExpenseDate();
-                              Navigator.of(context).pop();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 10,
-                              ),
-                              child: Icon(
-                                Icons
-                                    .arrow_back_ios_new_rounded,
-                                size: 20,
-                                color: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      if (isMain != null) {
+                        returnExpensesProvider(
+                          context,
+                          listen: false,
+                        ).clearExpenseDate();
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Visibility(
+                          visible:
+                              isMain != null ? true : false,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              onTap: () {
+                                returnExpensesProvider(
+                                  context,
+                                  listen: false,
+                                ).clearExpenseDate();
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 10,
+                                    ),
+                                child: Icon(
+                                  Icons
+                                      .arrow_back_ios_new_rounded,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Column(
-                        spacing: 5,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .h4
-                                      .fontSize,
-                              fontWeight:
-                                  theme
-                                      .mobileTexts
-                                      .h4
-                                      .fontWeightBold,
+                        Column(
+                          spacing: 5,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .h4
+                                        .fontSize,
+                                fontWeight:
+                                    theme
+                                        .mobileTexts
+                                        .h4
+                                        .fontWeightBold,
+                              ),
+                              title,
                             ),
-                            title,
-                          ),
-                          Text(
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                            Text(
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              subTitle,
                             ),
-                            subTitle,
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   Container(
                     height: 40,

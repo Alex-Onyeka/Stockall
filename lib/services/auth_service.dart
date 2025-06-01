@@ -7,15 +7,15 @@ class AuthService extends ChangeNotifier {
   bool isLoading = false;
   bool isSuccessLoading = false;
 
-  void switchLoader() {
-    isLoading = !isLoading;
-    notifyListeners();
-  }
+  // void switchLoader() {
+  //   isLoading = !isLoading;
+  //   notifyListeners();
+  // }
 
-  void switchSuccessLoader() {
-    isSuccessLoading = !isSuccessLoading;
-    notifyListeners();
-  }
+  // void switchSuccessLoader() {
+  //   isSuccessLoading = !isSuccessLoading;
+  //   notifyListeners();
+  // }
 
   final SupabaseClient _client = Supabase.instance.client;
 
@@ -81,7 +81,7 @@ class AuthService extends ChangeNotifier {
     String password,
     BuildContext context,
   ) async {
-    switchLoader(); // Start loader
+    // switchLoader(); // Start loader
 
     try {
       // 1. Sign in via Supabase Auth
@@ -114,10 +114,12 @@ class AuthService extends ChangeNotifier {
       });
 
       // 4. Store the user in local DB
-      await returnLocalDatabase(
-        context,
-        listen: false,
-      ).insertUser(tempUser);
+      if (context.mounted) {
+        await returnLocalDatabase(
+          context,
+          listen: false,
+        ).insertUser(tempUser);
+      }
 
       print(
         "✅ User signed in and saved locally: ${tempUser.email}",
@@ -127,7 +129,7 @@ class AuthService extends ChangeNotifier {
       print("❌ Sign-in failed: $e");
       rethrow;
     } finally {
-      switchLoader(); // Stop loader
+      // switchLoader(); // Stop loader
     }
   }
 

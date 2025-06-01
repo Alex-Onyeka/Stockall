@@ -22,6 +22,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   late Future<TempShopClass?> shopFuture;
   bool _navigated = false;
+  bool _providersInitialized = false;
 
   @override
   void initState() {
@@ -59,10 +60,15 @@ class _HomeState extends State<Home> {
       builder: (context, shopSnapshot) {
         if (shopSnapshot.connectionState ==
             ConnectionState.waiting) {
-          return returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader('Loading');
+          // return returnCompProvider(
+          //   context,
+          //   listen: false,
+          // ).showLoader('Loading');
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         } else if (shopSnapshot.hasError) {
           return Scaffold(
             body: Center(
@@ -88,23 +94,26 @@ class _HomeState extends State<Home> {
                 MaterialPageRoute(
                   builder: (context) => ShopBannerScreen(),
                 ),
-                (route) =>
-                    false, // removes all previous routes
+                (route) => false,
               );
             }
           });
           return const Scaffold();
         } else {
-          // Shop exists, now check local user
           return FutureBuilder<TempUserClass?>(
             future: localUserFuture,
             builder: (context, userSnapshot) {
               if (userSnapshot.connectionState ==
                   ConnectionState.waiting) {
-                return returnCompProvider(
-                  context,
-                  listen: false,
-                ).showLoader('Loading');
+                // return returnCompProvider(
+                //   context,
+                //   listen: false,
+                // ).showLoader('Loading');
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               } else if (userSnapshot.hasError) {
                 return Scaffold(
                   body: EmptyWidgetDisplayOnly(
@@ -118,26 +127,26 @@ class _HomeState extends State<Home> {
                 );
               } else if (userSnapshot.data == null &&
                   !_navigated) {
-                WidgetsBinding.instance.addPostFrameCallback((
-                  _,
-                ) {
-                  if (mounted) {
-                    setState(() {
-                      _navigated = true;
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _navigated = true;
+                        });
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EmpAuth(),
+                          ),
+                          (route) => false,
+                        );
+                      }
                     });
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EmpAuth(),
-                      ),
-                      (route) =>
-                          false, // removes all previous routes
-                    );
-                  }
-                });
                 return const Scaffold();
-              } else {
-                // All good, set providers and show normal page
+              } else if (!_providersInitialized &&
+                  shopSnapshot.data != null &&
+                  userSnapshot.data != null) {
+                // Only set providers once
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
                       if (mounted) {
@@ -149,19 +158,21 @@ class _HomeState extends State<Home> {
                           context,
                           listen: false,
                         ).fetchCurrentUser();
+                        _providersInitialized = true;
                       }
                     });
+              }
 
-                switch (navProv.currentPage) {
-                  case 0:
-                    return const Dashboard();
-                  case 1:
-                    return const ProductsPage();
-                  case 2:
-                    return const SalesPage();
-                  default:
-                    return const Dashboard();
-                }
+              // Show the actual content
+              switch (navProv.currentPage) {
+                case 0:
+                  return const Dashboard();
+                case 1:
+                  return const ProductsPage();
+                case 2:
+                  return const SalesPage();
+                default:
+                  return const Dashboard();
               }
             },
           );

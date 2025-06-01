@@ -216,8 +216,14 @@ ValidateInputProvider returnValidate(
   );
 }
 
-ThemeProvider returnTheme(BuildContext context) {
-  return Provider.of<ThemeProvider>(context);
+ThemeProvider returnTheme(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ThemeProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 DataProvider returnData(
