@@ -483,7 +483,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             records,
                                                           ),
                                                           currentUser:
-                                                              localUser,
+                                                              localUser!,
                                                           theme:
                                                               theme,
                                                           value: returnReceiptProvider(
