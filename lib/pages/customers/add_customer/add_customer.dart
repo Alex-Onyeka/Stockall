@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_customers_class.dart';
-import 'package:stockitt/pages/customers/add_customer/platforms/add_customer_mobile.dart';
+import 'package:storrec/classes/temp_customers_class.dart';
+import 'package:storrec/pages/customers/add_customer/platforms/add_customer_mobile.dart';
 
 class AddCustomer extends StatefulWidget {
   final TempCustomersClass? customer;

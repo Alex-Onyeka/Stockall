@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/text_fields/general_textfield.dart';
-import 'package:stockitt/components/text_fields/phone_number_text_field.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/pages/authentication/components/check_agree.dart';
-import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:stockitt/providers/comp_provider.dart';
-import 'package:stockitt/providers/theme_provider.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/text_fields/general_textfield.dart';
+import 'package:storrec/components/text_fields/phone_number_text_field.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/pages/authentication/components/check_agree.dart';
+import 'package:storrec/pages/authentication/components/email_text_field.dart';
+import 'package:storrec/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:storrec/providers/comp_provider.dart';
+import 'package:storrec/providers/theme_provider.dart';
+import 'package:storrec/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupMobile extends StatefulWidget {
@@ -269,7 +269,7 @@ class _SignupMobileState extends State<SignupMobile> {
                               .h3
                               .fontWeightBold,
                     ),
-                    'Stockitt',
+                    appName,
                   ),
                 ],
               ),

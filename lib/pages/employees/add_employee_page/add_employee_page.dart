@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
 
 class AddEmployeePage extends StatefulWidget {
   final TempUserClass? employee;

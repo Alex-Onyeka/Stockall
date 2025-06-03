@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
 
 class SearchProductTile extends StatelessWidget {
   final TempProductClass product;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/authentication/splash_screens/platforms/components/mobile_splash_widget.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/authentication/splash_screens/platforms/components/mobile_splash_widget.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 // ignore: must_be_immutable
 class SplashMobile extends StatefulWidget {

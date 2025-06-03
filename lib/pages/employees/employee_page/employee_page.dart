@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/employees/employee_page/platforms/employee_page_mobile.dart';
+import 'package:storrec/pages/employees/employee_page/platforms/employee_page_mobile.dart';
 
 class EmployeePage extends StatelessWidget {
   final String employeeId;

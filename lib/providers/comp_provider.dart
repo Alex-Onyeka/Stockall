@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class CompProvider extends ChangeNotifier {
   ThemeProvider themeProvider = ThemeProvider();

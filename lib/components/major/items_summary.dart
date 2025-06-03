@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/components/text_fields/text_field_barcode.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/compnents/products_summary_tab.dart';
+import 'package:storrec/components/text_fields/text_field_barcode.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/products/compnents/products_summary_tab.dart';
 
 class ItemsSummary extends StatefulWidget {
   final TextEditingController? searchController;

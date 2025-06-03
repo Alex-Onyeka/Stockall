@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/sales/sales_page/platforms/sales_page_mobile.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/sales/sales_page/platforms/sales_page_mobile.dart';
 
 class SalesPage extends StatelessWidget {
   const SalesPage({super.key});

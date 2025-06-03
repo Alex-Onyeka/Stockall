@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/text_fields/barcode_scanner.dart';
-import 'package:stockitt/components/text_fields/general_textfield.dart';
-import 'package:stockitt/components/text_fields/main_dropdown.dart';
-import 'package:stockitt/components/text_fields/money_textfield.dart';
-import 'package:stockitt/components/text_fields/number_textfield.dart';
-import 'package:stockitt/constants/bottom_sheet_widgets.dart';
-import 'package:stockitt/constants/scan_barcode.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/text_fields/barcode_scanner.dart';
+import 'package:storrec/components/text_fields/general_textfield.dart';
+import 'package:storrec/components/text_fields/main_dropdown.dart';
+import 'package:storrec/components/text_fields/money_textfield.dart';
+import 'package:storrec/components/text_fields/number_textfield.dart';
+import 'package:storrec/constants/bottom_sheet_widgets.dart';
+import 'package:storrec/constants/scan_barcode.dart';
+import 'package:storrec/main.dart';
 
 class EditProductMobile extends StatefulWidget {
   final TempProductClass product;

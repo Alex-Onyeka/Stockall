@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/home/home.dart';
-import 'package:stockitt/providers/theme_provider.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/authentication/components/email_text_field.dart';
+import 'package:storrec/pages/home/home.dart';
+import 'package:storrec/providers/theme_provider.dart';
+import 'package:storrec/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginMobile extends StatefulWidget {
@@ -206,7 +206,7 @@ class _LoginMobileState extends State<LoginMobile> {
                               .h3
                               .fontWeightBold,
                     ),
-                    'Stockitt',
+                    appName,
                   ),
                 ],
               ),

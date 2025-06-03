@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class EnterCodeDesktop extends StatelessWidget {
   final ThemeProvider themeProvider;
@@ -106,7 +106,7 @@ class EnterCodeDesktop extends StatelessWidget {
                                                       .h3
                                                       .fontWeightBold,
                                             ),
-                                            'Stockitt',
+                                            'storrec',
                                           ),
                                         ],
                                       ),

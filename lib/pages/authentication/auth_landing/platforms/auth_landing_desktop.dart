@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class AuthLandingDesktop extends StatelessWidget {
   final ThemeProvider themeProvider;
@@ -97,7 +97,7 @@ class AuthLandingDesktop extends StatelessWidget {
                                       .h1
                                       .fontWeightBold,
                             ),
-                            'Welcome to Stockitt',
+                            'Welcome to $appName',
                           ),
                         ),
                         SizedBox(height: 20),

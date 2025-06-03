@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/classes/temp_shop_class.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/dashboard/dashboard.dart';
-import 'package:stockitt/pages/dashboard/employee_auth_page/emp_auth.dart';
-import 'package:stockitt/pages/products/products_page.dart';
-import 'package:stockitt/pages/sales/sales_page/sales_page.dart';
-import 'package:stockitt/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:stockitt/providers/nav_provider.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/classes/temp_shop_class.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/dashboard/dashboard.dart';
+import 'package:storrec/pages/dashboard/employee_auth_page/emp_auth.dart';
+import 'package:storrec/pages/products/products_page.dart';
+import 'package:storrec/pages/sales/sales_page/sales_page.dart';
+import 'package:storrec/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:storrec/providers/nav_provider.dart';
+import 'package:storrec/services/auth_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

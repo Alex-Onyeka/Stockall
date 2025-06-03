@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/dashboard/platforms/dashboard_desktop.dart';
-import 'package:stockitt/pages/dashboard/platforms/dashboard_mobile.dart';
-import 'package:stockitt/pages/dashboard/platforms/dashboard_tablet.dart';
+import 'package:storrec/pages/dashboard/platforms/dashboard_desktop.dart';
+import 'package:storrec/pages/dashboard/platforms/dashboard_mobile.dart';
+import 'package:storrec/pages/dashboard/platforms/dashboard_tablet.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

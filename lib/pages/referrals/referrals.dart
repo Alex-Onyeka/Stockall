@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/referrals/platforms/referrals_mobile.dart';
+import 'package:storrec/pages/referrals/platforms/referrals_mobile.dart';
 
 class Referrals extends StatelessWidget {
   const Referrals({super.key});

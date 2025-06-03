@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class VerifyPhoneMobile extends StatefulWidget {
   final ThemeProvider theme;

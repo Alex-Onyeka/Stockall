@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/buttons/payment_type_button.dart';
-import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockitt/constants/app_bar.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/customers/customers_list/customer_list.dart';
-import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/buttons/payment_type_button.dart';
+import 'package:storrec/components/text_fields/edit_cart_text_field.dart';
+import 'package:storrec/constants/app_bar.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/customers/customers_list/customer_list.dart';
+import 'package:storrec/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class MakeSalesMobileTwo extends StatefulWidget {
   final double totalAmount;

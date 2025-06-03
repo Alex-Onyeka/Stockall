@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class ProductTileMain extends StatefulWidget {
   final Function() action;

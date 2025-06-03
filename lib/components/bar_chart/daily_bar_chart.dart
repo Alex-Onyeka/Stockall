@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/components/bar_chart/horizontal_stroke.dart';
-import 'package:stockitt/components/bar_chart/vertical_stroke.dart';
+import 'package:storrec/components/bar_chart/horizontal_stroke.dart';
+import 'package:storrec/components/bar_chart/vertical_stroke.dart';
 import 'package:intl/intl.dart';
 
 class DailyBarChart extends StatefulWidget {

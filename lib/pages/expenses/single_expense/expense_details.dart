@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/expenses/single_expense/platform/expense_details_mobile.dart';
+import 'package:storrec/pages/expenses/single_expense/platform/expense_details_mobile.dart';
 
 class ExpenseDetails extends StatelessWidget {
   final int expenseId;

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_sale_record.dart';
-import 'package:stockitt/components/calendar/calendar_widget.dart';
-import 'package:stockitt/components/list_tiles/main_receipt_tile.dart';
-import 'package:stockitt/components/major/empty_widget_display.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/constants/app_bar.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:storrec/classes/temp_main_receipt.dart';
+import 'package:storrec/classes/temp_product_sale_record.dart';
+import 'package:storrec/components/calendar/calendar_widget.dart';
+import 'package:storrec/components/list_tiles/main_receipt_tile.dart';
+import 'package:storrec/components/major/empty_widget_display.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/constants/app_bar.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/sales/make_sales/page1/make_sales_page.dart';
 
 class TotalSalesMobile extends StatefulWidget {
   const TotalSalesMobile({super.key});

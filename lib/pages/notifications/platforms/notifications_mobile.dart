@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/classes/temp_notification.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/components/major/top_banner.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/product_details/product_details_page.dart';
-import 'package:stockitt/providers/notifications_provider.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_notification.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/components/major/top_banner.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/products/product_details/product_details_page.dart';
+import 'package:storrec/providers/notifications_provider.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class NotificationsMobile extends StatelessWidget {
   const NotificationsMobile({super.key});

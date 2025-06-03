@@ -1,14 +1,14 @@
 // import 'package:flutter/material.dart';
-// import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-// import 'package:stockitt/components/buttons/main_button_p.dart';
-// import 'package:stockitt/components/progress_bar.dart';
-// import 'package:stockitt/components/text_fields/barcode_scanner.dart';
-// import 'package:stockitt/components/text_fields/main_dropdown.dart';
-// import 'package:stockitt/components/text_fields/money_textfield.dart';
-// import 'package:stockitt/constants/bottom_sheet_widgets.dart';
-// import 'package:stockitt/constants/scan_barcode.dart';
-// import 'package:stockitt/main.dart';
-// import 'package:stockitt/pages/products/add_products_three/add_products_three.dart';
+// import 'package:storrec/components/alert_dialogues/info_alert.dart';
+// import 'package:storrec/components/buttons/main_button_p.dart';
+// import 'package:storrec/components/progress_bar.dart';
+// import 'package:storrec/components/text_fields/barcode_scanner.dart';
+// import 'package:storrec/components/text_fields/main_dropdown.dart';
+// import 'package:storrec/components/text_fields/money_textfield.dart';
+// import 'package:storrec/constants/bottom_sheet_widgets.dart';
+// import 'package:storrec/constants/scan_barcode.dart';
+// import 'package:storrec/main.dart';
+// import 'package:storrec/pages/products/add_products_three/add_products_three.dart';
 
 // class AddProductsTwoMobile extends StatefulWidget {
 //   final TextEditingController costController;

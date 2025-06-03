@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/expenses/platforms/expenses_moblie.dart';
+import 'package:storrec/pages/expenses/platforms/expenses_moblie.dart';
 
 class ExpensesPage extends StatelessWidget {
   final bool? isMain;

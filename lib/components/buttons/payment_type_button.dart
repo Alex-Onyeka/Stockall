@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/main.dart';
 
 class PaymentTypeButton extends StatelessWidget {
   final int index;

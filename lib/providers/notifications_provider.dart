@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_notification.dart';
+import 'package:storrec/classes/temp_notification.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationProvider with ChangeNotifier {

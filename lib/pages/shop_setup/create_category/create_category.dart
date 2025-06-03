@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/buttons/main_button_transparent.dart';
-import 'package:stockitt/components/major/top_banner.dart';
-import 'package:stockitt/components/text_fields/general_textfield.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/buttons/main_button_transparent.dart';
+import 'package:storrec/components/major/top_banner.dart';
+import 'package:storrec/components/text_fields/general_textfield.dart';
+import 'package:storrec/main.dart';
 
 class CreateCategory extends StatefulWidget {
   const CreateCategory({super.key});

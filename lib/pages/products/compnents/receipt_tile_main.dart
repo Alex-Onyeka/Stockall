@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_sale_record.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_main_receipt.dart';
+import 'package:storrec/classes/temp_product_sale_record.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class ReceiptTileMain extends StatefulWidget {
   final TempMainReceipt mainReceipt;

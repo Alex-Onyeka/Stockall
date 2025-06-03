@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class PhoneNumberTextField extends StatefulWidget {
   final TextEditingController controller;

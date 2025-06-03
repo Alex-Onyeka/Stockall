@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/pages/profile/edit/platforms/edit_mobile.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/pages/profile/edit/platforms/edit_mobile.dart';
 
 class Edit extends StatefulWidget {
   final TempUserClass user;

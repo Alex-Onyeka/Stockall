@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/authentication/sign_up/signup_two.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/pages/authentication/components/email_text_field.dart';
+import 'package:storrec/pages/authentication/sign_up/signup_two.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class LoginDesktop extends StatefulWidget {
   final TextEditingController emailController;
@@ -149,7 +149,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
                                             .h3
                                             .fontWeightBold,
                                   ),
-                                  'Stockitt',
+                                  appName,
                                 ),
                               ],
                             ),

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:stockitt/classes/temp_expenses_class.dart';
-import 'package:stockitt/components/buttons/floating_action_butto.dart';
-import 'package:stockitt/components/calendar/calendar_widget.dart';
-import 'package:stockitt/components/major/empty_widget_display.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/components/major/items_summary.dart';
-import 'package:stockitt/components/major/top_banner.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/expenses/add_expenses/add_expenses.dart';
-import 'package:stockitt/pages/expenses/components/expenses_tile.dart';
-import 'package:stockitt/pages/expenses/single_expense/expense_details.dart';
-import 'package:stockitt/pages/expenses/total_expenses/total_expenses.dart';
+import 'package:storrec/classes/temp_expenses_class.dart';
+import 'package:storrec/components/buttons/floating_action_butto.dart';
+import 'package:storrec/components/calendar/calendar_widget.dart';
+import 'package:storrec/components/major/empty_widget_display.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/components/major/items_summary.dart';
+import 'package:storrec/components/major/top_banner.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:storrec/pages/expenses/components/expenses_tile.dart';
+import 'package:storrec/pages/expenses/single_expense/expense_details.dart';
+import 'package:storrec/pages/expenses/total_expenses/total_expenses.dart';
 
 class ExpensesMoblie extends StatefulWidget {
   final bool? isMain;

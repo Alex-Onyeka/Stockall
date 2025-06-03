@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/pages/products/add_product_one/platforms/add_product_mobile.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/pages/products/add_product_one/platforms/add_product_mobile.dart';
 
 class AddProduct extends StatefulWidget {
   final TempProductClass? product;

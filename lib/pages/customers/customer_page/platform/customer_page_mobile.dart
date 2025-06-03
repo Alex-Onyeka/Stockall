@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockitt/classes/temp_customers_class.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/components/major/top_banner.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/customers/add_customer/add_customer.dart';
-import 'package:stockitt/pages/products/compnents/receipt_tile_main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_customers_class.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/components/major/top_banner.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/customers/add_customer/add_customer.dart';
+import 'package:storrec/pages/products/compnents/receipt_tile_main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class CustomerPageMobile extends StatelessWidget {
   final TempCustomersClass customer;

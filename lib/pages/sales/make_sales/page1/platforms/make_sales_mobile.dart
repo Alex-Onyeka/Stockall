@@ -1,21 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_cart_item.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/buttons/small_button_main.dart';
-import 'package:stockitt/components/major/empty_widget_display.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/constants/app_bar.dart';
-import 'package:stockitt/constants/bottom_sheet_widgets.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/add_product_one/add_product.dart';
-import 'package:stockitt/pages/products/compnents/cart_item_main.dart';
-import 'package:stockitt/pages/sales/make_sales/page2/make_sales_two.dart';
+import 'package:storrec/classes/temp_cart_item.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/buttons/small_button_main.dart';
+import 'package:storrec/components/major/empty_widget_display.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/constants/app_bar.dart';
+import 'package:storrec/constants/bottom_sheet_widgets.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/products/add_product_one/add_product.dart';
+import 'package:storrec/pages/products/compnents/cart_item_main.dart';
+import 'package:storrec/pages/sales/make_sales/page2/make_sales_two.dart';
 
 class MakeSalesMobile extends StatefulWidget {
   final TextEditingController searchController;

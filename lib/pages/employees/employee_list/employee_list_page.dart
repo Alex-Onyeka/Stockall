@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/employees/employee_list/platforms/employee_list_mobile.dart';
+import 'package:storrec/pages/employees/employee_list/platforms/employee_list_mobile.dart';
 
 class EmployeeListPage extends StatelessWidget {
   final String role;

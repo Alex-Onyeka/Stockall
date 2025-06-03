@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stockitt/components/major/top_banner.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/report/general_report/general_report_page.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/components/major/top_banner.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/report/general_report/general_report_page.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class ReportMobile extends StatelessWidget {
   const ReportMobile({super.key});

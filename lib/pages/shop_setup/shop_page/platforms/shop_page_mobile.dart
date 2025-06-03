@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:stockitt/classes/temp_shop_class.dart';
-import 'package:stockitt/components/buttons/main_button_transparent.dart';
-import 'package:stockitt/constants/app_bar.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/shop_setup/shop_setup_page.dart';
-import 'package:stockitt/pages/shop_setup/shop_setup_two.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/classes/temp_shop_class.dart';
+import 'package:storrec/components/buttons/main_button_transparent.dart';
+import 'package:storrec/constants/app_bar.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/shop_setup/shop_setup_page.dart';
+import 'package:storrec/pages/shop_setup/shop_setup_two.dart';
+import 'package:storrec/services/auth_service.dart';
 
 class ShopPageMobile extends StatefulWidget {
   const ShopPageMobile({super.key});

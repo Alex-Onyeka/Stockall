@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/components/buttons/floating_action_butto.dart';
-import 'package:stockitt/components/major/empty_widget_display.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/employees/add_employee_page/add_employee_page.dart';
-import 'package:stockitt/pages/employees/components/employee_tile_main.dart';
-import 'package:stockitt/pages/employees/employee_page/employee_page.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/components/buttons/floating_action_butto.dart';
+import 'package:storrec/components/major/empty_widget_display.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/employees/add_employee_page/add_employee_page.dart';
+import 'package:storrec/pages/employees/components/employee_tile_main.dart';
+import 'package:storrec/pages/employees/employee_page/employee_page.dart';
+import 'package:storrec/services/auth_service.dart';
 
 class EmployeeListMobile extends StatefulWidget {
   final String role;

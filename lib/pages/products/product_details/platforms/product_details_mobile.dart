@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 // import 'package:path/path.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockitt/components/text_fields/money_textfield.dart';
-import 'package:stockitt/constants/app_bar.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/add_product_one/add_product.dart';
-import 'package:stockitt/pages/products/product_details/platforms/components/edit_discount_page.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/components/text_fields/edit_cart_text_field.dart';
+import 'package:storrec/components/text_fields/money_textfield.dart';
+import 'package:storrec/constants/app_bar.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/products/add_product_one/add_product.dart';
+import 'package:storrec/pages/products/product_details/platforms/components/edit_discount_page.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class ProductDetailsMobile extends StatefulWidget {
   final ThemeProvider theme;

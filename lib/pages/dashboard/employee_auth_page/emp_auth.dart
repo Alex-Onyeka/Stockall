@@ -1,19 +1,19 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/authentication/components/email_text_field.dart';
-import 'package:stockitt/pages/dashboard/components/button_tab.dart';
-import 'package:stockitt/pages/dashboard/components/main_bottom_nav.dart';
-import 'package:stockitt/pages/dashboard/components/main_info_tab.dart';
-import 'package:stockitt/pages/dashboard/components/top_nav_bar.dart';
-import 'package:stockitt/pages/dashboard/components/total_sales_banner.dart';
-import 'package:stockitt/pages/home/home.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/classes/temp_user_class.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/authentication/components/email_text_field.dart';
+import 'package:storrec/pages/dashboard/components/button_tab.dart';
+import 'package:storrec/pages/dashboard/components/main_bottom_nav.dart';
+import 'package:storrec/pages/dashboard/components/main_info_tab.dart';
+import 'package:storrec/pages/dashboard/components/top_nav_bar.dart';
+import 'package:storrec/pages/dashboard/components/total_sales_banner.dart';
+import 'package:storrec/pages/home/home.dart';
+import 'package:storrec/services/auth_service.dart';
 
 class EmpAuth extends StatefulWidget {
   const EmpAuth({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class NumberTextfield extends StatefulWidget {
   final String title;

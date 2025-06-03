@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.stockittsolutions.stockitt"
+    namespace = "com.storrecsolutions.storrec"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.stockittsolutions.stockitt"
+        applicationId = "com.storrecsolutions.storrec"
         minSdk = 21
         targetSdk = 34
         versionCode = flutter.versionCode

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/expenses/total_expenses/platforms/total_expenses_mobile.dart';
+import 'package:storrec/pages/expenses/total_expenses/platforms/total_expenses_mobile.dart';
 
 class TotalExpenses extends StatelessWidget {
   const TotalExpenses({super.key});

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_cart_item.dart';
-import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/classes/temp_product_sale_record.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockitt/providers/data_provider.dart';
+import 'package:storrec/classes/temp_cart_item.dart';
+import 'package:storrec/classes/temp_main_receipt.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/classes/temp_product_sale_record.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:storrec/providers/data_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {

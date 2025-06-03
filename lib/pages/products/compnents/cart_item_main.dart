@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stockitt/classes/temp_cart_item.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_cart_item.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class CartItemMain extends StatefulWidget {
   final TempCartItem cartItem;

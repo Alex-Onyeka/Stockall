@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:stockitt/classes/temp_expenses_class.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/major/empty_widget_display_only.dart';
-import 'package:stockitt/components/major/top_banner.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/expenses/add_expenses/add_expenses.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_expenses_class.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/major/empty_widget_display_only.dart';
+import 'package:storrec/components/major/top_banner.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class ExpenseDetailsMobile extends StatelessWidget {
   final int expenseId;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/pages/sales/make_sales/page2/platforms/make_sales_mobile_two.dart';
+import 'package:storrec/pages/sales/make_sales/page2/platforms/make_sales_mobile_two.dart';
 
 class MakeSalesTwo extends StatefulWidget {
   final double totalAmount;

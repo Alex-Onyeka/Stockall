@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:sqflite/sqflite.dart';
 // import 'package:path/path.dart';
-// import 'package:stockitt/classes/temp_user_class.dart';
+// import 'package:storrec/classes/temp_user_class.dart';
 
 // class LocalUserDatabase extends ChangeNotifier {
 //   static final LocalUserDatabase _instance =
@@ -121,7 +121,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:stockitt/classes/temp_user_class.dart';
+import 'package:storrec/classes/temp_user_class.dart';
 
 class LocalUserDatabase extends ChangeNotifier {
   static final LocalUserDatabase _instance =

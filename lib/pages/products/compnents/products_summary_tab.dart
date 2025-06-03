@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
 
 class ProductSummaryTab extends StatefulWidget {
   final String title;

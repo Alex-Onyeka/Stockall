@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/providers/nav_provider.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/providers/nav_provider.dart';
 
 class NavButton extends StatelessWidget {
   final String title;

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_expenses_class.dart';
-import 'package:stockitt/classes/temp_main_receipt.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/classes/temp_product_sale_record.dart';
-import 'package:stockitt/components/calendar/calendar_widget.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_expenses_class.dart';
+import 'package:storrec/classes/temp_main_receipt.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/classes/temp_product_sale_record.dart';
+import 'package:storrec/components/calendar/calendar_widget.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class GeneralReportMobile extends StatefulWidget {
   const GeneralReportMobile({super.key});

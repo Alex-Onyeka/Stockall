@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:stockitt/classes/product_quantity_summary.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/classes/temp_product_sale_record.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/classes/product_quantity_summary.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/classes/temp_product_sale_record.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
 
 class ReportProvider extends ChangeNotifier {
   bool setDate = false;

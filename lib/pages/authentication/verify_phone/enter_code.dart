@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/pages/authentication/verify_phone/platforms/enter_code_desktop.dart';
-import 'package:stockitt/pages/authentication/verify_phone/platforms/enter_code_mobile.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/pages/authentication/verify_phone/platforms/enter_code_desktop.dart';
+import 'package:storrec/pages/authentication/verify_phone/platforms/enter_code_mobile.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class EnterCode extends StatelessWidget {
   final String number;

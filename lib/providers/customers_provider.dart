@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_customers_class.dart';
-import 'package:stockitt/main.dart';
+import 'package:storrec/classes/temp_customers_class.dart';
+import 'package:storrec/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {

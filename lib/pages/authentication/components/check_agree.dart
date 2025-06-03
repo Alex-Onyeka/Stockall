@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class CheckAgree extends StatelessWidget {
   final ThemeProvider theme;

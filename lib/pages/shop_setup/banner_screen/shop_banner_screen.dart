@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockitt/components/buttons/main_button_transparent.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/shop_setup/shop_setup_page.dart';
-import 'package:stockitt/services/auth_service.dart';
+import 'package:storrec/components/buttons/main_button_transparent.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/shop_setup/shop_setup_page.dart';
+import 'package:storrec/services/auth_service.dart';
 
 class ShopBannerScreen extends StatelessWidget {
   const ShopBannerScreen({super.key});

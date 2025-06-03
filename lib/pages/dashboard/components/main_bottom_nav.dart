@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/dashboard/components/nav_button.dart';
-import 'package:stockitt/pages/sales/make_sales/page1/make_sales_page.dart';
-import 'package:stockitt/providers/nav_provider.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/dashboard/components/nav_button.dart';
+import 'package:storrec/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:storrec/providers/nav_provider.dart';
 
 class MainBottomNav extends StatelessWidget {
   final GlobalKey<ScaffoldState> globalKey;

@@ -1,4 +1,4 @@
-# stockitt
+# storrec
 
 A new Flutter project.
 

@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.stockittsolutions" "\0"
-            VALUE "FileDescription", "stockitt" "\0"
+            VALUE "CompanyName", "com.storrecsolutions" "\0"
+            VALUE "FileDescription", "Storrec" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "stockitt" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.stockittsolutions. All rights reserved." "\0"
-            VALUE "OriginalFilename", "stockitt.exe" "\0"
-            VALUE "ProductName", "stockitt" "\0"
+            VALUE "InternalName", "Storrec" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.storrecsolutions. All rights reserved." "\0"
+            VALUE "OriginalFilename", "storrec.exe" "\0"
+            VALUE "ProductName", "Storrec" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

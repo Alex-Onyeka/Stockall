@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/classes/temp_product_class.dart';
-import 'package:stockitt/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/components/buttons/main_button_transparent.dart';
-import 'package:stockitt/components/calendar/calendar_widget.dart';
-import 'package:stockitt/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockitt/constants/calculations.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/product_details/platforms/product_details_mobile.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/classes/temp_product_class.dart';
+import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/components/buttons/main_button_transparent.dart';
+import 'package:storrec/components/calendar/calendar_widget.dart';
+import 'package:storrec/components/text_fields/edit_cart_text_field.dart';
+import 'package:storrec/constants/calculations.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/products/product_details/platforms/product_details_mobile.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class EditDiscountPage extends StatefulWidget {
   final ThemeProvider theme;

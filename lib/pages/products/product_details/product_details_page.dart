@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockitt/main.dart';
-import 'package:stockitt/pages/products/product_details/platforms/product_details_mobile.dart';
+import 'package:storrec/main.dart';
+import 'package:storrec/pages/products/product_details/platforms/product_details_mobile.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   final int productId;

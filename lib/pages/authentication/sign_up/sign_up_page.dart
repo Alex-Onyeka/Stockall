@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/pages/authentication/sign_up/platforms/signup_desktop.dart';
-import 'package:stockitt/pages/authentication/sign_up/platforms/signup_mobile.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/pages/authentication/sign_up/platforms/signup_desktop.dart';
+import 'package:storrec/pages/authentication/sign_up/platforms/signup_mobile.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

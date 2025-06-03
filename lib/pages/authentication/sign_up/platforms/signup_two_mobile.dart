@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockitt/components/alert_dialogues/info_alert.dart';
-import 'package:stockitt/components/buttons/main_button_p.dart';
-import 'package:stockitt/constants/constants_main.dart';
-import 'package:stockitt/providers/theme_provider.dart';
+import 'package:storrec/components/alert_dialogues/info_alert.dart';
+import 'package:storrec/components/buttons/main_button_p.dart';
+import 'package:storrec/constants/constants_main.dart';
+import 'package:storrec/providers/theme_provider.dart';
 
 class SignupTwoMobile extends StatefulWidget {
   final TextEditingController nameController;
@@ -86,7 +86,7 @@ class _SignupTwoMobileState extends State<SignupTwoMobile> {
                                   .h3
                                   .fontWeightBold,
                         ),
-                        'Stockitt',
+                        appName,
                       ),
                     ],
                   ),

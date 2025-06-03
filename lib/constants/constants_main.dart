@@ -101,3 +101,5 @@ const String receiptIconSvg =
 const String plusIconSvg = 'assets/svgs/plus_icon.svg';
 
 const String nairaSymbol = '₦';
+
+const String appName = 'Storrec';
