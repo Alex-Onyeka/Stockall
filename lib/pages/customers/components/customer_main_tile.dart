@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_customers_class.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class CustomersMainTile extends StatelessWidget {
   final Function()? action;

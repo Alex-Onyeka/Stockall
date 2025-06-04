@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/components/buttons/main_button_p.dart';
-import 'package:storrec/components/buttons/main_button_transparent.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/pages/authentication/login/login_page.dart';
-import 'package:storrec/pages/authentication/sign_up/sign_up_page.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/authentication/login/login_page.dart';
+import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class AuthLandingMobile extends StatelessWidget {
   final ThemeProvider themeProvider;

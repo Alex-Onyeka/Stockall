@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/customers/customers_list/platforms/customer_list_mobile.dart';
+import 'package:stockall/pages/customers/customers_list/platforms/customer_list_mobile.dart';
 
 class CustomerList extends StatefulWidget {
   final bool? isSales;

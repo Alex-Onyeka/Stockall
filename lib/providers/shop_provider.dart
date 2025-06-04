@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_shop_class.dart';
-import 'package:storrec/services/auth_service.dart';
+import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShopProvider extends ChangeNotifier {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/classes/temp_user_class.dart';
-import 'package:storrec/components/alert_dialogues/info_alert.dart';
-import 'package:storrec/components/buttons/main_button_p.dart';
-import 'package:storrec/components/text_fields/general_textfield.dart';
-import 'package:storrec/components/text_fields/phone_number_text_field.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/pages/authentication/components/check_agree.dart';
-import 'package:storrec/pages/authentication/components/email_text_field.dart';
-import 'package:storrec/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:storrec/providers/comp_provider.dart';
-import 'package:storrec/providers/theme_provider.dart';
-import 'package:storrec/services/auth_service.dart';
+import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/text_fields/general_textfield.dart';
+import 'package:stockall/components/text_fields/phone_number_text_field.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/authentication/components/check_agree.dart';
+import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:stockall/providers/comp_provider.dart';
+import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupMobile extends StatefulWidget {

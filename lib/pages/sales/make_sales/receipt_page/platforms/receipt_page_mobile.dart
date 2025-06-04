@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:storrec/classes/temp_main_receipt.dart';
-import 'package:storrec/classes/temp_product_sale_record.dart';
-import 'package:storrec/classes/temp_shop_class.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/components/major/top_banner_two.dart';
-import 'package:storrec/constants/calculations.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/home/home.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/classes/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/major/top_banner_two.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class ReceiptPageMobile extends StatelessWidget {
   final bool isMain;

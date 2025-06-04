@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/main.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarWidget extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:storrec/constants/play_sounds.dart';
+import 'package:stockall/constants/play_sounds.dart';
 
 Future<String> scanCode(
   BuildContext context,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/components/alert_dialogues/info_alert.dart';
-import 'package:storrec/components/buttons/main_button_p.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class SignupTwoMobile extends StatefulWidget {
   final TextEditingController nameController;

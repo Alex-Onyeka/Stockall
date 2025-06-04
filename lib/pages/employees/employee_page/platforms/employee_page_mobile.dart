@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:storrec/classes/temp_main_receipt.dart';
-import 'package:storrec/classes/temp_user_class.dart';
-import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/components/major/top_banner.dart';
-import 'package:storrec/constants/calculations.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/employees/add_employee_page/add_employee_page.dart';
-import 'package:storrec/pages/products/compnents/receipt_tile_main.dart';
-import 'package:storrec/providers/comp_provider.dart';
-import 'package:storrec/providers/theme_provider.dart';
-import 'package:storrec/services/auth_service.dart';
+import 'package:stockall/classes/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/major/top_banner.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
+import 'package:stockall/pages/products/compnents/receipt_tile_main.dart';
+import 'package:stockall/providers/comp_provider.dart';
+import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class EmployeePageMobile extends StatefulWidget {
   final String employeeId;

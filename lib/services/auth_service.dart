@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_user_class.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
@@ -174,6 +174,12 @@ class AuthService extends ChangeNotifier {
   Future<void> signOut() async {
     await _client.auth.signOut();
     notifyListeners();
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    await Supabase.instance.client.auth
+        .resetPasswordForEmail(email);
+    print('Reset link sent to $email');
   }
 
   User? get currentUser => _client.auth.currentUser;

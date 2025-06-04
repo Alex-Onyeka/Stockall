@@ -1,6 +1,6 @@
 {
-  "name": "storrec",
-  "short_name": "storrec",
+  "name": "stockall",
+  "short_name": "stockall",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0175C2",

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:storrec/classes/temp_notification.dart';
-import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
-import 'package:storrec/constants/calculations.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/dashboard/employee_auth_page/emp_auth.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/classes/temp_notification.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class TopNavBar extends StatelessWidget {
   final List<TempNotification> notifications;

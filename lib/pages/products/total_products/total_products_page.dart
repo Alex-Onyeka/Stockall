@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_product_class.dart';
-import 'package:storrec/components/buttons/floating_action_butto.dart';
-import 'package:storrec/components/major/empty_widget_display.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/components/text_fields/text_field_barcode.dart';
-import 'package:storrec/constants/app_bar.dart';
-import 'package:storrec/constants/calculations.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/constants/scan_barcode.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/products/add_product_one/add_product.dart';
-import 'package:storrec/pages/products/compnents/product_filter_button.dart';
-import 'package:storrec/pages/products/compnents/product_tile_main.dart';
-import 'package:storrec/pages/products/compnents/search_product_tile.dart';
-import 'package:storrec/pages/products/product_details/product_details_page.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/components/buttons/floating_action_butto.dart';
+import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/text_fields/text_field_barcode.dart';
+import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/scan_barcode.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
+import 'package:stockall/pages/products/compnents/product_filter_button.dart';
+import 'package:stockall/pages/products/compnents/product_tile_main.dart';
+import 'package:stockall/pages/products/compnents/search_product_tile.dart';
+import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class TotalProductsPage extends StatefulWidget {
   const TotalProductsPage({super.key, required this.theme});

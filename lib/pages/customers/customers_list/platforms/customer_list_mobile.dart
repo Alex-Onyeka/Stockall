@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:storrec/classes/temp_customers_class.dart';
-import 'package:storrec/components/buttons/floating_action_butto.dart';
-import 'package:storrec/components/major/empty_widget_display.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/components/text_fields/general_textfield_only.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/customers/add_customer/add_customer.dart';
-import 'package:storrec/pages/customers/components/customer_main_tile.dart';
-import 'package:storrec/pages/customers/customer_page/customer_page.dart';
+import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/components/buttons/floating_action_butto.dart';
+import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/text_fields/general_textfield_only.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/customers/add_customer/add_customer.dart';
+import 'package:stockall/pages/customers/components/customer_main_tile.dart';
+import 'package:stockall/pages/customers/customer_page/customer_page.dart';
 
 class CustomerListMobile extends StatefulWidget {
   final TextEditingController searchController;

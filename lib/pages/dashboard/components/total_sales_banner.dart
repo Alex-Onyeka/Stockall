@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:storrec/classes/temp_expenses_class.dart';
-import 'package:storrec/classes/temp_user_class.dart';
-import 'package:storrec/constants/calculations.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class DashboardTotalSalesBanner extends StatefulWidget {
   final double? value;

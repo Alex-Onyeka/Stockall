@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/authentication/splash_screens/platforms/splash_desktop.dart';
-import 'package:storrec/pages/authentication/splash_screens/platforms/splash_mobile.dart';
-import 'package:storrec/providers/theme_provider.dart';
-import 'package:storrec/theme/main_theme.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/splash_screens/platforms/splash_desktop.dart';
+import 'package:stockall/pages/authentication/splash_screens/platforms/splash_mobile.dart';
+import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/theme/main_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

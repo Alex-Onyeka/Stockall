@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/report/platforms/report_mobile.dart';
+import 'package:stockall/pages/report/platforms/report_mobile.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});

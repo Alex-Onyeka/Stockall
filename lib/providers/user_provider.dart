@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:storrec/classes/temp_user_class.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserProvider extends ChangeNotifier {

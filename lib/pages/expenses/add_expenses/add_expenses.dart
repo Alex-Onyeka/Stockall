@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_expenses_class.dart';
-import 'package:storrec/pages/expenses/add_expenses/platforms/add_expenses_mobile.dart';
+import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_mobile.dart';
 
 class AddExpenses extends StatefulWidget {
   final TempExpensesClass? expense;

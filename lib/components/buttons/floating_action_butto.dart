@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class FloatingActionButtonMain extends StatelessWidget {
   final String text;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_polygon_clipper/flutter_polygon_clipper.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class ConfirmationAlert extends StatelessWidget {
   final String title;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/shop_setup/shop_page/platforms/shop_page_mobile.dart';
+import 'package:stockall/pages/shop_setup/shop_page/platforms/shop_page_mobile.dart';
 
 class ShopPage extends StatelessWidget {
   const ShopPage({super.key});

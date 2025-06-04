@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/sales/total_sales/platforms/total_sales_mobile.dart';
+import 'package:stockall/pages/sales/total_sales/platforms/total_sales_mobile.dart';
 
 class TotalSalesPage extends StatelessWidget {
   const TotalSalesPage({super.key});

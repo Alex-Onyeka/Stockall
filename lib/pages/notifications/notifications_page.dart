@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/notifications/platforms/notifications_mobile.dart';
+import 'package:stockall/pages/notifications/platforms/notifications_mobile.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});

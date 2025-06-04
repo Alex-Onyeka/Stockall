@@ -1,4 +1,4 @@
-import 'package:storrec/classes/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class.dart';
 
 class TempCartItem {
   final TempProductClass item;

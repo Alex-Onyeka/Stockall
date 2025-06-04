@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_expenses_class.dart';
-import 'package:storrec/components/calendar/calendar_widget.dart';
-import 'package:storrec/components/major/empty_widget_display.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/constants/calculations.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/expenses/add_expenses/add_expenses.dart';
-import 'package:storrec/pages/expenses/components/expenses_tile.dart';
-import 'package:storrec/pages/expenses/single_expense/expense_details.dart';
+import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/components/calendar/calendar_widget.dart';
+import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:stockall/pages/expenses/components/expenses_tile.dart';
+import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 
 class TotalExpensesMobile extends StatefulWidget {
   const TotalExpensesMobile({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/authentication/sign_up/platforms/signup_two_desktop.dart';
-import 'package:storrec/pages/authentication/sign_up/platforms/signup_two_mobile.dart';
+import 'package:stockall/pages/authentication/sign_up/platforms/signup_two_desktop.dart';
+import 'package:stockall/pages/authentication/sign_up/platforms/signup_two_mobile.dart';
 
 class SignupTwo extends StatefulWidget {
   const SignupTwo({super.key});

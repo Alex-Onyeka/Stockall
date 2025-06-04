@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/authentication/auth_landing/auth_landing.dart';
-import 'package:storrec/pages/authentication/splash_screens/splash_screen.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
+import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart';
 
 class AuthScreensPage extends StatelessWidget {
   const AuthScreensPage({super.key});

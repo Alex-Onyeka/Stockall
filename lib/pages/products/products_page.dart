@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/products/platforms/product_page_mobile.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/platforms/product_page_mobile.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});

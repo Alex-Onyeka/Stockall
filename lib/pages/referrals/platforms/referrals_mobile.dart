@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/components/major/top_banner.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/major/top_banner.dart';
+import 'package:stockall/main.dart';
 
 class ReferralsMobile extends StatelessWidget {
   const ReferralsMobile({super.key});

@@ -1,15 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+// import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/components/alert_dialogues/info_alert.dart';
-import 'package:storrec/components/buttons/main_button_p.dart';
-import 'package:storrec/constants/constants_main.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/authentication/components/email_text_field.dart';
-import 'package:storrec/pages/home/home.dart';
-import 'package:storrec/providers/theme_provider.dart';
-import 'package:storrec/services/auth_service.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
+import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginMobile extends StatefulWidget {
@@ -301,7 +303,47 @@ class _LoginMobileState extends State<LoginMobile> {
                         theme: widget.theme,
                       ),
 
-                      SizedBox(height: 30),
+                      // SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ForgotPasswordPage();
+                                  },
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                    right: 0.0,
+                                    top: 15,
+                                    bottom: 15,
+                                    left: 20,
+                                  ),
+                              child: Text(
+                                style: TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .secColor100,
+                                ),
+                                'Forgot Password?',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
                       MainButtonP(
                         themeProvider: widget.theme,
                         action: () {

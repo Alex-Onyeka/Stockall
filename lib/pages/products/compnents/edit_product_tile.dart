@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/main.dart';
 
 class ProductActionTile extends StatelessWidget {
   final String text;

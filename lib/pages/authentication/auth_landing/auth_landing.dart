@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/pages/authentication/auth_landing/platforms/auth_landing_desktop.dart';
-import 'package:storrec/pages/authentication/auth_landing/platforms/auth_landing_mobile.dart';
-import 'package:storrec/pages/authentication/auth_landing/platforms/auth_landing_tablet.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/pages/authentication/auth_landing/platforms/auth_landing_desktop.dart';
+import 'package:stockall/pages/authentication/auth_landing/platforms/auth_landing_mobile.dart';
+import 'package:stockall/pages/authentication/auth_landing/platforms/auth_landing_tablet.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class AuthLanding extends StatelessWidget {
   const AuthLanding({super.key});

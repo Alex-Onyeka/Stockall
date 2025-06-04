@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_main_receipt.dart';
-import 'package:storrec/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
+import 'package:stockall/classes/temp_main_receipt.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
 
 class ReceiptPage extends StatelessWidget {
   final TempMainReceipt mainReceipt;

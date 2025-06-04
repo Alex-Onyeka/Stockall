@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_product_class.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/products/edit_product/platforms/edit_product_mobile.dart';
+import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/edit_product/platforms/edit_product_mobile.dart';
 
 class EditProductsPage extends StatefulWidget {
   final TempProductClass product;

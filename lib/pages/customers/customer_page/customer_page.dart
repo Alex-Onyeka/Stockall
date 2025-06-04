@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_customers_class.dart';
-import 'package:storrec/pages/customers/customer_page/platform/customer_page_mobile.dart';
+import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/pages/customers/customer_page/platform/customer_page_mobile.dart';
 
 class CustomerPage extends StatelessWidget {
   final TempCustomersClass customer;

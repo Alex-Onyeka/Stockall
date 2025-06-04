@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/main.dart';
 
 PreferredSizeWidget appBar({
   required BuildContext context,

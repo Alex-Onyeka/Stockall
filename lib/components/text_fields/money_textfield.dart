@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class MoneyTextfield extends StatefulWidget {
   final String title;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
 
 class MakeSalesPage extends StatefulWidget {
   const MakeSalesPage({super.key});

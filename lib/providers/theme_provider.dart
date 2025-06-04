@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/theme/main_theme.dart';
+import 'package:stockall/theme/main_theme.dart';
 
 class ThemeProvider extends ChangeNotifier {
   LightModeColor lightModeColor = LightModeColor();

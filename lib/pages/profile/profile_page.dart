@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/pages/profile/platforms/profile_page_mobile.dart';
+import 'package:stockall/pages/profile/platforms/profile_page_mobile.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

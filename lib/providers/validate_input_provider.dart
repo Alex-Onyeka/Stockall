@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/components/alert_dialogues/info_alert.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class ValidateInputProvider extends ChangeNotifier {
   ThemeProvider themeProvider = ThemeProvider();

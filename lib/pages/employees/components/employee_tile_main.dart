@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_user_class.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class EmployeeTileMain extends StatelessWidget {
   const EmployeeTileMain({

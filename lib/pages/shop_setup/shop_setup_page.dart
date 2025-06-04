@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:storrec/classes/temp_shop_class.dart';
-import 'package:storrec/components/alert_dialogues/confirmation_alert.dart';
-import 'package:storrec/components/alert_dialogues/info_alert.dart';
-import 'package:storrec/components/buttons/main_button_p.dart';
-import 'package:storrec/components/buttons/main_button_transparent.dart';
-import 'package:storrec/components/progress_bar.dart';
-import 'package:storrec/components/major/top_banner.dart';
-import 'package:storrec/components/text_fields/phone_number_text_field.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/shop_setup/shop_setup_two.dart';
-import 'package:storrec/providers/theme_provider.dart';
-import 'package:storrec/pages/shop_setup/components/text_field.dart';
-import 'package:storrec/services/auth_service.dart';
+import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
+import 'package:stockall/components/progress_bar.dart';
+import 'package:stockall/components/major/top_banner.dart';
+import 'package:stockall/components/text_fields/phone_number_text_field.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/shop_setup/shop_setup_two.dart';
+import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/shop_setup/components/text_field.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class ShopSetupPage extends StatefulWidget {
   final TempShopClass? shop;

@@ -3,14 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:storrec/classes/temp_customers_class.dart';
-import 'package:storrec/components/buttons/main_button_p.dart';
-import 'package:storrec/components/major/empty_widget_display.dart';
-import 'package:storrec/components/text_fields/general_textfield.dart';
-import 'package:storrec/components/text_fields/general_textfield_only.dart';
-import 'package:storrec/components/text_fields/main_dropdown_only.dart';
-import 'package:storrec/components/text_fields/phone_number_text_field.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/text_fields/general_textfield.dart';
+import 'package:stockall/components/text_fields/general_textfield_only.dart';
+import 'package:stockall/components/text_fields/main_dropdown_only.dart';
+import 'package:stockall/components/text_fields/phone_number_text_field.dart';
+import 'package:stockall/main.dart';
 
 class AddCustomerMobile extends StatefulWidget {
   final TempCustomersClass? customer;

@@ -1,5 +1,5 @@
-name: storrec
-description: "A new Flutter project."
+name: stockall
+description: "Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Lets simplify your workflow and boost your efficiency."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:storrec/pages/products/add_products_three/platforms/add_products_three_mobile.dart';
+// import 'package:stockall/pages/products/add_products_three/platforms/add_products_three_mobile.dart';
 
 // class AddProductsThree extends StatefulWidget {
 //   const AddProductsThree({super.key});

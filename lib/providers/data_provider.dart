@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_product_class.dart';
-import 'package:storrec/main.dart';
+import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {

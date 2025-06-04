@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/classes/temp_expenses_class.dart';
-import 'package:storrec/constants/calculations.dart';
+import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {

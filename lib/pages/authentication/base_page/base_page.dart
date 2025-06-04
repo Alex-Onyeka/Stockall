@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:storrec/components/major/empty_widget_display_only.dart';
-import 'package:storrec/main.dart';
-import 'package:storrec/pages/authentication/auth_screens/auth_screens_page.dart';
-import 'package:storrec/pages/home/home.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BasePage extends StatelessWidget {

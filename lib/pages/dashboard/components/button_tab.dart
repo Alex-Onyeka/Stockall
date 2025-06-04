@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:storrec/providers/theme_provider.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class ButtonTab extends StatelessWidget {
   final String title;
