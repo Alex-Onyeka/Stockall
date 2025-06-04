@@ -201,7 +201,8 @@ class _EditMobileState extends State<EditMobile> {
                                     safeContex,
                                   ).pop();
 
-                                  await userProvider.updateUser(
+                                  TempUserClass
+                                  user = await userProvider.updateUser(
                                     TempUserClass(
                                       userId:
                                           widget
@@ -237,6 +238,14 @@ class _EditMobileState extends State<EditMobile> {
                                     ),
                                     context,
                                   );
+
+                                  if (safeContex.mounted) {
+                                    await returnLocalDatabase(
+                                      safeContex,
+                                      listen: false,
+                                    ).insertUser(user);
+                                  }
+
                                   setState(() {
                                     isLoading = false;
                                     showSuccess = true;
@@ -259,69 +268,6 @@ class _EditMobileState extends State<EditMobile> {
                           );
                         }
                       } else if (widget.action == 'email') {
-                        // if (widget
-                        //     .emailController
-                        //     .text
-                        //     .isEmpty) {
-                        //   showDialog(
-                        //     context: context,
-                        //     builder: (context) {
-                        //       return InfoAlert(
-                        //         theme: theme,
-                        //         message:
-                        //             'Name field can\'t be empty. Please enter Your new email.',
-                        //         title: 'Empty Fields',
-                        //       );
-                        //     },
-                        //   );
-                        // } else {
-                        //   final safeContex = context;
-
-                        //   showDialog(
-                        //     context: safeContex,
-                        //     builder: (context) {
-                        //       return ConfirmationAlert(
-                        //         theme: theme,
-                        //         message:
-                        //             'Are you sure you want to proceed?',
-                        //         title: 'Proceed?',
-                        //         action: () async {
-                        //           setState(() {
-                        //             isLoading = true;
-                        //           });
-                        //           Navigator.of(
-                        //             safeContex,
-                        //           ).pop();
-
-                        //           await AuthService()
-                        //               .triggerAuthEmailUpdate(
-                        //                 widget
-                        //                     .emailController
-                        //                     .text
-                        //                     .toLowerCase()
-                        //                     .trim(),
-                        //               );
-                        //           setState(() {
-                        //             isLoading = false;
-                        //             showSuccess = true;
-                        //           });
-
-                        //           Future.delayed(
-                        //             Duration(seconds: 2),
-                        //             () {
-                        //               if (safeContex
-                        //                   .mounted) {
-                        //                 Navigator.of(
-                        //                   safeContex,
-                        //                 ).pop();
-                        //               }
-                        //             },
-                        //           );
-                        //         },
-                        //       );
-                        //     },
-                        //   );
-                        // }
                       } else {
                         if (widget
                                 .oldPasswordController

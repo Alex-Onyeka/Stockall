@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_user_class.dart';
-import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -179,20 +178,20 @@ class UserProvider extends ChangeNotifier {
             })
             .eq('user_id', user.userId!)
             .select()
-            .single(); // Ensures we only get one record back
+            .single();
     final updatedUser = TempUserClass.fromJson(updatedRows);
-    if (context.mounted) {
-      await returnLocalDatabase(
-        context,
-        listen: false,
-      ).deleteUser();
-    }
-    if (context.mounted) {
-      returnLocalDatabase(
-        context,
-        listen: false,
-      ).insertUser(updatedUser);
-    }
+    // if (context.mounted) {
+    //   await returnLocalDatabase(
+    //     context,
+    //     listen: false,
+    //   ).deleteUser();
+    // }
+    // if (context.mounted) {
+    //   returnLocalDatabase(
+    //     context,
+    //     listen: false,
+    //   ).insertUser(updatedUser);
+    // }
 
     await fetchUsers();
 

@@ -180,6 +180,7 @@ class LocalUserDatabase extends ChangeNotifier {
     } catch (e) {
       print("❌ Failed to insert user locally: $e");
     }
+    notifyListeners();
   }
 
   /// Get the first user (or null if empty)

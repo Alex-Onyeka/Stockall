@@ -501,7 +501,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             records,
                                                           ),
                                                           currentUser:
-                                                              localUser!,
+                                                              returnLocalDatabase(
+                                                                context,
+                                                              ).currentEmployee,
                                                           theme:
                                                               theme,
                                                           value: returnReceiptProvider(
