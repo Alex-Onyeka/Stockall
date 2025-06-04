@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
@@ -12,7 +13,6 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
-import 'package:stockall/pages/referrals/referrals.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -472,9 +472,19 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             NavListTileAlt(
                               height: 20,
-                              action: () {},
+                              action: () async {
+                                phoneCall();
+                              },
                               title: 'Contact Us',
                               icon: Icons.phone,
+                            ),
+                            NavListTileAlt(
+                              height: 20,
+                              action: () async {
+                                openWhatsApp();
+                              },
+                              title: 'Chat With Us',
+                              svg: whatsappIconSvg,
                             ),
                             NavListTileAlt(
                               height: 20,
@@ -483,23 +493,24 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                   'Privacy P. & Terms/C.',
                               icon: Icons.menu_book_rounded,
                             ),
-                            NavListTileAlt(
-                              height: 20,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return Referrals();
-                                    },
-                                  ),
-                                );
-                              },
-                              title: 'Referrals',
-                              icon:
-                                  Icons
-                                      .card_giftcard_rounded,
-                            ),
+                            // NavListTileAlt(
+                            //   height: 20,
+                            //   action: () {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //         builder: (context) {
+                            //           return Referrals();
+                            //         },
+                            //       ),
+                            //     );
+                            //   },
+                            //   title: 'Referrals',
+                            //   icon:
+                            //       Icons
+                            //           .card_giftcard_rounded,
+                            // ),
+                            SizedBox(height: 30),
                           ],
                         ),
                       ),
@@ -608,6 +619,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                         title: 'Main Logout',
                         // svg: reportIconSvg,
                         icon: Icons.logout_rounded,
+                        color: Colors.redAccent,
                       ),
                     ),
                   ),
@@ -775,6 +787,7 @@ class NavListTileAlt extends StatelessWidget {
   final String? svg;
   final Function()? action;
   final double height;
+  final Color? color;
   const NavListTileAlt({
     super.key,
     required this.title,
@@ -782,6 +795,7 @@ class NavListTileAlt extends StatelessWidget {
     required this.action,
     this.svg,
     required this.height,
+    this.color,
   });
 
   @override
@@ -813,7 +827,9 @@ class NavListTileAlt extends StatelessWidget {
                           Visibility(
                             visible: icon != null,
                             child: Icon(
-                              color: Colors.grey.shade600,
+                              color:
+                                  color ??
+                                  Colors.grey.shade600,
                               size: height,
                               icon ??
                                   Icons
@@ -823,7 +839,9 @@ class NavListTileAlt extends StatelessWidget {
                           Visibility(
                             visible: svg != null,
                             child: SvgPicture.asset(
-                              color: Colors.grey.shade600,
+                              color:
+                                  color ??
+                                  Colors.grey.shade600,
                               svg ?? '',
                               height: height,
                             ),
@@ -835,7 +853,7 @@ class NavListTileAlt extends StatelessWidget {
 
                   Text(
                     style: TextStyle(
-                      color: Colors.grey.shade900,
+                      color: color ?? Colors.grey.shade900,
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
                     ),

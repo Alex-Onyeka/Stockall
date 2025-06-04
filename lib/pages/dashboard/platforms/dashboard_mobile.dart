@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -11,6 +12,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
@@ -35,6 +37,22 @@ class DashboardMobile extends StatefulWidget {
 }
 
 class _DashboardMobileState extends State<DashboardMobile> {
+  bool isFloatOpen = false;
+
+  void openFloat() {
+    setState(() {
+      isFloatOpen = true;
+    });
+
+    Future.delayed(Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          isFloatOpen = false;
+        });
+      }
+    });
+  }
+
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
   late TempShopClass shop;
@@ -1011,7 +1029,175 @@ class _DashboardMobileState extends State<DashboardMobile> {
                         ),
                       ],
                     ),
+                    Align(
+                      alignment: Alignment(
+                        1,
+                        isFloatOpen ? 1 : 0.94,
+                      ),
+                      child: Material(
+                        elevation: 2,
+                        color: Colors.transparent,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (isFloatOpen) {
+                              setState(() {
+                                isFloatOpen = false;
+                              });
+                            } else {
+                              setState(() {
+                                isFloatOpen = true;
+                              });
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(
+                              10,
+                              15,
+                              isFloatOpen ? 30 : 10,
+                              15,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor100,
+                              borderRadius:
+                                  BorderRadius.only(
+                                    topLeft:
+                                        Radius.circular(5),
+                                    bottomLeft:
+                                        Radius.circular(5),
+                                  ),
+                            ),
+                            child: Stack(
+                              children: [
+                                Visibility(
+                                  visible: isFloatOpen,
+                                  child: Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    children: [
+                                      Column(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          Icon(
+                                            color:
+                                                Colors
+                                                    .white,
+                                            size: 16,
+                                            Icons
+                                                .arrow_forward_ios_rounded,
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(width: 10),
+                                      Column(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        spacing: 15,
+                                        children: [
+                                          InkWell(
+                                            onTap: () async {
+                                              openWhatsApp();
+                                            },
 
+                                            child: Column(
+                                              spacing: 3,
+                                              mainAxisSize:
+                                                  MainAxisSize
+                                                      .min,
+                                              children: [
+                                                SvgPicture.asset(
+                                                  whatsappIconSvg,
+                                                  color:
+                                                      Colors
+                                                          .white,
+                                                  height:
+                                                      16,
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'Chat Us',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              phoneCall();
+                                            },
+                                            child: Column(
+                                              spacing: 3,
+                                              mainAxisSize:
+                                                  MainAxisSize
+                                                      .min,
+                                              children: [
+                                                Icon(
+                                                  size: 17,
+                                                  color:
+                                                      Colors
+                                                          .white,
+                                                  Icons
+                                                      .phone,
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'Call Us',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: !isFloatOpen,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      openFloat();
+                                    },
+                                    child: Column(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      children: [
+                                        Icon(
+                                          size: 16,
+                                          color:
+                                              Colors.white,
+                                          Icons
+                                              .arrow_back_ios_new_rounded,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Visibility(
                       visible:
                           context
