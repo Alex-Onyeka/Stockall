@@ -140,19 +140,17 @@ class _EnterNewPasswordMobileState
                                 await AuthService()
                                     .signOut();
 
-                                // if (safeContex.mounted) {
-                                //   Navigator.pushReplacementNamed(
-                                //     safeContex,
-                                //     '/login',
-                                //   );
-                                if (context.mounted) {
+                                if (kIsWeb) {
+                                  // 🧼 Clean up URL to remove token
                                   html.window.history
                                       .replaceState(
                                         null,
                                         'Login',
                                         '/#/login',
                                       );
+                                }
 
+                                if (context.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     '/login',
