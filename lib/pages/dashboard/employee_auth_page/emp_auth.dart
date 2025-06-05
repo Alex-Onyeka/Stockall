@@ -575,16 +575,31 @@ class _EmpAuthState extends State<EmpAuth> {
                 ),
                 Visibility(
                   visible: showSuccess,
-                  child: returnCompProvider(
-                    context,
-                  ).showSuccess('Logged in Succesfully'),
+                  child: Material(
+                    color: Colors.white,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
                 ),
-                Visibility(
-                  visible: isLoading,
-                  child: returnCompProvider(
-                    context,
-                  ).showLoader('Loading'),
-                ),
+                // Visibility(
+                //   visible: isLoading,
+                //   child: returnCompProvider(
+                //     context,
+                //   ).showLoader('Loading'),
+                // ),
+                // Visibility(
+                //   visible: showSuccess,
+                //   child: returnCompProvider(
+                //     context,
+                //   ).showSuccess('Logged in Succesfully'),
+                // ),
+                // Visibility(
+                //   visible: isLoading,
+                //   child: returnCompProvider(
+                //     context,
+                //   ).showLoader('Loading'),
+                // ),
               ],
             ),
           ),
