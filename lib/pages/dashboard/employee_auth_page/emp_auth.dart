@@ -42,15 +42,18 @@ class _EmpAuthState extends State<EmpAuth> {
     return tempUser;
   }
 
+  // final GlobalKey<ScaffoldState> _scaffoldKey =
+  //     GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Stack(
       children: [
         Scaffold(
-          bottomNavigationBar: MainBottomNav(
-            globalKey: GlobalKey(),
-          ),
+          // bottomNavigationBar: MainBottomNav(
+          //   globalKey: _scaffoldKey,
+          // ),
           // body: Column(
           //   children: [
           //     SizedBox(height: 20),
