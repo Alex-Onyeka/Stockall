@@ -47,7 +47,7 @@ class _EmpAuthState extends State<EmpAuth> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = returnTheme(context);
+    var theme = returnTheme(context, listen: false);
     return Stack(
       children: [
         Scaffold(
@@ -399,162 +399,163 @@ class _EmpAuthState extends State<EmpAuth> {
                                 MainButtonP(
                                   themeProvider: theme,
                                   action: () async {
-                                    bool isValidEmail(
-                                      String email,
-                                    ) {
-                                      final emailRegex = RegExp(
-                                        r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                      );
-                                      return emailRegex
-                                          .hasMatch(email);
-                                    }
+                                    print('Button Pressed');
+                                    // bool isValidEmail(
+                                    //   String email,
+                                    // ) {
+                                    //   final emailRegex = RegExp(
+                                    //     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                                    //   );
+                                    //   return emailRegex
+                                    //       .hasMatch(email);
+                                    // }
 
-                                    if (passwordController
-                                            .text
-                                            .isEmpty ||
-                                        emailController
-                                            .text
-                                            .isEmpty) {
-                                      if (context.mounted) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'Email and Password fields must be set.',
-                                              title:
-                                                  'Empty Fields',
-                                            );
-                                          },
-                                        );
-                                      }
-                                    } else if (!isValidEmail(
-                                      emailController.text,
-                                    )) {
-                                      if (context.mounted) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'Your email is not valid. Please check and try again.',
-                                              title:
-                                                  'Invalid email',
-                                            );
-                                          },
-                                        );
-                                      }
-                                    } else {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      TempUserClass? user =
-                                          await fetchUserFromDatabase(
-                                            emailController
-                                                .text,
-                                            AuthService()
-                                                .currentUser!
-                                                .id,
-                                          );
+                                    // if (passwordController
+                                    //         .text
+                                    //         .isEmpty ||
+                                    //     emailController
+                                    //         .text
+                                    //         .isEmpty) {
+                                    //   if (context.mounted) {
+                                    //     showDialog(
+                                    //       context: context,
+                                    //       builder: (
+                                    //         context,
+                                    //       ) {
+                                    //         return InfoAlert(
+                                    //           theme: theme,
+                                    //           message:
+                                    //               'Email and Password fields must be set.',
+                                    //           title:
+                                    //               'Empty Fields',
+                                    //         );
+                                    //       },
+                                    //     );
+                                    //   }
+                                    // } else if (!isValidEmail(
+                                    //   emailController.text,
+                                    // )) {
+                                    //   if (context.mounted) {
+                                    //     showDialog(
+                                    //       context: context,
+                                    //       builder: (
+                                    //         context,
+                                    //       ) {
+                                    //         return InfoAlert(
+                                    //           theme: theme,
+                                    //           message:
+                                    //               'Your email is not valid. Please check and try again.',
+                                    //           title:
+                                    //               'Invalid email',
+                                    //         );
+                                    //       },
+                                    //     );
+                                    //   }
+                                    // } else {
+                                    //   setState(() {
+                                    //     isLoading = true;
+                                    //   });
+                                    //   TempUserClass? user =
+                                    //       await fetchUserFromDatabase(
+                                    //         emailController
+                                    //             .text,
+                                    //         AuthService()
+                                    //             .currentUser!
+                                    //             .id,
+                                    //       );
 
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      if (user != null) {
-                                        if (user.password !=
-                                            passwordController
-                                                .text
-                                                .trim()) {
-                                          if (context
-                                              .mounted) {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return InfoAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'Your password is not correct. Check it and try again.',
-                                                  title:
-                                                      'Incorrect Password',
-                                                );
-                                              },
-                                            );
-                                          }
-                                        } else {
-                                          setState(() {
-                                            showSuccess =
-                                                true;
-                                          });
-                                          await Future.delayed(
-                                            Duration(
-                                              seconds: 2,
-                                            ),
-                                          );
-                                          if (context
-                                              .mounted) {
-                                            await returnLocalDatabase(
-                                              context,
-                                              listen: false,
-                                            ).insertUser(
-                                              user,
-                                            );
-                                            if (context
-                                                .mounted) {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (
-                                                        context,
-                                                      ) =>
-                                                          Home(),
-                                                ),
-                                                (route) =>
-                                                    false, // removes all previous routes
-                                              );
-                                            }
-                                          }
-                                          emailController
-                                              .clear();
-                                          passwordController
-                                              .clear();
-                                          setState(() {
-                                            showSuccess =
-                                                false;
-                                          });
-                                        }
-                                      } else {
-                                        if (context
-                                            .mounted) {
-                                          showDialog(
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Email address not registered with shop. Check the email and try again.',
-                                                title:
-                                                    'Email not found',
-                                              );
-                                            },
-                                          );
-                                        }
-                                      }
-                                    }
+                                    //   setState(() {
+                                    //     isLoading = false;
+                                    //   });
+                                    //   if (user != null) {
+                                    //     if (user.password !=
+                                    //         passwordController
+                                    //             .text
+                                    //             .trim()) {
+                                    //       if (context
+                                    //           .mounted) {
+                                    //         showDialog(
+                                    //           context:
+                                    //               context,
+                                    //           builder: (
+                                    //             context,
+                                    //           ) {
+                                    //             return InfoAlert(
+                                    //               theme:
+                                    //                   theme,
+                                    //               message:
+                                    //                   'Your password is not correct. Check it and try again.',
+                                    //               title:
+                                    //                   'Incorrect Password',
+                                    //             );
+                                    //           },
+                                    //         );
+                                    //       }
+                                    //     } else {
+                                    //       setState(() {
+                                    //         showSuccess =
+                                    //             true;
+                                    //       });
+                                    //       await Future.delayed(
+                                    //         Duration(
+                                    //           seconds: 2,
+                                    //         ),
+                                    //       );
+                                    //       if (context
+                                    //           .mounted) {
+                                    //         await returnLocalDatabase(
+                                    //           context,
+                                    //           listen: false,
+                                    //         ).insertUser(
+                                    //           user,
+                                    //         );
+                                    //         if (context
+                                    //             .mounted) {
+                                    //           Navigator.pushAndRemoveUntil(
+                                    //             context,
+                                    //             MaterialPageRoute(
+                                    //               builder:
+                                    //                   (
+                                    //                     context,
+                                    //                   ) =>
+                                    //                       Home(),
+                                    //             ),
+                                    //             (route) =>
+                                    //                 false, // removes all previous routes
+                                    //           );
+                                    //         }
+                                    //       }
+                                    //       emailController
+                                    //           .clear();
+                                    //       passwordController
+                                    //           .clear();
+                                    //       setState(() {
+                                    //         showSuccess =
+                                    //             false;
+                                    //       });
+                                    //     }
+                                    //   } else {
+                                    //     if (context
+                                    //         .mounted) {
+                                    //       showDialog(
+                                    //         context:
+                                    //             context,
+                                    //         builder: (
+                                    //           context,
+                                    //         ) {
+                                    //           return InfoAlert(
+                                    //             theme:
+                                    //                 theme,
+                                    //             message:
+                                    //                 'Email address not registered with shop. Check the email and try again.',
+                                    //             title:
+                                    //                 'Email not found',
+                                    //           );
+                                    //         },
+                                    //       );
+                                    //     }
+                                    //   }
+                                    // }
                                   },
 
                                   text: 'Login',
