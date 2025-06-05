@@ -133,7 +133,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                   success = true;
                 });
 
-                await Future.delayed(Duration(seconds: 1));
+                await Future.delayed(Duration(seconds: 3));
 
                 if (safeContext.mounted) {
                   Navigator.pushReplacement(
@@ -1578,7 +1578,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                                       ? 'Update Details'
                                       : 'Create Shop',
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 40),
                           ],
                         ),
                       ),
@@ -1590,167 +1590,26 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
           ),
           Visibility(
             visible: isLoading,
-            child: Material(
-              color: Colors.white,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader(
+              widget.shop != null
+                  ? 'Updating Details'
+                  : 'Setting Up Your Shop',
             ),
           ),
           Visibility(
             visible: success,
-            child: Material(
-              color: Colors.white,
-              child: Center(
-                child: Text(
-                  style: TextStyle(
-                    color: theme.lightModeColor.prColor300,
-                    fontSize: theme.mobileTexts.h3.fontSize,
-                    fontWeight:
-                        theme.mobileTexts.h2.fontWeightBold,
-                  ),
-                  'Shop Created Successfully',
-                ),
-              ),
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showSuccess(
+              widget.shop != null
+                  ? 'Update Completed Successfully'
+                  : 'Shop Setup Complete',
             ),
           ),
-          // Visibility(
-          //   visible: isLoading,
-          //   child: Material(
-          //     child: Container(
-          //       color: const Color.fromARGB(
-          //         245,
-          //         255,
-          //         255,
-          //         255,
-          //       ),
-          //       child: Center(
-          //         child: Column(
-          //           children: [
-          //             Expanded(
-          //               child: Stack(
-          //                 children: [
-          //                   Align(
-          //                     alignment: Alignment(0, 0),
-          //                     child: SizedBox(
-          //                       width: 180,
-          //                       child: Lottie.asset(
-          //                         mainLoader.isEmpty
-          //                             ? 'assets/animations/main_loader.json'
-          //                             : mainLoader,
-          //                         height: 80,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                   Align(
-          //                     alignment: Alignment(0, 0.1),
-          //                     child: Padding(
-          //                       padding:
-          //                           const EdgeInsets.symmetric(
-          //                             horizontal: 60.0,
-          //                           ),
-          //                       child: Text(
-          //                         textAlign:
-          //                             TextAlign.center,
-          //                         style: TextStyle(
-          //                           color:
-          //                               theme
-          //                                   .lightModeColor
-          //                                   .prColor300,
-          //                           fontSize:
-          //                               theme
-          //                                   .mobileTexts
-          //                                   .h4
-          //                                   .fontSize,
-          //                           fontWeight:
-          //                               theme
-          //                                   .mobileTexts
-          //                                   .h2
-          //                                   .fontWeightBold,
-          //                         ),
-          //                         widget.shop != null
-          //                             ? 'Updating Details'
-          //                             : 'Setting Up Your Shop',
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Visibility(
-          //   visible: success,
-          //   child: Material(
-          //     child: Container(
-          //       color: const Color.fromARGB(
-          //         251,
-          //         255,
-          //         255,
-          //         255,
-          //       ),
-          //       child: Center(
-          //         child: Column(
-          //           children: [
-          //             Expanded(
-          //               child: Stack(
-          //                 children: [
-          //                   Align(
-          //                     alignment: Alignment(0, -0.2),
-          //                     child: SizedBox(
-          //                       width: 180,
-          //                       child: Lottie.asset(
-          //                         successAnim.isEmpty
-          //                             ? 'assets/animations/check_animation.json'
-          //                             : successAnim,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                   Align(
-          //                     alignment: Alignment(0, 0.2),
-          //                     child: Padding(
-          //                       padding:
-          //                           const EdgeInsets.symmetric(
-          //                             horizontal: 60.0,
-          //                           ),
-          //                       child: Text(
-          //                         widget.shop != null
-          //                             ? 'Update Completed Successfully'
-          //                             : 'Shop Setup Complete',
-          //                         textAlign:
-          //                             TextAlign.center,
-          //                         style: TextStyle(
-          //                           color:
-          //                               theme
-          //                                   .lightModeColor
-          //                                   .prColor300,
-          //                           fontSize:
-          //                               theme
-          //                                   .mobileTexts
-          //                                   .h2
-          //                                   .fontSize,
-          //                           fontWeight:
-          //                               theme
-          //                                   .mobileTexts
-          //                                   .h2
-          //                                   .fontWeightBold,
-          //                         ),
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

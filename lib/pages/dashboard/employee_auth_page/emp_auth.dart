@@ -357,7 +357,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Loginnn',
+                                      'Login',
                                     ),
                                     Text(
                                       style: TextStyle(
@@ -383,7 +383,6 @@ class _EmpAuthState extends State<EmpAuth> {
                                   hint: 'Enter Email',
                                   title: 'Email',
                                 ),
-
                                 SizedBox(height: 20),
                                 EmailTextField(
                                   controller:
@@ -575,31 +574,16 @@ class _EmpAuthState extends State<EmpAuth> {
                 ),
                 Visibility(
                   visible: showSuccess,
-                  child: Material(
-                    color: Colors.white,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
+                  child: returnCompProvider(
+                    context,
+                  ).showSuccess('Logged in Succesfully'),
                 ),
-                // Visibility(
-                //   visible: isLoading,
-                //   child: returnCompProvider(
-                //     context,
-                //   ).showLoader('Loading'),
-                // ),
-                // Visibility(
-                //   visible: showSuccess,
-                //   child: returnCompProvider(
-                //     context,
-                //   ).showSuccess('Logged in Succesfully'),
-                // ),
-                // Visibility(
-                //   visible: isLoading,
-                //   child: returnCompProvider(
-                //     context,
-                //   ).showLoader('Loading'),
-                // ),
+                Visibility(
+                  visible: isLoading,
+                  child: returnCompProvider(
+                    context,
+                  ).showLoader('Loading'),
+                ),
               ],
             ),
           ),
