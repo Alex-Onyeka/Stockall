@@ -11,6 +11,18 @@ class EnterNewPassword extends StatefulWidget {
 
 class _EnterNewPasswordState
     extends State<EnterNewPassword> {
+  String? accessToken;
+  @override
+  void initState() {
+    super.initState();
+
+    final uri = Uri.base;
+    final token = uri.queryParameters['access_token'];
+    setState(() {
+      accessToken = token;
+    });
+  }
+
   TextEditingController passwordC = TextEditingController();
   TextEditingController confirmPasswordC =
       TextEditingController();
@@ -22,6 +34,7 @@ class _EnterNewPasswordState
           return EnterNewPasswordMobile(
             passwordC: passwordC,
             confirmPasswordC: confirmPasswordC,
+            accessToken: accessToken,
           );
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {

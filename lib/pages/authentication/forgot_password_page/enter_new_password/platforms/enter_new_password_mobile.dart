@@ -11,11 +11,13 @@ import 'package:stockall/services/auth_service.dart';
 class EnterNewPasswordMobile extends StatefulWidget {
   final TextEditingController passwordC;
   final TextEditingController confirmPasswordC;
+  final String? accessToken;
 
   const EnterNewPasswordMobile({
     super.key,
     required this.passwordC,
     required this.confirmPasswordC,
+    this.accessToken,
   });
 
   @override
