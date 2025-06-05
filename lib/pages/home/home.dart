@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     shopFuture = getUserShop();
-    // localUserFuture = getUserEmp();
+    localUserFuture = getUserEmp();
   }
 
   Future<TempUserClass?> getUserEmp() async {
@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
     return emp;
   }
 
-  // late Future<TempUserClass?> localUserFuture;
+  late Future<TempUserClass?> localUserFuture;
 
   Future<TempShopClass?> getUserShop() async {
     var shop = await returnShopProvider(
@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
           return const Scaffold();
         } else {
           return FutureBuilder<TempUserClass?>(
-            future: getUserEmp(),
+            future: localUserFuture,
             builder: (context, userSnapshot) {
               if (userSnapshot.connectionState ==
                   ConnectionState.waiting) {
