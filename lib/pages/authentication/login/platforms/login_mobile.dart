@@ -96,7 +96,7 @@ class _LoginMobileState extends State<LoginMobile> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return Home();
+                  return Home(isLogin: true);
                 },
               ),
             );

@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/enter_new_password.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/pages/products/products_page.dart';
@@ -14,7 +13,8 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final bool? isLogin;
+  const Home({super.key, this.isLogin});
 
   @override
   State<Home> createState() => _HomeState();
@@ -138,40 +138,6 @@ class _HomeState extends State<Home> {
                     height: 30,
                   ),
                 );
-              } else if (accessToken != null &&
-                  !_navigated) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _navigated = true;
-                        });
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    EnterNewPassword(),
-                          ),
-                          (route) => false,
-                        );
-                      }
-                    });
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).setShop(shopSnapshot.data!);
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).fetchCurrentUser();
-                        _providersInitialized = true;
-                      }
-                    });
-                return const Scaffold();
               } else if (userSnapshot.data == null &&
                   !_navigated) {
                 WidgetsBinding.instance
@@ -190,9 +156,10 @@ class _HomeState extends State<Home> {
                       }
                     });
                 return const Scaffold();
-              } else if (!_providersInitialized &&
-                  shopSnapshot.data != null &&
-                  userSnapshot.data != null) {
+              } else if (widget.isLogin != null ||
+                  !_providersInitialized &&
+                      shopSnapshot.data != null &&
+                      userSnapshot.data != null) {
                 // Only set providers once
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
