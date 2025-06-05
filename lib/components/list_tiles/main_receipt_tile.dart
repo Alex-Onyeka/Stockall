@@ -31,10 +31,10 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
   }
 
   String cutLongText2(String text) {
-    if (text.length < 7) {
+    if (text.length < 8) {
       return text;
     } else {
-      return '${text.substring(0, 7)}...';
+      return '${text.substring(0, 8)}...';
     }
   }
 
@@ -402,7 +402,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                           FontWeight.bold,
                                     ),
                                     cutLongText2(
-                                      '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}',
+                                      '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
                                     ),
                                   ),
                                 ],

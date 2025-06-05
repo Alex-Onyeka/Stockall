@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final navProv = Provider.of<NavProvider>(context);
-    final theme = returnTheme(context);
+    // final theme = returnTheme(context);
 
     return FutureBuilder<UserAndShopData>(
       future: combinedFuture,
@@ -64,14 +64,15 @@ class _HomeState extends State<Home> {
         } else if (snapshot.hasError) {
           return Scaffold(
             body: Center(
-              child: EmptyWidgetDisplayOnly(
-                title: 'An Error Occurred',
-                subText:
-                    'We couldn\'t load your data. Check your internet.',
-                icon: Icons.clear,
-                theme: theme,
-                height: 30,
-              ),
+              child: Text('An Error Occured'),
+              //  EmptyWidgetDisplayOnly(
+              //   title: 'An Error Occurred',
+              //   subText:
+              //       'We couldn\'t load your data. Check your internet.',
+              //   icon: Icons.clear,
+              //   theme: theme,
+              //   height: 30,
+              // ),
             ),
           );
         }
