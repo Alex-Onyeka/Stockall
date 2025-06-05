@@ -138,7 +138,7 @@ class AuthService extends ChangeNotifier {
     required BuildContext context,
   }) async {
     try {
-      // 🔐 Step 1: Change in Supabase Auth
+      // 🔐 Step 1: Update password in Supabase Auth
       final response = await _client.auth.updateUser(
         UserAttributes(password: newPassword),
       );
@@ -154,12 +154,13 @@ class AuthService extends ChangeNotifier {
         "🔐 Password successfully updated in Supabase Auth for ${user.email}",
       );
 
-      // Step 2: Update password in your 'users' table
+      // ✅ Step 2: Update password in 'users' table
       final updateResponse =
           await _client
               .from('users')
               .update({'password': newPassword})
               .eq('user_id', user.id)
+              .select() // this is required to return the updated row
               .maybeSingle();
 
       if (updateResponse == null) {
@@ -168,12 +169,14 @@ class AuthService extends ChangeNotifier {
         );
       }
 
+      // ✅ Step 3: Convert to TempUserClass
       final tempUser = TempUserClass.fromJson({
         ...updateResponse,
-        'password': newPassword,
+        'password':
+            newPassword, // You may not need this line if it's already in updateResponse
       });
 
-      // 4. Store the user in local DB
+      // ✅ Step 4: Save updated user locally
       if (context.mounted) {
         await returnLocalDatabase(
           context,
@@ -181,8 +184,9 @@ class AuthService extends ChangeNotifier {
         ).insertUser(tempUser);
         print("✅ User Inserted Into Local Storage.");
       }
+
       print(
-        "✅ Password updated in 'users' table: $updateResponse",
+        "✅ Password updated in 'users' table and saved locally.",
       );
     } catch (e) {
       print("❌ Error changing password: $e");

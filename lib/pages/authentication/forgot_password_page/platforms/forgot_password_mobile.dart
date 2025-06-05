@@ -6,7 +6,7 @@ import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
 import 'package:stockall/services/auth_service.dart';
 
-class ForgotPasswordMobile extends StatelessWidget {
+class ForgotPasswordMobile extends StatefulWidget {
   final TextEditingController emailController;
   const ForgotPasswordMobile({
     super.key,
@@ -14,54 +14,78 @@ class ForgotPasswordMobile extends StatelessWidget {
   });
 
   @override
+  State<ForgotPasswordMobile> createState() =>
+      _ForgotPasswordMobileState();
+}
+
+class _ForgotPasswordMobileState
+    extends State<ForgotPasswordMobile> {
+  bool isLoading = false;
+  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Scaffold(
-      appBar: appBar(
-        context: context,
-        title: 'Forgot Password',
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 25.0,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: appBar(
+            context: context,
+            title: 'Forgot Password',
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 25.0,
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  'Enter your email below and you will receive a password reset token.',
+                ),
+                SizedBox(height: 20),
+                EmailTextField(
+                  controller: widget.emailController,
+                  theme: theme,
+                  isEmail: true,
+                  hint: 'Enter Email',
+                  title: 'Email',
+                ),
+                SizedBox(height: 20),
+                MainButtonP(
+                  themeProvider: theme,
+                  action: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await AuthService()
+                        .sendPasswordResetEmail(
+                          widget.emailController.text
+                              .trim(),
+                        );
+                    if (context.mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return VerifyPhone();
+                          },
+                        ),
+                      );
+                    }
+                  },
+                  text: 'Send Recovery Link',
+                ),
+              ],
+            ),
+          ),
         ),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Text(
-              'Enter your email below and you will receive a password reset token.',
-            ),
-            SizedBox(height: 20),
-            EmailTextField(
-              controller: emailController,
-              theme: theme,
-              isEmail: true,
-              hint: 'Enter Email',
-              title: 'Email',
-            ),
-            SizedBox(height: 20),
-            MainButtonP(
-              themeProvider: theme,
-              action: () async {
-                await AuthService().sendPasswordResetEmail(
-                  emailController.text.trim(),
-                );
-                if (context.mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return VerifyPhone();
-                      },
-                    ),
-                  );
-                }
-              },
-              text: 'Send Recovery Link',
-            ),
-          ],
+        Visibility(
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Loading'),
         ),
-      ),
+      ],
     );
   }
 }
