@@ -114,18 +114,20 @@ class _HomeState extends State<Home> {
                     child: CircularProgressIndicator(),
                   ),
                 );
-              } else if (userSnapshot.hasError) {
-                return Scaffold(
-                  body: EmptyWidgetDisplayOnly(
-                    title: 'An Error Occurred',
-                    subText:
-                        'We couldn\'t load your employee data.',
-                    icon: Icons.clear,
-                    theme: theme,
-                    height: 30,
-                  ),
-                );
-              } else if (userSnapshot.data == null &&
+              }
+              // else if (userSnapshot.hasError) {
+              //   return Scaffold(
+              //     body: EmptyWidgetDisplayOnly(
+              //       title: 'An Error Occurred',
+              //       subText:
+              //           'We couldn\'t load your employee data.',
+              //       icon: Icons.clear,
+              //       theme: theme,
+              //       height: 30,
+              //     ),
+              //   );
+              // }
+              else if (userSnapshot.data == null &&
                   !_navigated) {
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
