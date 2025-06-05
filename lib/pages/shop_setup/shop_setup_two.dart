@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -14,7 +13,6 @@ import 'package:stockall/components/progress_bar.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/main_dropdown_only.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/components/major/top_banner.dart';
@@ -135,7 +133,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                   success = true;
                 });
 
-                await Future.delayed(Duration(seconds: 3));
+                await Future.delayed(Duration(seconds: 1));
 
                 if (safeContext.mounted) {
                   Navigator.pushReplacement(
@@ -1590,144 +1588,169 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
               ),
             ),
           ),
-
           Visibility(
             visible: isLoading,
             child: Material(
-              child: Container(
-                color: const Color.fromARGB(
-                  245,
-                  255,
-                  255,
-                  255,
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment(0, 0),
-                              child: SizedBox(
-                                width: 180,
-                                child: Lottie.asset(
-                                  mainLoader.isEmpty
-                                      ? 'assets/animations/main_loader.json'
-                                      : mainLoader,
-                                  height: 80,
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment(0, 0.1),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 60.0,
-                                    ),
-                                child: Text(
-                                  textAlign:
-                                      TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
-                                    fontWeight:
-                                        theme
-                                            .mobileTexts
-                                            .h2
-                                            .fontWeightBold,
-                                  ),
-                                  widget.shop != null
-                                      ? 'Updating Details'
-                                      : 'Setting Up Your Shop',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              color: Colors.white,
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
             ),
           ),
           Visibility(
             visible: success,
             child: Material(
-              child: Container(
-                color: const Color.fromARGB(
-                  251,
-                  255,
-                  255,
-                  255,
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment(0, -0.2),
-                              child: SizedBox(
-                                width: 180,
-                                child: Lottie.asset(
-                                  successAnim.isEmpty
-                                      ? 'assets/animations/check_animation.json'
-                                      : successAnim,
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment(0, 0.2),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 60.0,
-                                    ),
-                                child: Text(
-                                  widget.shop != null
-                                      ? 'Update Completed Successfully'
-                                      : 'Shop Setup Complete',
-                                  textAlign:
-                                      TextAlign.center,
-                                  style: TextStyle(
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .h2
-                                            .fontSize,
-                                    fontWeight:
-                                        theme
-                                            .mobileTexts
-                                            .h2
-                                            .fontWeightBold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  style: TextStyle(
+                    color: theme.lightModeColor.prColor300,
+                    fontSize: theme.mobileTexts.h3.fontSize,
+                    fontWeight:
+                        theme.mobileTexts.h2.fontWeightBold,
                   ),
+                  'Shop Created Successfully',
                 ),
               ),
             ),
           ),
+          // Visibility(
+          //   visible: isLoading,
+          //   child: Material(
+          //     child: Container(
+          //       color: const Color.fromARGB(
+          //         245,
+          //         255,
+          //         255,
+          //         255,
+          //       ),
+          //       child: Center(
+          //         child: Column(
+          //           children: [
+          //             Expanded(
+          //               child: Stack(
+          //                 children: [
+          //                   Align(
+          //                     alignment: Alignment(0, 0),
+          //                     child: SizedBox(
+          //                       width: 180,
+          //                       child: Lottie.asset(
+          //                         mainLoader.isEmpty
+          //                             ? 'assets/animations/main_loader.json'
+          //                             : mainLoader,
+          //                         height: 80,
+          //                       ),
+          //                     ),
+          //                   ),
+          //                   Align(
+          //                     alignment: Alignment(0, 0.1),
+          //                     child: Padding(
+          //                       padding:
+          //                           const EdgeInsets.symmetric(
+          //                             horizontal: 60.0,
+          //                           ),
+          //                       child: Text(
+          //                         textAlign:
+          //                             TextAlign.center,
+          //                         style: TextStyle(
+          //                           color:
+          //                               theme
+          //                                   .lightModeColor
+          //                                   .prColor300,
+          //                           fontSize:
+          //                               theme
+          //                                   .mobileTexts
+          //                                   .h4
+          //                                   .fontSize,
+          //                           fontWeight:
+          //                               theme
+          //                                   .mobileTexts
+          //                                   .h2
+          //                                   .fontWeightBold,
+          //                         ),
+          //                         widget.shop != null
+          //                             ? 'Updating Details'
+          //                             : 'Setting Up Your Shop',
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Visibility(
+          //   visible: success,
+          //   child: Material(
+          //     child: Container(
+          //       color: const Color.fromARGB(
+          //         251,
+          //         255,
+          //         255,
+          //         255,
+          //       ),
+          //       child: Center(
+          //         child: Column(
+          //           children: [
+          //             Expanded(
+          //               child: Stack(
+          //                 children: [
+          //                   Align(
+          //                     alignment: Alignment(0, -0.2),
+          //                     child: SizedBox(
+          //                       width: 180,
+          //                       child: Lottie.asset(
+          //                         successAnim.isEmpty
+          //                             ? 'assets/animations/check_animation.json'
+          //                             : successAnim,
+          //                       ),
+          //                     ),
+          //                   ),
+          //                   Align(
+          //                     alignment: Alignment(0, 0.2),
+          //                     child: Padding(
+          //                       padding:
+          //                           const EdgeInsets.symmetric(
+          //                             horizontal: 60.0,
+          //                           ),
+          //                       child: Text(
+          //                         widget.shop != null
+          //                             ? 'Update Completed Successfully'
+          //                             : 'Shop Setup Complete',
+          //                         textAlign:
+          //                             TextAlign.center,
+          //                         style: TextStyle(
+          //                           color:
+          //                               theme
+          //                                   .lightModeColor
+          //                                   .prColor300,
+          //                           fontSize:
+          //                               theme
+          //                                   .mobileTexts
+          //                                   .h2
+          //                                   .fontSize,
+          //                           fontWeight:
+          //                               theme
+          //                                   .mobileTexts
+          //                                   .h2
+          //                                   .fontWeightBold,
+          //                         ),
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

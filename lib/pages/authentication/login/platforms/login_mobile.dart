@@ -84,7 +84,7 @@ class _LoginMobileState extends State<LoginMobile> {
             showwSuccess = true;
           });
 
-          Future.delayed(Duration(seconds: 3), () {
+          Future.delayed(Duration(seconds: 1), () {
             Navigator.pushReplacement(
               // ignore: use_build_context_synchronously
               context,
@@ -381,7 +381,7 @@ class _LoginMobileState extends State<LoginMobile> {
                           .lightModeColor
                           .prColor300,
                   fontSize:
-                      widget.theme.mobileTexts.h4.fontSize,
+                      widget.theme.mobileTexts.h3.fontSize,
                   fontWeight:
                       widget
                           .theme
@@ -389,7 +389,7 @@ class _LoginMobileState extends State<LoginMobile> {
                           .h2
                           .fontWeightBold,
                 ),
-                'Login Successful',
+                'Logged In Successfully',
               ),
             ),
           ),
