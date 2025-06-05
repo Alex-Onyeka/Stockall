@@ -6,7 +6,6 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EnterNewPasswordMobile extends StatefulWidget {
@@ -135,23 +134,15 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                Future.delayed(
-                                  Duration(seconds: 2),
-                                  () {
-                                    if (safeContex
-                                        .mounted) {
-                                      Navigator.pushAndRemoveUntil(
-                                        safeContex,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) =>
-                                                  Home(),
-                                        ),
-                                        (route) => false,
-                                      );
-                                    }
-                                  },
-                                );
+                                await AuthService()
+                                    .signOut();
+
+                                if (safeContex.mounted) {
+                                  Navigator.popAndPushNamed(
+                                    safeContex,
+                                    '/launch',
+                                  );
+                                }
                               },
                             );
                           },

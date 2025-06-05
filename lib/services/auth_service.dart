@@ -138,7 +138,7 @@ class AuthService extends ChangeNotifier {
     required BuildContext context,
   }) async {
     try {
-      // 🔐 Step 1: Update password in Supabase Auth
+      // 🔐 Step 1: Change in Supabase Auth
       final response = await _client.auth.updateUser(
         UserAttributes(password: newPassword),
       );
@@ -154,39 +154,16 @@ class AuthService extends ChangeNotifier {
         "🔐 Password successfully updated in Supabase Auth for ${user.email}",
       );
 
-      // ✅ Step 2: Update password in 'users' table
+      // ✅ Step 2: Update password in your 'users' table
       final updateResponse =
           await _client
               .from('users')
               .update({'password': newPassword})
               .eq('user_id', user.id)
-              .select() // this is required to return the updated row
               .maybeSingle();
 
-      if (updateResponse == null) {
-        throw Exception(
-          "Update failed: No user returned from 'users' table.",
-        );
-      }
-
-      // ✅ Step 3: Convert to TempUserClass
-      final tempUser = TempUserClass.fromJson({
-        ...updateResponse,
-        'password':
-            newPassword, // You may not need this line if it's already in updateResponse
-      });
-
-      // ✅ Step 4: Save updated user locally
-      if (context.mounted) {
-        await returnLocalDatabase(
-          context,
-          listen: false,
-        ).insertUser(tempUser);
-        print("✅ User Inserted Into Local Storage.");
-      }
-
       print(
-        "✅ Password updated in 'users' table and saved locally.",
+        "✅ Password updated in 'users' table: $updateResponse",
       );
     } catch (e) {
       print("❌ Error changing password: $e");
@@ -200,17 +177,9 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
-    try {
-      await Supabase.instance.client.auth
-          .resetPasswordForEmail(
-            email,
-            redirectTo:
-                'https://www.stockallapp.com/#/reset-password',
-          );
-      print('Password reset email sent.');
-    } catch (e) {
-      print('Error sending reset email: $e');
-    }
+    await Supabase.instance.client.auth
+        .resetPasswordForEmail(email);
+    print('Reset link sent to $email');
   }
 
   User? get currentUser => _client.auth.currentUser;
