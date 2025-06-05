@@ -141,7 +141,7 @@ class _EnterNewPasswordMobileState
                                     if (safeContex
                                         .mounted) {
                                       Navigator.pushAndRemoveUntil(
-                                        context,
+                                        safeContex,
                                         MaterialPageRoute(
                                           builder:
                                               (context) =>

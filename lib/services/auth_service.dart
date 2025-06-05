@@ -154,18 +154,23 @@ class AuthService extends ChangeNotifier {
         "🔐 Password successfully updated in Supabase Auth for ${user.email}",
       );
 
-      // ✅ Step 2: Update password in your 'users' table
+      // Step 2: Update password in your 'users' table
       final updateResponse =
           await _client
               .from('users')
               .update({'password': newPassword})
               .eq('user_id', user.id)
               .maybeSingle();
-      // 3. Convert Supabase response into TempUserClass
+
+      if (updateResponse == null) {
+        throw Exception(
+          "Update failed: No user returned from 'users' table.",
+        );
+      }
+
       final tempUser = TempUserClass.fromJson({
-        ...updateResponse!,
-        'password':
-            newPassword, // Optional: if you're keeping it
+        ...updateResponse,
+        'password': newPassword,
       });
 
       // 4. Store the user in local DB

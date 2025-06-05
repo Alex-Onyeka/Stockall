@@ -40,8 +40,9 @@ class _EmailTextFieldState extends State<EmailTextField> {
         TextFormField(
           enabled: widget.isEnabled ?? true,
           validator: widget.validatorAction,
-          autocorrect: hidden && !widget.isEmail,
-          enableSuggestions: hidden && !widget.isEmail,
+          autocorrect: !widget.isEmail,
+          enableSuggestions: !widget.isEmail,
+
           keyboardType:
               widget.isEmail
                   ? TextInputType.emailAddress
