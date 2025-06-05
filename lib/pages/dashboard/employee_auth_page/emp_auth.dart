@@ -48,11 +48,12 @@ class _EmpAuthState extends State<EmpAuth> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Colors.white,
           // bottomNavigationBar: MainBottomNav(
           //   globalKey: GlobalKey(),
           // ),
           body: Container(
-            color: Colors.teal,
+            color: const Color.fromARGB(108, 150, 230, 222),
             child: Column(children: [Row()]),
           ),
           // Column(
