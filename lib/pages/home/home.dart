@@ -147,24 +147,26 @@ class _HomeState extends State<Home> {
                   //   child: Text('Employee not logged in'),
                   // ),
                 );
-              } else if (!_providersInitialized &&
-                  shopSnapshot.data != null) {
-                // Only set providers once
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).setShop(shopSnapshot.data!);
-                        // returnUserProvider(
-                        //   context,
-                        //   listen: false,
-                        // ).fetchCurrentUser();
-                        _providersInitialized = true;
-                      }
-                    });
               }
+              // else if (!_providersInitialized &&
+              //     shopSnapshot.data != null &&
+              //     userSnapshot.data != null) {
+              //   // Only set providers once
+              //   WidgetsBinding.instance
+              //       .addPostFrameCallback((_) {
+              //         if (mounted) {
+              //           returnShopProvider(
+              //             context,
+              //             listen: false,
+              //           ).setShop(shopSnapshot.data!);
+              //           returnUserProvider(
+              //             context,
+              //             listen: false,
+              //           ).fetchCurrentUser();
+              //           _providersInitialized = true;
+              //         }
+              //       });
+              // }
 
               // Show the actual content
               switch (navProv.currentPage) {
