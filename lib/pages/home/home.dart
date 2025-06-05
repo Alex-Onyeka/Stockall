@@ -125,7 +125,7 @@ class _HomeState extends State<Home> {
                     height: 30,
                   ),
                 );
-              } else if (!userSnapshot.hasData &&
+              } else if (userSnapshot.data == null &&
                   !_navigated) {
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
@@ -148,8 +148,7 @@ class _HomeState extends State<Home> {
                   // ),
                 );
               } else if (!_providersInitialized &&
-                  shopSnapshot.data != null &&
-                  userSnapshot.data != null) {
+                  shopSnapshot.data != null) {
                 // Only set providers once
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
@@ -158,10 +157,10 @@ class _HomeState extends State<Home> {
                           context,
                           listen: false,
                         ).setShop(shopSnapshot.data!);
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).fetchCurrentUser();
+                        // returnUserProvider(
+                        //   context,
+                        //   listen: false,
+                        // ).fetchCurrentUser();
                         _providersInitialized = true;
                       }
                     });
