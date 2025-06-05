@@ -127,25 +127,25 @@ class _HomeState extends State<Home> {
                 );
               } else if (userSnapshot.data == null &&
                   !_navigated) {
-                // WidgetsBinding.instance
-                //     .addPostFrameCallback((_) {
-                //       if (mounted) {
-                //         setState(() {
-                //           _navigated = true;
-                //         });
-                //         Navigator.pushAndRemoveUntil(
-                //           context,
-                //           MaterialPageRoute(
-                //             builder: (context) => EmpAuth(),
-                //           ),
-                //           (route) => false,
-                //         );
-                //       }
-                //     });
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _navigated = true;
+                        });
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EmpAuth(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    });
                 return const Scaffold(
-                  body: Center(
-                    child: Text('Employee not logged in'),
-                  ),
+                  // body: Center(
+                  //   child: Text('Employee not logged in'),
+                  // ),
                 );
               } else if (!_providersInitialized &&
                   shopSnapshot.data != null &&
