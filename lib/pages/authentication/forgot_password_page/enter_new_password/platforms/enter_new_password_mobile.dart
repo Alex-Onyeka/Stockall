@@ -140,7 +140,7 @@ class _EnterNewPasswordMobileState
                                 if (safeContex.mounted) {
                                   Navigator.popAndPushNamed(
                                     safeContex,
-                                    '/launch',
+                                    '/login',
                                   );
                                 }
                               },
