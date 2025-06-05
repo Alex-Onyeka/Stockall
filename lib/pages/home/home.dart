@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/enter_new_password.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/pages/products/products_page.dart';
@@ -24,11 +25,20 @@ class _HomeState extends State<Home> {
   bool _navigated = false;
   bool _providersInitialized = false;
 
+  String? accessToken;
   @override
   void initState() {
     super.initState();
     shopFuture = getUserShop();
     localUserFuture = getUserEmp();
+
+    super.initState();
+
+    final uri = Uri.base;
+    final token = uri.queryParameters['access_token'];
+    setState(() {
+      accessToken = token;
+    });
   }
 
   Future<TempUserClass?> getUserEmp() async {
@@ -43,6 +53,9 @@ class _HomeState extends State<Home> {
   late Future<TempUserClass?> localUserFuture;
 
   Future<TempShopClass?> getUserShop() async {
+    if (accessToken != null) {
+      print(accessToken);
+    }
     var shop = await returnShopProvider(
       context,
       listen: false,
@@ -137,6 +150,27 @@ class _HomeState extends State<Home> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => EmpAuth(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    });
+                return const Scaffold();
+              } else if (userSnapshot.data == null &&
+                  accessToken == null &&
+                  !_navigated) {
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _navigated = true;
+                        });
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    EnterNewPassword(),
                           ),
                           (route) => false,
                         );
