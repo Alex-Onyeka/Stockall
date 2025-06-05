@@ -104,20 +104,22 @@ class _EnterNewPasswordMobileState
                             );
                           },
                         );
-                      } else if (widget.accessToken ==
-                          null) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return InfoAlert(
-                              theme: theme,
-                              message:
-                                  'Click the link on your email to change your password.',
-                              title: 'Unauthorized Action',
-                            );
-                          },
-                        );
-                      } else {
+                      }
+                      // else if (widget.accessToken ==
+                      //     null) {
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (context) {
+                      //       return InfoAlert(
+                      //         theme: theme,
+                      //         message:
+                      //             'Click the link on your email to change your password.',
+                      //         title: 'Unauthorized Action',
+                      //       );
+                      //     },
+                      //   );
+                      // }
+                      else {
                         final safeContex = context;
 
                         showDialog(
