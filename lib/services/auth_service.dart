@@ -177,9 +177,17 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
-    await Supabase.instance.client.auth
-        .resetPasswordForEmail(email);
-    print('Reset link sent to $email');
+    try {
+      await Supabase.instance.client.auth
+          .resetPasswordForEmail(
+            email,
+            redirectTo:
+                'https://www.stockallapp.com/#/reset-password',
+          );
+      print('Password reset email sent.');
+    } catch (e) {
+      print('Error sending reset email: $e');
+    }
   }
 
   User? get currentUser => _client.auth.currentUser;
