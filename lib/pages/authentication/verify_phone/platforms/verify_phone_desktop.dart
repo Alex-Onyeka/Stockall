@@ -6,14 +6,12 @@ import 'package:stockall/pages/authentication/verify_phone/enter_code.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class VerifyPhoneDesktop extends StatelessWidget {
-  final String number;
   final ThemeProvider theme;
   final List circles;
   const VerifyPhoneDesktop({
     super.key,
     required this.theme,
     required this.circles,
-    required this.number,
   });
 
   @override
@@ -192,7 +190,8 @@ class VerifyPhoneDesktop extends StatelessWidget {
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return EnterCode(
-                                            number: number,
+                                            number:
+                                                'number',
                                           );
                                         },
                                       ),

@@ -3,6 +3,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ForgotPasswordMobile extends StatelessWidget {
@@ -45,6 +46,16 @@ class ForgotPasswordMobile extends StatelessWidget {
                 await AuthService().sendPasswordResetEmail(
                   emailController.text.trim(),
                 );
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return VerifyPhone();
+                      },
+                    ),
+                  );
+                }
               },
               text: 'Send Recovery Link',
             ),

@@ -43,9 +43,7 @@ class _SignupTwoDesktopState
         context,
         MaterialPageRoute(
           builder: (context) {
-            return VerifyPhone(
-              number: widget.phoneController.text,
-            );
+            return VerifyPhone();
           },
         ),
       );

@@ -161,7 +161,21 @@ class AuthService extends ChangeNotifier {
               .update({'password': newPassword})
               .eq('user_id', user.id)
               .maybeSingle();
+      // 3. Convert Supabase response into TempUserClass
+      final tempUser = TempUserClass.fromJson({
+        ...updateResponse!,
+        'password':
+            newPassword, // Optional: if you're keeping it
+      });
 
+      // 4. Store the user in local DB
+      if (context.mounted) {
+        await returnLocalDatabase(
+          context,
+          listen: false,
+        ).insertUser(tempUser);
+        print("✅ User Inserted Into Local Storage.");
+      }
       print(
         "✅ Password updated in 'users' table: $updateResponse",
       );

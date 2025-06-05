@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockall/components/buttons/main_button_p.dart';
+// import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class VerifyPhoneMobile extends StatefulWidget {
   final ThemeProvider theme;
-  final String number;
   final List circles;
   const VerifyPhoneMobile({
     super.key,
     required this.circles,
     required this.theme,
-    required this.number,
   });
 
   @override
@@ -87,7 +85,7 @@ class _VerifyPhoneMobileState
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      'We have sent a code to your Email',
+                      'We have sent a Password Reset Link to your Email',
                       style: TextStyle(
                         color:
                             widget
@@ -112,14 +110,14 @@ class _VerifyPhoneMobileState
                               .mobileTexts
                               .b1
                               .textStyleNormal,
-                      'Check your mail to verify your User Account',
+                      'Check your mail to Reset Your Password',
                     ),
-                    SizedBox(height: 20),
-                    MainButtonP(
-                      themeProvider: widget.theme,
-                      action: () {},
-                      text: 'Proceed to Verify',
-                    ),
+                    // SizedBox(height: 20),
+                    // MainButtonP(
+                    //   themeProvider: widget.theme,
+                    //   action: () {},
+                    //   text: 'Proceed to Verify',
+                    // ),
                   ],
                 ),
               ),
