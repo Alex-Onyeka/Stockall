@@ -48,236 +48,240 @@ class _EmpAuthState extends State<EmpAuth> {
     return Stack(
       children: [
         Scaffold(
-          bottomNavigationBar: MainBottomNav(
-            globalKey: GlobalKey(),
+          // bottomNavigationBar: MainBottomNav(
+          //   globalKey: GlobalKey(),
+          // ),
+          body: Container(
+            color: Colors.teal,
+            child: Column(children: [Row()]),
           ),
-          body: Column(
-            children: [
-              SizedBox(height: 20),
-              TopNavBar(
-                notifications: [],
-                title: 'Users Shop',
-                subText: 'shop@gmail.com',
-                theme: theme,
-                openSideBar: () {},
-                role: 'Cashier',
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0,
-                  ),
-                  child: ListView(
-                    children: [
-                      DashboardTotalSalesBanner(
-                        theme: theme,
-                        value: 10000,
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        spacing: 20,
-                        children: [
-                          Expanded(
-                            child: MainInfoTab(
-                              title: 'title',
-                              number: '20',
-                              icon: '',
-                              theme: theme,
-                            ),
-                          ),
-                          Expanded(
-                            child: MainInfoTab(
-                              title: 'title',
-                              number: '20',
-                              icon: '',
-                              theme: theme,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  fontWeight:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontWeightBold,
-                                ),
-                                'Quick Actions',
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
+          // Column(
+          //   children: [
+          //     SizedBox(height: 20),
+          //     TopNavBar(
+          //       notifications: [],
+          //       title: 'Users Shop',
+          //       subText: 'shop@gmail.com',
+          //       theme: theme,
+          //       openSideBar: () {},
+          //       role: 'Cashier',
+          //     ),
+          //     Expanded(
+          //       child: Padding(
+          //         padding: const EdgeInsets.symmetric(
+          //           horizontal: 30.0,
+          //         ),
+          //         child: ListView(
+          //           children: [
+          //             DashboardTotalSalesBanner(
+          //               theme: theme,
+          //               value: 10000,
+          //             ),
+          //             SizedBox(height: 20),
+          //             Row(
+          //               mainAxisAlignment:
+          //                   MainAxisAlignment.center,
+          //               spacing: 20,
+          //               children: [
+          //                 Expanded(
+          //                   child: MainInfoTab(
+          //                     title: 'title',
+          //                     number: '20',
+          //                     icon: '',
+          //                     theme: theme,
+          //                   ),
+          //                 ),
+          //                 Expanded(
+          //                   child: MainInfoTab(
+          //                     title: 'title',
+          //                     number: '20',
+          //                     icon: '',
+          //                     theme: theme,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //             SizedBox(height: 20),
+          //             Column(
+          //               children: [
+          //                 Row(
+          //                   children: [
+          //                     Text(
+          //                       style: TextStyle(
+          //                         fontSize:
+          //                             theme
+          //                                 .mobileTexts
+          //                                 .b1
+          //                                 .fontSize,
+          //                         fontWeight:
+          //                             theme
+          //                                 .mobileTexts
+          //                                 .b1
+          //                                 .fontWeightBold,
+          //                       ),
+          //                       'Quick Actions',
+          //                     ),
+          //                   ],
+          //                 ),
+          //                 SizedBox(height: 20),
 
-                          SizedBox(
-                            width: double.infinity,
-                            child: LayoutBuilder(
-                              builder: (
-                                context,
-                                constraints,
-                              ) {
-                                if (constraints.maxWidth >
-                                    320) {
-                                  return Column(
-                                    spacing: 15,
-                                    children: [
-                                      Row(
-                                        spacing: 15,
-                                        children: [
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                productIconSvg,
-                                            title:
-                                                'Products',
-                                            action: () {},
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                salesIconSvg,
-                                            title: 'Sales',
-                                            action: () {
-                                              returnNavProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).navigate(2);
-                                            },
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                custBookIconSvg,
-                                            title:
-                                                'Customers',
-                                            action: () {},
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        spacing: 15,
-                                        children: [
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                employeesIconSvg,
-                                            title:
-                                                'Employees',
-                                            action: () {},
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                expensesIconSvg,
-                                            title:
-                                                'Expenses',
-                                            action:
-                                                () async {},
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                reportIconSvg,
-                                            title: 'Report',
-                                            action: () {},
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return Column(
-                                    spacing: 15,
-                                    children: [
-                                      Row(
-                                        spacing: 15,
-                                        children: [
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                productIconSvg,
-                                            title:
-                                                'Products',
-                                            action: () {},
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                salesIconSvg,
-                                            title: 'Sales',
-                                            action: () {},
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        spacing: 15,
-                                        children: [
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                custBookIconSvg,
-                                            title:
-                                                'Customers',
-                                            action: () {},
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                employeesIconSvg,
-                                            title:
-                                                'Employees',
-                                            action: () {},
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        spacing: 15,
-                                        children: [
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                expensesIconSvg,
-                                            title:
-                                                'Expenses',
-                                            action:
-                                                () async {},
-                                          ),
-                                          ButtonTab(
-                                            theme: theme,
-                                            icon:
-                                                reportIconSvg,
-                                            title: 'Report',
-                                            action: () {},
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+          //                 SizedBox(
+          //                   width: double.infinity,
+          //                   child: LayoutBuilder(
+          //                     builder: (
+          //                       context,
+          //                       constraints,
+          //                     ) {
+          //                       if (constraints.maxWidth >
+          //                           320) {
+          //                         return Column(
+          //                           spacing: 15,
+          //                           children: [
+          //                             Row(
+          //                               spacing: 15,
+          //                               children: [
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       productIconSvg,
+          //                                   title:
+          //                                       'Products',
+          //                                   action: () {},
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       salesIconSvg,
+          //                                   title: 'Sales',
+          //                                   action: () {
+          //                                     returnNavProvider(
+          //                                       context,
+          //                                       listen:
+          //                                           false,
+          //                                     ).navigate(2);
+          //                                   },
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       custBookIconSvg,
+          //                                   title:
+          //                                       'Customers',
+          //                                   action: () {},
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                             Row(
+          //                               spacing: 15,
+          //                               children: [
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       employeesIconSvg,
+          //                                   title:
+          //                                       'Employees',
+          //                                   action: () {},
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       expensesIconSvg,
+          //                                   title:
+          //                                       'Expenses',
+          //                                   action:
+          //                                       () async {},
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       reportIconSvg,
+          //                                   title: 'Report',
+          //                                   action: () {},
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                           ],
+          //                         );
+          //                       } else {
+          //                         return Column(
+          //                           spacing: 15,
+          //                           children: [
+          //                             Row(
+          //                               spacing: 15,
+          //                               children: [
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       productIconSvg,
+          //                                   title:
+          //                                       'Products',
+          //                                   action: () {},
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       salesIconSvg,
+          //                                   title: 'Sales',
+          //                                   action: () {},
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                             Row(
+          //                               spacing: 15,
+          //                               children: [
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       custBookIconSvg,
+          //                                   title:
+          //                                       'Customers',
+          //                                   action: () {},
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       employeesIconSvg,
+          //                                   title:
+          //                                       'Employees',
+          //                                   action: () {},
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                             Row(
+          //                               spacing: 15,
+          //                               children: [
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       expensesIconSvg,
+          //                                   title:
+          //                                       'Expenses',
+          //                                   action:
+          //                                       () async {},
+          //                                 ),
+          //                                 ButtonTab(
+          //                                   theme: theme,
+          //                                   icon:
+          //                                       reportIconSvg,
+          //                                   title: 'Report',
+          //                                   action: () {},
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                           ],
+          //                         );
+          //                       }
+          //                     },
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ),
         Material(
           color: Colors.transparent,
