@@ -76,7 +76,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<AuthResponse> signIn(
+  Future<TempUserClass> signIn(
     String email,
     String password,
     BuildContext context,
@@ -124,7 +124,7 @@ class AuthService extends ChangeNotifier {
       print(
         "✅ User signed in and saved locally: ${tempUser.email}",
       );
-      return authResponse;
+      return tempUser;
     } catch (e) {
       print("❌ Sign-in failed: $e");
       rethrow;

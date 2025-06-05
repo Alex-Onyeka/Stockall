@@ -175,6 +175,7 @@ class LocalUserDatabase extends ChangeNotifier {
       await _box!.put(key, user);
 
       currentEmployee = user;
+      notifyListeners();
       print("✅ User inserted locally: ${user.email}");
       notifyListeners();
     } catch (e) {

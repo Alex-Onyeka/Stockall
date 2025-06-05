@@ -138,26 +138,7 @@ class _HomeState extends State<Home> {
                     height: 30,
                   ),
                 );
-              } else if (userSnapshot.data == null &&
-                  !_navigated) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _navigated = true;
-                        });
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EmpAuth(),
-                          ),
-                          (route) => false,
-                        );
-                      }
-                    });
-                return const Scaffold();
-              } else if (userSnapshot.data == null &&
-                  accessToken == null &&
+              } else if (accessToken != null &&
                   !_navigated) {
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
@@ -171,6 +152,38 @@ class _HomeState extends State<Home> {
                             builder:
                                 (context) =>
                                     EnterNewPassword(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    });
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                      if (mounted) {
+                        returnShopProvider(
+                          context,
+                          listen: false,
+                        ).setShop(shopSnapshot.data!);
+                        returnUserProvider(
+                          context,
+                          listen: false,
+                        ).fetchCurrentUser();
+                        _providersInitialized = true;
+                      }
+                    });
+                return const Scaffold();
+              } else if (userSnapshot.data == null &&
+                  !_navigated) {
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _navigated = true;
+                        });
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EmpAuth(),
                           ),
                           (route) => false,
                         );

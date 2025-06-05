@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -78,7 +79,12 @@ class _LoginMobileState extends State<LoginMobile> {
           widget.passwordController.text,
           context,
         );
-        if (res.user != null && context.mounted) {
+        if (context.mounted) {
+          await returnLocalDatabase(
+            context,
+            listen: false,
+          ).insertUser(res);
+          print('New Insert');
           setState(() {
             issLoading = false;
             showwSuccess = true;
