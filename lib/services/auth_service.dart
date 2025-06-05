@@ -171,12 +171,17 @@ class AuthService extends ChangeNotifier {
       });
 
       // 4. Store the user in local DB
+      print("context.mounted = ${context.mounted}");
       if (context.mounted) {
         print("✅ Inserting Users into the Local");
         await returnLocalDatabase(
           context,
           listen: false,
         ).insertUser(tempUser);
+      } else {
+        print(
+          "⚠️ Context no longer mounted, skipping local insert",
+        );
       }
 
       print(
