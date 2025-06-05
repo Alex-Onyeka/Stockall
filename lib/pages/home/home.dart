@@ -138,24 +138,6 @@ class _HomeState extends State<Home> {
                     height: 30,
                   ),
                 );
-              } else if (userSnapshot.data == null &&
-                  !_navigated) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _navigated = true;
-                        });
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EmpAuth(),
-                          ),
-                          (route) => false,
-                        );
-                      }
-                    });
-                return const Scaffold();
               } else if (widget.isLogin != null ||
                   !_providersInitialized &&
                       shopSnapshot.data != null &&

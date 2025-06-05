@@ -74,17 +74,12 @@ class _LoginMobileState extends State<LoginMobile> {
         issLoading = true;
       });
       try {
-        var res = await AuthService().signIn(
+        await AuthService().signIn(
           widget.emailController.text,
           widget.passwordController.text,
           context,
         );
         if (context.mounted) {
-          await returnLocalDatabase(
-            context,
-            listen: false,
-          ).insertUser(res);
-          print('New Insert');
           setState(() {
             issLoading = false;
             showwSuccess = true;
