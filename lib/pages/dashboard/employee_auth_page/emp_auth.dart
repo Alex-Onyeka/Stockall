@@ -357,7 +357,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Loginn',
+                                      'Login',
                                     ),
                                     Text(
                                       style: TextStyle(
