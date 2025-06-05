@@ -1,3 +1,6 @@
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -137,10 +140,23 @@ class _EnterNewPasswordMobileState
                                 await AuthService()
                                     .signOut();
 
-                                if (safeContex.mounted) {
-                                  Navigator.pushReplacementNamed(
-                                    safeContex,
+                                // if (safeContex.mounted) {
+                                //   Navigator.pushReplacementNamed(
+                                //     safeContex,
+                                //     '/login',
+                                //   );
+                                if (context.mounted) {
+                                  html.window.history
+                                      .replaceState(
+                                        null,
+                                        'Login',
+                                        '/#/login',
+                                      );
+
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
                                     '/login',
+                                    (_) => false,
                                   );
                                 }
                               },
