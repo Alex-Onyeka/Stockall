@@ -24,11 +24,9 @@ import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.white, // or any color
