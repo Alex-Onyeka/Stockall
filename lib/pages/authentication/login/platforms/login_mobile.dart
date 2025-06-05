@@ -86,14 +86,10 @@ class _LoginMobileState extends State<LoginMobile> {
           });
 
           Future.delayed(Duration(seconds: 3), () {
-            Navigator.pushReplacement(
+            Navigator.pushReplacementNamed(
               // ignore: use_build_context_synchronously
               context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return Home();
-                },
-              ),
+              '/',
             );
             setState(() {
               showwSuccess = false;

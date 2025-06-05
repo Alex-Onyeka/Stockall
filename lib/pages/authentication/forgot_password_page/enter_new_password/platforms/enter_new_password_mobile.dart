@@ -138,7 +138,7 @@ class _EnterNewPasswordMobileState
                                     .signOut();
 
                                 if (safeContex.mounted) {
-                                  Navigator.popAndPushNamed(
+                                  Navigator.pushReplacementNamed(
                                     safeContex,
                                     '/login',
                                   );
