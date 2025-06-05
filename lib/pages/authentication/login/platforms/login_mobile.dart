@@ -359,6 +359,41 @@ class _LoginMobileState extends State<LoginMobile> {
             ),
           ),
         ),
+        Visibility(
+          visible: issLoading,
+          child: Material(
+            color: Colors.white,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: showwSuccess,
+          child: Material(
+            color: Colors.white,
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  color:
+                      widget
+                          .theme
+                          .lightModeColor
+                          .prColor300,
+                  fontSize:
+                      widget.theme.mobileTexts.h4.fontSize,
+                  fontWeight:
+                      widget
+                          .theme
+                          .mobileTexts
+                          .h2
+                          .fontWeightBold,
+                ),
+                'Login Successful',
+              ),
+            ),
+          ),
+        ),
         // Visibility(
         //   visible: issLoading,
         //   child: Material(

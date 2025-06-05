@@ -179,7 +179,10 @@ class CustomersProvider extends ChangeNotifier {
         .where(
           (customer) =>
               customer.shopId ==
-              currentShop(context).shopId,
+              returnShopProvider(
+                context,
+                listen: false,
+              ).userShop!.shopId!,
         )
         .toList();
   }

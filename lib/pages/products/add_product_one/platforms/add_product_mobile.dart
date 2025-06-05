@@ -17,6 +17,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class AddProductMobile extends StatefulWidget {
   final TempProductClass? product;
@@ -385,7 +386,7 @@ class _AddProductMobileState
     var shop = await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(userIdMain());
+    ).getUserShop(AuthService().currentUser!.id);
 
     setState(() {
       userShop = shop;

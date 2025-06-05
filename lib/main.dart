@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/local_database/local_user/local_user_database.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -110,9 +109,9 @@ String userId() {
   return 'user_001';
 }
 
-String userIdMain() {
-  return AuthService().currentUser!.id;
-}
+// String userIdMain() {
+//   return AuthService().currentUser!.id;
+// }
 
 int shopId(BuildContext context) {
   var tempId =
@@ -191,14 +190,15 @@ ReceiptsProvider returnReceiptProvider(
   );
 }
 
-TempShopClass currentShop(BuildContext context) {
-  return returnShopProvider(
-    context,
-    listen: false,
-  ).shops.firstWhere(
-    (element) => element.userId == userIdMain(),
-  );
-}
+// TempShopClass currentShop(BuildContext context) {
+//   return returnShopProvider(
+//     context,
+//     listen: false,
+//   ).shops.firstWhere(
+//     (element) =>
+//         element.userId == AuthService().currentUser!.id,
+//   );
+// }
 
 UserProvider returnUserProvider(
   BuildContext context, {
@@ -322,15 +322,15 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            systemStatusBarContrastEnforced: true,
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 0,
-          toolbarHeight: 80,
-        ),
+        // appBarTheme: AppBarTheme(
+        //   systemOverlayStyle: SystemUiOverlayStyle(
+        //     systemStatusBarContrastEnforced: true,
+        //   ),
+        //   backgroundColor: Colors.white,
+        //   centerTitle: true,
+        //   elevation: 0,
+        //   toolbarHeight: 80,
+        // ),
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),

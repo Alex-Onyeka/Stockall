@@ -402,7 +402,11 @@ class DataProvider extends ChangeNotifier {
     return sortProductsByName(products)
         .where(
           (element) =>
-              element.shopId == currentShop(context).shopId,
+              element.shopId ==
+              returnShopProvider(
+                context,
+                listen: false,
+              ).userShop!.shopId!,
         )
         .toList();
   }
