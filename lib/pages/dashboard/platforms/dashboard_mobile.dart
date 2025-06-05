@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification.dart';
+import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -95,6 +96,19 @@ class _DashboardMobileState extends State<DashboardMobile> {
   //     ).clearExpenseDate();
   //   });
   // }
+  late Future<List<TempProductClass>> productsFuture;
+  Future<List<TempProductClass>> getProducts() async {
+    var tempP = await returnData(
+      context,
+      listen: false,
+    ).getProducts(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+    return tempP;
+  }
 
   late Future<List<TempMainReceipt>> mainReceiptFuture;
 
@@ -178,6 +192,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProdutRecordsFuture = getProductSalesRecord();
     mainReceiptFuture = getMainReceipts();
     expensesFuture = getExpenses();
+    productsFuture = getProducts();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       clearDate();
@@ -559,12 +574,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                       children: [
                                         Expanded(
                                           child: FutureBuilder(
-                                            future: returnData(
-                                              context,
-                                              listen: false,
-                                            ).getProducts(
-                                              shop.shopId!,
-                                            ),
+                                            future:
+                                                productsFuture,
                                             builder: (
                                               context,
                                               snapshot,
@@ -608,6 +619,20 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           () {},
                                                     ),
                                                   ),
+                                                );
+                                              } else if (snapshot
+                                                  .hasError) {
+                                                return MainInfoTab(
+                                                  theme:
+                                                      theme,
+                                                  icon:
+                                                      pulseIconSvg,
+                                                  number:
+                                                      '0',
+                                                  title:
+                                                      'All Products',
+                                                  action:
+                                                      () {},
                                                 );
                                               } else {
                                                 return MainInfoTab(
