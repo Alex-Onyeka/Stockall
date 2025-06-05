@@ -177,7 +177,6 @@ class LocalUserDatabase extends ChangeNotifier {
       currentEmployee = user;
       notifyListeners();
       print("✅ User inserted locally: ${user.email}");
-      notifyListeners();
     } catch (e) {
       print("❌ Failed to insert user locally: $e");
     }

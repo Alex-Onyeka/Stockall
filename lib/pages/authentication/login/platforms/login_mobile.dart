@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -74,12 +73,12 @@ class _LoginMobileState extends State<LoginMobile> {
         issLoading = true;
       });
       try {
-        await AuthService().signIn(
+        var res = await AuthService().signIn(
           widget.emailController.text,
           widget.passwordController.text,
           context,
         );
-        if (context.mounted) {
+        if (res.user != null && context.mounted) {
           setState(() {
             issLoading = false;
             showwSuccess = true;
@@ -91,7 +90,7 @@ class _LoginMobileState extends State<LoginMobile> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return Home(isLogin: true);
+                  return Home();
                 },
               ),
             );

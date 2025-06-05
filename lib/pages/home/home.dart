@@ -13,8 +13,7 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class Home extends StatefulWidget {
-  final bool? isLogin;
-  const Home({super.key, this.isLogin});
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -25,20 +24,11 @@ class _HomeState extends State<Home> {
   bool _navigated = false;
   bool _providersInitialized = false;
 
-  String? accessToken;
   @override
   void initState() {
     super.initState();
     shopFuture = getUserShop();
     localUserFuture = getUserEmp();
-
-    super.initState();
-
-    final uri = Uri.base;
-    final token = uri.queryParameters['access_token'];
-    setState(() {
-      accessToken = token;
-    });
   }
 
   Future<TempUserClass?> getUserEmp() async {
@@ -53,9 +43,6 @@ class _HomeState extends State<Home> {
   late Future<TempUserClass?> localUserFuture;
 
   Future<TempShopClass?> getUserShop() async {
-    if (accessToken != null) {
-      print(accessToken);
-    }
     var shop = await returnShopProvider(
       context,
       listen: false,
@@ -138,10 +125,31 @@ class _HomeState extends State<Home> {
                     height: 30,
                   ),
                 );
-              } else if (widget.isLogin != null ||
-                  !_providersInitialized &&
-                      shopSnapshot.data != null &&
-                      userSnapshot.data != null) {
+              } else if (userSnapshot.data == null &&
+                  !_navigated) {
+                // WidgetsBinding.instance
+                //     .addPostFrameCallback((_) {
+                //       if (mounted) {
+                //         setState(() {
+                //           _navigated = true;
+                //         });
+                //         Navigator.pushAndRemoveUntil(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => EmpAuth(),
+                //           ),
+                //           (route) => false,
+                //         );
+                //       }
+                //     });
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Employee not logged in'),
+                  ),
+                );
+              } else if (!_providersInitialized &&
+                  shopSnapshot.data != null &&
+                  userSnapshot.data != null) {
                 // Only set providers once
                 WidgetsBinding.instance
                     .addPostFrameCallback((_) {
