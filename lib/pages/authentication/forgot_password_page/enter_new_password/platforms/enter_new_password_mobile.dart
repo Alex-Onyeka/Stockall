@@ -147,10 +147,10 @@ class _EnterNewPasswordMobileState
                                       );
                                 }
 
-                                if (context.mounted) {
+                                if (safeContex.mounted) {
                                   Future.microtask(() {
                                     Navigator.pushNamedAndRemoveUntil(
-                                      context,
+                                      safeContex,
                                       '/',
                                       (_) => false,
                                     );
