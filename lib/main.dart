@@ -28,9 +28,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setUrlStrategy(
-    const HashUrlStrategy(),
-  ); // this is the fix
+  usePathUrlStrategy();
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.white, // or any color
