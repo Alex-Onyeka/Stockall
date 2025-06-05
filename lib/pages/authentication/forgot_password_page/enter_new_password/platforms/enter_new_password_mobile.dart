@@ -104,22 +104,7 @@ class _EnterNewPasswordMobileState
                             );
                           },
                         );
-                      }
-                      // else if (widget.accessToken ==
-                      //     null) {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (context) {
-                      //       return InfoAlert(
-                      //         theme: theme,
-                      //         message:
-                      //             'Click the link on your email to change your password.',
-                      //         title: 'Unauthorized Action',
-                      //       );
-                      //     },
-                      //   );
-                      // }
-                      else {
+                      } else {
                         final safeContex = context;
 
                         showDialog(
@@ -154,10 +139,12 @@ class _EnterNewPasswordMobileState
 
                                 await AuthService()
                                     .signOut();
-                                await returnLocalDatabase(
-                                  context,
-                                  listen: false,
-                                ).deleteUser();
+                                if (safeContex.mounted) {
+                                  await returnLocalDatabase(
+                                    context,
+                                    listen: false,
+                                  ).deleteUser();
+                                }
                                 if (kIsWeb) {
                                   // 🧼 Clean up URL to remove token
                                   html.window.history
@@ -169,12 +156,15 @@ class _EnterNewPasswordMobileState
                                 }
 
                                 if (context.mounted) {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    '/login',
-                                    (_) => false,
-                                  );
+                                  Future.microtask(() {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/login',
+                                      (_) => false,
+                                    );
+                                  });
                                 }
+
                                 setState(() {
                                   isLoading = false;
                                   showSuccess = false;

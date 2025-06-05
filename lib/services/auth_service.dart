@@ -113,13 +113,13 @@ class AuthService extends ChangeNotifier {
             password, // Optional: if you're keeping it
       });
 
-      // 4. Store the user in local DB
-      if (context.mounted) {
-        await returnLocalDatabase(
-          context,
-          listen: false,
-        ).insertUser(tempUser);
-      }
+      // // 4. Store the user in local DB
+      // if (context.mounted) {
+      //   await returnLocalDatabase(
+      //     context,
+      //     listen: false,
+      //   ).insertUser(tempUser);
+      // }
 
       print(
         "✅ User signed in and saved locally: ${tempUser.email}",
@@ -154,12 +154,15 @@ class AuthService extends ChangeNotifier {
         "🔐 Password successfully updated in Supabase Auth for ${user.email}",
       );
 
+      print("Updating user with ID: ${user.id}");
+
       // ✅ Step 2: Update password in your 'users' table
       final updateResponse =
           await _client
               .from('users')
               .update({'password': newPassword})
               .eq('user_id', user.id)
+              .select()
               .maybeSingle();
 
       print(
