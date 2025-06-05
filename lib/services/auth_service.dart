@@ -113,13 +113,13 @@ class AuthService extends ChangeNotifier {
             password, // Optional: if you're keeping it
       });
 
-      // // 4. Store the user in local DB
-      // if (context.mounted) {
-      //   await returnLocalDatabase(
-      //     context,
-      //     listen: false,
-      //   ).insertUser(tempUser);
-      // }
+      // 4. Store the user in local DB
+      if (context.mounted) {
+        await returnLocalDatabase(
+          context,
+          listen: false,
+        ).insertUser(tempUser);
+      }
 
       print(
         "✅ User signed in and saved locally: ${tempUser.email}",
@@ -164,6 +164,20 @@ class AuthService extends ChangeNotifier {
               .eq('user_id', user.id)
               .select()
               .maybeSingle();
+
+      // 3. Convert Supabase response into TempUserClass
+      final tempUser = TempUserClass.fromJson({
+        ...updateResponse!,
+      });
+
+      // 4. Store the user in local DB
+      if (context.mounted) {
+        print("✅ Inserting Users into the Local");
+        await returnLocalDatabase(
+          context,
+          listen: false,
+        ).insertUser(tempUser);
+      }
 
       print(
         "✅ Password updated in 'users' table: $updateResponse",

@@ -137,21 +137,13 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                await AuthService()
-                                    .signOut();
-                                if (safeContex.mounted) {
-                                  await returnLocalDatabase(
-                                    context,
-                                    listen: false,
-                                  ).deleteUser();
-                                }
                                 if (kIsWeb) {
                                   // 🧼 Clean up URL to remove token
                                   html.window.history
                                       .replaceState(
                                         null,
-                                        'Login',
-                                        '/#/login',
+                                        '',
+                                        '/',
                                       );
                                 }
 
@@ -159,7 +151,7 @@ class _EnterNewPasswordMobileState
                                   Future.microtask(() {
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
-                                      '/login',
+                                      '/',
                                       (_) => false,
                                     );
                                   });
