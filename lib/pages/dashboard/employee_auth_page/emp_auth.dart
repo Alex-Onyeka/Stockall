@@ -4,14 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/dashboard/components/button_tab.dart';
-import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
-import 'package:stockall/pages/dashboard/components/main_info_tab.dart';
-import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
-import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
