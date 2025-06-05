@@ -104,6 +104,19 @@ class _EnterNewPasswordMobileState
                             );
                           },
                         );
+                      } else if (widget.accessToken ==
+                          null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InfoAlert(
+                              theme: theme,
+                              message:
+                                  'Click the link on your email to change your password.',
+                              title: 'Unauthorized Action',
+                            );
+                          },
+                        );
                       } else {
                         final safeContex = context;
 
@@ -139,7 +152,10 @@ class _EnterNewPasswordMobileState
 
                                 await AuthService()
                                     .signOut();
-
+                                await returnLocalDatabase(
+                                  context,
+                                  listen: false,
+                                ).deleteUser();
                                 if (kIsWeb) {
                                   // 🧼 Clean up URL to remove token
                                   html.window.history
@@ -157,6 +173,10 @@ class _EnterNewPasswordMobileState
                                     (_) => false,
                                   );
                                 }
+                                setState(() {
+                                  isLoading = false;
+                                  showSuccess = false;
+                                });
                               },
                             );
                           },
