@@ -3,6 +3,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class ForgotPasswordMobile extends StatelessWidget {
   final TextEditingController emailController;
@@ -40,7 +41,11 @@ class ForgotPasswordMobile extends StatelessWidget {
             SizedBox(height: 20),
             MainButtonP(
               themeProvider: theme,
-              action: () {},
+              action: () async {
+                await AuthService().sendPasswordResetEmail(
+                  emailController.text.trim(),
+                );
+              },
               text: 'Send Recovery Link',
             ),
           ],
