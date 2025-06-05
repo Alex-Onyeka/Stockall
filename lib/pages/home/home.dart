@@ -22,7 +22,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   late Future<TempShopClass?> shopFuture;
   bool _navigated = false;
-  bool _providersInitialized = false;
+  // bool _providersInitialized = false;
 
   @override
   void initState() {
@@ -58,112 +58,77 @@ class _HomeState extends State<Home> {
     return FutureBuilder<TempShopClass?>(
       future: shopFuture,
       builder: (context, shopSnapshot) {
-        if (shopSnapshot.connectionState ==
-            ConnectionState.waiting) {
-          // return returnCompProvider(
-          //   context,
-          //   listen: false,
-          // ).showLoader('Loading');
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (shopSnapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: EmptyWidgetDisplayOnly(
-                title: 'An Error Occurred',
-                subText:
-                    'We couldn\'t load your data. Check your internet.',
-                icon: Icons.clear,
-                theme: theme,
-                height: 30,
-              ),
-            ),
-          );
-        } else if (shopSnapshot.data == null &&
-            !_navigated) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                _navigated = true;
-              });
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ShopBannerScreen(),
+        return FutureBuilder(
+          future: localUserFuture,
+          builder: (context, userSnapshot) {
+            if (shopSnapshot.connectionState ==
+                    ConnectionState.waiting ||
+                userSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+              // return returnCompProvider(
+              //   context,
+              //   listen: false,
+              // ).showLoader('Loading');
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
                 ),
-                (route) => false,
               );
-            }
-          });
-          return const Scaffold();
-        } else {
-          return FutureBuilder<TempUserClass?>(
-            future: localUserFuture,
-            builder: (context, userSnapshot) {
-              if (userSnapshot.connectionState ==
-                  ConnectionState.waiting) {
-                // return returnCompProvider(
-                //   context,
-                //   listen: false,
-                // ).showLoader('Loading');
-                return Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              } else if (userSnapshot.hasError) {
-                return Scaffold(
-                  body: EmptyWidgetDisplayOnly(
+            } else if (shopSnapshot.hasError ||
+                userSnapshot.hasError) {
+              return Scaffold(
+                body: Center(
+                  child: EmptyWidgetDisplayOnly(
                     title: 'An Error Occurred',
                     subText:
-                        'We couldn\'t load your employee data.',
+                        'We couldn\'t load your data. Check your internet.',
                     icon: Icons.clear,
                     theme: theme,
                     height: 30,
                   ),
-                );
-              } else if (userSnapshot.data == null &&
-                  !_navigated) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _navigated = true;
-                        });
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EmpAuth(),
-                          ),
-                          (route) => false,
-                        );
-                      }
-                    });
-                return const Scaffold();
-              } else if (!_providersInitialized &&
-                  shopSnapshot.data != null &&
-                  userSnapshot.data != null) {
-                // Only set providers once
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) {
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).setShop(shopSnapshot.data!);
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).fetchCurrentUser();
-                        _providersInitialized = true;
-                      }
-                    });
-              }
-
-              // Show the actual content
+                ),
+              );
+            } else if (shopSnapshot.data == null &&
+                !_navigated) {
+              WidgetsBinding.instance.addPostFrameCallback((
+                _,
+              ) {
+                if (mounted) {
+                  setState(() {
+                    _navigated = true;
+                  });
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => ShopBannerScreen(),
+                    ),
+                    (route) => false,
+                  );
+                }
+              });
+              return const Scaffold();
+            } else if (userSnapshot.data == null &&
+                !_navigated) {
+              WidgetsBinding.instance.addPostFrameCallback((
+                _,
+              ) {
+                if (mounted) {
+                  setState(() {
+                    _navigated = true;
+                  });
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EmpAuth(),
+                    ),
+                    (route) => false,
+                  );
+                }
+              });
+              return const Scaffold();
+            } else {
+              //  Show the actual content
               switch (navProv.currentPage) {
                 case 0:
                   return const Dashboard();
@@ -174,10 +139,71 @@ class _HomeState extends State<Home> {
                 default:
                   return const Dashboard();
               }
-            },
-          );
-        }
+            }
+          },
+        );
       },
     );
   }
 }
+
+
+// FutureBuilder<TempUserClass?>(
+//             future: localUserFuture,
+//             builder: (context, userSnapshot) {
+//               if (userSnapshot.connectionState ==
+//                   ConnectionState.waiting) {
+//                 // return returnCompProvider(
+//                 //   context,
+//                 //   listen: false,
+//                 // ).showLoader('Loading');
+//                 return Scaffold(
+//                   body: Center(
+//                     child: CircularProgressIndicator(),
+//                   ),
+//                 );
+//               } else if (userSnapshot.hasError) {
+//                 return Scaffold(
+//                   body: EmptyWidgetDisplayOnly(
+//                     title: 'An Error Occurred',
+//                     subText:
+//                         'We couldn\'t load your employee data.',
+//                     icon: Icons.clear,
+//                     theme: theme,
+//                     height: 30,
+//                   ),
+//                 );
+//               } 
+//               } else if (!_providersInitialized &&
+//                   shopSnapshot.data != null &&
+//                   userSnapshot.data != null) {
+//                 // Only set providers once
+//                 WidgetsBinding.instance
+//                     .addPostFrameCallback((_) {
+//                       if (mounted) {
+//                         returnShopProvider(
+//                           context,
+//                           listen: false,
+//                         ).setShop(shopSnapshot.data!);
+//                         returnUserProvider(
+//                           context,
+//                           listen: false,
+//                         ).fetchCurrentUser();
+//                         _providersInitialized = true;
+//                       }
+//                     });
+//               }
+
+//               // Show the actual content
+//               switch (navProv.currentPage) {
+//                 case 0:
+//                   return const Dashboard();
+//                 case 1:
+//                   return const ProductsPage();
+//                 case 2:
+//                   return const SalesPage();
+//                 default:
+//                   return const Dashboard();
+//               }
+//             },
+//           );
