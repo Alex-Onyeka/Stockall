@@ -7,6 +7,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -173,7 +174,16 @@ class _LoginMobileState extends State<LoginMobile> {
             backgroundColor: Colors.white,
             leading: GestureDetector(
               onTap: () {
-                Navigator.of(context).pop();
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BasePage(),
+                    ),
+                  );
+                }
               },
               child: Container(
                 padding: EdgeInsets.symmetric(

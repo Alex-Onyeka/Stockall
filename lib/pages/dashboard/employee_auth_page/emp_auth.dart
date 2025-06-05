@@ -280,7 +280,7 @@ class _EmpAuthState extends State<EmpAuth> {
           // ),
         ),
         Material(
-          color: Colors.teal,
+          color: const Color.fromARGB(255, 120, 206, 197),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
             child: Stack(
