@@ -129,7 +129,7 @@ class _EnterNewPasswordMobileState
                                           widget
                                               .passwordC
                                               .text,
-                                      context: context,
+                                      context: safeContex,
                                     );
 
                                 setState(() {
