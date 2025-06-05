@@ -16,10 +16,11 @@ class BasePage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
-          return returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader('Loading');
+          // return returnCompProvider(
+          //   context,
+          //   listen: false,
+          // ).showLoader('Loading');
+          return CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Scaffold(
             body: EmptyWidgetDisplayOnly(
@@ -28,6 +29,7 @@ class BasePage extends StatelessWidget {
                   'An error occured while loading your data. Please check your internet and try again',
               theme: returnTheme(context),
               height: 35,
+              icon: Icons.clear,
             ),
           );
         }

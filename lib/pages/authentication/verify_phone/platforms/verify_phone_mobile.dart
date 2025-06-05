@@ -126,10 +126,13 @@ class _VerifyPhoneMobileState
             ],
           ),
         ),
-        returnCompProvider(
-          context,
-          listen: false,
-        ).showLoader('Verifying Email'),
+        Visibility(
+          visible: false,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Verifying Email'),
+        ),
       ],
     );
   }

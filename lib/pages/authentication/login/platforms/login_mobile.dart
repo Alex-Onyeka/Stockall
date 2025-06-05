@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -361,17 +361,140 @@ class _LoginMobileState extends State<LoginMobile> {
         ),
         Visibility(
           visible: issLoading,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader('Logging In'),
+          child: Material(
+            child: Container(
+              color: const Color.fromARGB(
+                245,
+                255,
+                255,
+                255,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment(0, 0),
+                            child: SizedBox(
+                              width: 180,
+                              child: Lottie.asset(
+                                mainLoader.isEmpty
+                                    ? 'assets/animations/main_loader.json'
+                                    : mainLoader,
+                                height: 80,
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment(0, 0.1),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 60.0,
+                                  ),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h2
+                                          .fontWeightBold,
+                                ),
+                                'Logging In',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
         Visibility(
           visible: showwSuccess,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showSuccess('Logged In Successfully'),
+          child: Material(
+            child: Container(
+              color: const Color.fromARGB(
+                251,
+                255,
+                255,
+                255,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment(0, -0.2),
+                            child: SizedBox(
+                              width: 180,
+                              child: Lottie.asset(
+                                successAnim.isEmpty
+                                    ? 'assets/animations/check_animation.json'
+                                    : successAnim,
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment(0, 0.2),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 60.0,
+                                  ),
+                              child: Text(
+                                'Logged in Successfully',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h2
+                                          .fontSize,
+                                  fontWeight:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h2
+                                          .fontWeightBold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );

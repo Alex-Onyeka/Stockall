@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -9,7 +10,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/components/check_agree.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -439,17 +439,140 @@ class _SignupMobileState extends State<SignupMobile> {
         ),
         Visibility(
           visible: isLoading,
-          child: Provider.of<CompProvider>(
-            context,
-            listen: false,
-          ).showLoader('Loading'),
+          child: Material(
+            child: Container(
+              color: const Color.fromARGB(
+                245,
+                255,
+                255,
+                255,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment(0, 0),
+                            child: SizedBox(
+                              width: 180,
+                              child: Lottie.asset(
+                                mainLoader.isEmpty
+                                    ? 'assets/animations/main_loader.json'
+                                    : mainLoader,
+                                height: 80,
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment(0, 0.1),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 60.0,
+                                  ),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h2
+                                          .fontWeightBold,
+                                ),
+                                'Logging In',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
         Visibility(
           visible: showSuccess,
-          child: Provider.of<CompProvider>(
-            context,
-            listen: false,
-          ).showSuccess('Account Created Successfully'),
+          child: Material(
+            child: Container(
+              color: const Color.fromARGB(
+                251,
+                255,
+                255,
+                255,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment(0, -0.2),
+                            child: SizedBox(
+                              width: 180,
+                              child: Lottie.asset(
+                                successAnim.isEmpty
+                                    ? 'assets/animations/check_animation.json'
+                                    : successAnim,
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment(0, 0.2),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 60.0,
+                                  ),
+                              child: Text(
+                                'Account Created Successfully',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h2
+                                          .fontSize,
+                                  fontWeight:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .h2
+                                          .fontWeightBold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
