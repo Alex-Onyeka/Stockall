@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/platforms/enter_new_password_mobile.dart';
 
 class EnterNewPassword extends StatefulWidget {
@@ -38,9 +39,9 @@ class _EnterNewPasswordState
           );
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {
-          return Scaffold();
+          return UnsupportedPlatform();
         } else {
-          return Scaffold();
+          return UnsupportedPlatform();
         }
       },
     );

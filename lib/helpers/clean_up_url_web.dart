@@ -1,7 +1,7 @@
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 // Used only on web
 void cleanUpUrl() {
-  html.window.history.replaceState(null, '', '/');
+  web.window.history.replaceState(null, '', '/');
 }

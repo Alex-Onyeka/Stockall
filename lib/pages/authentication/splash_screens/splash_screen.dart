@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/splash_screens/platforms/splash_desktop.dart';
 import 'package:stockall/pages/authentication/splash_screens/platforms/splash_mobile.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/theme/main_theme.dart';
@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var themeProvider = Provider.of<ThemeProvider>(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 900) {
+        if (constraints.maxWidth < 550) {
           return SplashMobile(
             constraints: constraints,
             themeProvider: themeProvider,
@@ -72,15 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
             currentPage: currentPage,
           );
         } else {
-          return SplashDesktop(
-            themeProvider: themeProvider,
-            constraints: constraints,
-            currentPage: currentPage,
-            onTap: () {
-              nextPage();
-            },
-            pages: pages,
-          );
+          return UnsupportedPlatform();
         }
       },
     );

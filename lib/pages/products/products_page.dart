@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/platforms/product_page_mobile.dart';
 
@@ -29,21 +30,22 @@ class _ProductsPageState extends State<ProductsPage> {
           },
           child: LayoutBuilder(
             builder: (context, constraints) {
-              if (constraints.maxWidth < 500) {
+              if (constraints.maxWidth < 550) {
                 return ProductPageMobile(theme: theme);
               } else {
-                return Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 700,
-                      child: ProductPageMobile(
-                        theme: theme,
-                      ),
-                    ),
-                  ],
-                );
+                return UnsupportedPlatform();
+                // return Row(
+                //   mainAxisAlignment:
+                //       MainAxisAlignment.center,
+                //   children: [
+                //     SizedBox(
+                //       width: 700,
+                //       child: ProductPageMobile(
+                //         theme: theme,
+                //       ),
+                //     ),
+                //   ],
+                // );
               }
             },
           ),

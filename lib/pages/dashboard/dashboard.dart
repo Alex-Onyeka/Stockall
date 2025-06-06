@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/pages/dashboard/platforms/dashboard_desktop.dart';
+import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
-import 'package:stockall/pages/dashboard/platforms/dashboard_tablet.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -42,9 +41,11 @@ class _DashboardState extends State<Dashboard> {
             return DashboardMobile();
           } else if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {
-            return DashboardTablet();
+            return UnsupportedPlatform();
+            // return DashboardTablet();
           } else {
-            return DashboardDesktop();
+            return UnsupportedPlatform();
+            // return DashboardDesktop();
           }
         },
       ),

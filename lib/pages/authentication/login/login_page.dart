@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/pages/authentication/login/platforms/login_desktop.dart';
+import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/pages/authentication/login/platforms/login_mobile.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -35,18 +35,19 @@ class _LoginPageState extends State<LoginPage> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 500) {
+          if (constraints.maxWidth < 550) {
             return LoginMobile(
               theme: theme,
               emailController: emailController,
               passwordController: passwordController,
             );
           } else {
-            return LoginDesktop(
-              theme: theme,
-              emailController: emailController,
-              passwordController: passwordController,
-            );
+            return UnsupportedPlatform();
+            // return LoginDesktop(
+            //   theme: theme,
+            //   emailController: emailController,
+            //   passwordController: passwordController,
+            // );
           }
         },
       ),
