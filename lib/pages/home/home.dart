@@ -60,15 +60,15 @@ class _HomeState extends State<Home> {
       builder: (context, shopSnapshot) {
         if (shopSnapshot.connectionState ==
             ConnectionState.waiting) {
-          // return returnCompProvider(
-          //   context,
-          //   listen: false,
-          // ).showLoader('Loading');
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Loading');
+          // return Scaffold(
+          //   body: Center(
+          //     child: CircularProgressIndicator(),
+          //   ),
+          // );
         } else if (shopSnapshot.hasError) {
           return Scaffold(
             body: Center(
@@ -105,15 +105,15 @@ class _HomeState extends State<Home> {
             builder: (context, userSnapshot) {
               if (userSnapshot.connectionState ==
                   ConnectionState.waiting) {
-                // return returnCompProvider(
-                //   context,
-                //   listen: false,
-                // ).showLoader('Loading');
-                return Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                return returnCompProvider(
+                  context,
+                  listen: false,
+                ).showLoader('Loading');
+                // return Scaffold(
+                //   body: Center(
+                //     child: CircularProgressIndicator(),
+                //   ),
+                // );
               } else if (userSnapshot.hasError) {
                 return Scaffold(
                   body: EmptyWidgetDisplayOnly(

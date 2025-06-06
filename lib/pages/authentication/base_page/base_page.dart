@@ -16,11 +16,11 @@ class BasePage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
-          // return returnCompProvider(
-          //   context,
-          //   listen: false,
-          // ).showLoader('Loading');
-          return CircularProgressIndicator();
+          return returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Loading');
+          // return CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Scaffold(
             body: EmptyWidgetDisplayOnly(
