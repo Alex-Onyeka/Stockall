@@ -13,62 +13,72 @@ class UnsupportedPlatform extends StatelessWidget {
           if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
-                children: [
-                  Stack(
-                    alignment: Alignment(0, 0),
-                    children: [
-                      Icon(
-                        size: 160,
-                        color: Colors.grey.shade800,
-                        Icons.tablet_android_rounded,
-                      ),
-                      Icon(
-                        size: 100,
-                        color: Colors.grey.shade700,
-                        Icons.clear,
-                      ),
-                    ],
-                  ),
-                  Text(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.h3.fontSize,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          theme.lightModeColor.secColor200,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                ),
+                child: Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  spacing: 20,
+                  children: [
+                    Stack(
+                      alignment: Alignment(0, 0),
+                      children: [
+                        Icon(
+                          size: 160,
+                          color: Colors.grey.shade800,
+                          Icons.tablet_android_rounded,
+                        ),
+                        Icon(
+                          size: 100,
+                          color: Colors.grey.shade700,
+                          Icons.clear,
+                        ),
+                      ],
                     ),
-                    'Not Yet Available For Tablet. Only Available on Mobile',
-                  ),
-                ],
+                    Text(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.h2.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                      'Not Yet Available For This Sreen Size. Only Available on Mobile',
+                    ),
+                  ],
+                ),
               ),
             );
           } else if (constraints.maxWidth > 1000) {
             return Center(
-              child: Column(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    size: 250,
-                    color: Colors.grey.shade800,
-                    Icons.desktop_access_disabled_rounded,
-                  ),
-                  Text(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.h1.fontSize,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          theme.lightModeColor.secColor200,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 80.0,
+                ),
+                child: Column(
+                  spacing: 10,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      size: 250,
+                      color: Colors.grey.shade800,
+                      Icons.desktop_access_disabled_rounded,
                     ),
-                    'Not Yet Available For Desktop, Only Available on Mobile',
-                  ),
-                ],
+                    Text(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.h1.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                      'Not Yet Available For This Screen Size, Only Available on Mobile',
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
