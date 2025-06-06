@@ -15,7 +15,7 @@ class UnsupportedPlatform extends StatelessWidget {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0,
+                  horizontal: 150.0,
                 ),
                 child: Column(
                   mainAxisAlignment:
@@ -55,7 +55,7 @@ class UnsupportedPlatform extends StatelessWidget {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 80.0,
+                  horizontal: 150.0,
                 ),
                 child: Column(
                   spacing: 10,
@@ -64,7 +64,7 @@ class UnsupportedPlatform extends StatelessWidget {
                   children: [
                     Icon(
                       size: 250,
-                      color: Colors.grey.shade800,
+                      color: Colors.grey,
                       Icons.desktop_access_disabled_rounded,
                     ),
                     Text(
