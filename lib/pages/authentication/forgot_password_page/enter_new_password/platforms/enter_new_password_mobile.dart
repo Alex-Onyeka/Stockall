@@ -1,5 +1,4 @@
-import 'dart:html' as html;
-import 'package:flutter/foundation.dart';
+import 'package:stockall/helpers/clean_up_url.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
@@ -191,15 +190,7 @@ class _EnterNewPasswordMobileState
                                         showSuccess = true;
                                       });
 
-                                      if (kIsWeb) {
-                                        // 🧼 Clean up URL to remove token
-                                        html.window.history
-                                            .replaceState(
-                                              null,
-                                              '',
-                                              '/',
-                                            );
-                                      }
+                                      cleanUpUrl(); // works safely on all platforms
 
                                       if (safeContex
                                           .mounted) {
