@@ -558,7 +558,7 @@ class _EmpAuthState extends State<EmpAuth> {
 
                                   text: 'Login',
                                 ),
-                                SizedBox(height: 10),
+                                SizedBox(height: 20),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.end,
@@ -583,7 +583,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                               message:
                                                   'You are about to Logout from the shop to recover your password. Only the shop Owner should perform this action. Are you sure you want to Proceed?',
                                               title:
-                                                  'Are you sure?',
+                                                  'Log Out From Shop?',
                                               action: () async {
                                                 await AuthService()
                                                     .signOut();
@@ -597,7 +597,10 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       builder: (
                                                         context,
                                                       ) {
-                                                        return ForgotPasswordPage();
+                                                        return ForgotPasswordPage(
+                                                          isMain:
+                                                              true,
+                                                        );
                                                       },
                                                     ),
                                                   );
@@ -635,6 +638,14 @@ class _EmpAuthState extends State<EmpAuth> {
                                               Icons.logout,
                                             ),
                                             Text(
+                                              style: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade700,
+                                                fontSize:
+                                                    12,
+                                              ),
                                               'Logout to Reset Password?',
                                             ),
                                           ],

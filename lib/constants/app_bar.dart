@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 
 PreferredSizeWidget appBar({
   required BuildContext context,
   required String title,
+  bool? isMain,
   Widget? widget,
 }) {
   var theme = returnTheme(context);
@@ -12,7 +14,18 @@ PreferredSizeWidget appBar({
     toolbarHeight: 60,
     leading: IconButton(
       onPressed: () {
-        Navigator.of(context).pop();
+        if (isMain != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AuthLanding();
+              },
+            ),
+          );
+        } else {
+          Navigator.of(context).pop();
+        }
       },
       icon: Padding(
         padding: const EdgeInsets.only(

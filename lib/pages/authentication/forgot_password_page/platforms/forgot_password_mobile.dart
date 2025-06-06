@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ForgotPasswordMobile extends StatefulWidget {
   final TextEditingController emailController;
+  final bool? isMain;
   const ForgotPasswordMobile({
     super.key,
     required this.emailController,
+    this.isMain,
   });
 
   @override
@@ -73,6 +76,30 @@ class _ForgotPasswordMobileState
                     }
                   },
                   text: 'Send Recovery Link',
+                ),
+                SizedBox(height: 20),
+                InkWell(
+                  onTap: () {
+                    if (widget.isMain != null) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return AuthLanding();
+                          },
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 10,
+                    ),
+                    child: Center(child: Text('Cancel')),
+                  ),
                 ),
               ],
             ),
