@@ -31,17 +31,28 @@ class _EnterNewPasswordState
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
-          return EnterNewPasswordMobile(
-            passwordC: passwordC,
-            confirmPasswordC: confirmPasswordC,
-            accessToken: accessToken,
+        if (accessToken == null) {
+          return Scaffold(
+            body: Center(
+              child: Text(
+                textAlign: TextAlign.center,
+                'Unauthorized Access. Check your email to reset your password.',
+              ),
+            ),
           );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return UnsupportedPlatform();
         } else {
-          return UnsupportedPlatform();
+          if (constraints.maxWidth < 550) {
+            return EnterNewPasswordMobile(
+              passwordC: passwordC,
+              confirmPasswordC: confirmPasswordC,
+              accessToken: accessToken,
+            );
+          } else if (constraints.maxWidth > 550 &&
+              constraints.maxWidth < 1000) {
+            return UnsupportedPlatform();
+          } else {
+            return UnsupportedPlatform();
+          }
         }
       },
     );
