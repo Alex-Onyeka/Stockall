@@ -47,7 +47,7 @@ class _EmpAuthState extends State<EmpAuth> {
           //   globalKey: GlobalKey(),
           // ),
           body: Container(
-            color: const Color.fromARGB(108, 150, 230, 222),
+            color: Colors.grey.shade100,
             child: Column(children: [Row()]),
           ),
           // Column(
