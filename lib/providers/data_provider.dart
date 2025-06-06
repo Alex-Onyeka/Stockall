@@ -186,6 +186,7 @@ class DataProvider extends ChangeNotifier {
   String category = '';
   String unit = '';
   bool isRefundable = false;
+  bool setCustomPrice = false;
   String sizeType = '';
   String size = '';
   double costPrice = 0;
@@ -197,6 +198,7 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> products = [
     TempProductClass(
+      setCustomPrice: false,
       shopId: 1,
       id: 1,
       name: 'Airpod Pro 2nd Gen',
@@ -214,6 +216,7 @@ class DataProvider extends ChangeNotifier {
       color: 'Red',
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 2,
       id: 2,
       name: 'Red T-Shirt',
@@ -231,6 +234,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 20,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 3,
       id: 3,
       name: 'Bluetooth Speaker',
@@ -248,6 +252,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 15,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 1,
       id: 4,
       name: 'Running Shoes',
@@ -265,6 +270,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 10,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 1,
       id: 5,
       name: 'Notebook',
@@ -282,6 +288,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 100,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 2,
       id: 6,
       name: 'Coffee Mug',
@@ -299,6 +306,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 30,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 3,
       id: 7,
       name: 'Laptop Bag',
@@ -316,6 +324,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 0,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 2,
       id: 8,
       name: 'LED Bulb',
@@ -333,6 +342,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 200,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 3,
       id: 9,
       name: 'Shampoo',
@@ -350,6 +360,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 60,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 2,
       id: 10,
       name: 'Wrist Watch',
@@ -367,6 +378,7 @@ class DataProvider extends ChangeNotifier {
       quantity: 8,
     ),
     TempProductClass(
+      setCustomPrice: false,
       shopId: 3,
       id: 10,
       name: 'Face Mask Pack',
@@ -472,6 +484,7 @@ class DataProvider extends ChangeNotifier {
 
   void clearFields() {
     isProductRefundable = false;
+    setCustomPrice = false;
     isRefundable = false;
     selectedCategory = null;
     selectedColor = null;
@@ -491,6 +504,11 @@ class DataProvider extends ChangeNotifier {
   bool isProductRefundable = false;
   void toggleRefundable() {
     isProductRefundable = !isProductRefundable;
+    notifyListeners();
+  }
+
+  void toggleSetCustomPrice() {
+    setCustomPrice = !setCustomPrice;
     notifyListeners();
   }
 

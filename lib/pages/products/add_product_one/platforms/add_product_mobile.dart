@@ -145,6 +145,8 @@ class _AddProductMobileState
                   sizeType: dataProvider.selectedSize,
                   isRefundable:
                       dataProvider.isProductRefundable,
+                  setCustomPrice:
+                      dataProvider.setCustomPrice,
                   costPrice: double.parse(
                     widget.costController.text.replaceAll(
                       ',',
@@ -227,6 +229,7 @@ class _AddProductMobileState
 
             await provider.updateProduct(
               product: TempProductClass(
+                setCustomPrice: provider.setCustomPrice,
                 id: widget.product!.id,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
@@ -308,6 +311,7 @@ class _AddProductMobileState
       barcode = widget.product!.barcode;
       barCodeSet =
           widget.product!.barcode != null ? true : false;
+
       widget.nameController.text = widget.product!.name;
       widget.costController.text = widget.product!.costPrice
           .toString()
@@ -338,6 +342,8 @@ class _AddProductMobileState
             listen: false,
           ).isProductRefundable =
           widget.product!.isRefundable;
+      returnData(context, listen: false).setCustomPrice =
+          widget.product!.setCustomPrice;
       // returnData(context, listen: false).selectedUnit =
       //     widget.product!.unit;
       returnData(
@@ -420,6 +426,7 @@ class _AddProductMobileState
       children: [
         Scaffold(
           appBar: AppBar(
+            scrolledUnderElevation: 0,
             leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -1037,6 +1044,79 @@ class _AddProductMobileState
                                           context,
                                           listen: false,
                                         ).toggleRefundable();
+                                        FocusManager
+                                            .instance
+                                            .primaryFocus
+                                            ?.unfocus();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              InkWell(
+                                onTap: () {
+                                  returnData(
+                                    context,
+                                    listen: false,
+                                  ).toggleSetCustomPrice();
+                                  FocusManager
+                                      .instance
+                                      .primaryFocus
+                                      ?.unfocus();
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Allow To Set Custom Price?',
+                                          ),
+                                          Column(
+                                            spacing: 5,
+                                            children: [
+                                              Text(
+                                                'Allow Cashier to Set custom price during sale? ',
+                                              ),
+                                              Text(
+                                                'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      activeColor:
+                                          theme
+                                              .lightModeColor
+                                              .secColor100,
+                                      value:
+                                          returnData(
+                                            context,
+                                          ).setCustomPrice,
+                                      onChanged: (value) {
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).toggleSetCustomPrice();
                                         FocusManager
                                             .instance
                                             .primaryFocus

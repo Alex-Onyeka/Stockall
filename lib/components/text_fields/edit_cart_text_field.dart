@@ -49,9 +49,7 @@ class _EditCartTextFieldState
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade700,
           ),
-          keyboardType: TextInputType.numberWithOptions(
-            decimal: true,
-          ),
+          keyboardType: TextInputType.number,
           autocorrect: false,
           enableSuggestions: false,
           decoration: InputDecoration(

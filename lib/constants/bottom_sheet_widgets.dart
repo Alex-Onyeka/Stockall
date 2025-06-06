@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class.dart';
@@ -10,6 +11,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
+import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -1313,11 +1315,12 @@ class _CustomBottomPanelState
   //
   //
   //
-  void selectProduct(
-    ThemeProvider theme,
-    TempCartItem cartItem,
-    Function() closeAction,
-  ) {
+  void selectProduct({
+    required ThemeProvider theme,
+    required TempCartItem cartItem,
+    required Function() closeAction,
+    required TextEditingController priceController,
+  }) {
     showDialog(
       context: context,
       builder: (context) {
@@ -1343,6 +1346,30 @@ class _CustomBottomPanelState
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Visibility(
+                    visible:
+                        returnSalesProvider(
+                          context,
+                        ).isSetCustomPrice &&
+                        cartItem.item.setCustomPrice,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: 450,
+                          child: MoneyTextfield(
+                            title: 'Enter Custom Price',
+                            hint: 'Enter Price',
+                            controller: priceController,
+                            theme: theme,
+                            onChanged: (p0) {
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
                   SizedBox(
                     width: 450,
                     child: EditCartTextField(
@@ -1395,6 +1422,74 @@ class _CustomBottomPanelState
                       theme: theme,
                     ),
                   ),
+                  Visibility(
+                    visible: cartItem.item.setCustomPrice,
+                    child: SizedBox(height: 20),
+                  ),
+                  Visibility(
+                    visible: cartItem.item.setCustomPrice,
+                    child: InkWell(
+                      onTap: () {
+                        returnSalesProvider(
+                          context,
+                          listen: false,
+                        ).toggleSetCustomPrice();
+                        priceController.clear();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          spacing: 5,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              returnSalesProvider(
+                                    context,
+                                  ).isSetCustomPrice
+                                  ? 'Cancel Custom Price'
+                                  : 'Set Custom Price',
+                            ),
+                            Stack(
+                              children: [
+                                Visibility(
+                                  visible:
+                                      returnSalesProvider(
+                                        context,
+                                      ).isSetCustomPrice ==
+                                      false,
+                                  child: SvgPicture.asset(
+                                    editIconSvg,
+                                    height: 20,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      returnSalesProvider(
+                                        context,
+                                      ).isSetCustomPrice ==
+                                      true,
+                                  child: Icon(Icons.clear),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 20),
                   Container(
                     decoration: BoxDecoration(
@@ -1434,15 +1529,7 @@ class _CustomBottomPanelState
                                     .b1
                                     .fontWeightBold,
                           ),
-                          formatLargeNumberDouble(
-                            qqty *
-                                (returnSalesProvider(
-                                  context,
-                                  listen: false,
-                                ).discountCheck(
-                                  cartItem.item,
-                                )),
-                          ),
+                          '$nairaSymbol${priceController.text.isEmpty ? formatLargeNumberDouble(qqty * (returnSalesProvider(context, listen: false).discountCheck(cartItem.item))) : formatLargeNumberDouble(double.tryParse(priceController.text.replaceAll(',', '')) ?? 0)}',
                         ),
                       ],
                     ),
@@ -1511,7 +1598,7 @@ class _CustomBottomPanelState
                                         title:
                                             "Quantity Limit Reached",
                                         message:
-                                            "Only ${cartItem.item.quantity} available in stock.",
+                                            "Only (${cartItem.item.quantity}) items available in stock.",
                                         theme: theme,
                                       ),
                                 );
@@ -1557,10 +1644,39 @@ class _CustomBottomPanelState
                                   .text
                                   .isEmpty ||
                               qqty == 0) {
-                            Navigator.of(context).pop();
+                            // Navigator.of(context).pop();
+
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return InfoAlert(
+                                  theme: theme,
+                                  message:
+                                      'Item quantity cannot be set to (0)',
+                                  title: 'Invalid Quantity',
+                                );
+                              },
+                            );
                           } else {
+                            if (priceController
+                                .text
+                                .isNotEmpty) {
+                              cartItem.customPrice =
+                                  double.tryParse(
+                                    priceController.text
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                  );
+                            }
                             cartItem.quantity =
                                 qqty.toDouble();
+                            cartItem.setCustomPrice =
+                                returnSalesProvider(
+                                  context,
+                                  listen: false,
+                                ).isSetCustomPrice;
                             returnSalesProvider(
                               context,
                               listen: false,
@@ -1582,11 +1698,20 @@ class _CustomBottomPanelState
     ).then((value) {
       qqty = 0;
       quantityController.text = '';
+      priceController.clear();
+      if (context.mounted) {
+        returnSalesProvider(
+          context,
+          listen: false,
+        ).closeCustomPrice();
+      }
     });
   }
 
   TextEditingController quantityController =
       TextEditingController(text: '');
+  TextEditingController priceController =
+      TextEditingController();
   double qqty = 0;
   List productResults = [];
   String? scanResult;
@@ -1853,8 +1978,8 @@ class _CustomBottomPanelState
                                       )
                                       .isNotEmpty) {
                                     selectProduct(
-                                      theme,
-                                      TempCartItem(
+                                      theme: theme,
+                                      cartItem: TempCartItem(
                                         discount:
                                             product
                                                 .discount,
@@ -1875,12 +2000,15 @@ class _CustomBottomPanelState
                                                 )
                                                 .quantity,
                                       ),
-                                      widget.close,
+                                      closeAction:
+                                          widget.close,
+                                      priceController:
+                                          priceController,
                                     );
                                   } else {
                                     selectProduct(
-                                      theme,
-                                      TempCartItem(
+                                      theme: theme,
+                                      cartItem: TempCartItem(
                                         discount:
                                             product
                                                 .discount,
@@ -1897,7 +2025,10 @@ class _CustomBottomPanelState
                                             ) ??
                                             0.0,
                                       ),
-                                      widget.close,
+                                      closeAction:
+                                          widget.close,
+                                      priceController:
+                                          priceController,
                                     );
                                   }
                                 },
@@ -1971,8 +2102,8 @@ class _CustomBottomPanelState
                                       )
                                       .isNotEmpty) {
                                     selectProduct(
-                                      theme,
-                                      TempCartItem(
+                                      theme: theme,
+                                      cartItem: TempCartItem(
                                         discount:
                                             product
                                                 .discount,
@@ -1993,12 +2124,15 @@ class _CustomBottomPanelState
                                                 )
                                                 .quantity,
                                       ),
-                                      widget.close,
+                                      closeAction:
+                                          widget.close,
+                                      priceController:
+                                          priceController,
                                     );
                                   } else {
                                     selectProduct(
-                                      theme,
-                                      TempCartItem(
+                                      theme: theme,
+                                      cartItem: TempCartItem(
                                         discount:
                                             product
                                                 .discount,
@@ -2015,7 +2149,10 @@ class _CustomBottomPanelState
                                             ) ??
                                             0.0,
                                       ),
-                                      widget.close,
+                                      closeAction:
+                                          widget.close,
+                                      priceController:
+                                          priceController,
                                     );
                                   }
                                 },
@@ -2050,9 +2187,14 @@ void editCartItemBottomSheet(
   Function()? updateAction,
   TempCartItem cartItem,
   TextEditingController numberController,
+  TextEditingController priceController,
 ) async {
   numberController.text = cartItem.quantity.toString();
   double qqty = cartItem.quantity.toDouble();
+  cartItem.setCustomPrice
+      ? priceController.text =
+          cartItem.customPrice.toString()
+      : priceController.text = "";
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -2152,6 +2294,31 @@ void editCartItemBottomSheet(
                         child: Column(
                           spacing: 5,
                           children: [
+                            // Visibility(
+                            //   visible:
+                            //       cartItem.setCustomPrice ||
+                            //       returnSalesProvider(
+                            //         context,
+                            //       ).isSetCustomPrice,
+                            //   child: Column(
+                            //     children: [
+                            //       SizedBox(
+                            //         width: 450,
+                            //         child: EditCartTextField(
+                            //           title: 'Custom Price',
+                            //           hint: 'Enter Price',
+                            //           controller:
+                            //               priceController,
+                            //           theme: theme,
+                            //           onChanged: (p0) {
+                            //             setState(() {});
+                            //           },
+                            //         ),
+                            //       ),
+                            //       SizedBox(height: 20),
+                            //     ],
+                            //   ),
+                            // ),
                             EditCartTextField(
                               title: 'Enter Number',
                               hint: 'Start Typing',
@@ -2193,6 +2360,82 @@ void editCartItemBottomSheet(
                                 }
                               },
                             ),
+                            // SizedBox(height: 20),
+                            // Visibility(
+                            //   visible:
+                            //       cartItem.customPrice ==
+                            //       null,
+                            //   child: InkWell(
+                            //     onTap: () {
+                            //       returnSalesProvider(
+                            //         context,
+                            //         listen: false,
+                            //       ).toggleSetCustomPrice();
+                            //       priceController.clear();
+                            //     },
+                            //     child: Container(
+                            //       padding:
+                            //           EdgeInsets.symmetric(
+                            //             vertical: 5,
+                            //             horizontal: 10,
+                            //           ),
+                            //       child: Row(
+                            //         mainAxisSize:
+                            //             MainAxisSize.min,
+                            //         mainAxisAlignment:
+                            //             MainAxisAlignment
+                            //                 .center,
+                            //         spacing: 5,
+                            //         children: [
+                            //           Text(
+                            //             style: TextStyle(
+                            //               fontSize:
+                            //                   theme
+                            //                       .mobileTexts
+                            //                       .b1
+                            //                       .fontSize,
+                            //               fontWeight:
+                            //                   FontWeight
+                            //                       .bold,
+                            //             ),
+                            //             returnSalesProvider(
+                            //                   context,
+                            //                 ).isSetCustomPrice
+                            //                 ? 'Cancel Custom Price'
+                            //                 : 'Set Custom Price',
+                            //           ),
+                            //           Stack(
+                            //             children: [
+                            //               Visibility(
+                            //                 visible:
+                            //                     returnSalesProvider(
+                            //                       context,
+                            //                     ).isSetCustomPrice ==
+                            //                     false,
+                            //                 child:
+                            //                     SvgPicture.asset(
+                            //                       editIconSvg,
+                            //                       height:
+                            //                           20,
+                            //                     ),
+                            //               ),
+                            //               Visibility(
+                            //                 visible:
+                            //                     returnSalesProvider(
+                            //                       context,
+                            //                     ).isSetCustomPrice ==
+                            //                     true,
+                            //                 child: Icon(
+                            //                   Icons.clear,
+                            //                 ),
+                            //               ),
+                            //             ],
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                             SizedBox(height: 20),
                             Row(
                               mainAxisAlignment:
@@ -2320,7 +2563,7 @@ void editCartItemBottomSheet(
                             MainButtonP(
                               themeProvider: theme,
                               action: updateAction,
-                              text: 'Update Quantity',
+                              text: 'Update Item',
                             ),
                           ],
                         ),
@@ -2335,6 +2578,15 @@ void editCartItemBottomSheet(
       );
     },
   );
+  // .then((_) {
+  //   var safeContext = context;
+  //   if (safeContext.mounted) {
+  //     returnSalesProvider(
+  //       safeContext,
+  //       listen: false,
+  //     ).closeCustomPrice();
+  //   }
+  // });
 }
 
 //

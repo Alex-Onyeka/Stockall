@@ -54,6 +54,7 @@ class SalesProvider extends ChangeNotifier {
           final product = cartItem.item;
 
           return TempProductSaleRecord(
+            customPriceSet: cartItem.item.setCustomPrice,
             createdAt: createdAt,
             productId: product.id!,
             productName: product.name,
@@ -152,6 +153,18 @@ class SalesProvider extends ChangeNotifier {
     return calcTotalMain(items) - calcDiscountMain(items);
   }
 
+  bool isSetCustomPrice = false;
+
+  void toggleSetCustomPrice() {
+    isSetCustomPrice = !isSetCustomPrice;
+    notifyListeners();
+  }
+
+  void closeCustomPrice() {
+    isSetCustomPrice = false;
+    notifyListeners();
+  }
+
   String addItemToCartMain(TempCartItem newItem) {
     String result = '';
     final index = cartItems.indexWhere(
@@ -190,11 +203,15 @@ class SalesProvider extends ChangeNotifier {
     return result;
   }
 
-  void editCartItemQuantity(
-    TempCartItem cartItem,
-    double number,
-  ) {
+  void editCartItemQuantity({
+    required TempCartItem cartItem,
+    required double number,
+    double? customPrice,
+    required bool setCustomPrice,
+  }) {
     cartItem.quantity = number;
+    cartItem.customPrice = customPrice;
+    cartItem.setCustomPrice = setCustomPrice;
     notifyListeners();
   }
 

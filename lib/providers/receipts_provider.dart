@@ -325,6 +325,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
   List<TempProductSaleRecord> productSaleRecords = [
     TempProductSaleRecord(
+      customPriceSet: false,
       discount: 10,
       discountedAmount: 3000,
       originalCost: 5000,
@@ -341,6 +342,7 @@ class ReceiptsProvider extends ChangeNotifier {
       revenue: 4500.0,
     ),
     TempProductSaleRecord(
+      customPriceSet: false,
       discount: 10,
       discountedAmount: 2100,
       originalCost: 4000,
@@ -357,6 +359,7 @@ class ReceiptsProvider extends ChangeNotifier {
       revenue: 3000.0,
     ),
     TempProductSaleRecord(
+      customPriceSet: false,
       discount: 10,
       discountedAmount: 5000,
       originalCost: 2500,
@@ -419,6 +422,7 @@ class ReceiptsProvider extends ChangeNotifier {
         ).cartItems) {
       productSaleRecords.add(
         TempProductSaleRecord(
+          customPriceSet: item.item.setCustomPrice,
           productName: '',
           discount: item.discount,
           originalCost: item.totalCost(),

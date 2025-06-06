@@ -81,18 +81,20 @@ class NotificationsMobile extends StatelessWidget {
                                         'Are you sure you want to proceed with delete?',
                                     title:
                                         'Delete Notification?',
-                                    action: () {
-                                      Provider.of<
+                                    action: () async {
+                                      await Provider.of<
                                         NotificationProvider
                                       >(
                                         context,
                                         listen: false,
-                                      ).deleteNotification(
+                                      ).deleteNotificationFromSupabase(
                                         notif,
                                       );
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
+                                      if (context.mounted) {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      }
                                     },
                                   );
                                 },
@@ -308,33 +310,25 @@ class _NotificatonTileMainState
                     Divider(),
                     InkWell(
                       onTap: widget.action,
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              spacing: 5,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade600,
-                                  ),
-                                  'Item:',
-                                ),
-                                Flexible(
-                                  child: Text(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5.0,
+                          bottom: 5,
+                          right: 15,
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                spacing: 5,
+                                children: [
+                                  Text(
                                     style: TextStyle(
                                       fontSize:
                                           widget
@@ -343,56 +337,73 @@ class _NotificatonTileMainState
                                               .b3
                                               .fontSize,
                                       color:
-                                          widget
-                                              .theme
-                                              .lightModeColor
-                                              .prColor300,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                          Colors
+                                              .grey
+                                              .shade600,
                                     ),
-                                    cutLongText(
-                                      widget
-                                              .notif
-                                              .itemName ??
-                                          'Product',
+                                    'Item:',
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        color:
+                                            widget
+                                                .theme
+                                                .lightModeColor
+                                                .prColor300,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      cutLongText(
+                                        widget
+                                                .notif
+                                                .itemName ??
+                                            'Product',
+                                      ),
                                     ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              spacing: 3,
+                              children: [
+                                Icon(
+                                  size: 20,
+                                  color: Colors.grey,
+                                  Icons
+                                      .delete_outline_rounded,
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                    color:
+                                        widget
+                                            .theme
+                                            .lightModeColor
+                                            .prColor300,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  formatDateWithoutYear(
+                                    widget.notif.date,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Row(
-                            spacing: 3,
-                            children: [
-                              Icon(
-                                size: 20,
-                                color: Colors.grey,
-                                Icons
-                                    .delete_outline_rounded,
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b4
-                                          .fontSize,
-                                  color:
-                                      widget
-                                          .theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                formatDateWithoutYear(
-                                  widget.notif.date,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

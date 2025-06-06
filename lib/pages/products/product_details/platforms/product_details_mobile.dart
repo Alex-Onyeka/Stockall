@@ -1295,6 +1295,15 @@ class _ProductDetailsMobileState
                                       text:
                                           'Is Refundable?',
                                     ),
+                                    BottomInfoSection(
+                                      theme: widget.theme,
+                                      mainText:
+                                          product.setCustomPrice
+                                              ? 'True'
+                                              : 'False',
+                                      text:
+                                          'Can Set Custom Price?',
+                                    ),
                                   ],
                                 ),
                               ),

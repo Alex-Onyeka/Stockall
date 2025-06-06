@@ -15,6 +15,38 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteNotificationFromSupabase(
+    TempNotification notif,
+  ) async {
+    try {
+      debugPrint(
+        'Attempting to delete notification ID: ${notif.id}',
+      );
+
+      final response =
+          await supabase
+              .from('notifications')
+              .delete()
+              .eq('id', notif.id!)
+              .select(); // confirm deletion
+
+      debugPrint('Deleted rows: $response');
+
+      if (response.isNotEmpty) {
+        deleteNotification(notif);
+        debugPrint(
+          'Notification ${notif.id} deleted successfully.',
+        );
+      } else {
+        debugPrint(
+          'No matching notification found to delete.',
+        );
+      }
+    } catch (e) {
+      debugPrint('Error deleting notification: $e');
+    }
+  }
+
   Future<List<TempNotification>> fetchRecentNotifications(
     int shopId,
   ) async {
@@ -24,7 +56,7 @@ class NotificationProvider with ChangeNotifier {
         .eq('shop_id', shopId)
         .order('is_viewed', ascending: true)
         .order('date', ascending: false)
-        .limit(5);
+        .limit(10);
 
     _notifications =
         (response as List)

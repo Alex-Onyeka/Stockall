@@ -31,10 +31,10 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
   }
 
   String cutLongText2(String text) {
-    if (text.length < 8) {
+    if (text.length < 7) {
       return text;
     } else {
-      return '${text.substring(0, 8)}...';
+      return '${text.substring(0, 7)}...';
     }
   }
 
@@ -128,54 +128,54 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
             ),
           );
         } else {
-          double getTotal() {
-            double totalAmount = 0;
-            for (var element
-                in snapshot.data!
-                    .where(
-                      (test) =>
-                          test.recepitId ==
-                          widget.mainReceipt.id,
-                    )
-                    .toList()) {
-              totalAmount += element.revenue;
-            }
-            return totalAmount;
-          }
+          // double getTotal() {
+          //   double totalAmount = 0;
+          //   for (var element
+          //       in snapshot.data!
+          //           .where(
+          //             (test) =>
+          //                 test.recepitId ==
+          //                 widget.mainReceipt.id,
+          //           )
+          //           .toList()) {
+          //     totalAmount += element.revenue;
+          //   }
+          //   return totalAmount;
+          // }
 
-          var productReceipts =
-              snapshot.data!
-                  .where(
-                    (test) =>
-                        test.recepitId ==
-                        widget.mainReceipt.id,
-                  )
-                  .toList();
+          // var productReceipts =
+          //     snapshot.data!
+          //         .where(
+          //           (test) =>
+          //               test.recepitId ==
+          //               widget.mainReceipt.id,
+          //         )
+          //         .toList();
 
-          var firstProductId =
-              productReceipts
-                  .firstWhere(
-                    (test) =>
-                        test.recepitId ==
-                        widget.mainReceipt.id,
-                  )
-                  .productId;
-          var firstProduct = returnData(
-                context,
-                listen: false,
-              )
-              .getProducts(
-                returnShopProvider(
-                  context,
-                  listen: false,
-                ).userShop!.shopId!,
-              )
-              .then((products) {
-                final product = products.firstWhere(
-                  (product) => product.id == firstProductId,
-                );
-                return product;
-              });
+          // var firstProductId =
+          //     productReceipts
+          //         .firstWhere(
+          //           (test) =>
+          //               test.recepitId ==
+          //               widget.mainReceipt.id,
+          //         )
+          //         .productId;
+          // var firstProduct = returnData(
+          //       context,
+          //       listen: false,
+          //     )
+          //     .getProducts(
+          //       returnShopProvider(
+          //         context,
+          //         listen: false,
+          //       ).userShop!.shopId!,
+          //     )
+          //     .then((products) {
+          //       final product = products.firstWhere(
+          //         (product) => product.id == firstProductId,
+          //       );
+          //       return product;
+          //     });
           return Padding(
             padding: const EdgeInsets.only(bottom: 15.0),
             child: Ink(
@@ -317,57 +317,25 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                     ),
                                     'Product Name',
                                   ),
-                                  FutureBuilder(
-                                    future: firstProduct,
-                                    builder: (
-                                      context,
-                                      snapshot,
-                                    ) {
-                                      if (snapshot
-                                              .connectionState ==
-                                          ConnectionState
-                                              .waiting) {
-                                        return Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          cutLongText(
-                                            cutLongText(
-                                              'Product',
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        var product =
-                                            snapshot.data;
-                                        return Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          cutLongText(
-                                            cutLongText(
-                                              product?.name ??
-                                                  'N/A',
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
+                                  // Text(
+                                  //   style: TextStyle(
+                                  //     fontSize:
+                                  //         theme
+                                  //             .mobileTexts
+                                  //             .b2
+                                  //             .fontSize,
+                                  //     fontWeight:
+                                  //         FontWeight.bold,
+                                  //   ),
+                                  //   cutLongText(
+                                  //     cutLongText(
+                                  //       snapshot
+                                  //           .data!
+                                  //           .first
+                                  //           .productName,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
@@ -436,7 +404,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
+                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(2000)}',
                                   ),
                                 ],
                               ),

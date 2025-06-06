@@ -39,6 +39,7 @@ class SmallButtonMain extends StatelessWidget {
                     MediaQuery.of(context).size.width > 300,
                 child: Icon(
                   color: Colors.white,
+                  size: 20,
                   Icons.add_rounded,
                 ),
               ),
