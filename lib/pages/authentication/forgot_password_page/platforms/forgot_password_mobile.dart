@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
@@ -23,6 +24,13 @@ class ForgotPasswordMobile extends StatefulWidget {
 
 class _ForgotPasswordMobileState
     extends State<ForgotPasswordMobile> {
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+    );
+    return emailRegex.hasMatch(email);
+  }
+
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,7 @@ class _ForgotPasswordMobileState
       children: [
         Scaffold(
           appBar: appBar(
+            isMain: widget.isMain,
             context: context,
             title: 'Forgot Password',
           ),
@@ -56,23 +65,54 @@ class _ForgotPasswordMobileState
                 MainButtonP(
                   themeProvider: theme,
                   action: () async {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    await AuthService()
-                        .sendPasswordResetEmail(
-                          widget.emailController.text
-                              .trim(),
-                        );
-                    if (context.mounted) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return VerifyPhone();
-                          },
-                        ),
+                    if (widget
+                        .emailController
+                        .text
+                        .isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return InfoAlert(
+                            theme: theme,
+                            message:
+                                'Email Field can\'t be empty. Please enter your email and try again.',
+                            title: 'Empty Email Field',
+                          );
+                        },
                       );
+                    } else if (!isValidEmail(
+                      widget.emailController.text,
+                    )) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return InfoAlert(
+                            theme: theme,
+                            message:
+                                'Email is Invalid. Please enter a vaild email and try again.',
+                            title: 'Ivalid Email',
+                          );
+                        },
+                      );
+                    } else {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await AuthService()
+                          .sendPasswordResetEmail(
+                            widget.emailController.text
+                                .trim(),
+                          );
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return VerifyPhone();
+                            },
+                          ),
+                        );
+                      }
                     }
                   },
                   text: 'Send Recovery Link',
