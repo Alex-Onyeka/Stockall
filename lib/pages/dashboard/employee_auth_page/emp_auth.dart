@@ -2,10 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -555,6 +557,91 @@ class _EmpAuthState extends State<EmpAuth> {
                                   },
 
                                   text: 'Login',
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.end,
+                                  children: [
+                                    InkWell(
+                                      onTap: () async {
+                                        var safeContext =
+                                            context;
+                                        var localDatabase =
+                                            returnLocalDatabase(
+                                              context,
+                                              listen: false,
+                                            );
+                                        showDialog(
+                                          context:
+                                              safeContext,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ConfirmationAlert(
+                                              theme: theme,
+                                              message:
+                                                  'You are about to Logout from the shop to recover your password. Only the shop Owner should perform this action. Are you sure you want to Proceed?',
+                                              title:
+                                                  'Are you sure?',
+                                              action: () async {
+                                                await AuthService()
+                                                    .signOut();
+                                                if (safeContext
+                                                    .mounted) {
+                                                  localDatabase
+                                                      .deleteUser();
+                                                  Navigator.pushReplacement(
+                                                    safeContext,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return ForgotPasswordPage();
+                                                      },
+                                                    ),
+                                                  );
+                                                  returnNavProvider(
+                                                    safeContext,
+                                                    listen:
+                                                        false,
+                                                  ).navigate(
+                                                    0,
+                                                  );
+                                                }
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              horizontal:
+                                                  20,
+                                              vertical: 5,
+                                            ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          spacing: 5,
+                                          children: [
+                                            Icon(
+                                              size: 20,
+                                              color:
+                                                  Colors
+                                                      .redAccent,
+                                              Icons.logout,
+                                            ),
+                                            Text(
+                                              'Logout to Reset Password?',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(height: 20),
                               ],
