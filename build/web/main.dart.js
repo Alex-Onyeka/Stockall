@@ -114811,7 +114811,7 @@ s=2
 return A.q(new A.hL(p,$.ae()).hL(),$async$$0)
 case 2:p=q.a
 if(p.e!=null){q.b.pF()
-self.window.open("/forgot-password","_blank")
+self.window.open("/#/forgot-password","_blank")
 p=A.f(p,!1,t.Q)
 p.b=!1
 p.a=0

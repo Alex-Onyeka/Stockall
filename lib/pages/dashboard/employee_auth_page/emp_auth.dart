@@ -606,8 +606,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                                   //     },
                                                   //   ),
                                                   // );
+
                                                   cleanUpUrl(
-                                                    '/forgot-password',
+                                                    '/#/forgot-password',
                                                   );
                                                   returnNavProvider(
                                                     safeContext,
