@@ -190,7 +190,9 @@ class _EnterNewPasswordMobileState
                                         showSuccess = true;
                                       });
 
-                                      cleanUpUrl(); // works safely on all platforms
+                                      cleanUpUrl(
+                                        '/',
+                                      ); // works safely on all platforms
 
                                       // if (safeContex
                                       //     .mounted) {

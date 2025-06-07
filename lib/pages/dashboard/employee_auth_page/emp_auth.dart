@@ -5,9 +5,10 @@ import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
+// import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -561,7 +562,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                 SizedBox(height: 20),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.end,
+                                      MainAxisAlignment
+                                          .center,
                                   children: [
                                     InkWell(
                                       onTap: () async {
@@ -591,18 +593,21 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     .mounted) {
                                                   localDatabase
                                                       .deleteUser();
-                                                  Navigator.pushReplacement(
-                                                    safeContext,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return ForgotPasswordPage(
-                                                          isMain:
-                                                              true,
-                                                        );
-                                                      },
-                                                    ),
+                                                  // Navigator.pushReplacement(
+                                                  //   safeContext,
+                                                  //   MaterialPageRoute(
+                                                  //     builder: (
+                                                  //       context,
+                                                  //     ) {
+                                                  //       return ForgotPasswordPage(
+                                                  //         isMain:
+                                                  //             true,
+                                                  //       );
+                                                  //     },
+                                                  //   ),
+                                                  // );
+                                                  cleanUpUrl(
+                                                    '/forgot-password',
                                                   );
                                                   returnNavProvider(
                                                     safeContext,

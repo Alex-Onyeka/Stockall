@@ -1,4 +1,4 @@
 // Used on mobile and desktop (non-web)
-void cleanUpUrl() {
+void cleanUpUrl(String link) {
   // Do nothing
 }

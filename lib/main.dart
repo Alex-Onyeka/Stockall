@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/local_database/local_user/local_user_database.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/enter_new_password.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart';
@@ -316,6 +317,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => BasePage(),
         '/launch': (context) => LaunchScreen(),
+        '/forgot-password':
+            (context) => ForgotPasswordPage(isMain: true),
         '/login': (context) => LoginPage(),
         '/splash': (context) => SplashScreen(),
         '/reset-password': (context) => EnterNewPassword(),
