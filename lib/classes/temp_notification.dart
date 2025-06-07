@@ -9,6 +9,8 @@ class TempNotification {
   final DateTime date;
   final String category;
   bool isViewed;
+  String? departmentName;
+  int? departmentId;
 
   TempNotification({
     this.id,
@@ -21,6 +23,8 @@ class TempNotification {
     required this.isViewed,
     required this.category,
     this.itemName,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempNotification.fromJson(
@@ -37,6 +41,8 @@ class TempNotification {
       isViewed: json['is_viewed'],
       category: json['category'],
       itemName: json['item_name'],
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 }

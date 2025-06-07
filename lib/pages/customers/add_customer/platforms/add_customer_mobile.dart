@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stockall/classes/temp_customers_class.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
@@ -35,6 +36,81 @@ class AddCustomerMobile extends StatefulWidget {
 
 class _AddCustomerMobileState
     extends State<AddCustomerMobile> {
+  TextEditingController controller =
+      TextEditingController();
+
+  bool stateSet = false;
+
+  void setCity(Function() updateAction, String name) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        var theme = returnTheme(context, listen: false);
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 20,
+              ),
+              backgroundColor: Colors.white,
+              title: Text(
+                'Add $name Name',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.h4.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 450,
+                    child: GeneralTextField(
+                      lines: 1,
+
+                      title: 'Enter $name Name',
+                      hint: 'Enter $name',
+                      controller: controller,
+                      theme: theme,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    spacing: 5,
+                    children: [
+                      MaterialButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          controller.clear();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      SmallButtonMain(
+                        theme: theme,
+                        action: () {
+                          updateAction();
+                        },
+                        buttonText: 'Save $name',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ).then((value) {
+      controller.clear();
+    });
+  }
   //
   //
   //
@@ -925,6 +1001,63 @@ class _AddCustomerMobileState
                                                                           ],
                                                                         ),
                                                                       ),
+                                                                      Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.end,
+                                                                        children: [
+                                                                          InkWell(
+                                                                            onTap: () {
+                                                                              setCity(
+                                                                                () {
+                                                                                  setState(
+                                                                                    () {
+                                                                                      selectedStateName =
+                                                                                          controller.text.trim();
+                                                                                      stateSet =
+                                                                                          true;
+                                                                                    },
+                                                                                  );
+
+                                                                                  int count =
+                                                                                      0;
+                                                                                  Navigator.popUntil(
+                                                                                    context,
+                                                                                    (
+                                                                                      route,
+                                                                                    ) {
+                                                                                      return count++ ==
+                                                                                          2;
+                                                                                    },
+                                                                                  );
+                                                                                },
+                                                                                'State',
+                                                                              );
+                                                                            },
+                                                                            child: Container(
+                                                                              padding: EdgeInsets.fromLTRB(
+                                                                                20,
+                                                                                10,
+                                                                                20,
+                                                                                5,
+                                                                              ),
+                                                                              child: Row(
+                                                                                spacing:
+                                                                                    3,
+                                                                                children: [
+                                                                                  Text(
+                                                                                    'Add Custom State',
+                                                                                  ),
+                                                                                  Icon(
+                                                                                    size:
+                                                                                        20,
+                                                                                    Icons.add,
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                       Expanded(
                                                                         child: Builder(
                                                                           builder: (
@@ -1003,15 +1136,43 @@ class _AddCustomerMobileState
                                                                                         subText:
                                                                                             'There are no results for this Location.',
                                                                                         buttonText:
-                                                                                            'Close',
+                                                                                            'Add Custom State',
                                                                                         theme:
                                                                                             theme,
                                                                                         height:
                                                                                             30,
                                                                                         action: () {
-                                                                                          Navigator.of(
-                                                                                            context,
-                                                                                          ).pop();
+                                                                                          setCity(
+                                                                                            () {
+                                                                                              setState(
+                                                                                                () {
+                                                                                                  selectedStateName =
+                                                                                                      controller.text.trim();
+                                                                                                  stateSet =
+                                                                                                      true;
+                                                                                                  cityFuture = fetchCities(
+                                                                                                    selectedCountryCode ??
+                                                                                                        '',
+                                                                                                    selectedStateCode ??
+                                                                                                        '',
+                                                                                                  );
+                                                                                                },
+                                                                                              );
+
+                                                                                              int count =
+                                                                                                  0;
+                                                                                              Navigator.popUntil(
+                                                                                                context,
+                                                                                                (
+                                                                                                  route,
+                                                                                                ) {
+                                                                                                  return count++ ==
+                                                                                                      2;
+                                                                                                },
+                                                                                              );
+                                                                                            },
+                                                                                            'State',
+                                                                                          );
                                                                                         },
                                                                                         icon:
                                                                                             Icons.clear,
@@ -1098,7 +1259,13 @@ class _AddCustomerMobileState
                                                       ),
                                                 );
                                               },
-                                            );
+                                            ).then((
+                                              context,
+                                            ) {
+                                              setState(
+                                                () {},
+                                              );
+                                            });
                                           },
                                           valueSet:
                                               selectedStateName !=
@@ -1301,6 +1468,64 @@ class _AddCustomerMobileState
                                                                           ],
                                                                         ),
                                                                       ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            10,
+                                                                      ),
+                                                                      Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.end,
+                                                                        children: [
+                                                                          InkWell(
+                                                                            onTap: () {
+                                                                              setCity(
+                                                                                () {
+                                                                                  setState(
+                                                                                    () {
+                                                                                      selectedCityName =
+                                                                                          controller.text.trim();
+                                                                                    },
+                                                                                  );
+                                                                                  int count =
+                                                                                      0;
+                                                                                  Navigator.popUntil(
+                                                                                    context,
+                                                                                    (
+                                                                                      route,
+                                                                                    ) {
+                                                                                      return count++ ==
+                                                                                          2;
+                                                                                    },
+                                                                                  );
+                                                                                },
+                                                                                'City',
+                                                                              );
+                                                                            },
+                                                                            child: Container(
+                                                                              padding: EdgeInsets.fromLTRB(
+                                                                                20,
+                                                                                10,
+                                                                                20,
+                                                                                5,
+                                                                              ),
+                                                                              child: Row(
+                                                                                spacing:
+                                                                                    3,
+                                                                                children: [
+                                                                                  Text(
+                                                                                    'Add City',
+                                                                                  ),
+                                                                                  Icon(
+                                                                                    size:
+                                                                                        20,
+                                                                                    Icons.add,
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                       Expanded(
                                                                         child: Builder(
                                                                           builder: (
@@ -1315,6 +1540,54 @@ class _AddCustomerMobileState
                                                                                       false,
                                                                                 ).showLoader(
                                                                                   'Loading',
+                                                                                ),
+                                                                              );
+                                                                            } else if (stateSet ==
+                                                                                true) {
+                                                                              return Scaffold(
+                                                                                body: Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.center,
+                                                                                  children: [
+                                                                                    EmptyWidgetDisplay(
+                                                                                      title:
+                                                                                          'Empty List',
+                                                                                      subText:
+                                                                                          'There are no results for this Location.',
+                                                                                      buttonText:
+                                                                                          'Add Custom City',
+                                                                                      theme:
+                                                                                          theme,
+                                                                                      height:
+                                                                                          30,
+                                                                                      action: () {
+                                                                                        setCity(
+                                                                                          () {
+                                                                                            setState(
+                                                                                              () {
+                                                                                                selectedCityName =
+                                                                                                    controller.text.trim();
+                                                                                              },
+                                                                                            );
+                                                                                            int count =
+                                                                                                0;
+                                                                                            Navigator.popUntil(
+                                                                                              context,
+                                                                                              (
+                                                                                                route,
+                                                                                              ) {
+                                                                                                return count++ ==
+                                                                                                    2;
+                                                                                              },
+                                                                                            );
+                                                                                          },
+                                                                                          'City',
+                                                                                        );
+                                                                                      },
+                                                                                      icon:
+                                                                                          Icons.clear,
+                                                                                    ),
+                                                                                  ],
                                                                                 ),
                                                                               );
                                                                             } else if (snapshot.hasError) {
@@ -1368,15 +1641,34 @@ class _AddCustomerMobileState
                                                                                         subText:
                                                                                             'There are no results for this Location.',
                                                                                         buttonText:
-                                                                                            'Close',
+                                                                                            'Add Custom City',
                                                                                         theme:
                                                                                             theme,
                                                                                         height:
                                                                                             30,
                                                                                         action: () {
-                                                                                          Navigator.of(
-                                                                                            context,
-                                                                                          ).pop();
+                                                                                          setCity(
+                                                                                            () {
+                                                                                              setState(
+                                                                                                () {
+                                                                                                  selectedCityName =
+                                                                                                      controller.text.trim();
+                                                                                                },
+                                                                                              );
+                                                                                              int count =
+                                                                                                  0;
+                                                                                              Navigator.popUntil(
+                                                                                                context,
+                                                                                                (
+                                                                                                  route,
+                                                                                                ) {
+                                                                                                  return count++ ==
+                                                                                                      2;
+                                                                                                },
+                                                                                              );
+                                                                                            },
+                                                                                            'City',
+                                                                                          );
                                                                                         },
                                                                                         icon:
                                                                                             Icons.clear,

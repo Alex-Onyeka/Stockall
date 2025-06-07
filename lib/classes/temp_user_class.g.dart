@@ -25,13 +25,15 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       phone: fields[5] as String?,
       role: fields[6] as String,
       authUserId: fields[7] as String?,
+      departmentName: fields[8] as String?,
+      departmentId: fields[9] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempUserClass obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -47,7 +49,11 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       ..writeByte(6)
       ..write(obj.role)
       ..writeByte(7)
-      ..write(obj.authUserId);
+      ..write(obj.authUserId)
+      ..writeByte(8)
+      ..write(obj.departmentName)
+      ..writeByte(9)
+      ..write(obj.departmentId);
   }
 
   @override

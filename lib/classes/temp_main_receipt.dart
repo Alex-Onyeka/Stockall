@@ -9,6 +9,8 @@ class TempMainReceipt {
   final String paymentMethod;
   final double cashAlt;
   final double bank;
+  String? departmentName;
+  int? departmentId;
 
   TempMainReceipt({
     this.id,
@@ -21,6 +23,8 @@ class TempMainReceipt {
     required this.paymentMethod,
     required this.bank,
     required this.cashAlt,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempMainReceipt.fromJson(
@@ -37,6 +41,8 @@ class TempMainReceipt {
       paymentMethod: json['payment_method'],
       cashAlt: (json['cash_alt'] as num).toDouble(),
       bank: (json['bank'] as num).toDouble(),
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 
@@ -51,6 +57,8 @@ class TempMainReceipt {
       'payment_method': paymentMethod,
       'cash_alt': cashAlt,
       'bank': bank,
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
   }
 }

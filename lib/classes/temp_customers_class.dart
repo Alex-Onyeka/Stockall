@@ -9,6 +9,8 @@ class TempCustomersClass {
   String? address;
   String? city;
   String? state;
+  String? departmentName;
+  int? departmentId;
 
   TempCustomersClass({
     this.country,
@@ -21,6 +23,8 @@ class TempCustomersClass {
     required this.state,
     required this.dateAdded,
     required this.shopId,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempCustomersClass.fromJson(
@@ -37,6 +41,8 @@ class TempCustomersClass {
       address: json['address'],
       city: json['city'],
       state: json['state'],
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 
@@ -51,6 +57,8 @@ class TempCustomersClass {
       'address': address,
       'city': city,
       'state': state,
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
   }
 }

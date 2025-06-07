@@ -9,6 +9,8 @@ class TempExpensesClass {
   final double? quantity;
   final String? unit;
   final String userId;
+  String? departmentName;
+  int? departmentId;
 
   TempExpensesClass({
     required this.name,
@@ -21,6 +23,8 @@ class TempExpensesClass {
     this.id,
     this.createdDate,
     required this.userId,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempExpensesClass.fromJson(
@@ -43,6 +47,8 @@ class TempExpensesClass {
       unit: json['unit'],
       userId: json['user_id'],
       creator: json['creator'],
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 
@@ -56,6 +62,8 @@ class TempExpensesClass {
       'unit': unit,
       'user_id': userId,
       'creator': creator,
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
   }
 }

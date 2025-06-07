@@ -18,6 +18,8 @@ class TempProductClass {
   DateTime? endDate;
   double quantity;
   bool setCustomPrice;
+  String? departmentName;
+  int? departmentId;
 
   TempProductClass({
     this.id,
@@ -39,6 +41,8 @@ class TempProductClass {
     required this.shopId,
     this.createdAt,
     required this.setCustomPrice,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempProductClass.fromJson(
@@ -75,6 +79,8 @@ class TempProductClass {
       quantity: (json['quantity'] as num).toDouble(),
       createdAt: DateTime.parse(json['created_at']),
       setCustomPrice: json['set_custom_price'],
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 
@@ -100,6 +106,8 @@ class TempProductClass {
 
       'quantity': quantity,
       'set_custom_price': setCustomPrice,
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
   }
 }

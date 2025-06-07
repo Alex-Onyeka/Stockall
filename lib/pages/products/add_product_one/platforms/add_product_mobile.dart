@@ -11,7 +11,6 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
-import 'package:stockall/components/text_fields/number_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -672,7 +671,7 @@ class _AddProductMobileState
                                 spacing: 15,
                                 children: [
                                   Expanded(
-                                    child: NumberTextfield(
+                                    child: EditCartTextField(
                                       theme: theme,
                                       hint:
                                           'Enter Quantity',
@@ -684,7 +683,7 @@ class _AddProductMobileState
                                   ),
 
                                   Expanded(
-                                    child: NumberTextfield(
+                                    child: EditCartTextField(
                                       theme: theme,
                                       hint:
                                           'Enter Product Size',

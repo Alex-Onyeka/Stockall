@@ -85,6 +85,12 @@ class TempUserClass extends HiveObject {
   @HiveField(7)
   String? authUserId;
 
+  @HiveField(8)
+  String? departmentName;
+
+  @HiveField(9)
+  int? departmentId;
+
   TempUserClass({
     this.userId,
     this.createdAt,
@@ -94,6 +100,8 @@ class TempUserClass extends HiveObject {
     this.phone,
     required this.role,
     this.authUserId,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempUserClass.fromJson(
@@ -110,6 +118,8 @@ class TempUserClass extends HiveObject {
       role: json['role'] ?? '',
       authUserId: json['auth_user_id'],
       password: json['password'] ?? '',
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 
@@ -121,6 +131,8 @@ class TempUserClass extends HiveObject {
       'role': role,
       'password': password,
       'auth_user_id': authUserId,
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
 
     if (includeUserId && userId != null) {

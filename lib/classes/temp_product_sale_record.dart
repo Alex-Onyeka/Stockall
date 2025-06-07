@@ -15,6 +15,8 @@ class TempProductSaleRecord {
   final double? originalCost;
   final double? costPrice;
   final bool customPriceSet;
+  String? departmentName;
+  int? departmentId;
 
   TempProductSaleRecord({
     this.productRecordId,
@@ -33,6 +35,8 @@ class TempProductSaleRecord {
     required this.discount,
     this.costPrice,
     required this.customPriceSet,
+    this.departmentName,
+    this.departmentId,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -59,6 +63,8 @@ class TempProductSaleRecord {
           (json['original_cost'] as num?)?.toDouble(),
       costPrice: (json['cost_price'] as num?)?.toDouble(),
       customPriceSet: json['custom_price_set'],
+      departmentId: json['department_id'],
+      departmentName: json['department_name'],
     );
   }
 
@@ -79,6 +85,8 @@ class TempProductSaleRecord {
       'original_cost': originalCost,
       'cost_price': costPrice,
       'custom_price_set': customPriceSet,
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
   }
 }
