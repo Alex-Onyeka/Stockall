@@ -7,7 +7,7 @@ void cleanUpUrl(String link) {
 
   // This updates the browser history without reloading the page
   // web.window.open(link, '_blank');
-  web.window.location.replace(cleanPath);
+  web.window.history.replaceState(null, '', cleanPath);
 }
 
 // // Used only on web

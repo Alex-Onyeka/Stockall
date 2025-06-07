@@ -112723,7 +112723,7 @@ return A.q(new A.hL(p,$.ae()).rd(o,m.a.c.a.a),$async$$0)
 case 2:m.G(new A.aR9(m))
 p=self
 n=p.window.location.pathname
-p.window.location.replace(n)
+p.window.history.replaceState(null,"",n)
 if(o.e!=null){p=t.X
 A.bjS(q.c,"/",p,p)}m.G(new A.aRa(m))
 return A.w(null,r)}})
