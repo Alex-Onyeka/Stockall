@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
@@ -1009,26 +1010,51 @@ class _AddCustomerMobileState
                                                                             onTap: () {
                                                                               setCity(
                                                                                 () {
-                                                                                  setState(
-                                                                                    () {
-                                                                                      selectedStateName =
-                                                                                          controller.text.trim();
-                                                                                      stateSet =
-                                                                                          true;
-                                                                                    },
-                                                                                  );
+                                                                                  if (controller.text.isEmpty) {
+                                                                                    showDialog(
+                                                                                      context:
+                                                                                          context,
+                                                                                      builder: (
+                                                                                        context,
+                                                                                      ) {
+                                                                                        return InfoAlert(
+                                                                                          theme:
+                                                                                              theme,
+                                                                                          message:
+                                                                                              'Name Field can\'t be set as Empty',
+                                                                                          title:
+                                                                                              'Empty Field',
+                                                                                        );
+                                                                                      },
+                                                                                    );
+                                                                                  } else {
+                                                                                    setState(
+                                                                                      () {
+                                                                                        selectedStateName =
+                                                                                            controller.text.trim();
+                                                                                        stateSet =
+                                                                                            true;
+                                                                                        cityFuture = fetchCities(
+                                                                                          selectedCountryCode ??
+                                                                                              '',
+                                                                                          selectedStateCode ??
+                                                                                              '',
+                                                                                        );
+                                                                                      },
+                                                                                    );
 
-                                                                                  int count =
-                                                                                      0;
-                                                                                  Navigator.popUntil(
-                                                                                    context,
-                                                                                    (
-                                                                                      route,
-                                                                                    ) {
-                                                                                      return count++ ==
-                                                                                          2;
-                                                                                    },
-                                                                                  );
+                                                                                    int count =
+                                                                                        0;
+                                                                                    Navigator.popUntil(
+                                                                                      context,
+                                                                                      (
+                                                                                        route,
+                                                                                      ) {
+                                                                                        return count++ ==
+                                                                                            2;
+                                                                                      },
+                                                                                    );
+                                                                                  }
                                                                                 },
                                                                                 'State',
                                                                               );
@@ -1144,32 +1170,51 @@ class _AddCustomerMobileState
                                                                                         action: () {
                                                                                           setCity(
                                                                                             () {
-                                                                                              setState(
-                                                                                                () {
-                                                                                                  selectedStateName =
-                                                                                                      controller.text.trim();
-                                                                                                  stateSet =
-                                                                                                      true;
-                                                                                                  cityFuture = fetchCities(
-                                                                                                    selectedCountryCode ??
-                                                                                                        '',
-                                                                                                    selectedStateCode ??
-                                                                                                        '',
-                                                                                                  );
-                                                                                                },
-                                                                                              );
+                                                                                              if (controller.text.isEmpty) {
+                                                                                                showDialog(
+                                                                                                  context:
+                                                                                                      context,
+                                                                                                  builder: (
+                                                                                                    context,
+                                                                                                  ) {
+                                                                                                    return InfoAlert(
+                                                                                                      theme:
+                                                                                                          theme,
+                                                                                                      message:
+                                                                                                          'Name Field can\'t be set as Empty',
+                                                                                                      title:
+                                                                                                          'Empty Field',
+                                                                                                    );
+                                                                                                  },
+                                                                                                );
+                                                                                              } else {
+                                                                                                setState(
+                                                                                                  () {
+                                                                                                    selectedStateName =
+                                                                                                        controller.text.trim();
+                                                                                                    stateSet =
+                                                                                                        true;
+                                                                                                    cityFuture = fetchCities(
+                                                                                                      selectedCountryCode ??
+                                                                                                          '',
+                                                                                                      selectedStateCode ??
+                                                                                                          '',
+                                                                                                    );
+                                                                                                  },
+                                                                                                );
 
-                                                                                              int count =
-                                                                                                  0;
-                                                                                              Navigator.popUntil(
-                                                                                                context,
-                                                                                                (
-                                                                                                  route,
-                                                                                                ) {
-                                                                                                  return count++ ==
-                                                                                                      2;
-                                                                                                },
-                                                                                              );
+                                                                                                int count =
+                                                                                                    0;
+                                                                                                Navigator.popUntil(
+                                                                                                  context,
+                                                                                                  (
+                                                                                                    route,
+                                                                                                  ) {
+                                                                                                    return count++ ==
+                                                                                                        2;
+                                                                                                  },
+                                                                                                );
+                                                                                              }
                                                                                             },
                                                                                             'State',
                                                                                           );
@@ -1480,23 +1525,42 @@ class _AddCustomerMobileState
                                                                             onTap: () {
                                                                               setCity(
                                                                                 () {
-                                                                                  setState(
-                                                                                    () {
-                                                                                      selectedCityName =
-                                                                                          controller.text.trim();
-                                                                                    },
-                                                                                  );
-                                                                                  int count =
-                                                                                      0;
-                                                                                  Navigator.popUntil(
-                                                                                    context,
-                                                                                    (
-                                                                                      route,
-                                                                                    ) {
-                                                                                      return count++ ==
-                                                                                          2;
-                                                                                    },
-                                                                                  );
+                                                                                  if (controller.text.isEmpty) {
+                                                                                    showDialog(
+                                                                                      context:
+                                                                                          context,
+                                                                                      builder: (
+                                                                                        context,
+                                                                                      ) {
+                                                                                        return InfoAlert(
+                                                                                          theme:
+                                                                                              theme,
+                                                                                          message:
+                                                                                              'Name Field can\'t be set as Empty',
+                                                                                          title:
+                                                                                              'Empty Field',
+                                                                                        );
+                                                                                      },
+                                                                                    );
+                                                                                  } else {
+                                                                                    setState(
+                                                                                      () {
+                                                                                        selectedCityName =
+                                                                                            controller.text.trim();
+                                                                                      },
+                                                                                    );
+                                                                                    int count =
+                                                                                        0;
+                                                                                    Navigator.popUntil(
+                                                                                      context,
+                                                                                      (
+                                                                                        route,
+                                                                                      ) {
+                                                                                        return count++ ==
+                                                                                            2;
+                                                                                      },
+                                                                                    );
+                                                                                  }
                                                                                 },
                                                                                 'City',
                                                                               );
@@ -1563,23 +1627,42 @@ class _AddCustomerMobileState
                                                                                       action: () {
                                                                                         setCity(
                                                                                           () {
-                                                                                            setState(
-                                                                                              () {
-                                                                                                selectedCityName =
-                                                                                                    controller.text.trim();
-                                                                                              },
-                                                                                            );
-                                                                                            int count =
-                                                                                                0;
-                                                                                            Navigator.popUntil(
-                                                                                              context,
-                                                                                              (
-                                                                                                route,
-                                                                                              ) {
-                                                                                                return count++ ==
-                                                                                                    2;
-                                                                                              },
-                                                                                            );
+                                                                                            if (controller.text.isEmpty) {
+                                                                                              showDialog(
+                                                                                                context:
+                                                                                                    context,
+                                                                                                builder: (
+                                                                                                  context,
+                                                                                                ) {
+                                                                                                  return InfoAlert(
+                                                                                                    theme:
+                                                                                                        theme,
+                                                                                                    message:
+                                                                                                        'Name Field can\'t be set as Empty',
+                                                                                                    title:
+                                                                                                        'Empty Field',
+                                                                                                  );
+                                                                                                },
+                                                                                              );
+                                                                                            } else {
+                                                                                              setState(
+                                                                                                () {
+                                                                                                  selectedCityName =
+                                                                                                      controller.text.trim();
+                                                                                                },
+                                                                                              );
+                                                                                              int count =
+                                                                                                  0;
+                                                                                              Navigator.popUntil(
+                                                                                                context,
+                                                                                                (
+                                                                                                  route,
+                                                                                                ) {
+                                                                                                  return count++ ==
+                                                                                                      2;
+                                                                                                },
+                                                                                              );
+                                                                                            }
                                                                                           },
                                                                                           'City',
                                                                                         );
@@ -1649,23 +1732,42 @@ class _AddCustomerMobileState
                                                                                         action: () {
                                                                                           setCity(
                                                                                             () {
-                                                                                              setState(
-                                                                                                () {
-                                                                                                  selectedCityName =
-                                                                                                      controller.text.trim();
-                                                                                                },
-                                                                                              );
-                                                                                              int count =
-                                                                                                  0;
-                                                                                              Navigator.popUntil(
-                                                                                                context,
-                                                                                                (
-                                                                                                  route,
-                                                                                                ) {
-                                                                                                  return count++ ==
-                                                                                                      2;
-                                                                                                },
-                                                                                              );
+                                                                                              if (controller.text.isEmpty) {
+                                                                                                showDialog(
+                                                                                                  context:
+                                                                                                      context,
+                                                                                                  builder: (
+                                                                                                    context,
+                                                                                                  ) {
+                                                                                                    return InfoAlert(
+                                                                                                      theme:
+                                                                                                          theme,
+                                                                                                      message:
+                                                                                                          'Name Field can\'t be set as Empty',
+                                                                                                      title:
+                                                                                                          'Empty Field',
+                                                                                                    );
+                                                                                                  },
+                                                                                                );
+                                                                                              } else {
+                                                                                                setState(
+                                                                                                  () {
+                                                                                                    selectedCityName =
+                                                                                                        controller.text.trim();
+                                                                                                  },
+                                                                                                );
+                                                                                                int count =
+                                                                                                    0;
+                                                                                                Navigator.popUntil(
+                                                                                                  context,
+                                                                                                  (
+                                                                                                    route,
+                                                                                                  ) {
+                                                                                                    return count++ ==
+                                                                                                        2;
+                                                                                                  },
+                                                                                                );
+                                                                                              }
                                                                                             },
                                                                                             'City',
                                                                                           );
