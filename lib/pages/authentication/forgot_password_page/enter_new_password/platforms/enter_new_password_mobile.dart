@@ -148,7 +148,9 @@ class _EnterNewPasswordMobileState
                                   'Are you sure you want to proceed?',
                               title: 'Proceed?',
                               action: () async {
-                                Navigator.of(context).pop();
+                                Navigator.of(
+                                  context,
+                                ).pop(); // Pop the dialog
 
                                 setState(() {
                                   isLoading = true;
@@ -168,27 +170,23 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                cleanUpUrl('/#/');
-
-                                // if (safeContex.mounted) {
-                                //   Navigator.pushNamedAndRemoveUntil(
-                                //     context,
-                                //     '/#/',
-                                //     (route) => false,
-                                //   );
-                                // }
+                                cleanUpUrl(
+                                  '',
+                                ); // Clean up ?token=... etc
 
                                 if (safeContex.mounted) {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/',
+                                  await Navigator.pushReplacementNamed(
+                                    safeContex,
+                                    '/', // This must match your route name
                                   );
                                 }
 
-                                setState(() {
-                                  isLoading = false;
-                                  showSuccess = false;
-                                });
+                                // Optional: reset state after navigation if still mounted
+                                if (mounted) {
+                                  setState(() {
+                                    showSuccess = false;
+                                  });
+                                }
                               },
                             );
                           },
