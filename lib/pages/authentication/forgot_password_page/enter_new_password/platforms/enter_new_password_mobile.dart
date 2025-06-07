@@ -174,7 +174,7 @@ class _EnterNewPasswordMobileState
                                 if (safeContex.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    '/#/',
+                                    '/',
                                     (route) => false,
                                   );
                                 }

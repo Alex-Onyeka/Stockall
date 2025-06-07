@@ -112723,7 +112723,7 @@ o===$&&A.b()
 s=2
 return A.q(new A.hL(o,$.ae()).rd(n,p.a.c.a.a),$async$$0)
 case 2:p.G(new A.aR9(p))
-if(n.e!=null)A.bjT(q.c,"/#/",new A.aRa(),t.X)
+if(n.e!=null)A.bjT(q.c,"/",new A.aRa(),t.X)
 p.G(new A.aRb(p))
 return A.w(null,r)}})
 return A.x($async$$0,r)},
