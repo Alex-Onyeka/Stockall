@@ -585,6 +585,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                               title:
                                                   'Log Out From Shop?',
                                               action: () async {
+                                                Navigator.of(
+                                                  safeContext,
+                                                ).pop();
                                                 setState(() {
                                                   isLoading =
                                                       true;
@@ -596,12 +599,12 @@ class _EmpAuthState extends State<EmpAuth> {
                                                   localDatabase
                                                       .deleteUser();
                                                   Navigator.pushNamedAndRemoveUntil(
-                                                    context,
-                                                    '/forgot-password', // or your desired route
+                                                    safeContext,
+                                                    '/forgot-password',
                                                     (
                                                       route,
                                                     ) =>
-                                                        false, // removes all previous routes
+                                                        false,
                                                   );
                                                   returnNavProvider(
                                                     safeContext,
