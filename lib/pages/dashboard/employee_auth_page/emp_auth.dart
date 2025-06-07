@@ -5,10 +5,8 @@ import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-// import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -587,28 +585,23 @@ class _EmpAuthState extends State<EmpAuth> {
                                               title:
                                                   'Log Out From Shop?',
                                               action: () async {
+                                                setState(() {
+                                                  isLoading =
+                                                      true;
+                                                });
                                                 await AuthService()
                                                     .signOut();
                                                 if (safeContext
                                                     .mounted) {
                                                   localDatabase
                                                       .deleteUser();
-                                                  // Navigator.pushReplacement(
-                                                  //   safeContext,
-                                                  //   MaterialPageRoute(
-                                                  //     builder: (
-                                                  //       context,
-                                                  //     ) {
-                                                  //       return ForgotPasswordPage(
-                                                  //         isMain:
-                                                  //             true,
-                                                  //       );
-                                                  //     },
-                                                  //   ),
-                                                  // );
-
-                                                  cleanUpUrl(
-                                                    '/#/forgot-password',
+                                                  Navigator.pushNamedAndRemoveUntil(
+                                                    context,
+                                                    '/forgot-password', // or your desired route
+                                                    (
+                                                      route,
+                                                    ) =>
+                                                        false, // removes all previous routes
                                                   );
                                                   returnNavProvider(
                                                     safeContext,
