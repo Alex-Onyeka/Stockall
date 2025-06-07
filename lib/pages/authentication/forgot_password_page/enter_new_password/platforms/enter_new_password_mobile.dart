@@ -149,12 +149,12 @@ class _EnterNewPasswordMobileState
                                   'Are you sure you want to proceed?',
                               title: 'Proceed?',
                               action: () async {
-                                setState(() {
-                                  isLoading = true;
-                                });
                                 Navigator.of(
                                   safeContex,
                                 ).pop();
+                                setState(() {
+                                  isLoading = true;
+                                });
 
                                 await AuthService()
                                     .changePasswordAndUpdateLocal(
@@ -170,9 +170,9 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                cleanUpUrl(
-                                  '/',
-                                ); // works safely on all platforms
+                                // cleanUpUrl(
+                                //   '/',
+                                // ); // works safely on all platforms
 
                                 if (safeContex.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
