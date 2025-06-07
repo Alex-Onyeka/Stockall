@@ -169,15 +169,15 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                cleanUpUrl('/');
+                                cleanUpUrl('/#/');
 
-                                if (safeContex.mounted) {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    '/',
-                                    (route) => false,
-                                  );
-                                }
+                                // if (safeContex.mounted) {
+                                //   Navigator.pushNamedAndRemoveUntil(
+                                //     context,
+                                //     '/',
+                                //     (route) => false,
+                                //   );
+                                // }
 
                                 setState(() {
                                   isLoading = false;
