@@ -192,16 +192,16 @@ class _EnterNewPasswordMobileState
 
                                       cleanUpUrl(); // works safely on all platforms
 
-                                      if (safeContex
-                                          .mounted) {
-                                        Future.microtask(() {
-                                          Navigator.pushReplacementNamed(
-                                            // ignore: use_build_context_synchronously
-                                            safeContex,
-                                            '/',
-                                          );
-                                        });
-                                      }
+                                      // if (safeContex
+                                      //     .mounted) {
+                                      //   Future.microtask(() {
+                                      //     Navigator.pushReplacementNamed(
+                                      //       // ignore: use_build_context_synchronously
+                                      //       safeContex,
+                                      //       '/',
+                                      //     );
+                                      //   });
+                                      // }
 
                                       setState(() {
                                         isLoading = false;

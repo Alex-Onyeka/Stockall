@@ -3,10 +3,10 @@ import 'package:web/web.dart' as web;
 
 /// Removes the query parameters from the current URL (used on Flutter Web).
 void cleanUpUrl() {
-  final cleanPath = web.window.location.pathname;
+  // final cleanPath = web.window.location.pathname;
 
   // This updates the browser history without reloading the page
-  web.window.location.replace(cleanPath);
+  web.window.open('https//www.stockallapp.com/', '_blank');
 }
 
 // // Used only on web

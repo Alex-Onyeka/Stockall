@@ -41,7 +41,7 @@ class UnsupportedPlatform extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.h2.fontSize,
+                            theme.mobileTexts.h1.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),

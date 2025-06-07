@@ -1123,13 +1123,14 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                                                                             () {
                                                                               selectedStateName =
                                                                                   controller.text.trim();
+                                                                              selectedStateCode =
+                                                                                  null;
                                                                               stateSet =
                                                                                   true;
                                                                               cityFuture = fetchCities(
-                                                                                selectedCountryCode ??
-                                                                                    '',
-                                                                                selectedStateCode ??
-                                                                                    '',
+                                                                                '',
+
+                                                                                '',
                                                                               );
                                                                             },
                                                                           );
@@ -1283,6 +1284,8 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                                                                                         () {
                                                                                           selectedStateName =
                                                                                               controller.text.trim();
+                                                                                          selectedStateCode =
+                                                                                              null;
                                                                                           stateSet =
                                                                                               true;
                                                                                           cityFuture = fetchCities(
@@ -1708,7 +1711,9 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                                                                       ),
                                                                     );
                                                                   } else if (stateSet ==
-                                                                      true) {
+                                                                          true &&
+                                                                      (selectedStateCode ==
+                                                                          null)) {
                                                                     return Scaffold(
                                                                       body: Row(
                                                                         mainAxisAlignment:

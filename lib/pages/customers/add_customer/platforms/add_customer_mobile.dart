@@ -1032,6 +1032,8 @@ class _AddCustomerMobileState
                                                                                       () {
                                                                                         selectedStateName =
                                                                                             controller.text.trim();
+                                                                                        selectedStateCode =
+                                                                                            null;
                                                                                         stateSet =
                                                                                             true;
                                                                                         cityFuture = fetchCities(
@@ -1192,6 +1194,8 @@ class _AddCustomerMobileState
                                                                                                   () {
                                                                                                     selectedStateName =
                                                                                                         controller.text.trim();
+                                                                                                    selectedStateCode =
+                                                                                                        null;
                                                                                                     stateSet =
                                                                                                         true;
                                                                                                     cityFuture = fetchCities(
@@ -1607,7 +1611,9 @@ class _AddCustomerMobileState
                                                                                 ),
                                                                               );
                                                                             } else if (stateSet ==
-                                                                                true) {
+                                                                                    true &&
+                                                                                (selectedStateCode ==
+                                                                                    null)) {
                                                                               return Scaffold(
                                                                                 body: Row(
                                                                                   mainAxisAlignment:
