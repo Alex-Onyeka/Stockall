@@ -112714,17 +112714,16 @@ $S:13}
 A.aRc.prototype={
 $0(){var s=0,r=A.y(t.P),q=this,p,o,n
 var $async$$0=A.u(function(a,b){if(a===1)return A.v(b,r)
-while(true)switch(s){case 0:n=q.b
-A.a5(n,!1).ab()
-p=q.a
-p.G(new A.aR8(p))
-o=$.co().b
-o===$&&A.b()
+while(true)switch(s){case 0:n=q.a
+n.G(new A.aR8(n))
+p=$.co().b
+p===$&&A.b()
+o=q.b
 s=2
-return A.q(new A.hL(o,$.ae()).rd(n,p.a.c.a.a),$async$$0)
-case 2:p.G(new A.aR9(p))
-if(n.e!=null)A.bjT(q.c,"/",new A.aRa(),t.X)
-p.G(new A.aRb(p))
+return A.q(new A.hL(p,$.ae()).rd(o,n.a.c.a.a),$async$$0)
+case 2:n.G(new A.aR9(n))
+if(o.e!=null)A.bjT(q.c,"/#/",new A.aRa(),t.X)
+n.G(new A.aRb(n))
 return A.w(null,r)}})
 return A.x($async$$0,r)},
 $S:10}

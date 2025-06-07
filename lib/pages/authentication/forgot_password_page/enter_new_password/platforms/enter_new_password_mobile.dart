@@ -148,9 +148,9 @@ class _EnterNewPasswordMobileState
                                   'Are you sure you want to proceed?',
                               title: 'Proceed?',
                               action: () async {
-                                Navigator.of(
-                                  safeContex,
-                                ).pop();
+                                // Navigator.of(
+                                //   safeContex,
+                                // ).pop();
                                 setState(() {
                                   isLoading = true;
                                 });
@@ -174,7 +174,7 @@ class _EnterNewPasswordMobileState
                                 if (safeContex.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    '/',
+                                    '/#/',
                                     (route) => false,
                                   );
                                 }
