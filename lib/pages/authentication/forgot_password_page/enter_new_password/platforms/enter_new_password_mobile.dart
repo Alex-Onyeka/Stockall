@@ -171,20 +171,20 @@ class _EnterNewPasswordMobileState
 
                                 cleanUpUrl('/#/');
 
-                                // if (safeContex.mounted) {
-                                //   Navigator.pushNamedAndRemoveUntil(
-                                //     context,
-                                //     '/#/',
-                                //     (route) => false,
-                                //   );
-                                // }
-
                                 if (safeContex.mounted) {
-                                  Navigator.pushReplacementNamed(
+                                  Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    '/',
+                                    '/#/',
+                                    (route) => false,
                                   );
                                 }
+
+                                // if (safeContex.mounted) {
+                                //   Navigator.pushReplacementNamed(
+                                //     context,
+                                //     '/',
+                                //   );
+                                // }
 
                                 setState(() {
                                   isLoading = false;
