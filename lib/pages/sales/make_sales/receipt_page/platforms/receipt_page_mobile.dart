@@ -751,9 +751,10 @@ class _ReceiptDetailsContainerState
                                                 ),
                                                 Visibility(
                                                   visible:
-                                                      productRecord
-                                                          .discount !=
-                                                      null,
+                                                      productRecord.discount !=
+                                                          null &&
+                                                      !productRecord
+                                                          .customPriceSet,
                                                   child: Text(
                                                     style: TextStyle(
                                                       decoration:

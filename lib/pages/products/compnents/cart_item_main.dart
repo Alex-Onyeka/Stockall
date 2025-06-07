@@ -182,24 +182,32 @@ class _CartItemMainState extends State<CartItemMain> {
                                           .lightModeColor
                                           .prColor300,
                                 ),
-                                'N${widget.cartItem.item.discount == null ? formatLargeNumberDouble(widget.cartItem.totalCost()) : formatLargeNumberDouble((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100))))}',
+                                'N${widget.cartItem.customPrice != null ? formatLargeNumberDoubleWidgetDecimal(widget.cartItem.customPrice ?? 0) : (widget.cartItem.customPrice) ?? (widget.cartItem.item.discount == null ? formatLargeNumberDouble(widget.cartItem.totalCost()) : formatLargeNumberDouble((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100)))))}',
                               ),
                               Visibility(
                                 visible:
                                     widget
-                                        .cartItem
-                                        .item
-                                        .discount !=
-                                    null,
+                                            .cartItem
+                                            .item
+                                            .discount !=
+                                        null &&
+                                    widget
+                                            .cartItem
+                                            .customPrice ==
+                                        null,
                                 child: Text('/'),
                               ),
                               Visibility(
                                 visible:
                                     widget
-                                        .cartItem
-                                        .item
-                                        .discount !=
-                                    null,
+                                            .cartItem
+                                            .item
+                                            .discount !=
+                                        null &&
+                                    widget
+                                            .cartItem
+                                            .customPrice ==
+                                        null,
                                 child: Text(
                                   style: TextStyle(
                                     decoration:

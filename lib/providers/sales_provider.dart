@@ -138,7 +138,8 @@ class SalesProvider extends ChangeNotifier {
   double calcDiscountMain(List<TempCartItem> items) {
     double tempTotalDiscount = 0;
     for (var item in items) {
-      if (item.item.discount != null) {
+      if (item.item.discount != null &&
+          item.customPrice == null) {
         double discountPerUnit =
             item.item.sellingPrice *
             (item.item.discount! / 100);

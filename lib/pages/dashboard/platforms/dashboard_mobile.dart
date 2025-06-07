@@ -1056,55 +1056,166 @@ class _DashboardMobileState extends State<DashboardMobile> {
                         ),
                       ],
                     ),
-                    Align(
-                      alignment: Alignment(
-                        1,
-                        isFloatOpen ? 1 : 0.94,
-                      ),
-                      child: Material(
-                        elevation: 2,
-                        color: Colors.transparent,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (isFloatOpen) {
-                              setState(() {
-                                isFloatOpen = false;
-                              });
-                            } else {
-                              setState(() {
-                                isFloatOpen = true;
-                              });
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(
-                              10,
-                              15,
-                              isFloatOpen ? 30 : 10,
-                              15,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor100,
-                              borderRadius:
-                                  BorderRadius.only(
-                                    topLeft:
-                                        Radius.circular(5),
-                                    bottomLeft:
-                                        Radius.circular(5),
+                    Visibility(
+                      visible:
+                          returnLocalDatabase(
+                                    context,
+                                  ).currentEmployee !=
+                                  null
+                              ? returnLocalDatabase(
+                                    context,
+                                  ).currentEmployee!.role ==
+                                  'Owner'
+                              : true,
+                      child: Align(
+                        alignment: Alignment(
+                          1,
+                          isFloatOpen ? 1 : 0.94,
+                        ),
+                        child: Material(
+                          elevation: 2,
+                          color: Colors.transparent,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (isFloatOpen) {
+                                setState(() {
+                                  isFloatOpen = false;
+                                });
+                              } else {
+                                setState(() {
+                                  isFloatOpen = true;
+                                });
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(
+                                10,
+                                15,
+                                isFloatOpen ? 30 : 10,
+                                15,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor100,
+                                borderRadius:
+                                    BorderRadius.only(
+                                      topLeft:
+                                          Radius.circular(
+                                            5,
+                                          ),
+                                      bottomLeft:
+                                          Radius.circular(
+                                            5,
+                                          ),
+                                    ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Visibility(
+                                    visible: isFloatOpen,
+                                    child: Row(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        Column(
+                                          mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Icon(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              size: 16,
+                                              Icons
+                                                  .arrow_forward_ios_rounded,
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(width: 10),
+                                        Column(
+                                          mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                          spacing: 15,
+                                          children: [
+                                            InkWell(
+                                              onTap: () async {
+                                                openWhatsApp();
+                                              },
+
+                                              child: Column(
+                                                spacing: 3,
+                                                mainAxisSize:
+                                                    MainAxisSize
+                                                        .min,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    whatsappIconSvg,
+                                                    color:
+                                                        Colors.white,
+                                                    height:
+                                                        16,
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Chat Us',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () async {
+                                                phoneCall();
+                                              },
+                                              child: Column(
+                                                spacing: 3,
+                                                mainAxisSize:
+                                                    MainAxisSize
+                                                        .min,
+                                                children: [
+                                                  Icon(
+                                                    size:
+                                                        17,
+                                                    color:
+                                                        Colors.white,
+                                                    Icons
+                                                        .phone,
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Call Us',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                            ),
-                            child: Stack(
-                              children: [
-                                Visibility(
-                                  visible: isFloatOpen,
-                                  child: Row(
-                                    mainAxisSize:
-                                        MainAxisSize.min,
-                                    children: [
-                                      Column(
+                                  Visibility(
+                                    visible: !isFloatOpen,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        openFloat();
+                                      },
+                                      child: Column(
                                         mainAxisSize:
                                             MainAxisSize
                                                 .min,
@@ -1113,113 +1224,19 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 .center,
                                         children: [
                                           Icon(
+                                            size: 16,
                                             color:
                                                 Colors
                                                     .white,
-                                            size: 16,
                                             Icons
-                                                .arrow_forward_ios_rounded,
+                                                .arrow_back_ios_new_rounded,
                                           ),
                                         ],
                                       ),
-                                      SizedBox(width: 10),
-                                      Column(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
-                                        spacing: 15,
-                                        children: [
-                                          InkWell(
-                                            onTap: () async {
-                                              openWhatsApp();
-                                            },
-
-                                            child: Column(
-                                              spacing: 3,
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  whatsappIconSvg,
-                                                  color:
-                                                      Colors
-                                                          .white,
-                                                  height:
-                                                      16,
-                                                ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    color:
-                                                        Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'Chat Us',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              phoneCall();
-                                            },
-                                            child: Column(
-                                              spacing: 3,
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
-                                              children: [
-                                                Icon(
-                                                  size: 17,
-                                                  color:
-                                                      Colors
-                                                          .white,
-                                                  Icons
-                                                      .phone,
-                                                ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    color:
-                                                        Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'Call Us',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Visibility(
-                                  visible: !isFloatOpen,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      openFloat();
-                                    },
-                                    child: Column(
-                                      mainAxisSize:
-                                          MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
-                                      children: [
-                                        Icon(
-                                          size: 16,
-                                          color:
-                                              Colors.white,
-                                          Icons
-                                              .arrow_back_ios_new_rounded,
-                                        ),
-                                      ],
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

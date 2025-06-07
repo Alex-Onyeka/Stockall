@@ -128,20 +128,20 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
             ),
           );
         } else {
-          // double getTotal() {
-          //   double totalAmount = 0;
-          //   for (var element
-          //       in snapshot.data!
-          //           .where(
-          //             (test) =>
-          //                 test.recepitId ==
-          //                 widget.mainReceipt.id,
-          //           )
-          //           .toList()) {
-          //     totalAmount += element.revenue;
-          //   }
-          //   return totalAmount;
-          // }
+          double getTotal() {
+            double totalAmount = 0;
+            for (var element
+                in snapshot.data!
+                    .where(
+                      (test) =>
+                          test.recepitId ==
+                          widget.mainReceipt.id,
+                    )
+                    .toList()) {
+              totalAmount += element.revenue;
+            }
+            return totalAmount;
+          }
 
           // var productReceipts =
           //     snapshot.data!
@@ -317,25 +317,25 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                     ),
                                     'Product Name',
                                   ),
-                                  // Text(
-                                  //   style: TextStyle(
-                                  //     fontSize:
-                                  //         theme
-                                  //             .mobileTexts
-                                  //             .b2
-                                  //             .fontSize,
-                                  //     fontWeight:
-                                  //         FontWeight.bold,
-                                  //   ),
-                                  //   cutLongText(
-                                  //     cutLongText(
-                                  //       snapshot
-                                  //           .data!
-                                  //           .first
-                                  //           .productName,
-                                  //     ),
-                                  //   ),
-                                  // ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    cutLongText(
+                                      cutLongText(
+                                        snapshot
+                                            .data!
+                                            .first
+                                            .productName,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -404,7 +404,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(2000)}',
+                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
                                   ),
                                 ],
                               ),

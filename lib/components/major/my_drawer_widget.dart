@@ -13,6 +13,7 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/referrals/referrals.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -470,46 +471,59 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                 ),
                               ),
                             ),
+                            Visibility(
+                              visible:
+                                  widget.role == 'Owner',
+                              child: NavListTileAlt(
+                                height: 20,
+                                action: () async {
+                                  phoneCall();
+                                },
+                                title: 'Contact Us',
+                                icon: Icons.phone,
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget.role == 'Owner',
+                              child: NavListTileAlt(
+                                height: 20,
+                                action: () async {
+                                  openWhatsApp();
+                                },
+                                title: 'Chat With Us',
+                                svg: whatsappIconSvg,
+                              ),
+                            ),
+                            Visibility(
+                              visible: false,
+                              // widget.role == 'Owner',
+                              child: NavListTileAlt(
+                                height: 20,
+                                action: () {},
+                                title:
+                                    'Privacy P. & Terms/C.',
+                                icon:
+                                    Icons.menu_book_rounded,
+                              ),
+                            ),
                             NavListTileAlt(
                               height: 20,
-                              action: () async {
-                                phoneCall();
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return Referrals();
+                                    },
+                                  ),
+                                );
                               },
-                              title: 'Contact Us',
-                              icon: Icons.phone,
+                              title: 'Referrals',
+                              icon:
+                                  Icons
+                                      .card_giftcard_rounded,
                             ),
-                            NavListTileAlt(
-                              height: 20,
-                              action: () async {
-                                openWhatsApp();
-                              },
-                              title: 'Chat With Us',
-                              svg: whatsappIconSvg,
-                            ),
-                            NavListTileAlt(
-                              height: 20,
-                              action: () {},
-                              title:
-                                  'Privacy P. & Terms/C.',
-                              icon: Icons.menu_book_rounded,
-                            ),
-                            // NavListTileAlt(
-                            //   height: 20,
-                            //   action: () {
-                            //     Navigator.push(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //         builder: (context) {
-                            //           return Referrals();
-                            //         },
-                            //       ),
-                            //     );
-                            //   },
-                            //   title: 'Referrals',
-                            //   icon:
-                            //       Icons
-                            //           .card_giftcard_rounded,
-                            // ),
                             SizedBox(height: 30),
                           ],
                         ),
