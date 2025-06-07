@@ -148,9 +148,7 @@ class _EnterNewPasswordMobileState
                                   'Are you sure you want to proceed?',
                               title: 'Proceed?',
                               action: () async {
-                                Navigator.of(
-                                  context,
-                                ).pop(); // Pop the dialog
+                                // Navigator.of(context).pop();
 
                                 setState(() {
                                   isLoading = true;
@@ -170,23 +168,27 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                cleanUpUrl(
-                                  '',
-                                ); // Clean up ?token=... etc
+                                cleanUpUrl('');
 
                                 if (safeContex.mounted) {
-                                  await Navigator.pushReplacementNamed(
-                                    safeContex,
-                                    '/', // This must match your route name
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/',
+                                    (route) => false,
                                   );
                                 }
 
-                                // Optional: reset state after navigation if still mounted
-                                if (mounted) {
-                                  setState(() {
-                                    showSuccess = false;
-                                  });
-                                }
+                                // if (safeContex.mounted) {
+                                //   Navigator.pushReplacementNamed(
+                                //     context,
+                                //     '/',
+                                //   );
+                                // }
+
+                                setState(() {
+                                  isLoading = false;
+                                  showSuccess = false;
+                                });
                               },
                             );
                           },
