@@ -317,8 +317,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => BasePage(),
         '/launch': (context) => LaunchScreen(),
-        // '/forgot-password':
-        //     (context) => ForgotPasswordPage(isMain: true),
+        '/forgot-password':
+            (context) => ForgotPasswordPage(isMain: true),
         '/login': (context) => LoginPage(),
         '/splash': (context) => SplashScreen(),
         '/reset-password': (context) => EnterNewPassword(),

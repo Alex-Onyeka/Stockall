@@ -600,7 +600,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       .deleteUser();
                                                   Navigator.pushNamedAndRemoveUntil(
                                                     safeContext,
-                                                    '/forgot-password',
+                                                    '/#/forgot-password',
                                                     (
                                                       route,
                                                     ) =>
