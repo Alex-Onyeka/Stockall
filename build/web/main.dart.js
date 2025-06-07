@@ -114784,7 +114784,7 @@ s=2
 return A.q(new A.hL(p,$.ae()).hK(),$async$$0)
 case 2:if(n.e!=null){q.c.pF()
 p=A.a5(n,!1)
-o=p.yh("/#/forgot-password",null,t.X)
+o=p.yh("/forgot-password",null,t.X)
 o.toString
 p.a7_(o,new A.aQo())
 n=A.f(n,!1,t.Q)

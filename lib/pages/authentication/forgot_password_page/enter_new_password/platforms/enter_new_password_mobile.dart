@@ -1,7 +1,6 @@
 import 'package:stockall/helpers/clean_up_url.dart';
 
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -170,15 +169,15 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                cleanUpUrl('/#/');
+                                cleanUpUrl('/');
 
-                                // if (safeContex.mounted) {
-                                //   Navigator.pushNamedAndRemoveUntil(
-                                //     context,
-                                //     '/#/',
-                                //     (route) => false,
-                                //   );
-                                // }
+                                if (safeContex.mounted) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/',
+                                    (route) => false,
+                                  );
+                                }
 
                                 setState(() {
                                   isLoading = false;
