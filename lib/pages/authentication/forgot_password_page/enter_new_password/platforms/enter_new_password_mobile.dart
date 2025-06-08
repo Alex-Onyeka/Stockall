@@ -228,25 +228,26 @@ class _EnterNewPasswordMobileState
                                     isLoading = false;
                                   });
                                   return;
-                                } else if (res == '400' &&
-                                    safeContex.mounted) {
-                                  await showDialog(
-                                    context: safeContex,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Auth Token not valid. Please click on the reset password link, go to your email and verify your password again.',
-                                        title:
-                                            'Auth Token Not Valid',
-                                      );
-                                    },
-                                  );
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  return;
                                 }
+                                // else if (res == '400' &&
+                                //     safeContex.mounted) {
+                                //   await showDialog(
+                                //     context: safeContex,
+                                //     builder: (context) {
+                                //       return InfoAlert(
+                                //         theme: theme,
+                                //         message:
+                                //             'Auth Token not valid. Please click on the reset password link, go to your email and verify your password again.',
+                                //         title:
+                                //             'Auth Token Not Valid',
+                                //       );
+                                //     },
+                                //   );
+                                //   setState(() {
+                                //     isLoading = false;
+                                //   });
+                                //   return;
+                                // }
 
                                 setState(() {
                                   isLoading = false;
