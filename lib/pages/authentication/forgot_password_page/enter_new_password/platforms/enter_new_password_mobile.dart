@@ -1,10 +1,5 @@
-import 'dart:async';
-
-import 'package:stockall/classes/temp_user_class.dart';
-import 'package:stockall/components/major/empty_widget_display.dart';
-import 'package:stockall/constants/calculations.dart';
+import 'package:provider/provider.dart';
 import 'package:stockall/helpers/clean_up_url.dart';
-
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -12,8 +7,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/providers/timer_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EnterNewPasswordMobile extends StatefulWidget {
@@ -37,54 +32,10 @@ class _EnterNewPasswordMobileState
     extends State<EnterNewPasswordMobile> {
   bool isLoading = false;
   bool showSuccess = false;
-  bool isExpired = false;
-
-  // late Future<TempUserClass> userFuture;
-  // Future<TempUserClass> getUser() async {
-  //   var tempUser =
-  //       await returnUserProvider(
-  //         context,
-  //         listen: false,
-  //       ).fetchCurrentUser();
-
-  //   return tempUser!;
-  // }
-
-  int time = 180;
-  Timer? _timer;
-
-  void startCountDownTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (
-      timer,
-    ) async {
-      if (time > 0) {
-        setState(() {
-          time--;
-        });
-      } else {
-        timer.cancel();
-        setState(() {
-          isExpired = true;
-        });
-        await Future.delayed(Duration(seconds: 2));
-        await AuthService().signOut();
-        if (context.mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AuthLanding();
-              },
-            ),
-          );
-        }
-      }
-    });
-  }
 
   String formatTime(int time) {
     if (time < 60) {
-      return time.toString();
+      return '${time.toString()} secs';
     } else if (time >= 60 && time < 120) {
       return '1:${time - 60} secs';
     } else {
@@ -93,72 +44,10 @@ class _EnterNewPasswordMobileState
   }
 
   @override
-  void dispose() {
-    _timer
-        ?.cancel(); // Always cancel the timer to avoid memory leaks
-    super.dispose();
-  }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  // startCountDownTimer(); // Start timer when widget initializes
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    startCountDownTimer();
-    // userFuture = getUser();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Stack(
       children: [
-        // FutureBuilder(
-        //   future: userFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState ==
-        //         ConnectionState.waiting) {
-        //       return Scaffold(
-        //         body: returnCompProvider(
-        //           context,
-        //           listen: false,
-        //         ).showLoader('Loading'),
-        //       );
-        //     } else if (snapshot.hasError) {
-        //       return Scaffold(
-        //         body: EmptyWidgetDisplay(
-        //           title: 'Error Loading Data',
-        //           subText:
-        //               'And Error Occurred. Please check your internet, reset your password, and try again.',
-        //           buttonText: 'Cancel',
-        //           theme: theme,
-        //           height: 35,
-        //           icon: Icons.clear,
-        //           action: () async {
-        //             await AuthService().signOut();
-        //             if (context.mounted) {
-        //               Navigator.pushReplacement(
-        //                 context,
-        //                 MaterialPageRoute(
-        //                   builder: (context) {
-        //                     return AuthLanding();
-        //                   },
-        //                 ),
-        //               );
-        //             }
-        //           },
-        //         ),
-        //       );
-        //     } else {
-        //       var user = snapshot.data!;
-
-        //     }
-        //   },
-        // ),
         Scaffold(
           appBar: appBar(
             context: context,
@@ -192,25 +81,41 @@ class _EnterNewPasswordMobileState
                     ],
                   ),
                   SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    spacing: 5,
-                    children: [
-                      Text('Token Valid Time'),
-                      Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color:
-                              time < 60
-                                  ? theme
-                                      .lightModeColor
-                                      .errorColor200
-                                  : null,
+                  InkWell(
+                    onTap: () {
+                      context
+                          .read<TimerProvider>()
+                          .startCountDownTimer(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      spacing: 5,
+                      children: [
+                        Text('Token Valid Time'),
+                        Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color:
+                                context
+                                            .watch<
+                                              TimerProvider
+                                            >()
+                                            .time <
+                                        60
+                                    ? theme
+                                        .lightModeColor
+                                        .errorColor200
+                                    : null,
+                          ),
+                          formatTime(
+                            context
+                                .watch<TimerProvider>()
+                                .time,
+                          ),
                         ),
-                        formatTime(time),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: 20),
                   MainButtonP(
@@ -245,23 +150,7 @@ class _EnterNewPasswordMobileState
                             );
                           },
                         );
-                      }
-                      // else if (user.password ==
-                      //     widget.passwordC.text) {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (context) {
-                      //       return InfoAlert(
-                      //         theme: theme,
-                      //         message:
-                      //             'New password should be different from the old password.',
-                      //         title:
-                      //             'Password The Same',
-                      //       );
-                      //     },
-                      //   );
-                      // }
-                      else {
+                      } else {
                         final safeContex = context;
 
                         showDialog(
@@ -381,7 +270,7 @@ class _EnterNewPasswordMobileState
           ),
         ),
         Visibility(
-          visible: isExpired,
+          visible: context.watch<TimerProvider>().time <= 0,
           child: Scaffold(
             backgroundColor: Colors.white,
             body: Center(
