@@ -258,7 +258,14 @@ class _TotalExpensesMobileState
                         Expanded(
                           child: Builder(
                             builder: (context) {
-                              if (expenses.isEmpty) {
+                              if (expenses.isEmpty &&
+                                  returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentEmployee!
+                                          .role ==
+                                      'Owner') {
                                 return EmptyWidgetDisplay(
                                   title: 'Empty List',
                                   subText:
@@ -278,6 +285,32 @@ class _TotalExpensesMobileState
                                       ),
                                     );
                                   },
+                                );
+                              } else if (expenses.isEmpty &&
+                                  returnLocalDatabase(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentEmployee!
+                                          .role !=
+                                      'Owner') {
+                                return SizedBox(
+                                  height:
+                                      MediaQuery.of(
+                                        context,
+                                      ).size.height -
+                                      400,
+                                  child: Center(
+                                    child: EmptyWidgetDisplayOnly(
+                                      subText:
+                                          'Come back later after expenses has been recorded to view expenses.',
+                                      title:
+                                          'No Expenses Recorded Yet',
+                                      svg: expensesIconSvg,
+                                      height: 35,
+                                      theme: theme,
+                                    ),
+                                  ),
                                 );
                               } else {
                                 return ListView.builder(

@@ -251,85 +251,92 @@ class _DetailsPageContainerState
                     theme: widget.theme,
                   ),
                 ),
-                Row(
-                  spacing: 15,
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 15),
-                    CustomerActionButton(
-                      icon: Icons.delete_outline_rounded,
-                      color:
-                          widget
-                              .theme
-                              .lightModeColor
-                              .errorColor200,
-                      iconSize: 18,
-                      text: 'Delete',
-                      action: () {
-                        final safeContext = context;
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: widget.theme,
-                              message:
-                                  'You are about to delete your customer, are you sure you want to proceed?',
-                              title: 'Are you sure?',
-                              action: () async {
-                                if (safeContext.mounted) {
-                                  Navigator.of(
-                                    safeContext,
-                                  ).pop();
-                                }
-                                returnExpensesProvider(
-                                  context,
-                                  listen: false,
-                                ).deleteExpense(
-                                  expense.id!,
-                                );
-                                await Future.delayed(
-                                  Duration(
-                                    microseconds: 500,
-                                  ),
-                                  () {},
-                                );
-                                if (context.mounted) {
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                }
-                              },
-                            );
-                          },
-                        );
-                      },
-                      theme: widget.theme,
-                    ),
-                    CustomerActionButton(
-                      svg: editIconSvg,
-                      color: Colors.grey,
-                      iconSize: 15,
-                      text: 'Edit',
-                      action: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
+                Visibility(
+                  visible:
+                      returnLocalDatabase(
+                        context,
+                      ).currentEmployee!.role ==
+                      'Owner',
+                  child: Row(
+                    spacing: 15,
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 15),
+                      CustomerActionButton(
+                        icon: Icons.delete_outline_rounded,
+                        color:
+                            widget
+                                .theme
+                                .lightModeColor
+                                .errorColor200,
+                        iconSize: 18,
+                        text: 'Delete',
+                        action: () {
+                          final safeContext = context;
+                          showDialog(
+                            context: context,
                             builder: (context) {
-                              return AddExpenses(
-                                expense: expense,
+                              return ConfirmationAlert(
+                                theme: widget.theme,
+                                message:
+                                    'You are about to delete your customer, are you sure you want to proceed?',
+                                title: 'Are you sure?',
+                                action: () async {
+                                  if (safeContext.mounted) {
+                                    Navigator.of(
+                                      safeContext,
+                                    ).pop();
+                                  }
+                                  returnExpensesProvider(
+                                    context,
+                                    listen: false,
+                                  ).deleteExpense(
+                                    expense.id!,
+                                  );
+                                  await Future.delayed(
+                                    Duration(
+                                      microseconds: 500,
+                                    ),
+                                    () {},
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  }
+                                },
                               );
                             },
-                          ),
-                        ).then((_) {
-                          setState(() {
-                            expenseFuture = getExpense();
+                          );
+                        },
+                        theme: widget.theme,
+                      ),
+                      CustomerActionButton(
+                        svg: editIconSvg,
+                        color: Colors.grey,
+                        iconSize: 15,
+                        text: 'Edit',
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return AddExpenses(
+                                  expense: expense,
+                                );
+                              },
+                            ),
+                          ).then((_) {
+                            setState(() {
+                              expenseFuture = getExpense();
+                            });
                           });
-                        });
-                      },
-                      theme: widget.theme,
-                    ),
-                  ],
+                        },
+                        theme: widget.theme,
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 10),
               ],
