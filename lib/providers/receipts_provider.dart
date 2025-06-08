@@ -506,11 +506,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
       return receipts.where((receipt) {
         final created = receipt.createdAt.toUtc();
-        return created.isAfter(
-              weekStartUtc.subtract(
-                const Duration(seconds: 1),
-              ),
-            ) &&
+        return !created.isBefore(weekStartUtc) &&
             created.isBefore(weekEndUtc);
       }).toList();
     }
@@ -528,9 +524,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
     return receipts.where((receipt) {
       final created = receipt.createdAt.toUtc();
-      return created.isAfter(
-            startOfDay.subtract(const Duration(seconds: 1)),
-          ) &&
+      return !created.isBefore(startOfDay) &&
           created.isBefore(endOfDay);
     }).toList();
   }
