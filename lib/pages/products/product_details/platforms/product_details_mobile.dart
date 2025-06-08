@@ -303,28 +303,23 @@ class _ProductDetailsMobileState
                                       action: () {
                                         setState(() {
                                           sellingController
-                                              .text = product
-                                              .sellingPrice
-                                              .toString()
-                                              .substring(
-                                                0,
-                                                product.sellingPrice
-                                                        .toString()
-                                                        .length -
-                                                    1,
-                                              );
+                                                  .text =
+                                              product
+                                                  .sellingPrice
+                                                  .toString()
+                                                  .split(
+                                                    '.',
+                                                  )[0];
 
                                           costController
-                                              .text = product
-                                              .costPrice
-                                              .toString()
-                                              .substring(
-                                                0,
-                                                product.costPrice
-                                                        .toString()
-                                                        .length -
-                                                    1,
-                                              );
+                                                  .text =
+                                              product
+                                                  .costPrice
+                                                  .toString()
+                                                  .toString()
+                                                  .split(
+                                                    '.',
+                                                  )[0];
                                         });
                                         showGeneralDialog(
                                           context: context,

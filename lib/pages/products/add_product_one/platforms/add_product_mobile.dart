@@ -312,21 +312,14 @@ class _AddProductMobileState
           widget.product!.barcode != null ? true : false;
 
       widget.nameController.text = widget.product!.name;
-      widget.costController.text = widget.product!.costPrice
-          .toString()
-          .substring(
-            0,
-            widget.product!.costPrice.toString().length - 1,
-          );
-      widget.sellingController.text = widget
-          .product!
-          .sellingPrice
-          .toString()
-          .substring(
-            0,
-            widget.product!.sellingPrice.toString().length -
-                1,
-          );
+      widget.costController.text =
+          widget.product!.costPrice.toString().split(
+            '.',
+          )[0];
+      widget.sellingController.text =
+          widget.product!.sellingPrice.toString().split(
+            '.',
+          )[0];
       widget.quantityController.text =
           widget.product!.quantity.toString();
 
