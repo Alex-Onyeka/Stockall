@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:stockall/local_database/local_user/local_user_database.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/enter_new_password.dart';
@@ -37,7 +38,7 @@ void main() async {
       statusBarBrightness: Brightness.light, // for iOS
     ),
   );
-
+  cleanUpUrl('link');
   // Lock to portrait only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
