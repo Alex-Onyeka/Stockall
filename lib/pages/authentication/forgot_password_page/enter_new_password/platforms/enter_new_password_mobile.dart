@@ -273,7 +273,7 @@ class _EnterNewPasswordMobileState
                                   'Are you sure you want to proceed?',
                               title: 'Proceed?',
                               action: () async {
-                                Navigator.of(context).pop();
+                                // Navigator.of(context).pop();
 
                                 setState(() {
                                   isLoading = true;
