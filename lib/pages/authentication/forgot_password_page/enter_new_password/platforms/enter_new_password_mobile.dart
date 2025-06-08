@@ -168,7 +168,7 @@ class _EnterNewPasswordMobileState
                                   showSuccess = true;
                                 });
 
-                                cleanUpUrl('');
+                                cleanUpUrl();
 
                                 if (safeContex.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(

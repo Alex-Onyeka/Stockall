@@ -31199,7 +31199,7 @@ var $async$Sh=A.u(function(a,b){if(a===1)return A.v(b,r)
 while(true)switch(s){case 0:if($.ag==null)A.aFL()
 $.ag.toString
 A.bdN(new A.lg(null,null,null,!0,B.l,B.aS,B.aM,null))
-A.bob("link")
+A.bob()
 s=2
 return A.q(A.aDk(A.a([B.PV,B.PW],t.UW)),$async$Sh)
 case 2:$.bbm().a7i(new A.Mw(),t.uw)
@@ -37799,8 +37799,8 @@ break
 case 6:case 1:return A.w(q,r)
 case 2:return A.v(o.at(-1),r)}})
 return A.x($async$yX,r)},
-bob(a){var s=self,r=s.window.location.pathname
-s.window.history.replaceState(null,"",r)},
+bob(){var s=self,r=s.window.location.origin,q=s.window.location.pathname
+s.window.history.replaceState(null,"",r+q)},
 bfd(a){var s=0,r=A.y(t.y),q
 var $async$bfd=A.u(function(b,c){if(b===1)return A.v(c,r)
 while(true)switch(s){case 0:q=$.afc().getItem(a)!=null
@@ -112767,7 +112767,7 @@ o=q.b
 s=2
 return A.q(new A.hL(p,$.ae()).rd(o,n.a.c.a.a),$async$$0)
 case 2:n.G(new A.aRc(n))
-A.bob("")
+A.bob()
 if(o.e!=null)A.bk_(q.c,"/",new A.aRd(),t.X)
 n.G(new A.aRe(n))
 return A.w(null,r)}})

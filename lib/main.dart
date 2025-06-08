@@ -38,7 +38,7 @@ void main() async {
       statusBarBrightness: Brightness.light, // for iOS
     ),
   );
-  cleanUpUrl('link');
+  cleanUpUrl();
   // Lock to portrait only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
