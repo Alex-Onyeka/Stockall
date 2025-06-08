@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
 // import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/providers/timer_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class VerifyPhoneMobile extends StatefulWidget {
   final ThemeProvider theme;
@@ -22,14 +24,58 @@ class VerifyPhoneMobile extends StatefulWidget {
 
 class _VerifyPhoneMobileState
     extends State<VerifyPhoneMobile> {
+  int time = 180;
+  Timer? _timer;
+
+  void startCountDownTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (
+      timer,
+    ) async {
+      if (time > 0) {
+        setState(() {
+          time--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {});
+        await Future.delayed(Duration(seconds: 2));
+        await AuthService().signOut();
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AuthLanding();
+              },
+            ),
+          );
+        }
+      }
+    });
+  }
+
   String formatTime(int time) {
     if (time < 60) {
       return '${time.toString()} secs';
     } else if (time >= 60 && time < 120) {
       return '1:${time - 60} secs';
-    } else {
+    } else if (time >= 120 && time < 180) {
       return '2:${time - 120} secs';
+    } else {
+      return '3:${time - 180} secs';
     }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startCountDownTimer();
   }
 
   @override
@@ -158,12 +204,7 @@ class _VerifyPhoneMobileState
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color:
-                                context
-                                            .watch<
-                                              TimerProvider
-                                            >()
-                                            .time >
-                                        60
+                                time > 60
                                     ? Colors.grey.shade800
                                     : widget
                                         .theme
@@ -177,11 +218,7 @@ class _VerifyPhoneMobileState
                                     .h4
                                     .fontSize,
                           ),
-                          formatTime(
-                            context
-                                .watch<TimerProvider>()
-                                .time,
-                          ),
+                          formatTime(time),
                         ),
                       ],
                     ),

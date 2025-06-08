@@ -21,7 +21,6 @@ import 'package:stockall/providers/report_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/providers/timer_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -99,9 +98,6 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => ReportProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => TimerProvider(),
         ),
       ],
       child: MyApp(),

@@ -34,7 +34,7 @@ class _EnterNewPasswordMobileState
   bool showSuccess = false;
   bool isExpired = false;
 
-  int time = 180;
+  int time = 120;
   Timer? _timer;
 
   void startCountDownTimer() {
