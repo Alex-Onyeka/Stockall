@@ -81,41 +81,34 @@ class _EnterNewPasswordMobileState
                     ],
                   ),
                   SizedBox(height: 20),
-                  InkWell(
-                    onTap: () {
-                      context
-                          .read<TimerProvider>()
-                          .startCountDownTimer(context);
-                    },
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      spacing: 5,
-                      children: [
-                        Text('Token Valid Time'),
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color:
-                                context
-                                            .watch<
-                                              TimerProvider
-                                            >()
-                                            .time <
-                                        60
-                                    ? theme
-                                        .lightModeColor
-                                        .errorColor200
-                                    : null,
-                          ),
-                          formatTime(
-                            context
-                                .watch<TimerProvider>()
-                                .time,
-                          ),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    spacing: 5,
+                    children: [
+                      Text('Token Valid Time'),
+                      Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color:
+                              context
+                                          .watch<
+                                            TimerProvider
+                                          >()
+                                          .time <
+                                      60
+                                  ? theme
+                                      .lightModeColor
+                                      .errorColor200
+                                  : null,
                         ),
-                      ],
-                    ),
+                        formatTime(
+                          context
+                              .watch<TimerProvider>()
+                              .time,
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 20),
                   MainButtonP(
