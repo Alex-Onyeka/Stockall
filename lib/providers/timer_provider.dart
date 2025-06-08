@@ -5,7 +5,7 @@ import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class TimerProvider extends ChangeNotifier {
-  int time = 180;
+  int time = 240;
   Timer? _timer;
   // bool isExpired = false;
   void cancelTimer() {
@@ -13,7 +13,7 @@ class TimerProvider extends ChangeNotifier {
   }
 
   void startCountDownTimer(BuildContext context) {
-    time = 180;
+    time = 240;
     notifyListeners();
     _timer = Timer.periodic(Duration(seconds: 1), (
       timer,

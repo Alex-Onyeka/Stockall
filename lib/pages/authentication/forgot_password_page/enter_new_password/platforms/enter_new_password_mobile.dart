@@ -1,4 +1,4 @@
-import 'package:provider/provider.dart';
+import 'dart:async';
 import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -7,8 +7,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/providers/timer_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EnterNewPasswordMobile extends StatefulWidget {
@@ -32,15 +32,62 @@ class _EnterNewPasswordMobileState
     extends State<EnterNewPasswordMobile> {
   bool isLoading = false;
   bool showSuccess = false;
+  bool isExpired = false;
+
+  int time = 180;
+  Timer? _timer;
+
+  void startCountDownTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (
+      timer,
+    ) async {
+      if (time > 0) {
+        setState(() {
+          time--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          isExpired = true;
+        });
+        await Future.delayed(Duration(seconds: 2));
+        await AuthService().signOut();
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AuthLanding();
+              },
+            ),
+          );
+        }
+      }
+    });
+  }
 
   String formatTime(int time) {
     if (time < 60) {
       return '${time.toString()} secs';
     } else if (time >= 60 && time < 120) {
       return '1:${time - 60} secs';
-    } else {
+    } else if (time >= 120 && time < 180) {
       return '2:${time - 120} secs';
+    } else {
+      return '3:${time - 180} secs';
     }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startCountDownTimer();
   }
 
   @override
@@ -86,27 +133,18 @@ class _EnterNewPasswordMobileState
                         MainAxisAlignment.center,
                     spacing: 5,
                     children: [
-                      Text('Token Valid Time'),
+                      Text('Remaining Token Valid Time'),
                       Text(
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color:
-                              context
-                                          .watch<
-                                            TimerProvider
-                                          >()
-                                          .time <
-                                      60
+                              time < 60
                                   ? theme
                                       .lightModeColor
                                       .errorColor200
                                   : null,
                         ),
-                        formatTime(
-                          context
-                              .watch<TimerProvider>()
-                              .time,
-                        ),
+                        formatTime(time),
                       ),
                     ],
                   ),
@@ -263,7 +301,7 @@ class _EnterNewPasswordMobileState
           ),
         ),
         Visibility(
-          visible: context.watch<TimerProvider>().time <= 0,
+          visible: isExpired,
           child: Scaffold(
             backgroundColor: Colors.white,
             body: Center(
