@@ -133,7 +133,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> changePasswordAndUpdateLocal({
+  Future<String> changePasswordAndUpdateLocal({
     required String newPassword,
     required BuildContext context,
   }) async {
@@ -178,6 +178,7 @@ class AuthService extends ChangeNotifier {
           context,
           listen: false,
         ).insertUser(tempUser);
+        return 'Success';
       } else {
         print(
           "⚠️ Context no longer mounted, skipping local insert",
@@ -187,9 +188,13 @@ class AuthService extends ChangeNotifier {
       print(
         "✅ Password updated in 'users' table: $updateResponse",
       );
+      return 'Success';
+    } on AuthException catch (e) {
+      print('Error Changing Password: $e');
+      return e.statusCode!;
     } catch (e) {
-      print("❌ Error changing password: $e");
-      rethrow;
+      print(e);
+      return e.toString();
     }
   }
 

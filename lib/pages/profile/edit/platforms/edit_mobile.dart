@@ -325,11 +325,12 @@ class _EditMobileState extends State<EditMobile> {
                             },
                           );
                         } else {
-                          final safeContex = context;
+                          final BuildContext rootContext =
+                              context; // Save outer context
 
                           showDialog(
-                            context: safeContex,
-                            builder: (context) {
+                            context: rootContext,
+                            builder: (dialogContext) {
                               return ConfirmationAlert(
                                 theme: theme,
                                 message:
@@ -339,32 +340,58 @@ class _EditMobileState extends State<EditMobile> {
                                   setState(() {
                                     isLoading = true;
                                   });
+
+                                  // Close the confirmation dialog
                                   Navigator.of(
-                                    safeContex,
+                                    dialogContext,
                                   ).pop();
 
-                                  await AuthService()
+                                  // Try to change password
+                                  var res = await AuthService()
                                       .changePasswordAndUpdateLocal(
                                         newPassword:
                                             widget
                                                 .passwordController
                                                 .text,
-                                        context: context,
+                                        context:
+                                            rootContext,
                                       );
+
+                                  // 💡 Handle "new password = old password" (422 error)
+                                  if (res == '422' &&
+                                      rootContext.mounted) {
+                                    await showDialog(
+                                      context: rootContext,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'New password cannot be the same as the old password.',
+                                          title:
+                                              'Password Not Changed',
+                                        );
+                                      },
+                                    );
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    return;
+                                  }
 
                                   setState(() {
                                     isLoading = false;
                                     showSuccess = true;
                                   });
 
+                                  // Wait 2 seconds then pop the parent page
                                   Future.delayed(
                                     Duration(seconds: 2),
                                     () {
-                                      if (safeContex
+                                      if (rootContext
                                           .mounted) {
                                         Navigator.of(
-                                          safeContex,
-                                        ).pop();
+                                          rootContext,
+                                        ).pop(); // close the whole screen/page
                                       }
                                     },
                                   );
