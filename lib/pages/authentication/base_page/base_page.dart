@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BasePage extends StatelessWidget {
@@ -23,13 +24,17 @@ class BasePage extends StatelessWidget {
           // return CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Scaffold(
-            body: EmptyWidgetDisplayOnly(
+            body: EmptyWidgetDisplay(
               title: 'An Error Occured',
               subText:
                   'An error occured while loading your data. Please check your internet and try again',
               theme: returnTheme(context),
               height: 35,
               icon: Icons.clear,
+              buttonText: 'Log Out',
+              action: () {
+                AuthService().signOut();
+              },
             ),
           );
         }

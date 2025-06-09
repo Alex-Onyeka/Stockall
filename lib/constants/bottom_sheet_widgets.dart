@@ -1961,7 +1961,7 @@ class _CustomBottomPanelState
                                         return InfoAlert(
                                           theme: theme,
                                           message:
-                                              'Product Quantity is Zero, there this product cannot be sold',
+                                              'Product Quantity is Zero, Therefore, this product cannot be sold',
                                           title:
                                               'Product Out of Stock',
                                         );
@@ -2085,7 +2085,7 @@ class _CustomBottomPanelState
                                         return InfoAlert(
                                           theme: theme,
                                           message:
-                                              'Product Quantity is Zero, there this product cannot be sold',
+                                              'Product Quantity is Zero, Therefore, this product cannot be sold',
                                           title:
                                               'Product out of Stock',
                                         );

@@ -4,7 +4,6 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_page.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class ShopBannerScreen extends StatelessWidget {
   const ShopBannerScreen({super.key});
@@ -22,15 +21,7 @@ class ShopBannerScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: () {
-                  AuthService().signOut();
-                },
-                child: LottieBuilder.asset(
-                  shopSetup,
-                  height: 140,
-                ),
-              ),
+              LottieBuilder.asset(shopSetup, height: 140),
               SizedBox(height: 15),
               Text(
                 textAlign: TextAlign.center,

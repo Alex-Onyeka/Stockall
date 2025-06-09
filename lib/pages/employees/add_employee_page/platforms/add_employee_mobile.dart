@@ -199,9 +199,16 @@ class _AddEmployeeMobileState
                                       children: [
                                         GeneralTextField(
                                           isEnabled:
-                                              widget
-                                                  .employee ==
-                                              null,
+                                              widget.employee ==
+                                                  null ||
+                                              (widget.employee !=
+                                                      null &&
+                                                  returnLocalDatabase(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).currentEmployee!.role ==
+                                                      'Owner'),
                                           title: 'Name',
                                           hint:
                                               'Enter employees\' Name',
@@ -216,9 +223,16 @@ class _AddEmployeeMobileState
                                         ),
                                         EmailTextField(
                                           isEnabled:
-                                              widget
-                                                  .employee ==
-                                              null,
+                                              widget.employee ==
+                                                  null ||
+                                              (widget.employee !=
+                                                      null &&
+                                                  returnLocalDatabase(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).currentEmployee!.role ==
+                                                      'Owner'),
                                           title: 'Email',
                                           hint:
                                               'Enter employees\' Email',
@@ -279,9 +293,16 @@ class _AddEmployeeMobileState
                                         ),
                                         PhoneNumberTextField(
                                           isEnabled:
-                                              widget
-                                                  .employee ==
-                                              null,
+                                              widget.employee ==
+                                                  null ||
+                                              (widget.employee !=
+                                                      null &&
+                                                  returnLocalDatabase(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).currentEmployee!.role ==
+                                                      'Owner'),
                                           controller:
                                               widget
                                                   .phoneController,
