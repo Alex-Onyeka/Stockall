@@ -3,7 +3,8 @@ import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final int? shopId;
+  const Dashboard({super.key, required this.shopId});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -38,7 +39,7 @@ class _DashboardState extends State<Dashboard> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
-            return DashboardMobile();
+            return DashboardMobile(shopId: widget.shopId);
           } else if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {
             return UnsupportedPlatform();

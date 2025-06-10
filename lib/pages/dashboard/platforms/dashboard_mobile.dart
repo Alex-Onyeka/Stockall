@@ -30,7 +30,8 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardMobile extends StatefulWidget {
-  const DashboardMobile({super.key});
+  final int? shopId;
+  const DashboardMobile({super.key, required this.shopId});
 
   @override
   State<DashboardMobile> createState() =>
@@ -62,12 +63,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempReceipts = returnReceiptProvider(
       context,
       listen: false,
-    ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+    ).loadReceipts(widget.shopId!);
 
     return tempReceipts;
   }
@@ -101,12 +97,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempP = await returnData(
       context,
       listen: false,
-    ).getProducts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+    ).getProducts(widget.shopId!);
     return tempP;
   }
 
@@ -128,12 +119,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempGet = await returnNotificationProvider(
       context,
       listen: false,
-    ).fetchRecentNotifications(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+    ).fetchRecentNotifications(widget.shopId!);
 
     return tempGet;
   }
@@ -145,12 +131,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempRecords = await returnReceiptProvider(
       context,
       listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+    ).loadProductSalesRecord(widget.shopId!);
 
     return tempRecords
         .where(
@@ -170,15 +151,19 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempExp = returnExpensesProvider(
       context,
       listen: false,
-    ).getExpenses(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+    ).getExpenses(widget.shopId!);
 
     return tempExp;
   }
+
+  // late Future<TempShopClass?> shopFuture;
+  // Future<TempShopClass?> getUserShop() async {
+  //   var shop = await returnShopProvider(
+  //     context,
+  //     listen: false,
+  //   ).getUserShop(AuthService().currentUser!.id);
+  //   return shop;
+  // }
 
   TextEditingController emailController =
       TextEditingController();
@@ -193,30 +178,31 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProdutRecordsFuture = getProductSalesRecord();
     expensesFuture = getExpenses();
     productsFuture = getProducts();
+    // shopFuture = getUserShop();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      clearDate();
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   clearDate();
 
-      final provider = returnShopProvider(
-        context,
-        listen: false,
-      );
+    //   final provider = returnShopProvider(
+    //     context,
+    //     listen: false,
+    //   );
 
-      if (provider.userShop != null) {
-        shop = provider.userShop!;
-      } else {
-        final fetchedShop = await provider.getUserShop(
-          AuthService().currentUser!.id,
-        );
-        if (fetchedShop != null) {
-          shop = fetchedShop;
-        }
-      }
+    //   // if (provider.userShop != null) {
+    //   //   shop = provider.userShop!;
+    //   // } else {
+    //   final fetchedShop = await provider.getUserShop(
+    //     AuthService().currentUser!.id,
+    //   );
+    //   if (fetchedShop != null) {
+    //     shop = fetchedShop;
+    //   }
+    //   // }
 
-      // Call this only when shop is guaranteed non-null
+    //   // Call this only when shop is guaranteed non-null
 
-      setState(() {});
-    });
+    //   setState(() {});
+    // });
   }
 
   @override

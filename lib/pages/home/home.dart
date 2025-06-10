@@ -20,7 +20,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late Future<TempShopClass?> shopFuture;
   bool _navigated = false;
   bool _providersInitialized = false;
 
@@ -31,6 +30,7 @@ class _HomeState extends State<Home> {
     localUserFuture = getUserEmp();
   }
 
+  late Future<TempUserClass?> localUserFuture;
   Future<TempUserClass?> getUserEmp() async {
     var emp =
         await returnLocalDatabase(
@@ -40,8 +40,7 @@ class _HomeState extends State<Home> {
     return emp;
   }
 
-  late Future<TempUserClass?> localUserFuture;
-
+  late Future<TempShopClass?> shopFuture;
   Future<TempShopClass?> getUserShop() async {
     var shop = await returnShopProvider(
       context,
@@ -188,13 +187,17 @@ class _HomeState extends State<Home> {
               // Show the actual content
               switch (navProv.currentPage) {
                 case 0:
-                  return const Dashboard();
+                  return Dashboard(
+                    shopId: shopSnapshot.data!.shopId!,
+                  );
                 case 1:
                   return const ProductsPage();
                 case 2:
                   return const SalesPage();
                 default:
-                  return const Dashboard();
+                  return Dashboard(
+                    shopId: shopSnapshot.data!.shopId!,
+                  );
               }
             },
           );
