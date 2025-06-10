@@ -180,29 +180,23 @@ class _DashboardMobileState extends State<DashboardMobile> {
     productsFuture = getProducts();
     // shopFuture = getUserShop();
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   clearDate();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      clearDate();
 
-    //   final provider = returnShopProvider(
-    //     context,
-    //     listen: false,
-    //   );
+      final provider = returnUserProvider(
+        context,
+        listen: false,
+      );
 
-    //   // if (provider.userShop != null) {
-    //   //   shop = provider.userShop!;
-    //   // } else {
-    //   final fetchedShop = await provider.getUserShop(
-    //     AuthService().currentUser!.id,
-    //   );
-    //   if (fetchedShop != null) {
-    //     shop = fetchedShop;
-    //   }
-    //   // }
+      // final localProvider = returnLocalDatabase(
+      //   context,
+      //   listen: false,
+      // );
 
-    //   // Call this only when shop is guaranteed non-null
+      await provider.fetchCurrentUser(context);
 
-    //   setState(() {});
-    // });
+      setState(() {});
+    });
   }
 
   @override
@@ -797,7 +791,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   context,
                                                                   listen:
                                                                       false,
-                                                                ).currentEmployee!.role ==
+                                                                ).currentEmployee?.role ==
                                                                 'Owner',
                                                             child: ButtonTab(
                                                               theme:
@@ -837,7 +831,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   context,
                                                                   listen:
                                                                       false,
-                                                                ).currentEmployee!.role ==
+                                                                ).currentEmployee?.role ==
                                                                 'Owner',
                                                             child: SizedBox(
                                                               width:

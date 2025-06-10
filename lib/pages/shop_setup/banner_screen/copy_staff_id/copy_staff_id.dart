@@ -38,11 +38,10 @@ class _CopyStaffIdState extends State<CopyStaffId> {
 
   late Future<TempUserClass> userFuture;
   Future<TempUserClass> getUser() async {
-    var tempUser =
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchCurrentUser();
+    var tempUser = await returnUserProvider(
+      context,
+      listen: false,
+    ).fetchCurrentUser(context);
 
     return tempUser!;
   }

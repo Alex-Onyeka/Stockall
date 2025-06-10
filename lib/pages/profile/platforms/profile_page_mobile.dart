@@ -19,11 +19,10 @@ class _ProfilePageMobileState
     extends State<ProfilePageMobile> {
   late Future<TempUserClass> userFuture;
   Future<TempUserClass> getUser() async {
-    var user =
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchCurrentUser();
+    var user = await returnUserProvider(
+      context,
+      listen: false,
+    ).fetchCurrentUser(context);
 
     return user!;
   }

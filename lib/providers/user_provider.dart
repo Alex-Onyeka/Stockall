@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -48,7 +49,9 @@ class UserProvider extends ChangeNotifier {
   TempUserClass? _currentUser;
   TempUserClass? get currentUserMain => _currentUser;
 
-  Future<TempUserClass?> fetchCurrentUser() async {
+  Future<TempUserClass?> fetchCurrentUser(
+    BuildContext context,
+  ) async {
     final authUser = _supabase.auth.currentUser;
 
     if (authUser == null) {
@@ -64,6 +67,13 @@ class UserProvider extends ChangeNotifier {
             .single();
 
     _currentUser = TempUserClass.fromJson(data);
+
+    if (context.mounted) {
+      await returnLocalDatabase(
+        context,
+        listen: false,
+      ).insertUser(_currentUser!);
+    }
     notifyListeners();
     return _currentUser;
   }
@@ -135,13 +145,18 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addUser(TempUserClass user) async {
+  Future<void> addUser(
+    TempUserClass user,
+    BuildContext context,
+  ) async {
     try {
       await _supabase
           .from('users')
           .insert(user.toJson(includeUserId: true));
       await fetchUsers();
-      await fetchCurrentUser();
+      if (context.mounted) {
+        await fetchCurrentUser(context);
+      }
     } catch (e, st) {
       debugPrint('Error adding main user: $e\n$st');
     }
