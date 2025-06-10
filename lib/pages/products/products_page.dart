@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/platforms/product_page_mobile.dart';
+import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -15,19 +17,32 @@ class _ProductsPageState extends State<ProductsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final provider = returnUserProvider(
+      final userShop = await returnShopProvider(
         context,
         listen: false,
-      );
+      ).getUserShop(AuthService().currentUser!.id);
+      if (context.mounted && userShop == null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ShopBannerScreen(),
+          ),
+          (route) => false,
+        );
+      } else {
+        if (context.mounted) {
+          final provider = returnUserProvider(
+            context,
+            listen: false,
+          );
 
-      // final localProvider = returnLocalDatabase(
-      //   context,
-      //   listen: false,
-      // );
+          await provider.fetchCurrentUser(context);
+        }
+      }
 
-      await provider.fetchCurrentUser(context);
-
-      setState(() {});
+      setState(() {
+        // stillLoading = false;
+      });
     });
   }
 

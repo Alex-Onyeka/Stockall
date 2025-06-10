@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
+import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class Dashboard extends StatefulWidget {
   final int? shopId;
@@ -43,26 +45,45 @@ class _DashboardState extends State<Dashboard> {
     returnData(context, listen: false).clearFields();
   }
 
+  bool stillLoading = true;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      clearDate();
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((
+        _,
+      ) async {
+        final userShop = await returnShopProvider(
+          context,
+          listen: false,
+        ).getUserShop(AuthService().currentUser!.id);
+        if (context.mounted && userShop == null) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ShopBannerScreen(),
+            ),
+            (route) => false,
+          );
+        } else {
+          clearDate();
 
-      final provider = returnUserProvider(
-        context,
-        listen: false,
-      );
+          if (context.mounted) {
+            final provider = returnUserProvider(
+              context,
+              listen: false,
+            );
 
-      // final localProvider = returnLocalDatabase(
-      //   context,
-      //   listen: false,
-      // );
+            await provider.fetchCurrentUser(context);
+          }
+        }
 
-      await provider.fetchCurrentUser(context);
-
-      setState(() {});
-    });
+        // setState(() {
+        //   stillLoading = false;
+        // });
+      });
+    }
   }
 
   @override
@@ -71,7 +92,10 @@ class _DashboardState extends State<Dashboard> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
-            return DashboardMobile(shopId: widget.shopId);
+            return DashboardMobile(
+              shopId: widget.shopId,
+              stillLoading: stillLoading,
+            );
           } else if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {
             return UnsupportedPlatform();
