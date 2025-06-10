@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
@@ -31,13 +32,6 @@ class LoginMobile extends StatefulWidget {
 }
 
 class _LoginMobileState extends State<LoginMobile> {
-  bool isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-    );
-    return emailRegex.hasMatch(email);
-  }
-
   bool issLoading = false;
   bool showwSuccess = false;
 

@@ -6,6 +6,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/pages/authentication/components/check_agree.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -46,13 +47,6 @@ bool showSuccess = false;
 bool isLoading = false;
 
 class _SignupMobileState extends State<SignupMobile> {
-  bool isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-    );
-    return emailRegex.hasMatch(email);
-  }
-
   void checkInputs() async {
     if (widget.emailController.text.isEmpty ||
         widget.passwordController.text.isEmpty ||

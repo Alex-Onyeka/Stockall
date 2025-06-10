@@ -732,6 +732,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         .maxWidth >
                                                     320) {
                                                   return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
                                                     spacing:
                                                         15,
                                                     children: [
@@ -798,39 +800,63 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         ],
                                                       ),
                                                       Row(
-                                                        spacing:
-                                                            15,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.start,
+                                                        // spacing:
+                                                        //     15,
                                                         children: [
-                                                          ButtonTab(
-                                                            theme:
-                                                                theme,
-                                                            icon:
-                                                                employeesIconSvg,
-                                                            title:
-                                                                'Employees',
-                                                            action: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    return EmployeeListPage(
-                                                                      empId:
-                                                                          localUser !=
-                                                                                  null
-                                                                              ? localUser.userId!
-                                                                              : '',
-                                                                      role:
-                                                                          localUser !=
-                                                                                  null
-                                                                              ? localUser.role
-                                                                              : '',
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              );
-                                                            },
+                                                          Visibility(
+                                                            visible:
+                                                                returnLocalDatabase(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).currentEmployee!.role ==
+                                                                'Owner',
+                                                            child: ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              icon:
+                                                                  employeesIconSvg,
+                                                              title:
+                                                                  'Employees',
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return EmployeeListPage(
+                                                                        empId:
+                                                                            localUser !=
+                                                                                    null
+                                                                                ? localUser.userId!
+                                                                                : '',
+                                                                        role:
+                                                                            localUser !=
+                                                                                    null
+                                                                                ? localUser.role
+                                                                                : '',
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible:
+                                                                returnLocalDatabase(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).currentEmployee!.role ==
+                                                                'Owner',
+                                                            child: SizedBox(
+                                                              width:
+                                                                  15,
+                                                            ),
                                                           ),
                                                           ButtonTab(
                                                             theme:
@@ -865,6 +891,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 },
                                                               );
                                                             },
+                                                          ),
+                                                          SizedBox(
+                                                            width:
+                                                                15,
                                                           ),
                                                           ButtonTab(
                                                             theme:
@@ -938,8 +968,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         ],
                                                       ),
                                                       Row(
-                                                        spacing:
-                                                            15,
                                                         children: [
                                                           ButtonTab(
                                                             theme:
@@ -961,43 +989,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                               );
                                                             },
                                                           ),
-                                                          ButtonTab(
-                                                            theme:
-                                                                theme,
-                                                            icon:
-                                                                employeesIconSvg,
-                                                            title:
-                                                                'Employees',
-                                                            action: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    return EmployeeListPage(
-                                                                      empId:
-                                                                          localUser !=
-                                                                                  null
-                                                                              ? localUser.userId!
-                                                                              : '',
-                                                                      role:
-                                                                          localUser !=
-                                                                                  null
-                                                                              ? localUser.role
-                                                                              : '',
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              );
-                                                            },
+                                                          SizedBox(
+                                                            width:
+                                                                15,
                                                           ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        spacing:
-                                                            15,
-                                                        children: [
                                                           ButtonTab(
                                                             theme:
                                                                 theme,
@@ -1031,6 +1026,63 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 },
                                                               );
                                                             },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Visibility(
+                                                            visible:
+                                                                returnLocalDatabase(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).currentEmployee!.role ==
+                                                                'Owner',
+                                                            child: ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              icon:
+                                                                  employeesIconSvg,
+                                                              title:
+                                                                  'Employees',
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return EmployeeListPage(
+                                                                        empId:
+                                                                            localUser !=
+                                                                                    null
+                                                                                ? localUser.userId!
+                                                                                : '',
+                                                                        role:
+                                                                            localUser !=
+                                                                                    null
+                                                                                ? localUser.role
+                                                                                : '',
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible:
+                                                                returnLocalDatabase(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).currentEmployee!.role ==
+                                                                'Owner',
+                                                            child: SizedBox(
+                                                              width:
+                                                                  15,
+                                                            ),
                                                           ),
                                                           ButtonTab(
                                                             theme:

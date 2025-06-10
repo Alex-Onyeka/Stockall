@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/shop_setup/banner_screen/copy_staff_id/copy_staff_id.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_page.dart';
 
 class ShopBannerScreen extends StatelessWidget {
@@ -42,8 +44,7 @@ class ShopBannerScreen extends StatelessWidget {
                 'Set Up Your Store To Start Selling',
               ),
               SizedBox(height: 30),
-              MainButtonTransparent(
-                constraints: BoxConstraints(),
+              MainButtonP(
                 themeProvider: theme,
                 action: () {
                   Navigator.push(
@@ -56,6 +57,37 @@ class ShopBannerScreen extends StatelessWidget {
                   );
                 },
                 text: 'Create Shop',
+              ),
+              SizedBox(height: 20),
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(),
+                'Or, don\'t you have a Store?',
+              ),
+              SizedBox(height: 10),
+              // Container(
+              //   padding: EdgeInsets.symmetric(vertical: 15),
+              //   child: Center(
+              //     child: Text(
+              //       style: TextStyle(),
+              //       'Sign Up as an Employee',
+              //     ),
+              //   ),
+              // ),
+              MainButtonTransparent(
+                themeProvider: theme,
+                constraints: BoxConstraints(),
+                text: 'Sign Up as a Staff',
+                action: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return CopyStaffId();
+                      },
+                    ),
+                  );
+                },
               ),
             ],
           ),

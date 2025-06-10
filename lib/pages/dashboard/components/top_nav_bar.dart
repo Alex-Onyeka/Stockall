@@ -5,8 +5,10 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class TopNavBar extends StatelessWidget {
   final List<TempNotification> notifications;
@@ -165,9 +167,7 @@ class TopNavBar extends StatelessWidget {
           Stack(
             children: [
               Visibility(
-                visible:
-                    role == 'Owner' ||
-                    role == "General Manager",
+                visible: role == 'Owner',
                 child: Stack(
                   alignment: Alignment(1.2, -1.8),
                   children: [
@@ -239,44 +239,64 @@ class TopNavBar extends StatelessWidget {
                 ),
               ),
               Visibility(
-                visible:
-                    role != 'Owner' &&
-                    role != "General Manager",
+                visible: role != 'Owner',
                 child: Stack(
                   alignment: Alignment(1.2, -1.8),
                   children: [
                     InkWell(
                       onTap: () {
+                        final localUser =
+                            returnLocalDatabase(
+                              context,
+                              listen: false,
+                            );
                         showDialog(
                           context: context,
-                          builder: (context) {
+                          builder: (dialogContext) {
                             return ConfirmationAlert(
                               theme: theme,
                               message:
                                   'You are about to Logout',
                               title: 'Are you Sure?',
                               action: () async {
-                                await returnLocalDatabase(
-                                  context,
-                                  listen: false,
-                                ).deleteUser();
+                                Navigator.of(
+                                  dialogContext,
+                                ).pop();
 
-                                if (context.mounted) {
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) =>
-                                              EmpAuth(),
-                                    ),
-                                    (route) =>
-                                        false, // removes all previous routes
-                                  );
-                                  returnNavProvider(
-                                    context,
-                                    listen: false,
-                                  ).navigate(0);
-                                }
+                                // if (context.mounted) {
+                                //   Navigator.pushAndRemoveUntil(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder:
+                                //           (context) =>
+                                //               EmpAuth(),
+                                //     ),
+                                //     (route) =>
+                                //         false, // removes all previous routes
+                                //   );
+                                //   returnNavProvider(
+                                //     context,
+                                //     listen: false,
+                                //   ).navigate(0);
+                                // }
+                                await AuthService()
+                                    .signOut();
+                                // await localUser
+                                //     .deleteUser();
+                                // if (context.mounted) {
+                                //   Navigator.pushReplacement(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (context) {
+                                //         return AuthScreensPage();
+                                //       },
+                                //     ),
+                                //   );
+                                //   returnNavProvider(
+                                //     context,
+                                //     listen: false,
+                                //   ).navigate(0);
+                                // }
                               },
                             );
                           },

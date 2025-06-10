@@ -24,8 +24,8 @@ class MainButtonTransparent extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
-            color: themeProvider.lightModeColor.prColor300,
-            width: 1.5,
+            color: themeProvider.lightModeColor.prColor200,
+            width: 1,
           ),
         ),
         child: InkWell(
@@ -50,7 +50,7 @@ class MainButtonTransparent extends StatelessWidget {
                             constraints,
                             context,
                           )
-                          .b1
+                          .b2
                           .fontSize,
                   fontWeight:
                       themeProvider
@@ -58,7 +58,7 @@ class MainButtonTransparent extends StatelessWidget {
                             constraints,
                             context,
                           )
-                          .b1
+                          .b2
                           .fontWeightRegular,
                 ),
                 text,

@@ -190,6 +190,9 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                 });
                 await shopProvider.createShop(
                   TempShopClass(
+                    employees: [
+                      AuthService().currentUser!.id,
+                    ],
                     createdAt: DateTime.now(),
                     userId: AuthService().currentUser!.id,
                     email: shopProvider.email!,

@@ -198,6 +198,26 @@ class UserProvider extends ChangeNotifier {
     return updatedUser;
   }
 
+  Future<void> updateEmployeeRole({
+    required String userId,
+    required String newRole,
+    required String authUserId,
+  }) async {
+    final supabase = Supabase.instance.client;
+
+    final response = await supabase
+        .from('users') // use your actual table name
+        .update({
+          'role': newRole,
+          'auth_user_id': authUserId,
+        })
+        .eq('user_id', userId);
+
+    if (response != null) {
+      throw Exception('Failed to update role: $response');
+    }
+  }
+
   Future<void> deleteUser(String userId) async {
     await _supabase
         .from('users')

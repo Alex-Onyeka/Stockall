@@ -12,26 +12,25 @@ class AddEmployeePage extends StatefulWidget {
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
-  TextEditingController nameController =
-      TextEditingController();
-  TextEditingController emailController =
-      TextEditingController();
-  TextEditingController passwordController =
-      TextEditingController();
-  TextEditingController newPasswordController =
-      TextEditingController();
-  TextEditingController phoneController =
-      TextEditingController();
+  // TextEditingController nameController =
+  //     TextEditingController();
+  // TextEditingController emailController =
+  //     TextEditingController();
+  // TextEditingController passwordController =
+  //     TextEditingController();
+  // TextEditingController newPasswordController =
+  //     TextEditingController();
+  TextEditingController idC = TextEditingController();
 
   @override
   void dispose() {
     super.dispose();
 
-    emailController.dispose();
-    nameController.dispose();
-    passwordController.dispose();
-    phoneController.dispose();
-    newPasswordController.dispose();
+    // emailController.dispose();
+    // nameController.dispose();
+    // passwordController.dispose();
+    // phoneController.dispose();
+    idC.dispose();
   }
 
   @override
@@ -44,11 +43,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return AddEmployeeMobile(
-              phoneController: phoneController,
-              newPasswordController: newPasswordController,
-              passwordController: passwordController,
-              nameController: nameController,
-              emailController: emailController,
+              idC: idC,
+              // newPasswordController: newPasswordController,
+              // passwordController: passwordController,
+              // nameController: nameController,
+              // emailController: emailController,
               employee: widget.employee,
             );
           } else if (constraints.maxWidth > 500 &&

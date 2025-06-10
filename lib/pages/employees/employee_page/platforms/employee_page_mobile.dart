@@ -133,6 +133,16 @@ class _EmployeePageMobileState
                                 deleteAction: () {
                                   final safeContext =
                                       context;
+                                  final userProvider =
+                                      returnUserProvider(
+                                        context,
+                                        listen: false,
+                                      );
+                                  final shopProvider =
+                                      returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      );
                                   showDialog(
                                     context: safeContext,
                                     builder: (context) {
@@ -154,13 +164,36 @@ class _EmployeePageMobileState
                                                 true;
                                           });
 
-                                          await returnUserProvider(
-                                            context,
-                                            listen: false,
-                                          ).deleteUser(
-                                            widget
-                                                .employeeId,
+                                          // await returnUserProvider(
+                                          //   context,
+                                          //   listen: false,
+                                          // ).deleteUser(
+                                          //   widget
+                                          //       .employeeId,
+                                          // );
+
+                                          await shopProvider.removeEmployeeFromShop(
+                                            employeeIdToRemove:
+                                                widget
+                                                    .employeeId,
+                                            shopId:
+                                                returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).userShop!.shopId!,
                                           );
+
+                                          await userProvider
+                                              .updateEmployeeRole(
+                                                authUserId:
+                                                    widget
+                                                        .employeeId,
+                                                newRole: '',
+                                                userId:
+                                                    widget
+                                                        .employeeId,
+                                              );
 
                                           setState(() {
                                             isLoading =
