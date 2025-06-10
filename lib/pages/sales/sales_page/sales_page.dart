@@ -3,8 +3,37 @@ import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/sales_page/platforms/sales_page_mobile.dart';
 
-class SalesPage extends StatelessWidget {
+class SalesPage extends StatefulWidget {
   const SalesPage({super.key});
+
+  @override
+  State<SalesPage> createState() => _SalesPageState();
+}
+
+class _SalesPageState extends State<SalesPage> {
+  void clearDate() {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceiptDate();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      clearDate();
+
+      final provider = returnUserProvider(
+        context,
+        listen: false,
+      );
+
+      await provider.fetchCurrentUser(context);
+
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
-import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/pages/products/products_page.dart';
 import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -21,7 +19,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _navigated = false;
-  bool _providersInitialized = false;
+  // bool _providersInitialized = false;
 
   @override
   void initState() {
@@ -212,7 +210,7 @@ class _HomeState extends State<Home> {
                 context,
                 listen: false,
               ).fetchCurrentUser(context);
-              _providersInitialized = true;
+              // _providersInitialized = true;
             }
           });
 

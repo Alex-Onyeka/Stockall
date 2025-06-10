@@ -12,6 +12,26 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final provider = returnUserProvider(
+        context,
+        listen: false,
+      );
+
+      // final localProvider = returnLocalDatabase(
+      //   context,
+      //   listen: false,
+      // );
+
+      await provider.fetchCurrentUser(context);
+
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return SafeArea(

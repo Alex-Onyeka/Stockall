@@ -103,15 +103,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
   late Future<List<TempMainReceipt>> mainReceiptFuture;
 
-  void clearDate() {
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).clearReceiptDate();
-
-    returnData(context, listen: false).clearFields();
-  }
-
   late Future<List<TempNotification>> notificationsFuture;
 
   Future<List<TempNotification>>
@@ -179,24 +170,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     expensesFuture = getExpenses();
     productsFuture = getProducts();
     // shopFuture = getUserShop();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      clearDate();
-
-      final provider = returnUserProvider(
-        context,
-        listen: false,
-      );
-
-      // final localProvider = returnLocalDatabase(
-      //   context,
-      //   listen: false,
-      // );
-
-      await provider.fetchCurrentUser(context);
-
-      setState(() {});
-    });
   }
 
   @override

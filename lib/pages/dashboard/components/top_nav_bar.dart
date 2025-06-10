@@ -5,8 +5,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
-import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -245,11 +243,11 @@ class TopNavBar extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        final localUser =
-                            returnLocalDatabase(
-                              context,
-                              listen: false,
-                            );
+                        // final localUser =
+                        //     returnLocalDatabase(
+                        //       context,
+                        //       listen: false,
+                        //     );
                         showDialog(
                           context: context,
                           builder: (dialogContext) {

@@ -31,6 +31,13 @@ class ShopProvider extends ChangeNotifier {
     return TempShopClass.fromJson(response);
   }
 
+  //   Stream<List<Map<String, dynamic>>> getUserShop(String userId) {
+  //   final response =  Supabase.instance.client
+  //       .from('shops')
+  //       .stream(primaryKey: ['shop_id'])
+  //       .order('created_at', ascending: false);
+  // }
+
   Future<void> updateShopContactDetails({
     required int shopId,
     required String name,

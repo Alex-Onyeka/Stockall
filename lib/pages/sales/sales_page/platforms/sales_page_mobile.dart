@@ -46,10 +46,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
   @override
   void initState() {
     super.initState();
-    // Defer clearDate until after first build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      clearDate();
-    });
 
     mainReceiptFuture = getMainReceipts();
     getProdutRecordsFuture = getProductSalesRecord();
@@ -101,13 +97,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
-
-  void clearDate() {
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).clearReceiptDate();
-  }
 
   @override
   void didChangeDependencies() {

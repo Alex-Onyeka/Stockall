@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/major/unsupported_platform.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
 
 class Dashboard extends StatefulWidget {
@@ -32,6 +33,37 @@ class _DashboardState extends State<Dashboard> {
   //     listen: false,
   //   ).turnOffLoader();
   // }
+
+  void clearDate() {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceiptDate();
+
+    returnData(context, listen: false).clearFields();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      clearDate();
+
+      final provider = returnUserProvider(
+        context,
+        listen: false,
+      );
+
+      // final localProvider = returnLocalDatabase(
+      //   context,
+      //   listen: false,
+      // );
+
+      await provider.fetchCurrentUser(context);
+
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
