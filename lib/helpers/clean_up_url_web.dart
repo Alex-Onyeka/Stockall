@@ -14,3 +14,7 @@ void cleanUpUrl() {
 // void cleanUpUrl() {
 //   web.window.history.replaceState(null, '', '/');
 // }
+
+void performRestart() {
+  web.window.location.reload();
+}

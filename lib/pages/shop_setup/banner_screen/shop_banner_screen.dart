@@ -3,8 +3,8 @@ import 'package:lottie/lottie.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/copy_staff_id/copy_staff_id.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_page.dart';
 
@@ -98,7 +98,7 @@ class ShopBannerScreen extends StatelessWidget {
                   //   listen: false,
                   // ).navigate(0);
                   // Navigator.popAndPushNamed(context, '/');
-                  MyApp.restartApp();
+                  performRestart();
                 },
                 child: Container(
                   decoration: BoxDecoration(

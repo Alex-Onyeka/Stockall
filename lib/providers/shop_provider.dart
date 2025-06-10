@@ -27,6 +27,8 @@ class ShopProvider extends ChangeNotifier {
     if (response == null) {
       return null;
     }
+    final shop = TempShopClass.fromJson(response);
+    setShop(shop);
 
     return TempShopClass.fromJson(response);
   }

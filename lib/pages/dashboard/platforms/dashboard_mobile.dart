@@ -381,7 +381,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                               }
                             },
                           ),
-
                           Expanded(
                             child: SingleChildScrollView(
                               child: SizedBox(
