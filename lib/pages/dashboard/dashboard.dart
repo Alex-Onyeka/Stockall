@@ -45,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
     returnData(context, listen: false).clearFields();
   }
 
-  bool stillLoading = true;
+  // bool stillLoading = true;
 
   @override
   void initState() {
@@ -94,7 +94,7 @@ class _DashboardState extends State<Dashboard> {
           if (constraints.maxWidth < 550) {
             return DashboardMobile(
               shopId: widget.shopId,
-              stillLoading: stillLoading,
+              // stillLoading: stillLoading,
             );
           } else if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {

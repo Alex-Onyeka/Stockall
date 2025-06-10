@@ -4,6 +4,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/copy_staff_id/copy_staff_id.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_page.dart';
 
@@ -88,6 +89,60 @@ class ShopBannerScreen extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+              SizedBox(height: 30),
+              InkWell(
+                onTap: () {
+                  returnNavProvider(
+                    context,
+                    listen: false,
+                  ).navigate(0);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Home();
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15,
+                  ),
+                  child: Center(
+                    child: Row(
+                      spacing: 5,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .secColor200,
+                          ),
+                          'Refresh Page to Verify',
+                        ),
+                        Icon(
+                          size: 22,
+                          color: Colors.grey,
+                          Icons.refresh_sharp,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
