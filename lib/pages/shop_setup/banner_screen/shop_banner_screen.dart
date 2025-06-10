@@ -97,14 +97,7 @@ class ShopBannerScreen extends StatelessWidget {
                     context,
                     listen: false,
                   ).navigate(0);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Home();
-                      },
-                    ),
-                  );
+                  Navigator.popAndPushNamed(context, '/');
                 },
                 child: Container(
                   decoration: BoxDecoration(
