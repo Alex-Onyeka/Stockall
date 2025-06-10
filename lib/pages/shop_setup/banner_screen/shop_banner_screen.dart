@@ -93,11 +93,12 @@ class ShopBannerScreen extends StatelessWidget {
               SizedBox(height: 30),
               InkWell(
                 onTap: () {
-                  returnNavProvider(
-                    context,
-                    listen: false,
-                  ).navigate(0);
-                  Navigator.popAndPushNamed(context, '/');
+                  // returnNavProvider(
+                  //   context,
+                  //   listen: false,
+                  // ).navigate(0);
+                  // Navigator.popAndPushNamed(context, '/');
+                  MyApp.restartApp();
                 },
                 child: Container(
                   decoration: BoxDecoration(

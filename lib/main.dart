@@ -306,12 +306,33 @@ Widget colorWidget(
   );
 }
 
-class MyApp extends StatelessWidget {
+final GlobalKey<MyAppState> appKey =
+    GlobalKey<MyAppState>();
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  static void restartApp() {
+    appKey.currentState?.restartApp();
+  }
+
+  @override
+  State<MyApp> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  Key _key = UniqueKey();
+
+  void restartApp() {
+    setState(() {
+      _key = UniqueKey(); // Forces full widget tree rebuild
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      key: _key,
       initialRoute: "/",
       routes: {
         '/': (context) => BasePage(),
@@ -324,15 +345,6 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            systemStatusBarContrastEnforced: true,
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 0,
-          toolbarHeight: 80,
-        ),
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Plus Jakarta Sans',
         primaryColor: const Color.fromRGBO(25, 43, 117, 1),
