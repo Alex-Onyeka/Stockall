@@ -306,9 +306,70 @@ Widget colorWidget(
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState
+    extends State<MyApp> /*with WidgetsBindingObserver*/ {
+  //   @override
+  //   void initState() {
+  //     super.initState();
+  //     WidgetsBinding.instance.addObserver(this);
+  //   }
+
+  //   @override
+  //   void dispose() {
+  //     WidgetsBinding.instance.removeObserver(this);
+  //     super.dispose();
+  //   }
+
+  //   @override
+  //   void didChangeAppLifecycleState(
+  //     AppLifecycleState state,
+  //   ) async {
+  //     final box = await Hive.openBox('authBox');
+
+  //     if (state == AppLifecycleState.paused) {
+  //       await box.put('wasClosed', true);
+  //     }
+  //   }
+
+  //   @override
+  //   Widget build(BuildContext context) {
+  //     return _EntryPoint();
+  //   }
+  // }
+
+  // class _EntryPoint extends StatefulWidget {
+  //   @override
+  //   State<_EntryPoint> createState() => _EntryPointState();
+  // }
+
+  // class _EntryPointState extends State<_EntryPoint> {
+  //   @override
+  //   void initState() {
+  //     super.initState();
+  //     Future.delayed(Duration.zero, () async {
+  //       final box = await Hive.openBox('authBox');
+  //       final wasClosed = box.get(
+  //         'wasClosed',
+  //         defaultValue: false,
+  //       );
+  //       if (wasClosed) {
+  //         await box.put('wasClosed', false);
+  //         if (context.mounted) {
+  //           Navigator.pushReplacement(
+  //             context,
+  //             MaterialPageRoute(builder: (_) => EmpAuth()),
+  //           );
+  //         }
+  //       }
+  //     });
+  //   }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
