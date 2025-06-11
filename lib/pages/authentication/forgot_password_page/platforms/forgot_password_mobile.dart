@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/helpers/clean_up_url_stub.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
@@ -9,9 +10,11 @@ import 'package:stockall/services/auth_service.dart';
 
 class ForgotPasswordMobile extends StatefulWidget {
   final TextEditingController emailController;
+  final bool? isMain;
   const ForgotPasswordMobile({
     super.key,
     required this.emailController,
+    this.isMain,
   });
 
   @override
@@ -36,6 +39,7 @@ class _ForgotPasswordMobileState
       children: [
         Scaffold(
           appBar: appBar(
+            isMain: widget.isMain,
             context: context,
             title: 'Forgot Password',
           ),
@@ -117,7 +121,20 @@ class _ForgotPasswordMobileState
                 SizedBox(height: 20),
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).pop();
+                    if (widget.isMain != null) {
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) {
+                      //       return Home();
+                      //     },
+                      //   ),
+                      // );
+                      performRestart();
+                      // Navigator.of(context).pop();
+                    } else {
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(

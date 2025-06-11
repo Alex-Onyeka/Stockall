@@ -65,18 +65,13 @@ class _CopyStaffIdState extends State<CopyStaffId> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              InkWell(
-                onTap: () {
-                  AuthService().signOut();
-                },
-                child: Text(
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.h3.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'Add yourself to a shop',
+              Text(
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.h3.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
+                'Add yourself to a shop',
               ),
               SizedBox(height: 15),
               Column(

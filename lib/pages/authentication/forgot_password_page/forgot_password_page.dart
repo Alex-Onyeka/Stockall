@@ -3,7 +3,8 @@ import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/platforms/forgot_password_mobile.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({super.key});
+  final bool? isMain;
+  const ForgotPasswordPage({super.key, this.isMain});
 
   @override
   State<ForgotPasswordPage> createState() =>
@@ -25,6 +26,7 @@ class _ForgotPasswordPageState
           if (constraints.maxWidth < 550) {
             return ForgotPasswordMobile(
               emailController: emailController,
+              isMain: widget.isMain,
             );
           } else if (constraints.maxWidth > 550 &&
               constraints.maxWidth < 1000) {

@@ -377,8 +377,8 @@ class _MyAppState
       routes: {
         '/': (context) => BasePage(),
         '/launch': (context) => LaunchScreen(),
-        '/forgot-password':
-            (context) => ForgotPasswordPage(),
+        // '/forgot-password':
+        //     (context) => ForgotPasswordPage(),
         '/login': (context) => LoginPage(),
         '/splash': (context) => SplashScreen(),
         '/reset-password': (context) => EnterNewPassword(),

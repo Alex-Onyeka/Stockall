@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/home/home.dart';
 
 PreferredSizeWidget appBar({
   required BuildContext context,
@@ -14,15 +15,15 @@ PreferredSizeWidget appBar({
     leading: IconButton(
       onPressed: () {
         if (isMain != null) {
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) {
-          //       return Home();
-          //     },
-          //   ),
-          // );
-          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return Home();
+              },
+            ),
+          );
+          // Navigator.of(context).pop();
         } else {
           Navigator.of(context).pop();
         }
