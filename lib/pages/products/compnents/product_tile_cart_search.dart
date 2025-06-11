@@ -229,7 +229,9 @@ class _ProductTileCartSearchState
                                               widget
                                                       .product
                                                       .quantity >
-                                                  10
+                                                  widget
+                                                      .product
+                                                      .lowQtty!
                                           ? Colors
                                               .grey
                                               .shade100
@@ -240,7 +242,9 @@ class _ProductTileCartSearchState
                                               widget
                                                       .product
                                                       .quantity <=
-                                                  10
+                                                  widget
+                                                      .product
+                                                      .lowQtty!
                                           ? const Color.fromARGB(
                                             255,
                                             255,
@@ -260,7 +264,9 @@ class _ProductTileCartSearchState
                                                 widget
                                                         .product
                                                         .quantity >
-                                                    10
+                                                    widget
+                                                        .product
+                                                        .lowQtty!
                                             ? Colors
                                                 .grey
                                                 .shade700
@@ -269,7 +275,9 @@ class _ProductTileCartSearchState
                                                 widget
                                                         .product
                                                         .quantity <=
-                                                    10
+                                                    widget
+                                                        .product
+                                                        .lowQtty!
                                             ? const Color.fromARGB(
                                               255,
                                               255,
@@ -303,14 +311,18 @@ class _ProductTileCartSearchState
                                           widget.product.quantity !=
                                                       0 &&
                                                   widget.product.quantity >
-                                                      10
+                                                      widget
+                                                          .product
+                                                          .lowQtty!
                                               ? Colors
                                                   .grey
                                                   .shade700
                                               : widget.product.quantity !=
                                                       0 &&
                                                   widget.product.quantity <=
-                                                      10
+                                                      widget
+                                                          .product
+                                                          .lowQtty!
                                               ? const Color.fromARGB(
                                                 255,
                                                 132,

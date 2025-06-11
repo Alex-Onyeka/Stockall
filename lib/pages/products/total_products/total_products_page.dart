@@ -134,10 +134,7 @@ class _TotalProductsPageState
                   theme: theme,
                   height: 30,
                   action: () {
-                    Navigator.popAndPushNamed(
-                      context,
-                      '/base',
-                    );
+                    Navigator.popAndPushNamed(context, '/');
                   },
                 ),
               );

@@ -20,6 +20,7 @@ class TempProductClass {
   bool setCustomPrice;
   String? departmentName;
   int? departmentId;
+  double? lowQtty;
 
   TempProductClass({
     this.id,
@@ -43,6 +44,7 @@ class TempProductClass {
     required this.setCustomPrice,
     this.departmentName,
     this.departmentId,
+    this.lowQtty,
   });
 
   factory TempProductClass.fromJson(
@@ -60,6 +62,7 @@ class TempProductClass {
       color: json['color'],
       sizeType: json['size_type'],
       size: json['size'],
+      lowQtty: (json['low_qtty'] as num).toDouble(),
       costPrice: (json['cost_price'] as num).toDouble(),
       sellingPrice:
           (json['selling_price'] as num).toDouble(),
@@ -108,6 +111,7 @@ class TempProductClass {
       'set_custom_price': setCustomPrice,
       'department_id': departmentId,
       'department_name': departmentName,
+      'low_qtty': lowQtty,
     };
   }
 }

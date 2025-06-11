@@ -18,7 +18,7 @@ class _AddProductState extends State<AddProduct> {
       TextEditingController();
   TextEditingController sellingController =
       TextEditingController();
-  TextEditingController sizeController =
+  TextEditingController lowQttyController =
       TextEditingController();
   TextEditingController quantityController =
       TextEditingController();
@@ -33,7 +33,7 @@ class _AddProductState extends State<AddProduct> {
     sellingController.dispose();
     discountController.dispose();
     quantityController.dispose();
-    sizeController.dispose();
+    lowQttyController.dispose();
   }
 
   @override
@@ -48,7 +48,7 @@ class _AddProductState extends State<AddProduct> {
             return AddProductMobile(
               product: widget.product,
               discountController: discountController,
-              sizeController: sizeController,
+              lowQttyController: lowQttyController,
               quantityController: quantityController,
               costController: costController,
               sellingController: sellingController,

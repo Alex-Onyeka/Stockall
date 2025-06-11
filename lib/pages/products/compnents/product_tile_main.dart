@@ -249,14 +249,18 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                           widget.product.quantity !=
                                                       0 &&
                                                   widget.product.quantity >
-                                                      10
+                                                      widget
+                                                          .product
+                                                          .lowQtty!
                                               ? Colors
                                                   .grey
                                                   .shade100
                                               : widget.product.quantity !=
                                                       0 &&
                                                   widget.product.quantity <=
-                                                      10
+                                                      widget
+                                                          .product
+                                                          .lowQtty!
                                               ? const Color.fromARGB(
                                                 255,
                                                 255,
@@ -274,14 +278,14 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                             widget.product.quantity !=
                                                         0 &&
                                                     widget.product.quantity >
-                                                        10
+                                                        widget.product.lowQtty!
                                                 ? Colors
                                                     .grey
                                                     .shade700
                                                 : widget.product.quantity !=
                                                         0 &&
                                                     widget.product.quantity <=
-                                                        10
+                                                        widget.product.lowQtty!
                                                 ? const Color.fromARGB(
                                                   255,
                                                   255,
@@ -316,14 +320,14 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               widget.product.quantity !=
                                                           0 &&
                                                       widget.product.quantity >
-                                                          10
+                                                          widget.product.lowQtty!
                                                   ? Colors
                                                       .grey
                                                       .shade700
                                                   : widget.product.quantity !=
                                                           0 &&
                                                       widget.product.quantity <=
-                                                          10
+                                                          widget.product.lowQtty!
                                                   ? const Color.fromARGB(
                                                     255,
                                                     132,

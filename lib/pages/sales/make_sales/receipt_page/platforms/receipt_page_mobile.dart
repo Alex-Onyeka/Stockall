@@ -930,7 +930,7 @@ class _ReceiptDetailsContainerState
                         if (Navigator.canPop(context)) {
                           Navigator.popUntil(
                             context,
-                            ModalRoute.withName('/base'),
+                            ModalRoute.withName('/'),
                           );
                         } else {
                           Navigator.pushReplacement(

@@ -337,10 +337,7 @@ class _ProductPageMobileState
                 theme: theme,
                 height: 30,
                 action: () {
-                  Navigator.popAndPushNamed(
-                    context,
-                    '/base',
-                  );
+                  Navigator.popAndPushNamed(context, '/');
                 },
               ),
             );

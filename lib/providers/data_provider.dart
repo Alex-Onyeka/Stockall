@@ -90,7 +90,7 @@ class DataProvider extends ChangeNotifier {
     final data = await getProducts(shopId);
 
     final tempData = data.where(
-      (product) => product.quantity < 10,
+      (product) => product.quantity < product.lowQtty!,
     );
 
     return tempData.toList();

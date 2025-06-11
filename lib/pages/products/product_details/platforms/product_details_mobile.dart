@@ -595,7 +595,7 @@ class _ProductDetailsMobileState
                                                           .theme,
                                                   backGround:
                                                       product.quantity >
-                                                              10
+                                                              product.lowQtty!
                                                           ? const Color.fromARGB(
                                                             18,
                                                             2,
@@ -610,7 +610,7 @@ class _ProductDetailsMobileState
                                                           ),
                                                   border:
                                                       product.quantity >
-                                                              10
+                                                              product.lowQtty!
                                                           ? const Color.fromARGB(
                                                             63,
                                                             2,
@@ -1271,16 +1271,24 @@ class _ProductDetailsMobileState
                                     BottomInfoSection(
                                       theme: widget.theme,
                                       mainText:
-                                          product
-                                                      .size!
-                                                      .isEmpty ||
-                                                  product.size ==
-                                                      null
-                                              ? 'Not Set'
-                                              : product
-                                                  .size!,
-                                      text: 'Size',
+                                          product.lowQtty!
+                                              .toString(),
+                                      text:
+                                          'Low Quantity Limit',
                                     ),
+                                    // BottomInfoSection(
+                                    //   theme: widget.theme,
+                                    //   mainText:
+                                    //       product
+                                    //                   .size!
+                                    //                   .isEmpty ||
+                                    //               product.size ==
+                                    //                   null
+                                    //           ? 'Not Set'
+                                    //           : product
+                                    //               .size!,
+                                    //   text: 'Size',
+                                    // ),
                                     BottomInfoSection(
                                       theme: widget.theme,
                                       mainText:

@@ -23,7 +23,7 @@ class AddProductMobile extends StatefulWidget {
   final TextEditingController costController;
   final TextEditingController sellingController;
   final TextEditingController nameController;
-  final TextEditingController sizeController;
+  final TextEditingController lowQttyController;
   final TextEditingController quantityController;
   final TextEditingController discountController;
 
@@ -32,7 +32,7 @@ class AddProductMobile extends StatefulWidget {
     required this.costController,
     required this.sellingController,
     required this.nameController,
-    required this.sizeController,
+    required this.lowQttyController,
     required this.quantityController,
     required this.discountController,
     this.product,
@@ -162,10 +162,16 @@ class _AddProductMobileState
                         .replaceAll(',', ''),
                   ),
                   barcode: barcode,
-                  size: widget.sizeController.text
-                      .replaceAll(',', ''),
+                  lowQtty:
+                      widget.lowQttyController.text.isEmpty
+                          ? 10
+                          : double.tryParse(
+                            widget.lowQttyController.text
+                                .replaceAll(',', ''),
+                          ),
                   discount: double.tryParse(
-                    widget.discountController.text,
+                    widget.discountController.text
+                        .replaceAll(',', ''),
                   ),
                   startDate:
                       dataProvider.startDate ??
@@ -262,7 +268,13 @@ class _AddProductMobileState
                   ),
                 ),
                 endDate: provider.endDate,
-                size: widget.sizeController.text,
+                lowQtty:
+                    widget.lowQttyController.text.isEmpty
+                        ? 10
+                        : double.tryParse(
+                          widget.lowQttyController.text
+                              .replaceAll(',', ''),
+                        ),
                 sizeType: provider.selectedSize,
                 startDate: provider.startDate,
               ),
@@ -312,6 +324,8 @@ class _AddProductMobileState
           widget.product!.barcode != null ? true : false;
 
       widget.nameController.text = widget.product!.name;
+      widget.lowQttyController.text =
+          widget.product!.lowQtty!.toString();
       widget.costController.text =
           widget.product!.costPrice.toString().split(
             '.',
@@ -323,8 +337,6 @@ class _AddProductMobileState
       widget.quantityController.text =
           widget.product!.quantity.toString();
 
-      widget.sizeController.text =
-          widget.product!.size.toString();
       widget.discountController.text =
           widget.product!.discount != null
               ? widget.product!.discount.toString()
@@ -678,13 +690,12 @@ class _AddProductMobileState
                                   Expanded(
                                     child: EditCartTextField(
                                       theme: theme,
-                                      hint:
-                                          'Enter Product Size',
+                                      hint: 'Enter Limit',
                                       title:
-                                          'Size  (Optional)',
+                                          'Low Quantity Limit',
                                       controller:
                                           widget
-                                              .sizeController,
+                                              .lowQttyController,
                                     ),
                                   ),
                                 ],
