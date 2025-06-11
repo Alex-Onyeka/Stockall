@@ -1849,7 +1849,10 @@ class _CustomBottomPanelState
                         context,
                         'Failed',
                       );
-                      widget.searchController.text = result;
+                      if (result != null) {
+                        widget.searchController.text =
+                            result;
+                      }
                       setState(() {
                         scanResult = result;
                         productResults.addAll(

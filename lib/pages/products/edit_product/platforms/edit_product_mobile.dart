@@ -206,7 +206,7 @@ class _EditProductMobileState
                       BarcodeScanner(
                         valueSet: barCodeSet,
                         onTap: () async {
-                          String info = await scanCode(
+                          String? info = await scanCode(
                             context,
                             'failed',
                           );

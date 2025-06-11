@@ -376,14 +376,18 @@ class _ProductPageMobileState
                               mainTitle: 'Products Summary',
                               firsRow: true,
                               scanAction: () async {
-                                String result =
+                                String? result =
                                     await scanCode(
                                       context,
                                       'Scan Failed',
                                     );
                                 setState(() {
-                                  searchController.text =
-                                      result;
+                                  if (result != null) {
+                                    searchController.text =
+                                        result;
+                                  } else {
+                                    return;
+                                  }
                                 });
                                 if (!context.mounted) {
                                   return;

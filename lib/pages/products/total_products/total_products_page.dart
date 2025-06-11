@@ -184,13 +184,17 @@ class _TotalProductsPageState
                           },
 
                           onPressedScan: () async {
-                            String result = await scanCode(
+                            String? result = await scanCode(
                               context,
                               'Scan Failed',
                             );
                             setState(() {
-                              searchController.text =
-                                  result;
+                              if (result != null) {
+                                searchController.text =
+                                    result;
+                              } else {
+                                return;
+                              }
                             });
                             if (!context.mounted) return;
                             setState(() {

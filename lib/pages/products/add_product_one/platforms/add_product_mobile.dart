@@ -499,7 +499,7 @@ class _AddProductMobileState
                               BarcodeScanner(
                                 valueSet: barCodeSet,
                                 onTap: () async {
-                                  String info =
+                                  String? info =
                                       await scanCode(
                                         context,
                                         'Not Saved',
