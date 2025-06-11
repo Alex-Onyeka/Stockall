@@ -103,7 +103,7 @@ Future<String> scanCode(
       //   ),
       // );
     }
-    print(e.toString());
+    print(e);
     return message;
   }
 }
