@@ -37,11 +37,12 @@ class _EmpAuthState extends State<EmpAuth> {
     String email,
     String authId,
   ) async {
+    print('Start 2');
     var tempUser = await returnUserProvider(
       context,
       listen: false,
     ).fetchUserByEmailAndAuthId(email, authId);
-
+    print('Finished Function');
     return tempUser;
   }
 
@@ -469,6 +470,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                       setState(() {
                                         isLoading = true;
                                       });
+                                      print('Starting');
                                       TempUserClass? user =
                                           await fetchUserFromDatabase(
                                             AuthService()
@@ -478,23 +480,34 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 .currentUser!
                                                 .id,
                                           );
-
+                                      print('Finished');
                                       setState(() {
                                         isLoading = false;
                                       });
+                                      print('Finished 2');
                                       if (user != null) {
+                                        print('Finished 3');
                                         if (user.password !=
                                             passwordController
                                                 .text
                                                 .trim()) {
+                                          print(
+                                            'Finished 4',
+                                          );
                                           if (context
                                               .mounted) {
+                                            print(
+                                              'Finished 5',
+                                            );
                                             showDialog(
                                               context:
                                                   context,
                                               builder: (
                                                 context,
                                               ) {
+                                                print(
+                                                  'Finished 6',
+                                                );
                                                 return InfoAlert(
                                                   theme:
                                                       theme,
@@ -518,6 +531,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                           );
                                           if (context
                                               .mounted) {
+                                            print(
+                                              'Finished 7',
+                                            );
                                             widget
                                                 .action!();
                                             // await returnLocalDatabase(
@@ -590,8 +606,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                                   isLoading =
                                                       true;
                                                 });
-                                                await AuthService()
-                                                    .signOut();
+                                                //
                                                 if (safeContext
                                                     .mounted) {
                                                   localDatabase
@@ -604,6 +619,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     ) =>
                                                         false,
                                                   );
+                                                  //await AuthService()
+                                                  //     .signOut();
                                                   returnNavProvider(
                                                     safeContext,
                                                     listen:

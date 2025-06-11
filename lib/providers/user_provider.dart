@@ -134,11 +134,13 @@ class UserProvider extends ChangeNotifier {
               .maybeSingle();
 
       if (data == null) {
+        print('User not found');
         return null;
       }
 
       var user = TempUserClass.fromJson(data);
       notifyListeners();
+      print('User found');
       return user;
     } catch (e) {
       return null;
