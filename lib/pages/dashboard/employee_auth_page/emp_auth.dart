@@ -618,7 +618,10 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       builder: (
                                                         context,
                                                       ) {
-                                                        return ForgotPasswordPage();
+                                                        return ForgotPasswordPage(
+                                                          isMain:
+                                                              true,
+                                                        );
                                                       },
                                                     ),
                                                   );
