@@ -103,7 +103,7 @@ Future<String> scanCode(
       //   ),
       // );
     }
-    // print(e);
+    print(e ?? 'This');
     return message;
   }
 }
