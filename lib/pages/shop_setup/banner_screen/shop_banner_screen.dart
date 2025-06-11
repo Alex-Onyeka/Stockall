@@ -36,21 +36,25 @@ class _ShopBannerScreenState
               child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 13,
+                  Opacity(
+                    opacity: 0,
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 13,
+                          ),
+                          child: Center(
+                            child: Text('Log Out'),
+                          ),
                         ),
-                        child: Center(
-                          child: Text('Log Out'),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   LottieBuilder.asset(
                     shopSetup,
@@ -182,13 +186,16 @@ class _ShopBannerScreenState
                         onTap: () {
                           showDialog(
                             context: context,
-                            builder: (context) {
+                            builder: (dialogContext) {
                               return ConfirmationAlert(
                                 theme: theme,
                                 message:
                                     'Are you sure you want to Log out?',
                                 title: 'Log Out',
                                 action: () async {
+                                  Navigator.of(
+                                    dialogContext,
+                                  ).pop();
                                   setState(() {
                                     isLoading = true;
                                   });
@@ -239,6 +246,7 @@ class _ShopBannerScreenState
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
