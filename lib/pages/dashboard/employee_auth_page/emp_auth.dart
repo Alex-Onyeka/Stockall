@@ -5,21 +5,29 @@ import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/pages/dashboard/components/button_tab.dart';
+import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
+import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
+import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
+// import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EmpAuth extends StatefulWidget {
-  const EmpAuth({super.key});
+  final Function()? action;
+  const EmpAuth({super.key, this.action});
 
   @override
   State<EmpAuth> createState() => _EmpAuthState();
 }
 
 class _EmpAuthState extends State<EmpAuth> {
-  TextEditingController emailController =
-      TextEditingController();
+  bool isKeyboardVisible(BuildContext context) {
+    return MediaQuery.of(context).viewInsets.bottom > 0;
+  }
+
   TextEditingController passwordController =
       TextEditingController();
   bool isLoading = false;
@@ -44,240 +52,249 @@ class _EmpAuthState extends State<EmpAuth> {
       children: [
         Scaffold(
           backgroundColor: Colors.white,
-          // bottomNavigationBar: MainBottomNav(
-          //   globalKey: GlobalKey(),
-          // ),
-          body: Container(
-            color: Colors.grey.shade100,
-            child: Column(children: [Row()]),
+          bottomNavigationBar: MainBottomNav(
+            globalKey: GlobalKey(),
           ),
-          // Column(
-          //   children: [
-          //     SizedBox(height: 20),
-          //     TopNavBar(
-          //       notifications: [],
-          //       title: 'Users Shop',
-          //       subText: 'shop@gmail.com',
-          //       theme: theme,
-          //       openSideBar: () {},
-          //       role: 'Cashier',
-          //     ),
-          //     Expanded(
-          //       child: Padding(
-          //         padding: const EdgeInsets.symmetric(
-          //           horizontal: 30.0,
-          //         ),
-          //         child: ListView(
-          //           children: [
-          //             DashboardTotalSalesBanner(
-          //               theme: theme,
-          //               value: 10000,
-          //             ),
-          //             SizedBox(height: 20),
-          //             Row(
-          //               mainAxisAlignment:
-          //                   MainAxisAlignment.center,
-          //               spacing: 20,
-          //               children: [
-          //                 Expanded(
-          //                   child: MainInfoTab(
-          //                     title: 'title',
-          //                     number: '20',
-          //                     icon: '',
-          //                     theme: theme,
-          //                   ),
-          //                 ),
-          //                 Expanded(
-          //                   child: MainInfoTab(
-          //                     title: 'title',
-          //                     number: '20',
-          //                     icon: '',
-          //                     theme: theme,
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //             SizedBox(height: 20),
-          //             Column(
-          //               children: [
-          //                 Row(
-          //                   children: [
-          //                     Text(
-          //                       style: TextStyle(
-          //                         fontSize:
-          //                             theme
-          //                                 .mobileTexts
-          //                                 .b1
-          //                                 .fontSize,
-          //                         fontWeight:
-          //                             theme
-          //                                 .mobileTexts
-          //                                 .b1
-          //                                 .fontWeightBold,
-          //                       ),
-          //                       'Quick Actions',
-          //                     ),
-          //                   ],
-          //                 ),
-          //                 SizedBox(height: 20),
-
-          //                 SizedBox(
-          //                   width: double.infinity,
-          //                   child: LayoutBuilder(
-          //                     builder: (
-          //                       context,
-          //                       constraints,
-          //                     ) {
-          //                       if (constraints.maxWidth >
-          //                           320) {
-          //                         return Column(
-          //                           spacing: 15,
-          //                           children: [
-          //                             Row(
-          //                               spacing: 15,
-          //                               children: [
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       productIconSvg,
-          //                                   title:
-          //                                       'Products',
-          //                                   action: () {},
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       salesIconSvg,
-          //                                   title: 'Sales',
-          //                                   action: () {
-          //                                     returnNavProvider(
-          //                                       context,
-          //                                       listen:
-          //                                           false,
-          //                                     ).navigate(2);
-          //                                   },
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       custBookIconSvg,
-          //                                   title:
-          //                                       'Customers',
-          //                                   action: () {},
-          //                                 ),
-          //                               ],
-          //                             ),
-          //                             Row(
-          //                               spacing: 15,
-          //                               children: [
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       employeesIconSvg,
-          //                                   title:
-          //                                       'Employees',
-          //                                   action: () {},
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       expensesIconSvg,
-          //                                   title:
-          //                                       'Expenses',
-          //                                   action:
-          //                                       () async {},
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       reportIconSvg,
-          //                                   title: 'Report',
-          //                                   action: () {},
-          //                                 ),
-          //                               ],
-          //                             ),
-          //                           ],
-          //                         );
-          //                       } else {
-          //                         return Column(
-          //                           spacing: 15,
-          //                           children: [
-          //                             Row(
-          //                               spacing: 15,
-          //                               children: [
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       productIconSvg,
-          //                                   title:
-          //                                       'Products',
-          //                                   action: () {},
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       salesIconSvg,
-          //                                   title: 'Sales',
-          //                                   action: () {},
-          //                                 ),
-          //                               ],
-          //                             ),
-          //                             Row(
-          //                               spacing: 15,
-          //                               children: [
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       custBookIconSvg,
-          //                                   title:
-          //                                       'Customers',
-          //                                   action: () {},
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       employeesIconSvg,
-          //                                   title:
-          //                                       'Employees',
-          //                                   action: () {},
-          //                                 ),
-          //                               ],
-          //                             ),
-          //                             Row(
-          //                               spacing: 15,
-          //                               children: [
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       expensesIconSvg,
-          //                                   title:
-          //                                       'Expenses',
-          //                                   action:
-          //                                       () async {},
-          //                                 ),
-          //                                 ButtonTab(
-          //                                   theme: theme,
-          //                                   icon:
-          //                                       reportIconSvg,
-          //                                   title: 'Report',
-          //                                   action: () {},
-          //                                 ),
-          //                               ],
-          //                             ),
-          //                           ],
-          //                         );
-          //                       }
-          //                     },
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ],
+          body:
+          // Container(
+          //   color: Colors.grey.shade100,
+          //   child: Column(children: [Row()]),
           // ),
+          Column(
+            children: [
+              SizedBox(height: 20),
+              TopNavBar(
+                notifications: [],
+                title: 'Users Shop',
+                subText: 'shop@gmail.com',
+                theme: theme,
+                openSideBar: () {},
+                role: 'Cashier',
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                  ),
+                  child: ListView(
+                    children: [
+                      DashboardTotalSalesBanner(
+                        theme: theme,
+                        value: 10000,
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        spacing: 20,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 130,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 130,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  fontWeight:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontWeightBold,
+                                ),
+                                'Quick Actions',
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+
+                          SizedBox(
+                            width: double.infinity,
+                            child: LayoutBuilder(
+                              builder: (
+                                context,
+                                constraints,
+                              ) {
+                                if (constraints.maxWidth >
+                                    320) {
+                                  return Column(
+                                    spacing: 15,
+                                    children: [
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                productIconSvg,
+                                            title:
+                                                'Products',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                salesIconSvg,
+                                            title: 'Sales',
+                                            action: () {
+                                              returnNavProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).navigate(2);
+                                            },
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                custBookIconSvg,
+                                            title:
+                                                'Customers',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                employeesIconSvg,
+                                            title:
+                                                'Employees',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                expensesIconSvg,
+                                            title:
+                                                'Expenses',
+                                            action:
+                                                () async {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                reportIconSvg,
+                                            title: 'Report',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return Column(
+                                    spacing: 15,
+                                    children: [
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                productIconSvg,
+                                            title:
+                                                'Products',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                salesIconSvg,
+                                            title: 'Sales',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                custBookIconSvg,
+                                            title:
+                                                'Customers',
+                                            action: () {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                employeesIconSvg,
+                                            title:
+                                                'Employees',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 15,
+                                        children: [
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                expensesIconSvg,
+                                            title:
+                                                'Expenses',
+                                            action:
+                                                () async {},
+                                          ),
+                                          ButtonTab(
+                                            theme: theme,
+                                            icon:
+                                                reportIconSvg,
+                                            title: 'Report',
+                                            action: () {},
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         Material(
           color: Colors.transparent,
@@ -347,6 +364,7 @@ class _EmpAuthState extends State<EmpAuth> {
                               children: [
                                 Column(
                                   children: [
+                                    SizedBox(height: 50),
                                     Text(
                                       style: TextStyle(
                                         fontSize:
@@ -370,21 +388,21 @@ class _EmpAuthState extends State<EmpAuth> {
                                             FontWeight
                                                 .normal,
                                       ),
-                                      'This is your staff account Login',
+                                      'Enter your password to Login.',
                                     ),
                                   ],
                                 ),
                                 SizedBox(height: 15),
-                                EmailTextField(
-                                  controller:
-                                      emailController,
-                                  theme: theme,
-                                  isEmail: true,
-                                  hint: 'Enter Email',
-                                  title: 'Email',
-                                ),
+                                // EmailTextField(
+                                //   controller:
+                                //       emailController,
+                                //   theme: theme,
+                                //   isEmail: true,
+                                //   hint: 'Enter Email',
+                                //   title: 'Email',
+                                // ),
 
-                                SizedBox(height: 20),
+                                // SizedBox(height: 20),
                                 EmailTextField(
                                   controller:
                                       passwordController,
@@ -397,22 +415,19 @@ class _EmpAuthState extends State<EmpAuth> {
                                 MainButtonP(
                                   themeProvider: theme,
                                   action: () async {
-                                    bool isValidEmail(
-                                      String email,
-                                    ) {
-                                      final emailRegex = RegExp(
-                                        r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                      );
-                                      return emailRegex
-                                          .hasMatch(email);
-                                    }
+                                    // bool isValidEmail(
+                                    //   String email,
+                                    // ) {
+                                    //   final emailRegex = RegExp(
+                                    //     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                                    //   );
+                                    //   return emailRegex
+                                    //       .hasMatch(email);
+                                    // }
 
                                     if (passwordController
-                                            .text
-                                            .isEmpty ||
-                                        emailController
-                                            .text
-                                            .isEmpty) {
+                                        .text
+                                        .isEmpty) {
                                       if (context.mounted) {
                                         showDialog(
                                           context: context,
@@ -422,40 +437,43 @@ class _EmpAuthState extends State<EmpAuth> {
                                             return InfoAlert(
                                               theme: theme,
                                               message:
-                                                  'Email and Password fields must be set.',
+                                                  'Password fields must be set.',
                                               title:
                                                   'Empty Fields',
                                             );
                                           },
                                         );
                                       }
-                                    } else if (!isValidEmail(
-                                      emailController.text,
-                                    )) {
-                                      if (context.mounted) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'Your email is not valid. Please check and try again.',
-                                              title:
-                                                  'Invalid email',
-                                            );
-                                          },
-                                        );
-                                      }
-                                    } else {
+                                    }
+                                    // else if (!isValidEmail(
+                                    //   emailController.text,
+                                    // )) {
+                                    //   if (context.mounted) {
+                                    //     showDialog(
+                                    //       context: context,
+                                    //       builder: (
+                                    //         context,
+                                    //       ) {
+                                    //         return InfoAlert(
+                                    //           theme: theme,
+                                    //           message:
+                                    //               'Your email is not valid. Please check and try again.',
+                                    //           title:
+                                    //               'Invalid email',
+                                    //         );
+                                    //       },
+                                    //     );
+                                    //   }
+                                    // }
+                                    else {
                                       setState(() {
                                         isLoading = true;
                                       });
                                       TempUserClass? user =
                                           await fetchUserFromDatabase(
-                                            emailController
-                                                .text,
+                                            AuthService()
+                                                .currentUser!
+                                                .email!,
                                             AuthService()
                                                 .currentUser!
                                                 .id,
@@ -500,56 +518,36 @@ class _EmpAuthState extends State<EmpAuth> {
                                           );
                                           if (context
                                               .mounted) {
-                                            await returnLocalDatabase(
-                                              context,
-                                              listen: false,
-                                            ).insertUser(
-                                              user,
-                                            );
-                                            if (context
-                                                .mounted) {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (
-                                                        context,
-                                                      ) =>
-                                                          Home(),
-                                                ),
-                                                (route) =>
-                                                    false, // removes all previous routes
-                                              );
-                                            }
+                                            widget
+                                                .action!();
+                                            // await returnLocalDatabase(
+                                            //   context,
+                                            //   listen: false,
+                                            // ).insertUser(
+                                            //   user,
+                                            // );
+                                            // if (context
+                                            //     .mounted) {
+                                            //   Navigator.pushAndRemoveUntil(
+                                            //     context,
+                                            //     MaterialPageRoute(
+                                            //       builder:
+                                            //           (
+                                            //             context,
+                                            //           ) =>
+                                            //               Home(),
+                                            //     ),
+                                            //     (route) =>
+                                            //         false, // removes all previous routes
+                                            //   );
+                                            // }
                                           }
-                                          emailController
-                                              .clear();
                                           passwordController
                                               .clear();
                                           setState(() {
                                             showSuccess =
                                                 false;
                                           });
-                                        }
-                                      } else {
-                                        if (context
-                                            .mounted) {
-                                          showDialog(
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Email address not registered with shop. Check the email and try again.',
-                                                title:
-                                                    'Email not found',
-                                              );
-                                            },
-                                          );
                                         }
                                       }
                                     }
@@ -581,9 +579,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                             return ConfirmationAlert(
                                               theme: theme,
                                               message:
-                                                  'You are about to Logout from the shop to recover your password. Only the shop Owner should perform this action. Are you sure you want to Proceed?',
+                                                  'You are about to Logout from the shop to recover your password. Are you sure you want to Proceed?',
                                               title:
-                                                  'Log Out From Shop?',
+                                                  'Recover Password',
                                               action: () async {
                                                 Navigator.of(
                                                   safeContext,
@@ -656,16 +654,21 @@ class _EmpAuthState extends State<EmpAuth> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 20),
+                                SizedBox(height: 50),
                               ],
                             ),
                           ),
                           Container(
                             height:
-                                MediaQuery.of(
-                                  context,
-                                ).size.height *
-                                0.5,
+                                isKeyboardVisible(
+                                          context,
+                                        ) ==
+                                        false
+                                    ? 0
+                                    : MediaQuery.of(
+                                          context,
+                                        ).size.height *
+                                        0.5,
                           ),
                         ],
                       ),
