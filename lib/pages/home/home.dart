@@ -28,11 +28,16 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     shopFuture = getUserShop();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnCompProvider(
+        context,
+        listen: false,
+      ).setVisible();
+    });
     // localUserFuture = getUserEmp();
   }
 
-  // bool isVerified = true;
+  // bool isNotVerified = true;
 
   // late Future<TempUserClass?> localUserFuture;
   // Future<TempUserClass?> getUserEmp() async {
@@ -101,7 +106,7 @@ class _HomeState extends State<Home> {
             } else if (shopSnapshot.data == null) {
               WidgetsBinding.instance.addPostFrameCallback((
                 _,
-              ) {
+              ) async {
                 if (mounted) {
                   returnNavProvider(
                     context,

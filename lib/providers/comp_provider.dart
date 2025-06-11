@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/local_database/local_user/local_user_database.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class CompProvider extends ChangeNotifier {
@@ -170,6 +171,41 @@ class CompProvider extends ChangeNotifier {
 
   void swtichTab(int index) {
     activeTab = index;
+    notifyListeners();
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //  Money Visibility
+  bool isVisible = false;
+  void setVisible() async {
+    final visible =
+        await LocalUserDatabase().getDataVisibility();
+    if (visible) {
+      isVisible = true;
+    } else {
+      isVisible = false;
+    }
+    notifyListeners();
+  }
+
+  String returnMoney(String money) {
+    if (isVisible) {
+      return money.toString();
+    }
+    {
+      return '*****';
+    }
+  }
+
+  void toggleVisible() async {
+    await LocalUserDatabase().toggleDataVisibility();
+    isVisible = !isVisible;
     notifyListeners();
   }
 }

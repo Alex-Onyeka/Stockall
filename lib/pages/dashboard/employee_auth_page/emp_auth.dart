@@ -24,9 +24,9 @@ class EmpAuth extends StatefulWidget {
 }
 
 class _EmpAuthState extends State<EmpAuth> {
-  bool isKeyboardVisible(BuildContext context) {
-    return MediaQuery.of(context).viewInsets.bottom > 0;
-  }
+  // bool isKeyboardVisible(BuildContext context) {
+  //   return MediaQuery.of(context).viewInsets.bottom > 0;
+  // }
 
   TextEditingController passwordController =
       TextEditingController();
@@ -299,7 +299,7 @@ class _EmpAuthState extends State<EmpAuth> {
         Material(
           color: Colors.transparent,
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
             child: Stack(
               children: [
                 InkWell(
@@ -313,10 +313,10 @@ class _EmpAuthState extends State<EmpAuth> {
                     height:
                         MediaQuery.of(context).size.height,
                     color: const Color.fromARGB(
-                      126,
-                      0,
-                      0,
-                      0,
+                      215,
+                      255,
+                      255,
+                      255,
                     ),
                     child: SingleChildScrollView(
                       child: Column(
@@ -660,15 +660,16 @@ class _EmpAuthState extends State<EmpAuth> {
                           ),
                           Container(
                             height:
-                                isKeyboardVisible(
-                                          context,
-                                        ) ==
-                                        false
-                                    ? 0
-                                    : MediaQuery.of(
-                                          context,
-                                        ).size.height *
-                                        0.5,
+                                // isKeyboardVisible(
+                                //           context,
+                                //         ) ==
+                                //         false
+                                //     ? 0
+                                //     :
+                                MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.4,
                           ),
                         ],
                       ),

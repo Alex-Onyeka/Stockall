@@ -45,13 +45,18 @@ class _DashboardTotalSalesBannerState
 
   @override
   Widget build(BuildContext context) {
+    var visible = returnCompProvider(context);
+    var toggleVisible = returnCompProvider(
+      context,
+      listen: false,
+    );
     return Stack(
       alignment: Alignment(0.9, 0.0),
       children: [
         Container(
           padding: EdgeInsets.only(
             left: 15,
-            top: 15,
+            top: 10,
             bottom: 10,
           ),
           decoration: BoxDecoration(
@@ -65,18 +70,48 @@ class _DashboardTotalSalesBannerState
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b3
-                              .fontSize,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
+                  Ink(
+                    child: InkWell(
+                      onTap: () {
+                        toggleVisible.toggleVisible();
+                      },
+                      child: SizedBox(
+                        child: Row(
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              'Today\'s Sale Revenue',
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  size: 20,
+                                  color:
+                                      Colors.grey.shade300,
+                                  visible.isVisible
+                                      ? Icons
+                                          .visibility_outlined
+                                      : Icons
+                                          .visibility_off_outlined,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    'Today\'s Sale Revenue',
                   ),
                   Row(
                     children: [
@@ -93,6 +128,7 @@ class _DashboardTotalSalesBannerState
                         ),
                         nairaSymbol,
                       ),
+                      SizedBox(width: 5),
                       Text(
                         style: TextStyle(
                           fontSize:
@@ -104,10 +140,14 @@ class _DashboardTotalSalesBannerState
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
-                        formatLargeNumberDoubleWidgetDecimal(
-                          widget.value != null
-                              ? widget.value!
-                              : 0,
+                        returnCompProvider(
+                          context,
+                        ).returnMoney(
+                          formatLargeNumberDoubleWidgetDecimal(
+                            widget.value != null
+                                ? widget.value!
+                                : 0,
+                          ),
                         ),
                       ),
                     ],
@@ -143,14 +183,16 @@ class _DashboardTotalSalesBannerState
 
                       return ExpensesAndProfitValues(
                         widget: widget,
-                        expenses:
-                            formatLargeNumberDoubleWidgetDecimal(
-                              getTotal(),
-                            ),
-                        profit:
-                            formatLargeNumberDoubleWidgetDecimal(
-                              getProfit(),
-                            ),
+                        expenses: visible.returnMoney(
+                          formatLargeNumberDoubleWidgetDecimal(
+                            getTotal(),
+                          ),
+                        ),
+                        profit: visible.returnMoney(
+                          formatLargeNumberDoubleWidgetDecimal(
+                            getProfit(),
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -210,7 +252,7 @@ class _DashboardTotalSalesBannerState
                                       .fontSize,
                             ),
 
-                            '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(widget.userValue ?? 0)}',
+                            '$nairaSymbol ${visible.returnMoney(formatLargeNumberDoubleWidgetDecimal(widget.userValue ?? 0))}',
                           ),
                         ],
                       ),

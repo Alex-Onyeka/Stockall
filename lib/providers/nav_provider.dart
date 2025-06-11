@@ -28,6 +28,7 @@ class NavProvider extends ChangeNotifier {
   }
 
   bool isNotVerified = true;
+
   void verify() {
     isNotVerified = false;
     notifyListeners();

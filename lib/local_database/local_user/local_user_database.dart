@@ -132,32 +132,45 @@ class LocalUserDatabase extends ChangeNotifier {
   LocalUserDatabase._internal();
 
   static const String _boxName = 'usersBox';
+  static const String _visibilityBoxName = 'visibilityBox';
+  static const String _visibilityKey = 'isDataVisible';
 
   Box<TempUserClass>? _box;
+  Box<bool>? _visibilityBox;
 
   double userTotalSale = 0;
 
+  TempUserClass? currentEmployee;
+  List<TempUserClass> currentEmployees = [];
+
+  /// Set and notify userTotalSale
   void setUserTotalSale(double value) {
     userTotalSale = value;
     notifyListeners();
   }
 
-  /// Initialize Hive and open the box
+  /// Initialize Hive and open user and visibility boxes
   Future<void> init() async {
     await Hive.initFlutter();
 
-    // Register adapter only once
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(TempUserClassAdapter());
     }
 
     _box = await Hive.openBox<TempUserClass>(_boxName);
-    print("✅ Hive box '$_boxName' opened");
+    _visibilityBox = await Hive.openBox<bool>(
+      _visibilityBoxName,
+    );
+
+    // Set default value for visibility if not set
+    if (!_visibilityBox!.containsKey(_visibilityKey)) {
+      await _visibilityBox!.put(_visibilityKey, true);
+    }
+
+    print(
+      "✅ Hive boxes '$_boxName' and '$_visibilityBoxName' opened",
+    );
   }
-
-  TempUserClass? currentEmployee;
-
-  List<TempUserClass> currentEmployees = [];
 
   /// Insert or update a user
   Future<void> insertUser(TempUserClass user) async {
@@ -166,12 +179,10 @@ class LocalUserDatabase extends ChangeNotifier {
         await init();
       }
 
-      // Use userId as key if available, else add automatically
       final key =
           user.userId ??
           DateTime.now().millisecondsSinceEpoch.toString();
 
-      // Put user in box by key (replace if exists)
       await _box!.put(key, user);
 
       currentEmployee = user;
@@ -218,5 +229,27 @@ class LocalUserDatabase extends ChangeNotifier {
     } catch (e) {
       print("❌ Failed to delete local user: $e");
     }
+  }
+
+  /// Set the data visibility flag
+  Future<void> setDataVisibility(bool value) async {
+    if (_visibilityBox == null) await init();
+    await _visibilityBox!.put(_visibilityKey, value);
+    notifyListeners();
+  }
+
+  /// Get the current data visibility flag
+  Future<bool> getDataVisibility() async {
+    if (_visibilityBox == null) await init();
+    return _visibilityBox!.get(
+      _visibilityKey,
+      defaultValue: true,
+    )!;
+  }
+
+  /// Toggle the visibility flag
+  Future<void> toggleDataVisibility() async {
+    final current = await getDataVisibility();
+    await setDataVisibility(!current);
   }
 }
