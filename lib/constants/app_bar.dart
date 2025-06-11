@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
-import 'package:stockall/pages/home/home.dart';
 
 PreferredSizeWidget appBar({
   required BuildContext context,

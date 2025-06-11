@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
@@ -611,9 +612,15 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     .mounted) {
                                                   // localDatabase
                                                   //     .deleteUser();
-                                                  Navigator.pushNamed(
+                                                  Navigator.push(
                                                     safeContext,
-                                                    '/forgot-password',
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return ForgotPasswordPage();
+                                                      },
+                                                    ),
                                                   );
                                                   //await AuthService()
                                                   //     .signOut();

@@ -378,7 +378,7 @@ class _MyAppState
         '/': (context) => BasePage(),
         '/launch': (context) => LaunchScreen(),
         '/forgot-password':
-            (context) => ForgotPasswordPage(isMain: true),
+            (context) => ForgotPasswordPage(),
         '/login': (context) => LoginPage(),
         '/splash': (context) => SplashScreen(),
         '/reset-password': (context) => EnterNewPassword(),
