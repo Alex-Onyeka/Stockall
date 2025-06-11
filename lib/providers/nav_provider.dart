@@ -26,4 +26,10 @@ class NavProvider extends ChangeNotifier {
     currentAuth = index;
     notifyListeners();
   }
+
+  bool isNotVerified = true;
+  void verify() {
+    isNotVerified = false;
+    notifyListeners();
+  }
 }

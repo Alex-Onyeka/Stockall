@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
     // localUserFuture = getUserEmp();
   }
 
-  bool isVerified = true;
+  // bool isVerified = true;
 
   // late Future<TempUserClass?> localUserFuture;
   // Future<TempUserClass?> getUserEmp() async {
@@ -103,9 +103,10 @@ class _HomeState extends State<Home> {
                 _,
               ) {
                 if (mounted) {
-                  setState(() {
-                    isVerified = false;
-                  });
+                  returnNavProvider(
+                    context,
+                    listen: false,
+                  ).verify();
                 }
               });
               return ShopBannerScreen();
@@ -220,12 +221,13 @@ class _HomeState extends State<Home> {
           },
         ),
         Visibility(
-          visible: isVerified,
+          visible: returnNavProvider(context).isNotVerified,
           child: EmpAuth(
             action: () {
-              setState(() {
-                isVerified = false;
-              });
+              returnNavProvider(
+                context,
+                listen: false,
+              ).verify();
             },
           ),
         ),
