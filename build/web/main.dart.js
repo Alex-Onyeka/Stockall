@@ -123488,7 +123488,7 @@ aDd(a,b){var s=0,r=A.w(t.yx),q,p=2,o=[],n=this,m,l,k,j
 var $async$Gm=A.r(function(c,d){if(c===1){o.push(d)
 s=p}while(true)switch(s){case 0:p=4
 s=7
-return A.m(n.a.co("users").fU(0).cY("email",a.toLowerCase()).cY("auth_user_id",b).lk(),$async$Gm)
+return A.m(n.a.co("users").fU(0).cY("email",a.toLowerCase()).cY("user_id",b).lk(),$async$Gm)
 case 7:m=d
 if(m==null){A.ce("User not found")
 q=null

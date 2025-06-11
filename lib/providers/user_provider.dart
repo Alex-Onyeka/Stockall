@@ -122,7 +122,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<TempUserClass?> fetchUserByEmailAndAuthId(
     String email,
-    String authId,
+    String userId,
   ) async {
     try {
       final data =
@@ -130,7 +130,7 @@ class UserProvider extends ChangeNotifier {
               .from('users')
               .select()
               .eq('email', email.toLowerCase())
-              .eq('auth_user_id', authId)
+              .eq('user_id', userId)
               .maybeSingle();
 
       if (data == null) {
