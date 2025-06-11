@@ -581,11 +581,11 @@ class _EmpAuthState extends State<EmpAuth> {
                                       onTap: () async {
                                         var safeContext =
                                             context;
-                                        var localDatabase =
-                                            returnLocalDatabase(
-                                              context,
-                                              listen: false,
-                                            );
+                                        // var localDatabase =
+                                        //     returnLocalDatabase(
+                                        //       context,
+                                        //       listen: false,
+                                        //     );
                                         showDialog(
                                           context:
                                               safeContext,
@@ -609,15 +609,11 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 //
                                                 if (safeContext
                                                     .mounted) {
-                                                  localDatabase
-                                                      .deleteUser();
-                                                  Navigator.pushNamedAndRemoveUntil(
+                                                  // localDatabase
+                                                  //     .deleteUser();
+                                                  Navigator.pushNamed(
                                                     safeContext,
                                                     '/forgot-password',
-                                                    (
-                                                      route,
-                                                    ) =>
-                                                        false,
                                                   );
                                                   //await AuthService()
                                                   //     .signOut();

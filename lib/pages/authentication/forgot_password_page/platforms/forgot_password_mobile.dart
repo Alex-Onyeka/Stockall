@@ -6,6 +6,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ForgotPasswordMobile extends StatefulWidget {
@@ -126,7 +127,7 @@ class _ForgotPasswordMobileState
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return AuthLanding();
+                            return Home();
                           },
                         ),
                       );
