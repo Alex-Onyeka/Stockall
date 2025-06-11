@@ -150,7 +150,7 @@ class _TotalProductsPageState
                     return products
                         .where(
                           (p) =>
-                              p.quantity <= 10 &&
+                              p.quantity <= p.lowQtty! &&
                               p.quantity != 0,
                         )
                         .toList();

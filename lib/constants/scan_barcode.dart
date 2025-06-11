@@ -82,7 +82,7 @@ Future<String> scanCode(
         //   ),
         // );
       }
-      return '';
+      return message;
     }
   } catch (e) {
     if (context.mounted) {
@@ -103,6 +103,7 @@ Future<String> scanCode(
       //   ),
       // );
     }
-    return '';
+    print(e.toString());
+    return message;
   }
 }

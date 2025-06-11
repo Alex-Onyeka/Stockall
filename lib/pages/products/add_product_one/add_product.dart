@@ -19,7 +19,7 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController sellingController =
       TextEditingController();
   TextEditingController lowQttyController =
-      TextEditingController();
+      TextEditingController(text: '10');
   TextEditingController quantityController =
       TextEditingController();
   TextEditingController discountController =
