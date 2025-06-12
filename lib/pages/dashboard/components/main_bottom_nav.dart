@@ -22,25 +22,11 @@ class MainBottomNav extends StatelessWidget {
       alignment: Alignment(-0.03, -2),
       children: [
         Container(
-          height:
-              returnNavProvider(
-                        context,
-                        listen: false,
-                      ).currentPage ==
-                      1
-                  ? 80
-                  : 93,
+          height: 95,
           color: Colors.white,
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
           child: Row(
-            crossAxisAlignment:
-                returnNavProvider(
-                          context,
-                          listen: false,
-                        ).currentPage ==
-                        1
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
@@ -180,106 +166,113 @@ class MainBottomNav extends StatelessWidget {
               listen: false,
             ).clearReceiptDate();
           },
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                // BoxShadow(
-                //   color:
-                //       returnNavProvider(
-                //                 context,
-                //               ).currentPage ==
-                //               1
-                //           ? const Color.fromARGB(0, 0, 0, 0)
-                //           : const Color.fromARGB(
-                //             55,
-                //             0,
-                //             0,
-                //             0,
-                //           ),
-                //   blurRadius: 5,
-                //   offset: Offset(0, -1),
-                // ),
-              ],
-              border: Border.all(
-                color:
+          child: Stack(
+            children: [
+              Visibility(
+                visible:
                     returnNavProvider(
                               context,
+                              listen: false,
                             ).currentPage ==
                             1
-                        ? returnTheme(
-                          context,
-                        ).lightModeColor.prColor300
-                        : Colors.transparent,
-              ),
-            ),
-            child: Stack(
-              alignment: Alignment(0, 0),
-              children: [
-                Column(
-                  spacing:
-                      returnNavProvider(
-                                context,
-                                listen: false,
-                              ).currentPage ==
-                              1
-                          ? 0
-                          : 3,
+                        ? true
+                        : false,
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SvgPicture.asset(
-                      makeSalesIconSvg,
-                      color:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  1
-                              ? Colors.white
-                              : null,
-                    ),
-                    Visibility(
-                      visible:
-                          returnNavProvider(
-                                    context,
-                                    listen: false,
-                                  ).currentPage ==
-                                  1
-                              ? false
-                              : true,
-                      child: Text(
-                        style: TextStyle(
-                          color: const Color.fromARGB(
-                            255,
-                            4,
-                            49,
-                            199,
-                          ),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          // BoxShadow(
+                          //   color:
+                          //       returnNavProvider(
+                          //                 context,
+                          //               ).currentPage ==
+                          //               1
+                          //           ? const Color.fromARGB(
+                          //             0,
+                          //             0,
+                          //             0,
+                          //             0,
+                          //           )
+                          //           : const Color.fromARGB(
+                          //             55,
+                          //             0,
+                          //             0,
+                          //             0,
+                          //           ),
+                          //   blurRadius: 5,
+                          //   offset: Offset(0, 2),
+                          // ),
+                        ],
+                        border: Border.all(
+                          color:
+                              returnTheme(
+                                context,
+                              ).lightModeColor.prColor300,
                         ),
-                        'Make Sale',
+                      ),
+                      child: SvgPicture.asset(
+                        plusIconSvg,
+                        height: 23,
+                        color:
+                            returnTheme(
+                              context,
+                            ).lightModeColor.prColor300,
                       ),
                     ),
-                    // SizedBox(height: 10),
+                    SizedBox(height: 5),
+                    Text(
+                      style: TextStyle(
+                        color: const Color.fromARGB(
+                          255,
+                          4,
+                          49,
+                          199,
+                        ),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'Add New',
+                    ),
+                    SizedBox(height: 5),
                   ],
                 ),
-                Visibility(
-                  visible:
-                      returnNavProvider(
-                        context,
-                      ).currentPage ==
-                      1,
-                  child: SvgPicture.asset(
-                    plusIconSvg,
-                    height: 23,
-                    color:
-                        returnTheme(
-                          context,
-                        ).lightModeColor.prColor300,
-                  ),
+              ),
+              Visibility(
+                visible:
+                    returnNavProvider(
+                              context,
+                              listen: false,
+                            ).currentPage ==
+                            1
+                        ? false
+                        : true,
+                child: Column(
+                  spacing: 3,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(makeSalesIconSvg),
+                    Text(
+                      style: TextStyle(
+                        color: const Color.fromARGB(
+                          255,
+                          4,
+                          49,
+                          199,
+                        ),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'Make Sale',
+                    ),
+                    SizedBox(height: 5),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
