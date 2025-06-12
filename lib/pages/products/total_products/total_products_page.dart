@@ -515,7 +515,7 @@ class _TotalProductsPageState
                                                         .h4
                                                         .fontSize,
                                               ),
-                                              'Found ${productsResult.isEmpty ? products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase())).length : productsResult.length} Items',
+                                              'Found ${productsResult.isEmpty ? products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase())).length : productsResult.length} Item(s)',
                                             ),
                                             Padding(
                                               padding:
@@ -626,6 +626,7 @@ class _TotalProductsPageState
                                                             );
                                                           }
                                                         });
+                                                        clearState();
                                                       },
                                                       product:
                                                           product,
@@ -668,8 +669,33 @@ class _TotalProductsPageState
                                                           ),
                                                         ],
                                                       ),
-                                                      onTap:
-                                                          () {},
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ProductDetailsPage(
+                                                                productId:
+                                                                    product.id!,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          _,
+                                                        ) {
+                                                          if (context.mounted) {
+                                                            setState(
+                                                              () {
+                                                                _productsFuture = getProductList(
+                                                                  context,
+                                                                );
+                                                              },
+                                                            );
+                                                          }
+                                                        });
+                                                      },
                                                       subtitle: Text(
                                                         [
                                                           if (product.color !=

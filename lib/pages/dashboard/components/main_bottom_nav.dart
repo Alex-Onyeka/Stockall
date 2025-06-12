@@ -145,8 +145,8 @@ class MainBottomNav extends StatelessWidget {
               if (returnLocalDatabase(
                     context,
                     listen: false,
-                  ).currentEmployee!.role ==
-                  'Cashier') {
+                  ).currentEmployee!.role !=
+                  'Owner') {
                 return;
               } else {
                 action!();

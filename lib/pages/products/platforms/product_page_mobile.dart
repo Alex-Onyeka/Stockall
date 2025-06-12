@@ -443,8 +443,8 @@ class _ProductPageMobileState
                               if (returnLocalDatabase(
                                     context,
                                     listen: false,
-                                  ).currentEmployee!.role ==
-                                  'Cashier') {
+                                  ).currentEmployee!.role !=
+                                  'Owner') {
                                 return Center(
                                   child: SingleChildScrollView(
                                     child: EmptyWidgetDisplayOnly(
@@ -780,6 +780,7 @@ class _ProductPageMobileState
                                                         });
                                                       }
                                                     });
+                                                    clearState();
                                                   },
                                                   product:
                                                       product,

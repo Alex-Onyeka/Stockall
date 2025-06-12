@@ -37,7 +37,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   shape: BoxShape.circle,

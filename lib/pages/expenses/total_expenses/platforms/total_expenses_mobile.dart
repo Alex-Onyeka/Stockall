@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -40,6 +41,10 @@ class _TotalExpensesMobileState
   void initState() {
     super.initState();
     expensesFuture = getExpenses();
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
     });
@@ -92,6 +97,25 @@ class _TotalExpensesMobileState
               ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButtonMain(
+          action: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AddExpenses();
+                },
+              ),
+            ).then((_) {
+              setState(() {
+                expensesFuture = getExpenses();
+              });
+            });
+          },
+          color: theme.lightModeColor.secColor100,
+          text: 'Add Expenses',
+          theme: theme,
         ),
         body: FutureBuilder(
           future: expensesFuture,
@@ -258,18 +282,11 @@ class _TotalExpensesMobileState
                         Expanded(
                           child: Builder(
                             builder: (context) {
-                              if (expenses.isEmpty &&
-                                  returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentEmployee!
-                                          .role ==
-                                      'Owner') {
+                              if (expenses.isEmpty) {
                                 return EmptyWidgetDisplay(
                                   title: 'Empty List',
                                   subText:
-                                      'You don\'t have any Expenses under this category',
+                                      'You don\'t have any Expenses under this Date',
                                   buttonText:
                                       'Create Expenses',
                                   theme: theme,
@@ -286,33 +303,35 @@ class _TotalExpensesMobileState
                                     );
                                   },
                                 );
-                              } else if (expenses.isEmpty &&
-                                  returnLocalDatabase(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentEmployee!
-                                          .role !=
-                                      'Owner') {
-                                return SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        context,
-                                      ).size.height -
-                                      400,
-                                  child: Center(
-                                    child: EmptyWidgetDisplayOnly(
-                                      subText:
-                                          'Come back later after expenses has been recorded to view expenses.',
-                                      title:
-                                          'No Expenses Recorded Yet',
-                                      svg: expensesIconSvg,
-                                      height: 35,
-                                      theme: theme,
-                                    ),
-                                  ),
-                                );
-                              } else {
+                              }
+                              // else if (expenses.isEmpty &&
+                              //     returnLocalDatabase(
+                              //               context,
+                              //               listen: false,
+                              //             )
+                              //             .currentEmployee!
+                              //             .role !=
+                              //         'Owner') {
+                              //   return SizedBox(
+                              //     height:
+                              //         MediaQuery.of(
+                              //           context,
+                              //         ).size.height -
+                              //         400,
+                              //     child: Center(
+                              //       child: EmptyWidgetDisplayOnly(
+                              //         subText:
+                              //             'Come back later after expenses has been recorded to view expenses.',
+                              //         title:
+                              //             'No Expenses Recorded Yet',
+                              //         svg: expensesIconSvg,
+                              //         height: 35,
+                              //         theme: theme,
+                              //       ),
+                              //     ),
+                              //   );
+                              // }
+                              else {
                                 return ListView.builder(
                                   itemCount:
                                       expenses.length,
