@@ -31,10 +31,10 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
   }
 
   String cutLongText2(String text) {
-    if (text.length < 7) {
+    if (text.length < 8) {
       return text;
     } else {
-      return '${text.substring(0, 7)}...';
+      return '${text.substring(0, 8)}...';
     }
   }
 
@@ -300,7 +300,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                   .spaceBetween,
                           children: [
                             Expanded(
-                              flex: 4,
+                              flex: 5,
                               child: Column(
                                 spacing: 3,
                                 crossAxisAlignment:
@@ -328,54 +328,52 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                           FontWeight.bold,
                                     ),
                                     cutLongText(
-                                      cutLongText(
-                                        snapshot
-                                            .data!
-                                            .first
-                                            .productName,
-                                      ),
+                                      snapshot
+                                          .data!
+                                          .first
+                                          .productName,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                spacing: 3,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                    ),
-                                    'Receipt NO.',
-                                  ),
-                                  Text(
-                                    textAlign:
-                                        TextAlign.left,
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    cutLongText2(
-                                      '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // Expanded(
+                            //   flex: 3,
+                            //   child: Column(
+                            //     spacing: 3,
+                            //     crossAxisAlignment:
+                            //         CrossAxisAlignment
+                            //             .start,
+                            //     children: [
+                            //       Text(
+                            //         style: TextStyle(
+                            //           fontSize:
+                            //               theme
+                            //                   .mobileTexts
+                            //                   .b3
+                            //                   .fontSize,
+                            //         ),
+                            //         'Receipt NO.',
+                            //       ),
+                            //       Text(
+                            //         textAlign:
+                            //             TextAlign.left,
+                            //         style: TextStyle(
+                            //           fontSize:
+                            //               theme
+                            //                   .mobileTexts
+                            //                   .b2
+                            //                   .fontSize,
+                            //           fontWeight:
+                            //               FontWeight.bold,
+                            //         ),
+                            //         cutLongText2(
+                            //           '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                             Expanded(
                               flex: 3,
                               child: Column(
@@ -477,11 +475,12 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                             .secColor200,
                                   ),
 
-                                  "Customer: ${cutLongText(customer != null ? customer.name : 'Not Set')}",
+                                  "Customer: ${cutLongText2(customer != null ? customer.name.split(' ').first : 'Not Set')}",
                                 );
                               }
                             },
                           ),
+                          SizedBox(width: 10),
                           Text(
                             style: TextStyle(
                               fontSize:
@@ -492,7 +491,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade700,
                             ),
-                            'Cashier: ${cutLongText(widget.mainReceipt.staffName)}',
+                            'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])} ${widget.mainReceipt.staffName.split(' ').length > 1 ? widget.mainReceipt.staffName.split(' ')[1].split('')[0] : ''}.',
                           ),
                         ],
                       ),
