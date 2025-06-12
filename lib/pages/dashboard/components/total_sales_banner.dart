@@ -113,44 +113,49 @@ class _DashboardTotalSalesBannerState
                       ),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .h2
-                                  .fontSize,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                  InkWell(
+                    onTap: () {
+                      toggleVisible.toggleVisible();
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .h2
+                                    .fontSize,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          nairaSymbol,
                         ),
-                        nairaSymbol,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .h2
-                                  .fontSize,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        returnCompProvider(
-                          context,
-                        ).returnMoney(
-                          formatLargeNumberDoubleWidgetDecimal(
-                            widget.value != null
-                                ? widget.value!
-                                : 0,
+                        SizedBox(width: 5),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .h2
+                                    .fontSize,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          returnCompProvider(
+                            context,
+                          ).returnMoney(
+                            formatLargeNumberDoubleWidgetDecimal(
+                              widget.value != null
+                                  ? widget.value!
+                                  : 0,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: 0),
                   Builder(

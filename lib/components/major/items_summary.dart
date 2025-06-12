@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/products_summary_tab.dart';
 
 class ItemsSummary extends StatefulWidget {
@@ -30,6 +31,7 @@ class ItemsSummary extends StatefulWidget {
   final bool? isMoney3;
   final bool? isMoney4;
   final bool? isFilter;
+  final bool? isProduct;
   final Function()? filterAction;
   final bool? isDateSet;
   final bool? setDate;
@@ -64,6 +66,7 @@ class ItemsSummary extends StatefulWidget {
     this.isMoney4,
     this.onSearch,
     this.isFilter,
+    this.isProduct,
     this.filterAction,
   });
 
@@ -105,11 +108,14 @@ class _ItemsSummaryState extends State<ItemsSummary> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.center,
                 mainAxisAlignment:
-                    widget.isFilter != null
+                    widget.isFilter != null ||
+                            widget.isProduct != null
                         ? MainAxisAlignment.spaceBetween
                         : MainAxisAlignment.start,
                 children: [
@@ -126,61 +132,125 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                         ),
                         widget.mainTitle ?? '',
                       ),
-                      Text(
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight: FontWeight.normal,
+                      Visibility(
+                        visible: widget.subTitle != null,
+                        child: Text(
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          widget.subTitle ?? '',
                         ),
-                        widget.subTitle ?? '',
                       ),
                     ],
                   ),
-                  Visibility(
-                    visible: widget.isFilter ?? false,
-                    child: MaterialButton(
-                      onPressed: widget.filterAction,
-                      child: Row(
-                        spacing: 3,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade700,
-                            ),
-                            (widget.isDateSet != null &&
-                                        widget
-                                            .isDateSet!) ||
-                                    (widget.setDate !=
-                                            null &&
-                                        widget.setDate!)
-                                ? 'Clear Date'
-                                : 'Set Date',
+                  Stack(
+                    children: [
+                      Visibility(
+                        visible: widget.isFilter ?? false,
+                        child: MaterialButton(
+                          onPressed: widget.filterAction,
+                          child: Row(
+                            spacing: 3,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      Colors.grey.shade700,
+                                ),
+                                (widget.isDateSet != null &&
+                                            widget
+                                                .isDateSet!) ||
+                                        (widget.setDate !=
+                                                null &&
+                                            widget.setDate!)
+                                    ? 'Clear Date'
+                                    : 'Set Date',
+                              ),
+                              Icon(
+                                size: 20,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor100,
+                                (widget.isDateSet != null &&
+                                            widget
+                                                .isDateSet!) ||
+                                        (widget.setDate !=
+                                                null &&
+                                            widget.setDate!)
+                                    ? Icons.clear
+                                    : Icons
+                                        .date_range_outlined,
+                              ),
+                            ],
                           ),
-                          Icon(
-                            size: 20,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor100,
-                            (widget.isDateSet != null &&
-                                        widget
-                                            .isDateSet!) ||
-                                    (widget.setDate !=
-                                            null &&
-                                        widget.setDate!)
-                                ? Icons.clear
-                                : Icons.date_range_outlined,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Visibility(
+                        visible:
+                            widget.isProduct != null &&
+                                    returnLocalDatabase(
+                                              context,
+                                            )
+                                            .currentEmployee!
+                                            .role ==
+                                        'Owner'
+                                ? true
+                                : false,
+                        child: MaterialButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return AddProduct();
+                                },
+                              ),
+                            );
+                          },
+                          child: Row(
+                            spacing: 3,
+                            children: [
+                              Icon(
+                                size: 20,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor100,
+                                Icons.add,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      Colors.grey.shade700,
+                                ),
+                                'Add Product',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

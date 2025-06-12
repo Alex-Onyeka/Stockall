@@ -22,11 +22,25 @@ class MainBottomNav extends StatelessWidget {
       alignment: Alignment(-0.03, -2),
       children: [
         Container(
-          height: 80,
+          height:
+              returnNavProvider(
+                        context,
+                        listen: false,
+                      ).currentPage ==
+                      1
+                  ? 80
+                  : 93,
           color: Colors.white,
           padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment:
+                returnNavProvider(
+                          context,
+                          listen: false,
+                        ).currentPage ==
+                        1
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.end,
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
@@ -170,22 +184,22 @@ class MainBottomNav extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(
-                  color:
-                      returnNavProvider(
-                                context,
-                              ).currentPage ==
-                              1
-                          ? const Color.fromARGB(0, 0, 0, 0)
-                          : const Color.fromARGB(
-                            55,
-                            0,
-                            0,
-                            0,
-                          ),
-                  blurRadius: 5,
-                  offset: Offset(0, -1),
-                ),
+                // BoxShadow(
+                //   color:
+                //       returnNavProvider(
+                //                 context,
+                //               ).currentPage ==
+                //               1
+                //           ? const Color.fromARGB(0, 0, 0, 0)
+                //           : const Color.fromARGB(
+                //             55,
+                //             0,
+                //             0,
+                //             0,
+                //           ),
+                //   blurRadius: 5,
+                //   offset: Offset(0, -1),
+                // ),
               ],
               border: Border.all(
                 color:
@@ -202,15 +216,52 @@ class MainBottomNav extends StatelessWidget {
             child: Stack(
               alignment: Alignment(0, 0),
               children: [
-                SvgPicture.asset(
-                  makeSalesIconSvg,
-                  color:
+                Column(
+                  spacing:
                       returnNavProvider(
                                 context,
+                                listen: false,
                               ).currentPage ==
                               1
-                          ? Colors.white
-                          : null,
+                          ? 0
+                          : 3,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      makeSalesIconSvg,
+                      color:
+                          returnNavProvider(
+                                    context,
+                                  ).currentPage ==
+                                  1
+                              ? Colors.white
+                              : null,
+                    ),
+                    Visibility(
+                      visible:
+                          returnNavProvider(
+                                    context,
+                                    listen: false,
+                                  ).currentPage ==
+                                  1
+                              ? false
+                              : true,
+                      child: Text(
+                        style: TextStyle(
+                          color: const Color.fromARGB(
+                            255,
+                            4,
+                            49,
+                            199,
+                          ),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        'Make Sale',
+                      ),
+                    ),
+                    // SizedBox(height: 10),
+                  ],
                 ),
                 Visibility(
                   visible:

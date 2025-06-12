@@ -221,6 +221,7 @@ class _ProductPageMobileState
                           title2: 'Out of Stock',
                           value2: 0,
                           secondRow: false,
+                          isProduct: true,
                         ),
                       ),
                       //
@@ -429,6 +430,7 @@ class _ProductPageMobileState
                                       .length
                                       .toDouble(),
                               secondRow: false,
+                              isProduct: true,
                             ),
                           ),
                           //
