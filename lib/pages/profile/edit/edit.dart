@@ -4,11 +4,13 @@ import 'package:stockall/pages/profile/edit/platforms/edit_mobile.dart';
 
 class Edit extends StatefulWidget {
   final TempUserClass user;
+  final bool? main;
   final String action;
   const Edit({
     super.key,
     required this.user,
     required this.action,
+    this.main,
   });
 
   @override
@@ -32,28 +34,34 @@ class _EditState extends State<Edit> {
       TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
-          return EditMobile(
-            user: widget.user,
-            nameController: nameController,
-            phoneController: phoneController,
-            action: widget.action,
-            emailController: emailController,
-            passwordController: passwordController,
-            oldEmailController: oldEmailController,
-            oldPasswordController: oldPassordController,
-            confirmPasswordController:
-                confirmPasswordController,
-          );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
-        } else {
-          return Scaffold();
-        }
-      },
+    return GestureDetector(
+      onTap:
+          () =>
+              FocusManager.instance.primaryFocus?.unfocus(),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 550) {
+            return EditMobile(
+              user: widget.user,
+              nameController: nameController,
+              phoneController: phoneController,
+              action: widget.action,
+              emailController: emailController,
+              passwordController: passwordController,
+              oldEmailController: oldEmailController,
+              oldPasswordController: oldPassordController,
+              confirmPasswordController:
+                  confirmPasswordController,
+              main: widget.main,
+            );
+          } else if (constraints.maxWidth > 550 &&
+              constraints.maxWidth < 1000) {
+            return Scaffold();
+          } else {
+            return Scaffold();
+          }
+        },
+      ),
     );
   }
 }

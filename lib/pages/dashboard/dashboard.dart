@@ -50,40 +50,45 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    if (mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((
-        _,
-      ) async {
-        final userShop = await returnShopProvider(
-          context,
-          listen: false,
-        ).getUserShop(AuthService().currentUser!.id);
-        if (context.mounted && userShop == null) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ShopBannerScreen(),
-            ),
-            (route) => false,
-          );
-        } else {
-          clearDate();
 
-          if (context.mounted) {
-            final provider = returnUserProvider(
-              context,
-              listen: false,
-            );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handlePostFrameLogic();
+    });
+  }
 
-            await provider.fetchCurrentUser(context);
-          }
-        }
+  Future<void> _handlePostFrameLogic() async {
+    final userProvider = returnUserProvider(
+      context,
+      listen: false,
+    );
+    final shopProvider = returnShopProvider(
+      context,
+      listen: false,
+    );
 
-        // setState(() {
-        //   stillLoading = false;
-        // });
-      });
+    final userShop = await shopProvider.getUserShop(
+      AuthService().currentUser!.id,
+    );
+
+    if (!mounted) return;
+
+    if (userShop == null) {
+      // Navigate and return immediately
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ShopBannerScreen(),
+        ),
+        (route) => false,
+      );
+      return; // 🔁 Make sure nothing else runs
     }
+
+    clearDate(); // ✅ safe to run only if not navigating
+
+    if (!mounted) return;
+
+    await userProvider.fetchCurrentUser(context);
   }
 
   @override

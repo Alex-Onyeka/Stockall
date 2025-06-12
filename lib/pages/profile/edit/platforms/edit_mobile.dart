@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -9,6 +10,7 @@ import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EditMobile extends StatefulWidget {
@@ -21,12 +23,14 @@ class EditMobile extends StatefulWidget {
   final TextEditingController oldPasswordController;
   final TextEditingController confirmPasswordController;
   final String action;
+  final bool? main;
 
   const EditMobile({
     super.key,
     required this.nameController,
     required this.phoneController,
     required this.user,
+    this.main,
     required this.action,
     required this.emailController,
     required this.passwordController,
@@ -54,6 +58,9 @@ class _EditMobileState extends State<EditMobile> {
     }
   }
 
+  String value1 = '0';
+  String value2 = '0';
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -62,11 +69,17 @@ class _EditMobileState extends State<EditMobile> {
         Scaffold(
           appBar: appBar(
             context: context,
+            main: true,
             title:
                 widget.action == 'normal'
                     ? 'Edit Profile'
                     : widget.action == 'email'
                     ? 'Update Email'
+                    : widget.action == 'PIN' &&
+                        widget.main != null
+                    ? 'Create New PIN'
+                    : widget.action == 'PIN'
+                    ? 'Change PIN'
                     : 'Change Password',
           ),
           body: Padding(
@@ -156,6 +169,170 @@ class _EditMobileState extends State<EditMobile> {
                           theme: theme,
                         ),
                       ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: widget.action == 'PIN',
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Enter New PIN',
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          PinCodeTextField(
+                            appContext: context,
+                            length: 4,
+                            onChanged: (value) {
+                              setState(() {
+                                value1 = value;
+                              });
+                            },
+                            onCompleted: (value) {
+                              // setState(() {
+                              //   isLoading = true;
+                              // });
+
+                              // if (widget.user.pin != null &&
+                              //     widget.user.pin! != value) {
+                              //   setState(() {
+                              //     isLoading = false;
+                              //   });
+                              //   showDialog(
+                              //     context: context,
+                              //     builder: (context) {
+                              //       return InfoAlert(
+                              //         theme: theme,
+                              //         message:
+                              //             'Old Pin is Incorrect. Please Try again, or try logging in with your password.',
+                              //         title: 'Incorrect PIN',
+                              //       );
+                              //     },
+                              //   );
+                              // } else {
+                              //   setState(() {
+                              //     isLoading = false;
+                              //     showSuccess = true;
+                              //   });
+
+                              //   setState(() {
+                              //     showSuccess = false;
+                              //   });
+                              // }
+                            },
+                            pinTheme: PinTheme(
+                              shape: PinCodeFieldShape.box,
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              fieldHeight: 50,
+                              fieldWidth: 40,
+                              activeFillColor: Colors.white,
+                              selectedFillColor:
+                                  Colors.grey.shade100,
+                              inactiveFillColor:
+                                  Colors.grey.shade100,
+                              activeColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                              selectedColor:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                              inactiveColor: Colors.grey,
+                            ),
+                            cursorColor:
+                                theme
+                                    .lightModeColor
+                                    .prColor300,
+                            keyboardType:
+                                TextInputType.number,
+                            animationType:
+                                AnimationType.fade,
+                            enableActiveFill: true,
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Confirm New PIN',
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          PinCodeTextField(
+                            appContext: context,
+                            length: 4,
+                            onChanged: (value) {
+                              setState(() {
+                                value2 = value;
+                              });
+                            },
+                            onCompleted: (value) {
+                              if (value1 != value) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          'PIN Does not match. Please Check the two PIN\'s, and Try again.',
+                                      title: 'PIN Mismatch',
+                                    );
+                                  },
+                                );
+                              } else {
+                                return;
+                              }
+                            },
+                            pinTheme: PinTheme(
+                              shape: PinCodeFieldShape.box,
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              fieldHeight: 50,
+                              fieldWidth: 40,
+                              activeFillColor: Colors.white,
+                              selectedFillColor:
+                                  Colors.grey.shade100,
+                              inactiveFillColor:
+                                  Colors.grey.shade100,
+                              activeColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                              selectedColor:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                              inactiveColor: Colors.grey,
+                            ),
+                            cursorColor:
+                                theme
+                                    .lightModeColor
+                                    .prColor300,
+                            keyboardType:
+                                TextInputType.number,
+                            animationType:
+                                AnimationType.fade,
+                            enableActiveFill: true,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -267,7 +444,101 @@ class _EditMobileState extends State<EditMobile> {
                             },
                           );
                         }
-                      } else if (widget.action == 'email') {
+                      } else if (widget.action == 'PIN') {
+                        if (value1 != value2) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return InfoAlert(
+                                theme: theme,
+                                message:
+                                    'PIN Does not match. Please Check the two PIN\'s, and Try again.',
+                                title: 'PIN Mismatch',
+                              );
+                            },
+                          );
+                        } else if (value1.length != 4 ||
+                            value2.length != 4) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return InfoAlert(
+                                theme: theme,
+                                message:
+                                    'Invalid PIN Length. Please Ensure that the Length of PINS are 4, and try again.',
+                                title: 'Invalid PIN',
+                              );
+                            },
+                          );
+                        } else {
+                          final safeContex = context;
+                          var userProvider =
+                              returnUserProvider(
+                                context,
+                                listen: false,
+                              );
+                          var navP = returnNavProvider(
+                            context,
+                            listen: false,
+                          );
+                          showDialog(
+                            context: safeContex,
+                            builder: (context) {
+                              return ConfirmationAlert(
+                                theme: theme,
+                                message:
+                                    'Are you sure you want to proceed?',
+                                title: 'Proceed?',
+                                action: () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  Navigator.of(
+                                    safeContex,
+                                  ).pop();
+
+                                  await userProvider
+                                      .updatePinInSupabase(
+                                        newPin: value2,
+                                        userId:
+                                            AuthService()
+                                                .currentUser!
+                                                .id,
+                                      );
+
+                                  setState(() {
+                                    isLoading = false;
+                                    showSuccess = true;
+                                  });
+
+                                  if (!mounted) return;
+                                  navP.verify();
+
+                                  if (safeContex.mounted) {
+                                    if (widget.main !=
+                                        null) {
+                                      Navigator.push(
+                                        safeContex, // ✅ use this
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return Home();
+                                          },
+                                        ),
+                                      );
+                                      // performRestart();
+                                    } else {
+                                      Navigator.of(
+                                        safeContex,
+                                      ).pop();
+                                    }
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        }
                       } else {
                         if (widget
                                 .oldPasswordController
@@ -402,16 +673,29 @@ class _EditMobileState extends State<EditMobile> {
                         }
                       }
                     },
-                    text: 'Update Details',
+                    text:
+                        widget.action == 'normal'
+                            ? 'Update Details'
+                            : widget.action == 'password'
+                            ? 'Update Password'
+                            : widget.action == 'PIN' ||
+                                widget.main != null
+                            ? 'Create PIN'
+                            : widget.action == 'PIN'
+                            ? 'Update PIN'
+                            : 'Update Details',
                   ),
                   SizedBox(height: 10),
-                  MainButtonTransparent(
-                    themeProvider: theme,
-                    constraints: BoxConstraints(),
-                    text: 'Cancel',
-                    action: () {
-                      Navigator.of(context).pop();
-                    },
+                  Visibility(
+                    visible: widget.main != null,
+                    child: MainButtonTransparent(
+                      themeProvider: theme,
+                      constraints: BoxConstraints(),
+                      text: 'Cancel',
+                      action: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
                   ),
                   SizedBox(height: 30),
                 ],
@@ -436,6 +720,11 @@ class _EditMobileState extends State<EditMobile> {
                 ? 'Updated Successfully'
                 : widget.action == 'password'
                 ? 'Password Updated Successfully'
+                : widget.action == 'PIN'
+                ? 'PIN Updated Successfully'
+                : widget.action == 'PIN' &&
+                    widget.main != null
+                ? 'PIN Set Successfully'
                 : 'Successful',
           ),
         ),

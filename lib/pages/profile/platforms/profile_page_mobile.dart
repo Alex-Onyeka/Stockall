@@ -284,6 +284,28 @@ class _ProfilePageMobileState
                             text: 'Change Password',
                             constraints: BoxConstraints(),
                           ),
+                          MainButtonTransparent(
+                            themeProvider: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return Edit(
+                                      user: user,
+                                      action: 'PIN',
+                                    );
+                                  },
+                                ),
+                              ).then((context) {
+                                setState(() {
+                                  userFuture = getUser();
+                                });
+                              });
+                            },
+                            text: 'Change PIN',
+                            constraints: BoxConstraints(),
+                          ),
                         ],
                       ),
                     ),

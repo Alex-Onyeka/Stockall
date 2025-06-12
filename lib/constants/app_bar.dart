@@ -7,6 +7,7 @@ PreferredSizeWidget appBar({
   required String title,
   bool? isMain,
   Widget? widget,
+  bool? main,
 }) {
   var theme = returnTheme(context);
   return AppBar(
@@ -24,6 +25,8 @@ PreferredSizeWidget appBar({
             ),
           );
           // Navigator.of(context).pop();
+        } else if (main != null) {
+          return;
         } else {
           Navigator.of(context).pop();
         }

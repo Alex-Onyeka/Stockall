@@ -99,8 +99,23 @@ class UserProvider extends ChangeNotifier {
       await _supabase
           .from('users')
           .update({'password': newPassword})
-          .eq('auth_user_id', userId)
-          .single();
+          .eq('user_id', userId);
+
+      print("✅ Password updated on Supabase");
+    } catch (e) {
+      print("❌ Failed to update password: $e");
+    }
+  }
+
+  Future<void> updatePinInSupabase({
+    required String userId,
+    required String newPin,
+  }) async {
+    try {
+      await _supabase
+          .from('users')
+          .update({'pin': newPin})
+          .eq('user_id', userId);
 
       print("✅ Password updated on Supabase");
     } catch (e) {

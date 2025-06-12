@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -33,6 +34,8 @@ class _EmpAuthState extends State<EmpAuth> {
       TextEditingController();
   bool isLoading = false;
   bool showSuccess = false;
+  bool isPassword = false;
+  String value = '0';
 
   Future<TempUserClass?> fetchUserFromDatabase(
     String email,
@@ -330,7 +333,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                 MediaQuery.of(
                                   context,
                                 ).size.height *
-                                0.25,
+                                0.2,
                           ),
                           Container(
                             width:
@@ -366,7 +369,140 @@ class _EmpAuthState extends State<EmpAuth> {
                               children: [
                                 Column(
                                   children: [
-                                    SizedBox(height: 50),
+                                    SizedBox(height: 20),
+                                    Row(
+                                      spacing: 10,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Material(
+                                            color:
+                                                Colors
+                                                    .transparent,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  isPassword =
+                                                      false;
+                                                });
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          10,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color:
+                                                          !isPassword
+                                                              ? theme.lightModeColor.secColor200
+                                                              : Colors.grey.shade400,
+                                                      width:
+                                                          !isPassword
+                                                              ? 2
+                                                              : 1,
+                                                    ),
+                                                  ),
+                                                  color:
+                                                      !isPassword
+                                                          ? const Color.fromARGB(
+                                                            29,
+                                                            255,
+                                                            193,
+                                                            7,
+                                                          )
+                                                          : Colors.transparent,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          !isPassword
+                                                              ? FontWeight.bold
+                                                              : FontWeight.normal,
+                                                      color:
+                                                          !isPassword
+                                                              ? Colors.grey.shade800
+                                                              : Colors.grey.shade600,
+                                                      fontSize:
+                                                          13,
+                                                    ),
+                                                    'Enter Pin',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Material(
+                                            color:
+                                                Colors
+                                                    .transparent,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  isPassword =
+                                                      true;
+                                                });
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          10,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color:
+                                                          isPassword
+                                                              ? theme.lightModeColor.secColor200
+                                                              : Colors.grey.shade400,
+                                                      width:
+                                                          isPassword
+                                                              ? 2
+                                                              : 1,
+                                                    ),
+                                                  ),
+                                                  color:
+                                                      isPassword
+                                                          ? const Color.fromARGB(
+                                                            29,
+                                                            255,
+                                                            193,
+                                                            7,
+                                                          )
+                                                          : Colors.transparent,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          isPassword
+                                                              ? FontWeight.bold
+                                                              : FontWeight.normal,
+                                                      color:
+                                                          isPassword
+                                                              ? Colors.grey.shade800
+                                                              : Colors.grey.shade600,
+                                                      fontSize:
+                                                          13,
+                                                    ),
+                                                    'Password',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 30),
                                     Text(
                                       style: TextStyle(
                                         fontSize:
@@ -379,6 +515,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                       ),
                                       'Login',
                                     ),
+                                    SizedBox(height: 10),
                                     Text(
                                       style: TextStyle(
                                         fontSize:
@@ -390,7 +527,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             FontWeight
                                                 .normal,
                                       ),
-                                      'Enter your password to Login.',
+                                      'Enter your ${isPassword ? 'password' : 'PIN'} to Login.',
                                     ),
                                   ],
                                 ),
@@ -405,271 +542,380 @@ class _EmpAuthState extends State<EmpAuth> {
                                 // ),
 
                                 // SizedBox(height: 20),
-                                EmailTextField(
-                                  controller:
-                                      passwordController,
-                                  theme: theme,
-                                  isEmail: false,
-                                  hint: 'Enter Password',
-                                  title: 'Password',
-                                ),
-                                SizedBox(height: 30),
-                                MainButtonP(
-                                  themeProvider: theme,
-                                  action: () async {
-                                    // bool isValidEmail(
-                                    //   String email,
-                                    // ) {
-                                    //   final emailRegex = RegExp(
-                                    //     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                    //   );
-                                    //   return emailRegex
-                                    //       .hasMatch(email);
-                                    // }
-
-                                    if (passwordController
-                                        .text
-                                        .isEmpty) {
-                                      if (context.mounted) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'Password fields must be set.',
-                                              title:
-                                                  'Empty Fields',
-                                            );
-                                          },
-                                        );
-                                      }
-                                    }
-                                    // else if (!isValidEmail(
-                                    //   emailController.text,
-                                    // )) {
-                                    //   if (context.mounted) {
-                                    //     showDialog(
-                                    //       context: context,
-                                    //       builder: (
-                                    //         context,
-                                    //       ) {
-                                    //         return InfoAlert(
-                                    //           theme: theme,
-                                    //           message:
-                                    //               'Your email is not valid. Please check and try again.',
-                                    //           title:
-                                    //               'Invalid email',
-                                    //         );
-                                    //       },
-                                    //     );
-                                    //   }
-                                    // }
-                                    else {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      print('Starting');
-                                      TempUserClass? user =
-                                          await fetchUserFromDatabase(
-                                            AuthService()
-                                                .currentUser!
-                                                .email!,
-                                            AuthService()
-                                                .currentUser!
-                                                .id,
-                                          );
-                                      print('Finished');
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      print('Finished 2');
-                                      if (user != null) {
-                                        print('Finished 3');
-                                        if (user.password !=
-                                            passwordController
-                                                .text
-                                                .trim()) {
-                                          print(
-                                            'Finished 4',
-                                          );
-                                          if (context
-                                              .mounted) {
-                                            print(
-                                              'Finished 5',
-                                            );
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
-                                                context,
-                                              ) {
-                                                print(
-                                                  'Finished 6',
-                                                );
-                                                return InfoAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'Your password is not correct. Check it and try again.',
-                                                  title:
-                                                      'Incorrect Password',
-                                                );
-                                              },
-                                            );
-                                          }
-                                        } else {
-                                          setState(() {
-                                            showSuccess =
-                                                true;
-                                          });
-                                          await Future.delayed(
-                                            Duration(
-                                              seconds: 2,
-                                            ),
-                                          );
-                                          if (context
-                                              .mounted) {
-                                            print(
-                                              'Finished 7',
-                                            );
-                                            widget
-                                                .action!();
-                                            // await returnLocalDatabase(
-                                            //   context,
-                                            //   listen: false,
-                                            // ).insertUser(
-                                            //   user,
-                                            // );
-                                            // if (context
-                                            //     .mounted) {
-                                            //   Navigator.pushAndRemoveUntil(
-                                            //     context,
-                                            //     MaterialPageRoute(
-                                            //       builder:
-                                            //           (
-                                            //             context,
-                                            //           ) =>
-                                            //               Home(),
-                                            //     ),
-                                            //     (route) =>
-                                            //         false, // removes all previous routes
-                                            //   );
-                                            // }
-                                          }
-                                          passwordController
-                                              .clear();
-                                          setState(() {
-                                            showSuccess =
-                                                false;
-                                          });
-                                        }
-                                      }
-                                    }
-                                  },
-
-                                  text: 'Login',
-                                ),
-                                SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
+                                Stack(
                                   children: [
-                                    InkWell(
-                                      onTap: () async {
-                                        var safeContext =
-                                            context;
-                                        // var localDatabase =
-                                        //     returnLocalDatabase(
-                                        //       context,
-                                        //       listen: false,
-                                        //     );
-                                        showDialog(
-                                          context:
-                                              safeContext,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return ConfirmationAlert(
-                                              theme: theme,
-                                              message:
-                                                  'You are about to Logout from the shop to recover your password. Are you sure you want to Proceed?',
-                                              title:
-                                                  'Recover Password',
-                                              action: () async {
-                                                Navigator.of(
-                                                  safeContext,
-                                                ).pop();
+                                    Visibility(
+                                      visible: isPassword,
+                                      child: Column(
+                                        children: [
+                                          EmailTextField(
+                                            controller:
+                                                passwordController,
+                                            theme: theme,
+                                            isEmail: false,
+                                            hint:
+                                                'Enter Password',
+                                            title:
+                                                'Password',
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          ),
+                                          MainButtonP(
+                                            themeProvider:
+                                                theme,
+                                            action: () async {
+                                              if (passwordController
+                                                  .text
+                                                  .isEmpty) {
+                                                if (context
+                                                    .mounted) {
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Password fields must be set.',
+                                                        title:
+                                                            'Empty Fields',
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              } else {
                                                 setState(() {
                                                   isLoading =
                                                       true;
                                                 });
-                                                //
-                                                if (safeContext
-                                                    .mounted) {
-                                                  // localDatabase
-                                                  //     .deleteUser();
-                                                  Navigator.push(
-                                                    safeContext,
-                                                    MaterialPageRoute(
+                                                print(
+                                                  'Starting',
+                                                );
+                                                TempUserClass?
+                                                user = await fetchUserFromDatabase(
+                                                  AuthService()
+                                                      .currentUser!
+                                                      .email!,
+                                                  AuthService()
+                                                      .currentUser!
+                                                      .id,
+                                                );
+                                                print(
+                                                  'Finished',
+                                                );
+                                                setState(() {
+                                                  isLoading =
+                                                      false;
+                                                });
+                                                print(
+                                                  'Finished 2',
+                                                );
+                                                if (user !=
+                                                        null &&
+                                                    context
+                                                        .mounted) {
+                                                  print(
+                                                    'Finished 3',
+                                                  );
+                                                  if (user.password !=
+                                                      passwordController
+                                                          .text
+                                                          .trim()) {
+                                                    print(
+                                                      'Finished 4',
+                                                    );
+                                                    if (context
+                                                        .mounted) {
+                                                      print(
+                                                        'Finished 5',
+                                                      );
+                                                      showDialog(
+                                                        context:
+                                                            context,
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          print(
+                                                            'Finished 6',
+                                                          );
+                                                          return InfoAlert(
+                                                            theme:
+                                                                theme,
+                                                            message:
+                                                                'Your password is not correct. Check it and try again.',
+                                                            title:
+                                                                'Incorrect Password',
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+                                                  } else {
+                                                    setState(() {
+                                                      showSuccess =
+                                                          true;
+                                                    });
+                                                    await Future.delayed(
+                                                      Duration(
+                                                        seconds:
+                                                            2,
+                                                      ),
+                                                    );
+                                                    if (context
+                                                        .mounted) {
+                                                      print(
+                                                        'Finished 7',
+                                                      );
+                                                      widget
+                                                          .action!();
+                                                    }
+                                                    passwordController
+                                                        .clear();
+                                                    setState(() {
+                                                      showSuccess =
+                                                          false;
+                                                    });
+                                                  }
+                                                } else {
+                                                  showDialog(
+                                                    // ignore: use_build_context_synchronously
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'User is Not found. Please check your details, and network and try again.',
+                                                        title:
+                                                            'User not found',
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              }
+                                            },
+
+                                            text: 'Login',
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: !isPassword,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 0,
+                                            ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    color:
+                                                        Colors.grey.shade700,
+                                                  ),
+                                                  'Enter PIN',
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            PinCodeTextField(
+                                              appContext:
+                                                  context,
+                                              length: 4,
+                                              onChanged: (
+                                                value,
+                                              ) {
+                                                // print("OTP: $value");
+                                              },
+                                              onCompleted: (
+                                                value,
+                                              ) async {
+                                                // final compProvider =
+                                                //     returnCompProvider(
+                                                //       context,
+                                                //       listen:
+                                                //           false,
+                                                //     );
+                                                setState(() {
+                                                  isLoading =
+                                                      true;
+                                                });
+                                                TempUserClass?
+                                                user = await fetchUserFromDatabase(
+                                                  AuthService()
+                                                      .currentUser!
+                                                      .email!,
+                                                  AuthService()
+                                                      .currentUser!
+                                                      .id,
+                                                );
+                                                if (user !=
+                                                        null &&
+                                                    context
+                                                        .mounted) {
+                                                  if (value !=
+                                                      user.pin) {
+                                                    setState(() {
+                                                      isLoading =
+                                                          false;
+                                                    });
+                                                    showDialog(
+                                                      context:
+                                                          context,
                                                       builder: (
                                                         context,
                                                       ) {
-                                                        return ForgotPasswordPage(
-                                                          isMain:
-                                                              true,
+                                                        return InfoAlert(
+                                                          theme:
+                                                              theme,
+                                                          message:
+                                                              'Pin is Incorrect. Please Try again, or try logging in with your password.',
+                                                          title:
+                                                              'Incorrect PIN',
                                                         );
                                                       },
-                                                    ),
-                                                  );
-                                                  //await AuthService()
-                                                  //     .signOut();
-                                                  returnNavProvider(
-                                                    safeContext,
-                                                    listen:
-                                                        false,
-                                                  ).navigate(
-                                                    0,
+                                                    );
+                                                  } else {
+                                                    setState(() {
+                                                      isLoading =
+                                                          false;
+                                                      showSuccess =
+                                                          true;
+                                                    });
+                                                    await Future.delayed(
+                                                      Duration(
+                                                        seconds:
+                                                            2,
+                                                      ),
+                                                    );
+                                                    if (context
+                                                        .mounted) {
+                                                      widget
+                                                          .action!();
+                                                    }
+
+                                                    setState(() {
+                                                      showSuccess =
+                                                          false;
+                                                    });
+                                                  }
+                                                } else {
+                                                  showDialog(
+                                                    // ignore: use_build_context_synchronously
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'User is Not found. Please check your details, and network and try again.',
+                                                        title:
+                                                            'User not found',
+                                                      );
+                                                    },
                                                   );
                                                 }
                                               },
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              horizontal:
-                                                  20,
-                                              vertical: 5,
-                                            ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          spacing: 5,
-                                          children: [
-                                            Icon(
-                                              size: 20,
-                                              color:
-                                                  Colors
-                                                      .redAccent,
-                                              Icons.logout,
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                color:
+                                              pinTheme: PinTheme(
+                                                shape:
+                                                    PinCodeFieldShape
+                                                        .box,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      5,
+                                                    ),
+                                                fieldHeight:
+                                                    50,
+                                                fieldWidth:
+                                                    40,
+                                                activeFillColor:
+                                                    Colors
+                                                        .white,
+                                                selectedFillColor:
                                                     Colors
                                                         .grey
-                                                        .shade700,
-                                                fontSize:
-                                                    12,
+                                                        .shade100,
+                                                inactiveFillColor:
+                                                    Colors
+                                                        .grey
+                                                        .shade100,
+                                                activeColor:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                                selectedColor:
+                                                    theme
+                                                        .lightModeColor
+                                                        .prColor300,
+                                                inactiveColor:
+                                                    Colors
+                                                        .grey,
                                               ),
-                                              'Logout to Reset Password?',
+                                              cursorColor:
+                                                  theme
+                                                      .lightModeColor
+                                                      .prColor300,
+                                              keyboardType:
+                                                  TextInputType
+                                                      .number,
+                                              animationType:
+                                                  AnimationType
+                                                      .fade,
+                                              enableActiveFill:
+                                                  true,
+                                            ),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            MainButtonP(
+                                              themeProvider:
+                                                  theme,
+                                              action: () {
+                                                if (value
+                                                        .isEmpty ||
+                                                    value.length !=
+                                                        4) {
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Invalid PIN Length. Please Ensure that the Length of PINS are 4, and try again.',
+                                                        title:
+                                                            'Invalid PIN',
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                              text: 'Login',
+                                            ),
+                                            SizedBox(
+                                              height: 15,
                                             ),
                                           ],
                                         ),
@@ -677,7 +923,119 @@ class _EmpAuthState extends State<EmpAuth> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 50),
+                                SizedBox(height: 15),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  children: [
+                                    Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        onTap: () async {
+                                          var safeContext =
+                                              context;
+                                          // var localDatabase =
+                                          //     returnLocalDatabase(
+                                          //       context,
+                                          //       listen: false,
+                                          //     );
+                                          showDialog(
+                                            context:
+                                                safeContext,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ConfirmationAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'You are about to Logout from the shop to recover your password. Are you sure you want to Proceed?',
+                                                title:
+                                                    'Recover Password',
+                                                action: () async {
+                                                  Navigator.of(
+                                                    safeContext,
+                                                  ).pop();
+                                                  setState(() {
+                                                    isLoading =
+                                                        true;
+                                                  });
+                                                  //
+                                                  if (safeContext
+                                                      .mounted) {
+                                                    // localDatabase
+                                                    //     .deleteUser();
+                                                    Navigator.push(
+                                                      safeContext,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return ForgotPasswordPage(
+                                                            isMain:
+                                                                true,
+                                                          );
+                                                        },
+                                                      ),
+                                                    );
+                                                    //await AuthService()
+                                                    //     .signOut();
+                                                    returnNavProvider(
+                                                      safeContext,
+                                                      listen:
+                                                          false,
+                                                    ).navigate(
+                                                      0,
+                                                    );
+                                                  }
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                horizontal:
+                                                    20,
+                                                vertical: 5,
+                                              ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            spacing: 5,
+                                            children: [
+                                              Icon(
+                                                size: 20,
+                                                color:
+                                                    Colors
+                                                        .redAccent,
+                                                Icons
+                                                    .logout,
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                  fontSize:
+                                                      12,
+                                                ),
+                                                'Forgot Password?',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
                               ],
                             ),
                           ),
