@@ -67,7 +67,7 @@ class _ProductSummaryTabState
           Row(
             children: [
               Visibility(
-                visible: widget.isMoney ?? false,
+                visible: false,
                 child: Text(
                   style: TextStyle(
                     fontSize:
@@ -90,7 +90,9 @@ class _ProductSummaryTabState
                   fontWeight: FontWeight.bold,
                   color: Colors.grey.shade700,
                 ),
-                formatMoney(widget.value),
+                widget.isMoney != null
+                    ? formatMoney(widget.value)
+                    : formatLargeNumberDouble(widget.value),
               ),
             ],
           ),

@@ -743,6 +743,14 @@ class _EmpAuthState extends State<EmpAuth> {
                                               ) {
                                                 // print("OTP: $value");
                                               },
+                                              hintCharacter:
+                                                  '0',
+                                              hintStyle: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade300,
+                                              ),
                                               onCompleted: (
                                                 value,
                                               ) async {
@@ -774,7 +782,10 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     setState(() {
                                                       isLoading =
                                                           false;
+                                                      value =
+                                                          '';
                                                     });
+
                                                     showDialog(
                                                       context:
                                                           context,
