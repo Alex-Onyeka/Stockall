@@ -30,11 +30,13 @@ class _CustomerListMobileState
   @override
   void initState() {
     super.initState();
-    _customersFuture = getCustomerList(context);
-    returnData(
-      context,
-      listen: false,
-    ).showFloatingActionButton();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _customersFuture = getCustomerList(context);
+      returnData(
+        context,
+        listen: false,
+      ).showFloatingActionButton();
+    });
   }
 
   String searchResult = '';

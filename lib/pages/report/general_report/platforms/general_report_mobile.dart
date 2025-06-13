@@ -155,11 +155,9 @@ class _GeneralReportMobileState
                       //   child: SizedBox(height: 30),
                       // ),
                       Visibility(
-                        visible: true,
-                        // returnLocalDatabase(
-                        //   context,
-                        // ).currentEmployee!.role ==
-                        // 'Owner',
+                        visible:
+                            userGeneral(context).role ==
+                            'Owner',
                         child: Row(
                           mainAxisAlignment:
                               MainAxisAlignment.end,

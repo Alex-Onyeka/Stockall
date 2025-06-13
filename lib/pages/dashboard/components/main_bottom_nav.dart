@@ -18,6 +18,11 @@ class MainBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var user =
+        returnUserProvider(
+          context,
+          listen: false,
+        ).currentUserMain;
     return Stack(
       alignment: Alignment(-0.03, -2),
       children: [
@@ -142,7 +147,12 @@ class MainBottomNav extends StatelessWidget {
                   listen: false,
                 ).currentPage ==
                 1) {
-              if ('Owner' == 'Owner') {
+              if (
+              // returnLocalDatabase(
+              //     context,
+              //     listen: false,
+              //   ).currentEmployee!.role !=
+              user?.role != 'Owner') {
                 return;
               } else {
                 action!();

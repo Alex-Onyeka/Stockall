@@ -5,12 +5,12 @@ import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart'
 import 'package:stockall/services/auth_service.dart';
 
 class EmployeeListPage extends StatefulWidget {
-  final String role;
+  // final String role;
   final String empId;
   const EmployeeListPage({
     super.key,
     required this.empId,
-    required this.role,
+    // required this.role,
   });
 
   @override
@@ -30,21 +30,13 @@ class _EmployeeListPageState
       ).getUserShop(AuthService().currentUser!.id);
       if (context.mounted && userShop == null) {
         Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (context) => ShopBannerScreen(),
           ),
           (route) => false,
         );
-      } else {
-        if (context.mounted) {
-          final provider = returnUserProvider(
-            context,
-            listen: false,
-          );
-
-          await provider.fetchCurrentUser(context);
-        }
       }
 
       setState(() {
@@ -59,8 +51,7 @@ class _EmployeeListPageState
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
           return EmployeeListMobile(
-            empId: widget.empId,
-            role: widget.role,
+            // role: widget.role,
           );
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {

@@ -579,7 +579,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                 //     context,
                 //     listen: false,
                 //   ).currentEmployee!.role ==
-                'Owner' == 'Cashier') {
+                userGeneral(context).role == 'Cashier') {
                   return EmptyWidgetDisplayOnly(
                     title: 'No Products',
                     subText:

@@ -11,12 +11,12 @@ import 'package:stockall/pages/employees/employee_page/employee_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EmployeeListMobile extends StatefulWidget {
-  final String role;
-  final String empId;
+  // final String role;
+  // final String empId;
   const EmployeeListMobile({
     super.key,
-    required this.role,
-    required this.empId,
+    // required this.role,
+    // required this.empId,
   });
 
   @override
@@ -58,10 +58,11 @@ class _EmployeeListMobileState
 
   @override
   Widget build(BuildContext context) {
+    var user = userGeneral(context);
     var theme = returnTheme(context);
     return Scaffold(
       floatingActionButton: Visibility(
-        visible: widget.role == 'Owner',
+        visible: user.role == 'Owner',
         child: FloatingActionButtonMain(
           theme: theme,
           action: () {
@@ -118,7 +119,9 @@ class _EmployeeListMobileState
               //         AuthService().currentUser!.id
               //     ? 'My Account'
               //     :
-              'Your Employees',
+              user.userId! == user.authUserId
+                  ? 'Your Employees'
+                  : 'My Account',
             ),
           ],
         ),
@@ -143,18 +146,18 @@ class _EmployeeListMobileState
             );
           } else {
             List<TempUserClass> employees =
-                widget.role == 'Owner'
+                user.role == 'Owner'
                     ? snapshot.data!
                         .where(
                           (emp) =>
-                              emp.userId !=
-                              AuthService().currentUser!.id,
+                              emp.authUserId != emp.userId!,
                         )
                         .toList()
                     : snapshot.data!
                         .where(
                           (emp) =>
-                              emp.userId == widget.empId,
+                              emp.userId ==
+                              AuthService().currentUser!.id,
                         )
                         .toList();
 

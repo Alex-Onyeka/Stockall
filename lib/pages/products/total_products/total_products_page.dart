@@ -87,7 +87,7 @@ class _TotalProductsPageState
           title: 'All Products',
         ),
         floatingActionButton: Visibility(
-          visible: true,
+          visible: userGeneral(context).role == 'Owner',
           // returnLocalDatabase(
           //   context,
           // ).currentEmployee!.role ==

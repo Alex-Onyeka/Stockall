@@ -212,14 +212,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                 if (snapshot.connectionState ==
                     ConnectionState.waiting) {
                   return MyDrawerWidget(
-                    role: '',
                     action: () {},
                     theme: theme,
                     notifications: [],
                   );
                 } else if (snapshot.hasError) {
                   return MyDrawerWidget(
-                    role: '',
                     action: () {},
                     theme: theme,
                     notifications: [],
@@ -229,11 +227,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                       snapshot.data!;
 
                   return MyDrawerWidget(
-                    role:
-                        // localUser != null
-                        //     ? localUser.role
-                        //     :
-                        'Owner',
                     action: () {
                       showDialog(
                         context: context,
@@ -247,10 +240,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                               await AuthService().signOut();
 
                               if (context.mounted) {
-                                // returnLocalDatabase(
-                                //   context,
-                                //   listen: false,
-                                // ).deleteUser();
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -349,10 +338,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
                                 return TopNavBar(
                                   role:
-                                      // localUser != null
-                                      //     ? localUser.role
-                                      //     :
-                                      'Owner',
+                                      userGeneral(
+                                        context,
+                                      ).role,
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -487,21 +475,16 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                       emp,
                                                                     ) =>
                                                                         emp.staffName ==
-                                                                        'Alex',
+                                                                        userGeneral(
+                                                                          context,
+                                                                        ).name,
                                                                     // localUser?.name,
                                                                   )
                                                                   .toList(),
                                                               records,
                                                             ),
-                                                            currentUser: TempUserClass(
-                                                              password:
-                                                                  'password',
-                                                              name:
-                                                                  'name',
-                                                              email:
-                                                                  'email',
-                                                              role:
-                                                                  'role',
+                                                            currentUser: userGeneral(
+                                                              context,
                                                             ),
                                                             // returnLocalDatabase(
                                                             //   context,
@@ -777,7 +760,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         children: [
                                                           Visibility(
                                                             visible:
-                                                                true,
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
                                                             // returnLocalDatabase(
                                                             //   context,
                                                             //   listen:
@@ -800,17 +786,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     ) {
                                                                       return EmployeeListPage(
                                                                         empId:
-                                                                            // localUser !=
-                                                                            //         null
-                                                                            //     ? localUser.userId!
-                                                                            //     :
-                                                                            '',
-                                                                        role:
-                                                                            // localUser !=
-                                                                            //         null
-                                                                            //     ? localUser.role
-                                                                            //     :
-                                                                            'Owner',
+                                                                            userGeneral(
+                                                                              context,
+                                                                            ).userId!,
                                                                       );
                                                                     },
                                                                   ),
@@ -820,7 +798,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           ),
                                                           Visibility(
                                                             visible:
-                                                                true,
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
                                                             // returnLocalDatabase(
                                                             //   context,
                                                             //   listen:
@@ -1007,7 +988,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         children: [
                                                           Visibility(
                                                             visible:
-                                                                true,
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
                                                             // returnLocalDatabase(
                                                             //   context,
                                                             //   listen:
@@ -1030,17 +1014,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     ) {
                                                                       return EmployeeListPage(
                                                                         empId:
-                                                                            // localUser !=
-                                                                            //         null
-                                                                            //     ? localUser.userId!
-                                                                            //     :
-                                                                            'Owner',
-                                                                        role:
-                                                                            // localUser !=
-                                                                            //         null
-                                                                            //     ? localUser.role
-                                                                            //     :
-                                                                            'Owner',
+                                                                            userGeneral(
+                                                                              context,
+                                                                            ).role,
                                                                       );
                                                                     },
                                                                   ),
@@ -1050,7 +1026,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           ),
                                                           Visibility(
                                                             visible:
-                                                                true,
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
                                                             // returnLocalDatabase(
                                                             //   context,
                                                             //   listen:
@@ -1114,7 +1093,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
                             //             .role ==
                             //         'Owner'
                             //     :
-                            true,
+                            userGeneral(context).role ==
+                            'Owner',
                         child: Align(
                           alignment: Alignment(
                             1,

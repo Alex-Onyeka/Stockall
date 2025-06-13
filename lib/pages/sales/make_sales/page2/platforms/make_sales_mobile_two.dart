@@ -12,6 +12,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class MakeSalesMobileTwo extends StatefulWidget {
   final double totalAmount;
@@ -52,12 +53,7 @@ class _MakeSalesMobileTwoState
   late Future<TempUserClass?> localUserFuture;
 
   Future<TempUserClass?> getLocalUser() async {
-    var tempUser = TempUserClass(
-      password: 'password',
-      name: 'name',
-      email: 'email',
-      role: 'role',
-    );
+    var tempUser = userGeneral(context);
     // await returnLocalDatabase(
     //   context,
     //   listen: false,
@@ -625,13 +621,15 @@ class _MakeSalesMobileTwoState
                                                       false,
                                                 ).cartItems,
                                             staffId:
-                                                snapshot
-                                                    .data!
-                                                    .userId!,
+                                                AuthService()
+                                                    .currentUser!
+                                                    .id,
                                             staffName:
-                                                snapshot
-                                                    .data!
-                                                    .name,
+                                                returnUserProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).currentUserMain!.name,
                                             shopId:
                                                 returnShopProvider(
                                                   context,

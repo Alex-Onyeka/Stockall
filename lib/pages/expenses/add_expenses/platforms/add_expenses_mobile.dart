@@ -103,9 +103,17 @@ class _AddExpensesMobileState
               if (widget.expenses == null) {
                 await expensesProvider.addExpense(
                   TempExpensesClass(
-                    creator: 'Owner',
+                    creator:
+                        returnUserProvider(
+                          context,
+                          listen: false,
+                        ).currentUserMain!.name,
                     // localProvider.currentEmployee!.name,
-                    userId: AuthService().currentUser!.id,
+                    userId:
+                        returnUserProvider(
+                          context,
+                          listen: false,
+                        ).currentUserMain!.userId!,
                     // localProvider
                     //     .currentEmployee!
                     //     .userId!,
@@ -134,9 +142,17 @@ class _AddExpensesMobileState
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(
-                    creator: 'Alex Onyeka',
+                    creator:
+                        returnUserProvider(
+                          context,
+                          listen: false,
+                        ).currentUserMain!.name,
                     // localProvider.currentEmployee!.name,
-                    userId: AuthService().currentUser!.id,
+                    userId:
+                        returnUserProvider(
+                          context,
+                          listen: false,
+                        ).currentUserMain!.userId!,
                     // localProvider
                     //     .currentEmployee!
                     //     .userId!,

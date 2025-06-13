@@ -20,13 +20,13 @@ class MyDrawerWidget extends StatefulWidget {
   final ThemeProvider theme;
   final Function()? action;
   final List<TempNotification> notifications;
-  final String role;
+  // final String role;
   const MyDrawerWidget({
     super.key,
     required this.theme,
     required this.notifications,
     required this.action,
-    required this.role,
+    // required this.role,
   });
 
   @override
@@ -37,39 +37,40 @@ class MyDrawerWidget extends StatefulWidget {
 class _MyDrawerWidgetState extends State<MyDrawerWidget> {
   late Future<List<TempUserClass>> employeesFuture;
 
-  Future<List<TempUserClass>> getEmployees() async {
-    var tempEmployees =
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchUsers();
+  // Future<List<TempUserClass>> getEmployees() async {
+  //   var tempEmployees =
+  //       await returnUserProvider(
+  //         context,
+  //         listen: false,
+  //       ).fetchUsers();
 
-    var mainBeans =
-        tempEmployees
-            .where(
-              (emp) =>
-                  emp.userId !=
-                  AuthService().currentUser!.id,
-            )
-            .toList();
+  //   var mainBeans =
+  //       tempEmployees
+  //           .where(
+  //             (emp) =>
+  //                 emp.userId !=
+  //                 AuthService().currentUser!.id,
+  //           )
+  //           .toList();
 
-    // returnLocalDatabase(
-    //   // ignore: use_build_context_synchronously
-    //   context,
-    //   listen: false,
-    // ).currentEmployees.addAll(mainBeans);
+  //   // returnLocalDatabase(
+  //   //   // ignore: use_build_context_synchronously
+  //   //   context,
+  //   //   listen: false,
+  //   // ).currentEmployees.addAll(mainBeans);
 
-    return mainBeans;
-  }
+  //   return mainBeans;
+  // }
 
   @override
   void initState() {
     super.initState();
-    employeesFuture = getEmployees();
+    // employeesFuture = getEmployees();
   }
 
   @override
   Widget build(BuildContext context) {
+    var user = returnUserProvider(context).currentUserMain;
     return Drawer(
       backgroundColor: Colors.white,
       child: Padding(
@@ -158,7 +159,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             Visibility(
                               visible:
-                                  widget.role == 'Owner',
+                                  user?.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () {
@@ -211,7 +212,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             Visibility(
                               visible:
-                                  widget.role == 'Owner',
+                                  user?.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 16,
                                 action: () {
@@ -236,7 +237,6 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                           //           false,
                                           //     ).currentEmployee!.userId!
                                           //     : '',
-                                          role: 'Owner',
                                           // returnLocalDatabase(
                                           //           context,
                                           //           listen:
@@ -317,7 +317,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               },
                               child: Visibility(
                                 visible:
-                                    widget.role == 'Owner',
+                                    user?.role == 'Owner',
                                 child: SizedBox(
                                   height: 50,
                                   child: Padding(
@@ -477,7 +477,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             Visibility(
                               visible:
-                                  widget.role == 'Owner',
+                                  user?.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () async {
@@ -489,7 +489,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             Visibility(
                               visible:
-                                  widget.role == 'Owner',
+                                  user?.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () async {

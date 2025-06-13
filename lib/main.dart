@@ -27,15 +27,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   SystemUiOverlayStyle(
-  //     statusBarColor: Colors.white, // or any color
-  //     statusBarIconBrightness:
-  //         Brightness.dark, // for Android
-  //     systemNavigationBarContrastEnforced: true,
-  //     statusBarBrightness: Brightness.light, // for iOS
-  //   ),
-  // );
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.white, // or any color
+      statusBarIconBrightness:
+          Brightness.dark, // for Android
+      systemNavigationBarContrastEnforced: true,
+      statusBarBrightness: Brightness.light, // for iOS
+    ),
+  );
   // // Lock to portrait only
   // await SystemChrome.setPreferredOrientations([
   //   DeviceOrientation.portraitUp,
@@ -107,6 +107,10 @@ void main() async {
 
 String userId() {
   return 'user_001';
+}
+
+TempUserClass userGeneral(BuildContext context) {
+  return returnUserProvider(context).currentUserMain!;
 }
 
 // String userIdMain() {
@@ -385,70 +389,61 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (_) => ThemeProvider(),
             ),
+            ChangeNotifierProvider(
+              create: (_) => SalesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => CompProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => NavProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => DataProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => CustomersProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ValidateInputProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ShopProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => UserProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ReceiptsProvider(),
+            ),
             // ChangeNotifierProvider(
-            //   create: (_) => SalesProvider(),
+            //   create: (_) => LocalUserDatabase(),
             // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => CompProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => NavProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => DataProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => CustomersProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => ValidateInputProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => ShopProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => UserProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => ReceiptsProvider(),
-            // ),
-            // // ChangeNotifierProvider(
-            // //   create: (_) => LocalUserDatabase(),
-            // // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => AuthService(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => NotificationProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => ExpensesProvider(),
-            // ),
-            // ChangeNotifierProvider(
-            //   create: (_) => ReportProvider(),
-            // ),
+            ChangeNotifierProvider(
+              create: (_) => AuthService(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => NotificationProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ExpensesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ReportProvider(),
+            ),
           ],
           child: MaterialApp(
-            // initialRoute: snap "/",
-            // routes: {
-            //   '/': (context) => BasePage(),
-            //   '/launch': (context) => LaunchScreen(),
-            //   // '/forgot-password':
-            //   //     (context) => ForgotPasswordPage(),
-            //   '/login': (context) => LoginPage(),
-            //   '/splash': (context) => SplashScreen(),
-            //   '/reset-password':
-            //       (context) => EnterNewPassword(),
-            // },
-            home:
-                snapshot.connectionState ==
-                        ConnectionState.waiting
-                    ? Scaffold(
-                      body: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    )
-                    : SplashScreen(),
+            initialRoute: "/",
+            routes: {
+              '/': (context) => BasePage(),
+              '/launch': (context) => LaunchScreen(),
+              // '/forgot-password':
+              //     (context) => ForgotPasswordPage(),
+              '/login': (context) => LoginPage(),
+              '/splash': (context) => SplashScreen(),
+              '/reset-password':
+                  (context) => EnterNewPassword(),
+            },
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               appBarTheme: AppBarTheme(

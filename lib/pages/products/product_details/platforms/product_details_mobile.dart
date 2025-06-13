@@ -88,16 +88,7 @@ class _ProductDetailsMobileState
 
   @override
   Widget build(BuildContext context) {
-    final localUser = TempUserClass(
-      password: 'password',
-      name: 'name',
-      email: 'email',
-      role: 'role',
-    );
-    // returnLocalDatabase(
-    //   context,
-    //   listen: false,
-    // ).currentEmployee;
+    final localUser = userGeneral(context);
     return FutureBuilder(
       future: productFuture,
       builder: (context, snapshot) {
@@ -131,7 +122,7 @@ class _ProductDetailsMobileState
                   context: context,
                   title: 'Product Details',
                   widget: Visibility(
-                    visible: localUser!.role == 'Owner',
+                    visible: localUser.role == 'Owner',
                     child: InkWell(
                       onTap: () {
                         Navigator.push(

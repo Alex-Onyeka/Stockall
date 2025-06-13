@@ -119,14 +119,12 @@ class _ProductPageMobileState
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
-              role: '',
               action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
-              role: '',
               action: () {},
               theme: theme,
               notifications: [],
@@ -135,19 +133,12 @@ class _ProductPageMobileState
             List<TempNotification> notifications =
                 snapshot.data!;
 
-            TempUserClass? localUser = TempUserClass(
-              password: 'password',
-              name: 'name',
-              email: 'email',
-              role: 'role',
-            );
             // returnLocalDatabase(
             //   context,
             //   listen: false,
             // ).currentEmployee;
 
             return MyDrawerWidget(
-              role: localUser != null ? localUser.role : '',
               action: () {
                 showDialog(
                   context: context,
@@ -453,7 +444,8 @@ class _ProductPageMobileState
                               //     context,
                               //     listen: false,
                               //   ).currentEmployee!.role !=
-                              'Owner' == 'Owner') {
+                              userGeneral(context).role ==
+                                  'Owner') {
                                 return Center(
                                   child: SingleChildScrollView(
                                     child: EmptyWidgetDisplayOnly(

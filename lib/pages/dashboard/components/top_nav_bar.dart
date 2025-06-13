@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -248,6 +249,7 @@ class TopNavBar extends StatelessWidget {
                         //       context,
                         //       listen: false,
                         //     );
+
                         showDialog(
                           context: context,
                           builder: (dialogContext) {
@@ -281,20 +283,20 @@ class TopNavBar extends StatelessWidget {
                                     .signOut();
                                 // await localUser
                                 //     .deleteUser();
-                                // if (context.mounted) {
-                                //   Navigator.pushReplacement(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) {
-                                //         return AuthScreensPage();
-                                //       },
-                                //     ),
-                                //   );
-                                //   returnNavProvider(
-                                //     context,
-                                //     listen: false,
-                                //   ).navigate(0);
-                                // }
+                                if (context.mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return AuthScreensPage();
+                                      },
+                                    ),
+                                  );
+                                  returnNavProvider(
+                                    context,
+                                    listen: false,
+                                  ).navigate(0);
+                                }
                               },
                             );
                           },

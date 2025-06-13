@@ -41,7 +41,7 @@ class _SplashMobileState extends State<SplashMobile> {
                 title:
                     'Manage Stocks and Track Sales in Real Time',
                 subTitle:
-                    'Stay on top of your inventory and monitor sales as they happen, all in one place.',
+                    'Stay on top of your inventory and monitor sales as they happen, all in one place..',
                 lottie:
                     'assets/animations/shop_setup_icon.json',
                 constraints: widget.constraints,

@@ -581,13 +581,10 @@ class _DetailsPageContainerState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Visibility(
-                visible: true,
-                // returnLocalDatabase(
-                //       context,
-                //     ).currentEmployee!.role ==
-                //     'Owner' &&
-                // widget.employee.userId !=
-                //     AuthService().currentUser!.id,
+                visible:
+                    userGeneral(context).role == 'Owner' &&
+                    widget.employee.userId !=
+                        AuthService().currentUser!.id,
                 child: CustomerActionButton(
                   icon: Icons.delete_outline_rounded,
                   color:

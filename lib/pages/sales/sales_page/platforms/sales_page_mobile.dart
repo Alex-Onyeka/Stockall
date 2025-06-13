@@ -132,14 +132,12 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return MyDrawerWidget(
-              role: '',
               action: () {},
               theme: theme,
               notifications: [],
             );
           } else if (snapshot.hasError) {
             return MyDrawerWidget(
-              role: '',
               action: () {},
               theme: theme,
               notifications: [],
@@ -147,19 +145,13 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           } else {
             List<TempNotification> notifications =
                 snapshot.data!;
-            var localUser = TempUserClass(
-              password: 'password',
-              name: 'name',
-              email: 'email',
-              role: 'role',
-            );
-            // returnLocalDatabase(
-            //   context,
-            //   listen: false,
-            // ).currentEmployee;
+            // var localUser = userGeneral(context);
+            // // returnLocalDatabase(
+            // //   context,
+            // //   listen: false,
+            // // ).currentEmployee;
 
             return MyDrawerWidget(
-              role: localUser != null ? localUser.role : '',
               action: () {
                 showDialog(
                   context: context,
@@ -324,15 +316,11 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         records =
                                             snapshot.data!;
                                         return ItemsSummary(
-                                          isFilter: true,
-                                          // returnLocalDatabase(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     )
-                                          //     .currentEmployee!
-                                          //     .role ==
-                                          // 'Owner',
+                                          isFilter:
+                                              userGeneral(
+                                                context,
+                                              ).role ==
+                                              'Owner',
                                           isMoney1: true,
                                           mainTitle:
                                               'Sales Summary',

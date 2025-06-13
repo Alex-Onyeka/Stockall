@@ -280,7 +280,7 @@ class _DetailsPageContainerState
                               return ConfirmationAlert(
                                 theme: widget.theme,
                                 message:
-                                    'You are about to delete your customer, are you sure you want to proceed?',
+                                    'You are about to delete your Expenses, are you sure you want to proceed?',
                                 title: 'Are you sure?',
                                 action: () async {
                                   if (safeContext.mounted) {
