@@ -90,7 +90,7 @@ class _ProductSummaryTabState
                   fontWeight: FontWeight.bold,
                   color: Colors.grey.shade700,
                 ),
-                formatLargeNumberDouble(widget.value),
+                formatMoney(widget.value),
               ),
             ],
           ),

@@ -327,7 +327,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                   .currentEmployee!
                                                   .role ==
                                               'Owner',
-                                          isMoney1: true,
+                                          isMoney1: false,
                                           mainTitle:
                                               'Sales Summary',
                                           subTitle:

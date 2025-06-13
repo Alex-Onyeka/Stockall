@@ -119,18 +119,21 @@ class _DashboardTotalSalesBannerState
                     },
                     child: Row(
                       children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .h2
-                                    .fontSize,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                        Visibility(
+                          visible: !visible.isVisible,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .h2
+                                      .fontSize,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            nairaSymbol,
                           ),
-                          nairaSymbol,
                         ),
                         SizedBox(width: 5),
                         Text(
@@ -147,7 +150,7 @@ class _DashboardTotalSalesBannerState
                           returnCompProvider(
                             context,
                           ).returnMoney(
-                            formatLargeNumberDoubleWidgetDecimal(
+                            formatMoneyMid(
                               widget.value != null
                                   ? widget.value!
                                   : 0,

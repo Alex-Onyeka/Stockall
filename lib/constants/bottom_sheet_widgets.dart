@@ -1529,7 +1529,26 @@ class _CustomBottomPanelState
                                     .b1
                                     .fontWeightBold,
                           ),
-                          '$nairaSymbol${priceController.text.isEmpty ? formatLargeNumberDouble(qqty * (returnSalesProvider(context, listen: false).discountCheck(cartItem.item))) : formatLargeNumberDouble(double.tryParse(priceController.text.replaceAll(',', '')) ?? 0)}',
+                          priceController.text.isEmpty
+                              ? formatMoneyBig(
+                                qqty *
+                                    (returnSalesProvider(
+                                      context,
+                                      listen: false,
+                                    ).discountCheck(
+                                      cartItem.item,
+                                    )),
+                              )
+                              : formatMoneyBig(
+                                double.tryParse(
+                                      priceController.text
+                                          .replaceAll(
+                                            ',',
+                                            '',
+                                          ),
+                                    ) ??
+                                    0,
+                              ),
                         ),
                       ],
                     ),

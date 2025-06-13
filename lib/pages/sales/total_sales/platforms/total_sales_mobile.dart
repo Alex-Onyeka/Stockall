@@ -525,7 +525,7 @@ class ValueSummaryTabSmall extends StatelessWidget {
                 Row(
                   children: [
                     Visibility(
-                      visible: isMoney,
+                      visible: false,
                       child: Text(
                         style: TextStyle(
                           fontSize: 13,
@@ -542,7 +542,7 @@ class ValueSummaryTabSmall extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         color: Colors.grey.shade700,
                       ),
-                      formatLargeNumberDouble(value),
+                      formatMoney(value),
                     ),
                   ],
                 ),

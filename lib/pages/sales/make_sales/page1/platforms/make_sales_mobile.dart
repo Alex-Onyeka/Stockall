@@ -922,7 +922,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       .fontSize,
                                               // fontWeight: FontWeight.bold,
                                             ),
-                                            'N${formatLargeNumberDouble(returnSalesProvider(context).calcTotalMain(returnSalesProvider(context).cartItems))}',
+                                            formatMoneyBig(
+                                              returnSalesProvider(
+                                                context,
+                                              ).calcTotalMain(
+                                                returnSalesProvider(
+                                                  context,
+                                                ).cartItems,
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -952,7 +960,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       .fontSize,
                                               // fontWeight: FontWeight.bold,
                                             ),
-                                            '- N${formatLargeNumberDouble(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
+                                            '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
                                           ),
                                         ],
                                       ),
@@ -986,7 +994,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   FontWeight
                                                       .bold,
                                             ),
-                                            'N${formatLargeNumberDouble(returnSalesProvider(context).calcFinalTotalMain(returnSalesProvider(context).cartItems))}',
+                                            formatMoneyBig(
+                                              returnSalesProvider(
+                                                context,
+                                              ).calcFinalTotalMain(
+                                                returnSalesProvider(
+                                                  context,
+                                                ).cartItems,
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),

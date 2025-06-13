@@ -51,3 +51,100 @@ String cutLongText(String text, int length) {
   }
   return text;
 }
+
+// String formatMoney(num amount) {
+//   if (amount < 1000000) {
+//     return NumberFormat.currency(
+//       locale: 'en_NG', // Nigerian locale
+//       symbol: '₦',
+//       decimalDigits: 1,
+//     ).format(amount);
+//   } else {
+//     return NumberFormat.compactCurrency(
+//       locale: 'en_NG',
+//       symbol: '₦',
+//       decimalDigits: 1,
+//     ).format(amount);
+//   }
+// }
+
+String formatMoney(num amount) {
+  if (amount < 1000000) {
+    return NumberFormat.currency(
+      locale: 'en_NG',
+      symbol: '₦',
+      decimalDigits: 1,
+    ).format(amount);
+  } else {
+    String symbol = '₦';
+    String suffix = '';
+    double value = amount.toDouble();
+
+    if (value >= 1_000_000_000) {
+      value = value / 1_000_000_000;
+      suffix = 'B';
+    } else if (value >= 1_000_000) {
+      value = value / 1_000_000;
+      suffix = 'M';
+    }
+
+    String formatted = value.toStringAsFixed(
+      1,
+    ); // Ensures .0 is included
+    return '$symbol$formatted $suffix';
+  }
+}
+
+String formatMoneyMid(num amount) {
+  if (amount < 100000000) {
+    return NumberFormat.currency(
+      locale: 'en_NG',
+      symbol: '₦',
+      decimalDigits: 1,
+    ).format(amount);
+  } else {
+    String symbol = '₦';
+    String suffix = '';
+    double value = amount.toDouble();
+
+    if (value >= 1_000_000_000) {
+      value = value / 1_000_000_000;
+      suffix = 'B';
+    } else if (value >= 1_000_000) {
+      value = value / 1_000_000;
+      suffix = 'M';
+    }
+
+    String formatted = value.toStringAsFixed(
+      1,
+    ); // Ensures .0 is included
+    return '$symbol$formatted $suffix';
+  }
+}
+
+String formatMoneyBig(num amount) {
+  if (amount < 1000000000) {
+    return NumberFormat.currency(
+      locale: 'en_NG',
+      symbol: '₦',
+      decimalDigits: 1,
+    ).format(amount);
+  } else {
+    String symbol = '₦';
+    String suffix = '';
+    double value = amount.toDouble();
+
+    if (value >= 1_000_000_000) {
+      value = value / 1_000_000_000;
+      suffix = 'B';
+    } else if (value >= 1_000_000) {
+      value = value / 1_000_000;
+      suffix = 'M';
+    }
+
+    String formatted = value.toStringAsFixed(
+      1,
+    ); // Ensures .0 is included
+    return '$symbol$formatted $suffix';
+  }
+}
