@@ -385,48 +385,48 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (_) => ThemeProvider(),
             ),
-            ChangeNotifierProvider(
-              create: (_) => SalesProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => CompProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => NavProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => DataProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => CustomersProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => ValidateInputProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => ShopProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => UserProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => ReceiptsProvider(),
-            ),
             // ChangeNotifierProvider(
-            //   create: (_) => LocalUserDatabase(),
+            //   create: (_) => SalesProvider(),
             // ),
-            ChangeNotifierProvider(
-              create: (_) => AuthService(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => NotificationProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => ExpensesProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => ReportProvider(),
-            ),
+            // ChangeNotifierProvider(
+            //   create: (_) => CompProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => NavProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => DataProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => CustomersProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => ValidateInputProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => ShopProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => UserProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => ReceiptsProvider(),
+            // ),
+            // // ChangeNotifierProvider(
+            // //   create: (_) => LocalUserDatabase(),
+            // // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => AuthService(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => NotificationProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => ExpensesProvider(),
+            // ),
+            // ChangeNotifierProvider(
+            //   create: (_) => ReportProvider(),
+            // ),
           ],
           child: MaterialApp(
             // initialRoute: snap "/",
@@ -443,8 +443,10 @@ class MyApp extends StatelessWidget {
             home:
                 snapshot.connectionState ==
                         ConnectionState.waiting
-                    ? Center(
-                      child: CircularProgressIndicator(),
+                    ? Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     )
                     : SplashScreen(),
             debugShowCheckedModeBanner: false,
