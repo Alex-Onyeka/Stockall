@@ -70,7 +70,7 @@ class _ShopBannerScreenState
                       color:
                           theme.lightModeColor.secColor200,
                     ),
-                    'You account has been Created Successfully',
+                    'Your account has been Created Successfully',
                   ),
                   SizedBox(height: 10),
                   Text(
