@@ -109356,7 +109356,9 @@ p=A.j(j?"Clear Date":"Set Date",h,h,h,h,p,h,h)
 g=g.a.y
 if(!(k&&l)){m=m.k4
 m=m===!0}else m=!0
-g=A.C(A.a([q,A.b4(B.H,A.a([A.ag(A.iF(A.C(A.a([p,A.au(m?B.R:B.iY,g,h,20)],n),B.e,B.h,B.c,3),r),o===!0),A.ag(A.iF(A.C(A.a([A.au(B.cl,g,h,20),A.j("Add Product",h,h,h,h,A.m(h,h,B.O,h,h,h,h,h,h,h,h,s,h,h,B.j,h,h,!0,h,h,h,h,h,h,h,h),h,h)],n),B.e,B.h,B.c,3),new A.aUC(a)),!0)],n),B.q,B.E)],n),B.e,c,B.c,0)
+r=A.ag(A.iF(A.C(A.a([p,A.au(m?B.R:B.iY,g,h,20)],n),B.e,B.h,B.c,3),r),o===!0)
+p=i.a.k1!=null&&A.f(a,!0,t.R).d.y==="Owner"
+g=A.C(A.a([q,A.b4(B.H,A.a([r,A.ag(A.iF(A.C(A.a([A.au(B.cl,g,h,20),A.j("Add Product",h,h,h,h,A.m(h,h,B.O,h,h,h,h,h,h,h,h,s,h,h,B.j,h,h,!0,h,h,h,h,h,h,h,h),h,h)],n),B.e,B.h,B.c,3),new A.aUC(a)),p)],n),B.q,B.E)],n),B.e,c,B.c,0)
 c=i.a.e
 s=A.aA(a,h,t.l).w
 r=i.a6Y()
@@ -115951,7 +115953,7 @@ $1(a){var s,r,q,p,o=this,n=null,m="You have no Products Yet",l=o.b,k=J.aB(l)
 if(k.ga6(l)){l=A.f(a,!0,t.R).d.y
 k=o.a
 s=k.a
-if(l==="Owner")return A.aW(A.cV(A.fd(35,B.R,"No Product has been added to this store yet.",s.c,m),B.q,n,B.S),n,n)
+if(l!=="Owner")return A.aW(A.cV(A.fd(35,B.R,"No Product has been added to this store yet.",s.c,m),B.q,n,B.S),n,n)
 else return A.aW(A.cV(A.ed(new A.aZI(k,a),"Add Product",35,n,u.P,"assets/svgs/product_icon.svg",s.c,m),B.q,n,B.S),n,n)}else{s=o.a
 r=o.c
 q=r.a.y
@@ -119071,22 +119073,25 @@ p=A.aA(a,n,r).w
 s.push(A.ch(n,A.bp(B.C,n,A.n(A.cV(A.B(A.a([A.n(n,A.aA(a,n,r).w.a.b*0.02,n),A.aW(new A.X(B.bd,A.R(n,new A.lF(new A.b7X(a),new A.b7Y(a),n,n),B.i,B.l,n,n,n,500,n,new A.H(20,20,20,20),n,n,400),n),n,n),A.n(n,A.aA(a,n,r).w.a.b*0.3,n)],q),B.e,B.h,B.c,0),B.q,n,B.S),p.a.b,n),B.i,B.l0,0,n,n,n,n,n,B.G),B.P,!1,n,n,n,n,n,n,n,n,n,n,n,n,n,new A.b7Z(a),n,n,n,n,n,n))}return A.b4(B.H,s,B.q,B.E)}}},
 $S:157}
 A.b7V.prototype={
-$2(a,b){var s,r,q,p,o,n,m=null,l="Total Revenue",k=2000,j="Sales Number"
-if(b.a===B.J)s=A.C(A.a([new A.pV(k,l,B.bn,m),new A.pV(k,j,B.bw,m)],t.p),B.e,B.h,B.c,10)
+$2(a,b){var s,r,q,p,o,n,m,l=null,k="Total Revenue",j=2000,i="Sales Number"
+if(b.a===B.J)s=A.C(A.a([new A.pV(j,k,B.bn,l),new A.pV(j,i,B.bw,l)],t.p),B.e,B.h,B.c,10)
 else{s=t.p
-if(b.c!=null)s=A.C(A.a([new A.pV(k,l,B.bn,m),new A.pV(k,j,B.bw,m)],s),B.e,B.h,B.c,10)
+if(b.c!=null)s=A.C(A.a([new A.pV(j,k,B.bn,l),new A.pV(j,i,B.bw,l)],s),B.e,B.h,B.c,10)
 else{r=A.f(a,!1,t._)
 q=this.a
 p=b.b
 p.toString
-s=A.C(A.a([new A.pV(r.lp(a,q,p),l,B.bn,m),new A.pV(q.length,j,B.bw,m)],s),B.e,B.h,B.c,10)}}r=A.ag(A.n(m,30,m),!0)
-q=this.b
-p=A.m(m,m,B.O,m,m,m,m,m,m,m,m,q.b.f.a,m,m,B.j,m,m,!0,m,m,m,m,m,m,m,m)
-o=t._
-p=A.j(A.f(a,!0,o).f||A.f(a,!0,o).e?"Clear Date":"Set Date",m,m,m,m,p,m,m)
-o=A.f(a,!0,o).f||A.f(a,!0,o).e?B.R:B.iY
-n=t.p
-return A.B(A.a([s,r,A.ag(A.C(A.a([A.iF(A.C(A.a([p,A.au(o,q.a.y,m,20)],n),B.e,B.h,B.c,3),new A.b7U(a))],n),B.e,B.bG,B.c,0),!0)],n),B.e,B.h,B.c,0)},
+s=A.C(A.a([new A.pV(r.lp(a,q,p),k,B.bn,l),new A.pV(q.length,i,B.bw,l)],s),B.e,B.h,B.c,10)}}r=t.R
+q=A.f(a,!0,r).d.y
+q=A.ag(A.n(l,30,l),q!=="Owner")
+r=A.f(a,!0,r).d.y
+p=this.b
+o=A.m(l,l,B.O,l,l,l,l,l,l,l,l,p.b.f.a,l,l,B.j,l,l,!0,l,l,l,l,l,l,l,l)
+n=t._
+o=A.j(A.f(a,!0,n).f||A.f(a,!0,n).e?"Clear Date":"Set Date",l,l,l,l,o,l,l)
+n=A.f(a,!0,n).f||A.f(a,!0,n).e?B.R:B.iY
+m=t.p
+return A.B(A.a([s,q,A.ag(A.C(A.a([A.iF(A.C(A.a([o,A.au(n,p.a.y,l,20)],m),B.e,B.h,B.c,3),new A.b7U(a))],m),B.e,B.bG,B.c,0),r==="Owner")],m),B.e,B.h,B.c,0)},
 $S:785}
 A.b7U.prototype={
 $0(){var s=this.a,r=t._

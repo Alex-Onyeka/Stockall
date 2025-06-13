@@ -444,7 +444,7 @@ class _ProductPageMobileState
                               //     context,
                               //     listen: false,
                               //   ).currentEmployee!.role !=
-                              userGeneral(context).role ==
+                              userGeneral(context).role !=
                                   'Owner') {
                                 return Center(
                                   child: SingleChildScrollView(
