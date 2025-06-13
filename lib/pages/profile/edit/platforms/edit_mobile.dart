@@ -69,7 +69,9 @@ class _EditMobileState extends State<EditMobile> {
         Scaffold(
           appBar: appBar(
             context: context,
-            main: true,
+            main:
+                widget.action == 'PIN' &&
+                widget.main != null,
             title:
                 widget.action == 'normal'
                     ? 'Edit Profile'
