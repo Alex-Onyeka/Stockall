@@ -446,7 +446,7 @@ class MyApp extends StatelessWidget {
                     ? Center(
                       child: CircularProgressIndicator(),
                     )
-                    : BasePage(),
+                    : SplashScreen(),
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               appBarTheme: AppBarTheme(
