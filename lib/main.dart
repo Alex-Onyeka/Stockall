@@ -44,63 +44,64 @@ void main() async {
 
   // Hive.registerAdapter(TempUserClassAdapter());
   // await LocalUserDatabase().init();
-  await Supabase.initialize(
-    url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
-  );
+  // await Supabase.initialize(
+  //   url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
+  //   anonKey:
+  //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
+  // );
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => ThemeProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SalesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CompProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => NavProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DataProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CustomersProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ValidateInputProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ShopProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ReceiptsProvider(),
-        ),
-        // ChangeNotifierProvider(
-        //   create: (_) => LocalUserDatabase(),
-        // ),
-        ChangeNotifierProvider(
-          create: (_) => AuthService(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => NotificationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ExpensesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ReportProvider(),
-        ),
-      ],
-      child: MyApp(),
-    ),
+    // MultiProvider(
+    //   providers: [
+    //     ChangeNotifierProvider(
+    //       create: (_) => ThemeProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => SalesProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => CompProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => NavProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => DataProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => CustomersProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => ValidateInputProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => ShopProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => UserProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => ReceiptsProvider(),
+    //     ),
+    //     // ChangeNotifierProvider(
+    //     //   create: (_) => LocalUserDatabase(),
+    //     // ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => AuthService(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => NotificationProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => ExpensesProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (_) => ReportProvider(),
+    //     ),
+    //   ],
+    //   child: MyApp(),
+    // ),
+    MyApp(),
   );
 }
 
@@ -305,98 +306,170 @@ Widget colorWidget(
   );
 }
 
-class MyApp extends StatefulWidget {
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//   }
+
+//   @override
+//   void dispose() {
+//     WidgetsBinding.instance.removeObserver(this);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(
+//     AppLifecycleState state,
+//   ) async {
+//     final box = await Hive.openBox('authBox');
+
+//     if (state == AppLifecycleState.paused) {
+//       await box.put('wasClosed', true);
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return _EntryPoint();
+//   }
+// }
+
+// class _EntryPoint extends StatefulWidget {
+//   @override
+//   State<_EntryPoint> createState() => _EntryPointState();
+// }
+
+// class _EntryPointState extends State<_EntryPoint> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     Future.delayed(Duration.zero, () async {
+//       final box = await Hive.openBox('authBox');
+//       final wasClosed = box.get(
+//         'wasClosed',
+//         defaultValue: false,
+//       );
+//       if (wasClosed) {
+//         await box.put('wasClosed', false);
+//         if (context.mounted) {
+//           Navigator.pushReplacement(
+//             context,
+//             MaterialPageRoute(builder: (_) => EmpAuth()),
+//           );
+//         }
+//       }
+//     });
+//   }
+
+/*with WidgetsBindingObserver*/
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+  Future<void> _initializeSupabase() async {
+    await Supabase.initialize(
+      url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
+    );
+  }
 
-class _MyAppState
-    extends State<MyApp> /*with WidgetsBindingObserver*/ {
-  //   @override
-  //   void initState() {
-  //     super.initState();
-  //     WidgetsBinding.instance.addObserver(this);
-  //   }
-
-  //   @override
-  //   void dispose() {
-  //     WidgetsBinding.instance.removeObserver(this);
-  //     super.dispose();
-  //   }
-
-  //   @override
-  //   void didChangeAppLifecycleState(
-  //     AppLifecycleState state,
-  //   ) async {
-  //     final box = await Hive.openBox('authBox');
-
-  //     if (state == AppLifecycleState.paused) {
-  //       await box.put('wasClosed', true);
-  //     }
-  //   }
-
-  //   @override
-  //   Widget build(BuildContext context) {
-  //     return _EntryPoint();
-  //   }
-  // }
-
-  // class _EntryPoint extends StatefulWidget {
-  //   @override
-  //   State<_EntryPoint> createState() => _EntryPointState();
-  // }
-
-  // class _EntryPointState extends State<_EntryPoint> {
-  //   @override
-  //   void initState() {
-  //     super.initState();
-  //     Future.delayed(Duration.zero, () async {
-  //       final box = await Hive.openBox('authBox');
-  //       final wasClosed = box.get(
-  //         'wasClosed',
-  //         defaultValue: false,
-  //       );
-  //       if (wasClosed) {
-  //         await box.put('wasClosed', false);
-  //         if (context.mounted) {
-  //           Navigator.pushReplacement(
-  //             context,
-  //             MaterialPageRoute(builder: (_) => EmpAuth()),
-  //           );
-  //         }
-  //       }
-  //     });
-  //   }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: "/",
-      routes: {
-        '/': (context) => BasePage(),
-        '/launch': (context) => LaunchScreen(),
-        // '/forgot-password':
-        //     (context) => ForgotPasswordPage(),
-        '/login': (context) => LoginPage(),
-        '/splash': (context) => SplashScreen(),
-        '/reset-password': (context) => EnterNewPassword(),
-      },
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            systemStatusBarContrastEnforced: true,
+    return FutureBuilder(
+      future: _initializeSupabase(),
+      builder: (context, snapshot) {
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => ThemeProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => SalesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => CompProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => NavProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => DataProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => CustomersProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ValidateInputProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ShopProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => UserProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ReceiptsProvider(),
+            ),
+            // ChangeNotifierProvider(
+            //   create: (_) => LocalUserDatabase(),
+            // ),
+            ChangeNotifierProvider(
+              create: (_) => AuthService(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => NotificationProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ExpensesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => ReportProvider(),
+            ),
+          ],
+          child: MaterialApp(
+            // initialRoute: snap "/",
+            // routes: {
+            //   '/': (context) => BasePage(),
+            //   '/launch': (context) => LaunchScreen(),
+            //   // '/forgot-password':
+            //   //     (context) => ForgotPasswordPage(),
+            //   '/login': (context) => LoginPage(),
+            //   '/splash': (context) => SplashScreen(),
+            //   '/reset-password':
+            //       (context) => EnterNewPassword(),
+            // },
+            home:
+                snapshot.connectionState ==
+                        ConnectionState.waiting
+                    ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                    : BasePage(),
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(
+                systemOverlayStyle: SystemUiOverlayStyle(
+                  systemStatusBarContrastEnforced: true,
+                ),
+                backgroundColor: Colors.white,
+                centerTitle: true,
+                elevation: 0,
+                toolbarHeight: 80,
+              ),
+              scaffoldBackgroundColor: Colors.white,
+              fontFamily: 'Plus Jakarta Sans',
+              primaryColor: const Color.fromRGBO(
+                25,
+                43,
+                117,
+                1,
+              ),
+            ),
           ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 0,
-          toolbarHeight: 80,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Plus Jakarta Sans',
-        primaryColor: const Color.fromRGBO(25, 43, 117, 1),
-      ),
+        );
+      },
     );
   }
 }
