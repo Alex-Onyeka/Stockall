@@ -31,12 +31,12 @@ class _CustomerListMobileState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _customersFuture = getCustomerList(context);
       returnData(
         context,
         listen: false,
       ).showFloatingActionButton();
     });
+    _customersFuture = getCustomerList(context);
   }
 
   String searchResult = '';

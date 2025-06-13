@@ -133,7 +133,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                         widget.mainTitle ?? '',
                       ),
                       Visibility(
-                        visible: widget.subTitle != null,
+                        visible: true,
                         child: Text(
                           style: TextStyle(
                             color: Colors.grey.shade600,

@@ -346,7 +346,11 @@ class _ProductPageMobileState
                 Column(
                   children: [
                     SizedBox(
-                      height: 280,
+                      height:
+                          userGeneral(context).role ==
+                                  'Owner'
+                              ? 280
+                              : 260,
                       child: Stack(
                         children: [
                           TopBanner(
