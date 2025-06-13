@@ -426,13 +426,13 @@ class _AddEmployeeMobileState
                                           height: 25,
                                         ),
                                         Visibility(
-                                          visible:
-                                              returnLocalDatabase(
-                                                    context,
-                                                  )
-                                                  .currentEmployee!
-                                                  .role ==
-                                              'Owner',
+                                          visible: true,
+                                          // returnLocalDatabase(
+                                          //       context,
+                                          //     )
+                                          //     .currentEmployee!
+                                          //     .role ==
+                                          // 'Owner',
                                           child: Row(
                                             spacing: 5,
                                             children: [
@@ -480,13 +480,13 @@ class _AddEmployeeMobileState
                                   ),
                                   SizedBox(height: 0),
                                   Visibility(
-                                    visible:
-                                        returnLocalDatabase(
-                                              context,
-                                            )
-                                            .currentEmployee!
-                                            .role ==
-                                        'Owner',
+                                    visible: true,
+                                    // returnLocalDatabase(
+                                    //       context,
+                                    //     )
+                                    //     .currentEmployee!
+                                    //     .role ==
+                                    // 'Owner',
                                     child: ListView.builder(
                                       shrinkWrap: true,
                                       physics:
@@ -1158,28 +1158,29 @@ class _AddEmployeeMobileState
                             }
                           },
                           text:
-                              widget.employee != null &&
-                                      returnLocalDatabase(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .currentEmployee!
-                                              .role ==
-                                          'Owner'
-                                  ? 'Update Details'
-                                  : widget.employee !=
-                                          null &&
-                                      returnLocalDatabase(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .currentEmployee!
-                                              .role !=
-                                          'Owner'
-                                  ? 'Save New Password'
-                                  : 'Add Employee',
+                              // widget.employee != null &&
+                              //         returnLocalDatabase(
+                              //                   context,
+                              //                   listen:
+                              //                       false,
+                              //                 )
+                              //                 .currentEmployee!
+                              //                 .role ==
+                              //             'Owner'
+                              //     ? 'Update Details'
+                              //     : widget.employee !=
+                              //             null &&
+                              //         returnLocalDatabase(
+                              //                   context,
+                              //                   listen:
+                              //                       false,
+                              //                 )
+                              //                 .currentEmployee!
+                              //                 .role !=
+                              //             'Owner'
+                              //     ? 'Save New Password'
+                              //     :
+                              'Add Employee',
                         );
                       },
                     ),

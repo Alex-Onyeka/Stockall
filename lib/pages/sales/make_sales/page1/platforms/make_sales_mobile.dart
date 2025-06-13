@@ -574,11 +574,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             } else {
               var products = snapshot.data!;
               if (products.isEmpty) {
-                if (returnLocalDatabase(
-                      context,
-                      listen: false,
-                    ).currentEmployee!.role ==
-                    'Cashier') {
+                if (
+                // returnLocalDatabase(
+                //     context,
+                //     listen: false,
+                //   ).currentEmployee!.role ==
+                'Owner' == 'Cashier') {
                   return EmptyWidgetDisplayOnly(
                     title: 'No Products',
                     subText:

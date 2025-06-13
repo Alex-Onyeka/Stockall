@@ -43,7 +43,7 @@ void main() async {
   ]);
 
   Hive.registerAdapter(TempUserClassAdapter());
-  await LocalUserDatabase().init();
+  // await LocalUserDatabase().init();
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
     anonKey:
@@ -83,9 +83,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => ReceiptsProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => LocalUserDatabase(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (_) => LocalUserDatabase(),
+        // ),
         ChangeNotifierProvider(
           create: (_) => AuthService(),
         ),
@@ -169,15 +169,15 @@ NotificationProvider returnNotificationProvider(
 //   );
 // }
 
-LocalUserDatabase returnLocalDatabase(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<LocalUserDatabase>(
-    context,
-    listen: listen,
-  );
-}
+// LocalUserDatabase returnLocalDatabase(
+//   BuildContext context, {
+//   bool listen = true,
+// }) {
+//   return Provider.of<LocalUserDatabase>(
+//     context,
+//     listen: listen,
+//   );
+// }
 
 ReceiptsProvider returnReceiptProvider(
   BuildContext context, {

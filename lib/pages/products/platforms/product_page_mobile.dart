@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -134,11 +135,16 @@ class _ProductPageMobileState
             List<TempNotification> notifications =
                 snapshot.data!;
 
-            var localUser =
-                returnLocalDatabase(
-                  context,
-                  listen: false,
-                ).currentEmployee;
+            TempUserClass? localUser = TempUserClass(
+              password: 'password',
+              name: 'name',
+              email: 'email',
+              role: 'role',
+            );
+            // returnLocalDatabase(
+            //   context,
+            //   listen: false,
+            // ).currentEmployee;
 
             return MyDrawerWidget(
               role: localUser != null ? localUser.role : '',
@@ -442,11 +448,12 @@ class _ProductPageMobileState
                         child: Builder(
                           builder: (context) {
                             if (products.isEmpty) {
-                              if (returnLocalDatabase(
-                                    context,
-                                    listen: false,
-                                  ).currentEmployee!.role !=
-                                  'Owner') {
+                              if (
+                              // returnLocalDatabase(
+                              //     context,
+                              //     listen: false,
+                              //   ).currentEmployee!.role !=
+                              'Owner' == 'Owner') {
                                 return Center(
                                   child: SingleChildScrollView(
                                     child: EmptyWidgetDisplayOnly(

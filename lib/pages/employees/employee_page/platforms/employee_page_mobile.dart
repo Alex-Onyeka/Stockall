@@ -543,12 +543,12 @@ class _DetailsPageContainerState
                           );
                         } else {
                           var receipts = snapshot.data!;
-                          returnLocalDatabase(
-                            context,
-                            listen: false,
-                          ).setUserTotalSale(
-                            receipts.length.toDouble(),
-                          );
+                          // returnLocalDatabase(
+                          //   context,
+                          //   listen: false,
+                          // ).setUserTotalSale(
+                          //   receipts.length.toDouble(),
+                          // );
                           return Expanded(
                             child: ListView.builder(
                               itemCount:
@@ -581,13 +581,13 @@ class _DetailsPageContainerState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Visibility(
-                visible:
-                    returnLocalDatabase(
-                          context,
-                        ).currentEmployee!.role ==
-                        'Owner' &&
-                    widget.employee.userId !=
-                        AuthService().currentUser!.id,
+                visible: true,
+                // returnLocalDatabase(
+                //       context,
+                //     ).currentEmployee!.role ==
+                //     'Owner' &&
+                // widget.employee.userId !=
+                //     AuthService().currentUser!.id,
                 child: CustomerActionButton(
                   icon: Icons.delete_outline_rounded,
                   color:

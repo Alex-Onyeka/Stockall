@@ -119,10 +119,10 @@ class AuthService extends ChangeNotifier {
       // ✅ Insert into local SQLite
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
-        await returnLocalDatabase(
-          context,
-          listen: false,
-        ).insertUser(userRow);
+        // await returnLocalDatabase(
+        //   context,
+        //   listen: false,
+        // ).insertUser(userRow);
       }
 
       return signUpRes;
@@ -171,10 +171,10 @@ class AuthService extends ChangeNotifier {
       // 4. Store the user in local DB
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
-        await returnLocalDatabase(
-          context,
-          listen: false,
-        ).insertUser(tempUser);
+        // await returnLocalDatabase(
+        //   context,
+        //   listen: false,
+        // ).insertUser(tempUser);
       }
 
       print(
@@ -230,10 +230,10 @@ class AuthService extends ChangeNotifier {
       print("context.mounted = ${context.mounted}");
       if (context.mounted) {
         print("✅ Inserting Users into the Local");
-        await returnLocalDatabase(
-          context,
-          listen: false,
-        ).insertUser(tempUser);
+        // await returnLocalDatabase(
+        //   context,
+        //   listen: false,
+        // ).insertUser(tempUser);
         return 'Success';
       } else {
         print(

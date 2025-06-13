@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
@@ -146,11 +147,16 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           } else {
             List<TempNotification> notifications =
                 snapshot.data!;
-            var localUser =
-                returnLocalDatabase(
-                  context,
-                  listen: false,
-                ).currentEmployee;
+            var localUser = TempUserClass(
+              password: 'password',
+              name: 'name',
+              email: 'email',
+              role: 'role',
+            );
+            // returnLocalDatabase(
+            //   context,
+            //   listen: false,
+            // ).currentEmployee;
 
             return MyDrawerWidget(
               role: localUser != null ? localUser.role : '',
@@ -318,15 +324,15 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         records =
                                             snapshot.data!;
                                         return ItemsSummary(
-                                          isFilter:
-                                              returnLocalDatabase(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .currentEmployee!
-                                                  .role ==
-                                              'Owner',
+                                          isFilter: true,
+                                          // returnLocalDatabase(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     )
+                                          //     .currentEmployee!
+                                          //     .role ==
+                                          // 'Owner',
                                           isMoney1: true,
                                           mainTitle:
                                               'Sales Summary',

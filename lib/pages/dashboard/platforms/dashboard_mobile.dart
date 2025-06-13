@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
@@ -180,8 +181,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var localUser =
-        returnLocalDatabase(context).currentEmployee;
+    // var localUser =
+    //     returnLocalDatabase(context).currentEmployee;
     if (widget.shopId == null) {
       return Scaffold(
         body: returnCompProvider(
@@ -229,9 +230,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
                   return MyDrawerWidget(
                     role:
-                        localUser != null
-                            ? localUser.role
-                            : '',
+                        // localUser != null
+                        //     ? localUser.role
+                        //     :
+                        'Owner',
                     action: () {
                       showDialog(
                         context: context,
@@ -245,10 +247,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                               await AuthService().signOut();
 
                               if (context.mounted) {
-                                returnLocalDatabase(
-                                  context,
-                                  listen: false,
-                                ).deleteUser();
+                                // returnLocalDatabase(
+                                //   context,
+                                //   listen: false,
+                                // ).deleteUser();
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -347,9 +349,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
                                 return TopNavBar(
                                   role:
-                                      localUser != null
-                                          ? localUser.role
-                                          : '',
+                                      // localUser != null
+                                      //     ? localUser.role
+                                      //     :
+                                      'Owner',
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -484,15 +487,25 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                       emp,
                                                                     ) =>
                                                                         emp.staffName ==
-                                                                        localUser?.name,
+                                                                        'Alex',
+                                                                    // localUser?.name,
                                                                   )
                                                                   .toList(),
                                                               records,
                                                             ),
-                                                            currentUser:
-                                                                returnLocalDatabase(
-                                                                  context,
-                                                                ).currentEmployee,
+                                                            currentUser: TempUserClass(
+                                                              password:
+                                                                  'password',
+                                                              name:
+                                                                  'name',
+                                                              email:
+                                                                  'email',
+                                                              role:
+                                                                  'role',
+                                                            ),
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            // ).currentEmployee,
                                                             theme:
                                                                 theme,
                                                             value: returnReceiptProvider(
@@ -764,12 +777,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         children: [
                                                           Visibility(
                                                             visible:
-                                                                returnLocalDatabase(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).currentEmployee?.role ==
-                                                                'Owner',
+                                                                true,
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee?.role ==
+                                                            // 'Owner',
                                                             child: ButtonTab(
                                                               theme:
                                                                   theme,
@@ -786,15 +800,17 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     ) {
                                                                       return EmployeeListPage(
                                                                         empId:
-                                                                            localUser !=
-                                                                                    null
-                                                                                ? localUser.userId!
-                                                                                : '',
+                                                                            // localUser !=
+                                                                            //         null
+                                                                            //     ? localUser.userId!
+                                                                            //     :
+                                                                            '',
                                                                         role:
-                                                                            localUser !=
-                                                                                    null
-                                                                                ? localUser.role
-                                                                                : '',
+                                                                            // localUser !=
+                                                                            //         null
+                                                                            //     ? localUser.role
+                                                                            //     :
+                                                                            'Owner',
                                                                       );
                                                                     },
                                                                   ),
@@ -804,12 +820,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           ),
                                                           Visibility(
                                                             visible:
-                                                                returnLocalDatabase(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).currentEmployee?.role ==
-                                                                'Owner',
+                                                                true,
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee?.role ==
+                                                            // 'Owner',
                                                             child: SizedBox(
                                                               width:
                                                                   15,
@@ -990,12 +1007,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         children: [
                                                           Visibility(
                                                             visible:
-                                                                returnLocalDatabase(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).currentEmployee!.role ==
-                                                                'Owner',
+                                                                true,
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee!.role ==
+                                                            // 'Owner',
                                                             child: ButtonTab(
                                                               theme:
                                                                   theme,
@@ -1012,15 +1030,17 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     ) {
                                                                       return EmployeeListPage(
                                                                         empId:
-                                                                            localUser !=
-                                                                                    null
-                                                                                ? localUser.userId!
-                                                                                : '',
+                                                                            // localUser !=
+                                                                            //         null
+                                                                            //     ? localUser.userId!
+                                                                            //     :
+                                                                            'Owner',
                                                                         role:
-                                                                            localUser !=
-                                                                                    null
-                                                                                ? localUser.role
-                                                                                : '',
+                                                                            // localUser !=
+                                                                            //         null
+                                                                            //     ? localUser.role
+                                                                            //     :
+                                                                            'Owner',
                                                                       );
                                                                     },
                                                                   ),
@@ -1030,12 +1050,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           ),
                                                           Visibility(
                                                             visible:
-                                                                returnLocalDatabase(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).currentEmployee!.role ==
-                                                                'Owner',
+                                                                true,
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee!.role ==
+                                                            // 'Owner',
                                                             child: SizedBox(
                                                               width:
                                                                   15,
@@ -1082,17 +1103,18 @@ class _DashboardMobileState extends State<DashboardMobile> {
                       ),
                       Visibility(
                         visible:
-                            returnLocalDatabase(
-                                      context,
-                                    ).currentEmployee !=
-                                    null
-                                ? returnLocalDatabase(
-                                          context,
-                                        )
-                                        .currentEmployee!
-                                        .role ==
-                                    'Owner'
-                                : true,
+                            // returnLocalDatabase(
+                            //           context,
+                            //         ).currentEmployee !=
+                            //         null
+                            //     ? returnLocalDatabase(
+                            //               context,
+                            //             )
+                            //             .currentEmployee!
+                            //             .role ==
+                            //         'Owner'
+                            //     :
+                            true,
                         child: Align(
                           alignment: Alignment(
                             1,

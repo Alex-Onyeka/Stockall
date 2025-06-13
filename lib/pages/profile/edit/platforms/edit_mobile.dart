@@ -419,10 +419,10 @@ class _EditMobileState extends State<EditMobile> {
                                   );
 
                                   if (safeContex.mounted) {
-                                    await returnLocalDatabase(
-                                      safeContex,
-                                      listen: false,
-                                    ).insertUser(user);
+                                    // await returnLocalDatabase(
+                                    //   safeContex,
+                                    //   listen: false,
+                                    // ).insertUser(user);
                                   }
 
                                   setState(() {

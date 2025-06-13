@@ -111,13 +111,14 @@ class _EmployeeListMobileState
                 fontSize: theme.mobileTexts.h4.fontSize,
                 fontWeight: FontWeight.bold,
               ),
-              returnLocalDatabase(
-                        context,
-                        listen: false,
-                      ).currentEmployee!.userId! !=
-                      AuthService().currentUser!.id
-                  ? 'My Account'
-                  : 'Your Employees',
+              // returnLocalDatabase(
+              //           context,
+              //           listen: false,
+              //         ).currentEmployee!.userId! !=
+              //         AuthService().currentUser!.id
+              //     ? 'My Account'
+              //     :
+              'Your Employees',
             ),
           ],
         ),

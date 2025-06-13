@@ -249,15 +249,15 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                         ).clearExpenseDate();
                                       },
                                       child: ItemsSummary(
-                                        isFilter:
-                                            returnLocalDatabase(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                )
-                                                .currentEmployee!
-                                                .role ==
-                                            'Owner',
+                                        isFilter: true,
+                                        // returnLocalDatabase(
+                                        //       context,
+                                        //       listen:
+                                        //           false,
+                                        //     )
+                                        //     .currentEmployee!
+                                        //     .role ==
+                                        // 'Owner',
                                         isMoney1: true,
                                         mainTitle:
                                             'Expenses Summary',

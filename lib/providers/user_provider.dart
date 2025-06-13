@@ -69,12 +69,12 @@ class UserProvider extends ChangeNotifier {
 
     _currentUser = TempUserClass.fromJson(data);
 
-    if (context.mounted) {
-      await returnLocalDatabase(
-        context,
-        listen: false,
-      ).insertUser(_currentUser!);
-    }
+    // if (context.mounted) {
+    //   await returnLocalDatabase(
+    //     context,
+    //     listen: false,
+    //   ).insertUser(_currentUser!);
+    // }
     notifyListeners();
     return _currentUser;
   }

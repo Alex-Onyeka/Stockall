@@ -252,11 +252,11 @@ class _DetailsPageContainerState
                   ),
                 ),
                 Visibility(
-                  visible:
-                      returnLocalDatabase(
-                        context,
-                      ).currentEmployee!.role ==
-                      'Owner',
+                  visible: true,
+                  // returnLocalDatabase(
+                  //   context,
+                  // ).currentEmployee!.role ==
+                  // 'Owner',
                   child: Row(
                     spacing: 15,
                     mainAxisAlignment:

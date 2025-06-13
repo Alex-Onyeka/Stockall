@@ -200,16 +200,16 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                         ),
                       ),
                       Visibility(
-                        visible:
-                            widget.isProduct != null &&
-                                    returnLocalDatabase(
-                                              context,
-                                            )
-                                            .currentEmployee!
-                                            .role ==
-                                        'Owner'
-                                ? true
-                                : false,
+                        visible: true,
+                        // widget.isProduct != null &&
+                        //         returnLocalDatabase(
+                        //                   context,
+                        //                 )
+                        //                 .currentEmployee!
+                        //                 .role ==
+                        //             'Owner'
+                        //     ? true
+                        //     : false,
                         child: MaterialButton(
                           onPressed: () {
                             Navigator.push(

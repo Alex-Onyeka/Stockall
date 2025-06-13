@@ -9,6 +9,7 @@ import 'package:stockall/components/text_fields/number_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class AddExpensesMobile extends StatefulWidget {
   final TextEditingController nameController;
@@ -73,10 +74,10 @@ class _AddExpensesMobileState
             context,
             listen: false,
           );
-          final localProvider = returnLocalDatabase(
-            context,
-            listen: false,
-          );
+          // final localProvider = returnLocalDatabase(
+          //   context,
+          //   listen: false,
+          // );
           final expensesProvider = returnExpensesProvider(
             safeContext,
             listen: false,
@@ -102,12 +103,12 @@ class _AddExpensesMobileState
               if (widget.expenses == null) {
                 await expensesProvider.addExpense(
                   TempExpensesClass(
-                    creator:
-                        localProvider.currentEmployee!.name,
-                    userId:
-                        localProvider
-                            .currentEmployee!
-                            .userId!,
+                    creator: 'Owner',
+                    // localProvider.currentEmployee!.name,
+                    userId: AuthService().currentUser!.id,
+                    // localProvider
+                    //     .currentEmployee!
+                    //     .userId!,
                     name: widget.nameController.text.trim(),
                     unit:
                         returnData(
@@ -133,12 +134,12 @@ class _AddExpensesMobileState
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(
-                    creator:
-                        localProvider.currentEmployee!.name,
-                    userId:
-                        localProvider
-                            .currentEmployee!
-                            .userId!,
+                    creator: 'Alex Onyeka',
+                    // localProvider.currentEmployee!.name,
+                    userId: AuthService().currentUser!.id,
+                    // localProvider
+                    //     .currentEmployee!
+                    //     .userId!,
                     name: widget.nameController.text.trim(),
                     unit:
                         returnData(

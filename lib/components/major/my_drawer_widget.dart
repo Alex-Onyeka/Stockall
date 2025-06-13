@@ -53,11 +53,11 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
             )
             .toList();
 
-    returnLocalDatabase(
-      // ignore: use_build_context_synchronously
-      context,
-      listen: false,
-    ).currentEmployees.addAll(mainBeans);
+    // returnLocalDatabase(
+    //   // ignore: use_build_context_synchronously
+    //   context,
+    //   listen: false,
+    // ).currentEmployees.addAll(mainBeans);
 
     return mainBeans;
   }
@@ -221,31 +221,34 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                       builder: (context) {
                                         return EmployeeListPage(
                                           empId:
-                                              returnLocalDatabase(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).currentEmployee !=
-                                                      null
-                                                  ? returnLocalDatabase(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentEmployee!.userId!
-                                                  : '',
-                                          role:
-                                              returnLocalDatabase(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).currentEmployee !=
-                                                      null
-                                                  ? returnLocalDatabase(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentEmployee!.role
-                                                  : '',
+                                              AuthService()
+                                                  .currentUser!
+                                                  .id,
+                                          // returnLocalDatabase(
+                                          //           context,
+                                          //           listen:
+                                          //               false,
+                                          //         ).currentEmployee !=
+                                          //         null
+                                          //     ? returnLocalDatabase(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     ).currentEmployee!.userId!
+                                          //     : '',
+                                          role: 'Owner',
+                                          // returnLocalDatabase(
+                                          //           context,
+                                          //           listen:
+                                          //               false,
+                                          //         ).currentEmployee !=
+                                          //         null
+                                          //     ? returnLocalDatabase(
+                                          //       context,
+                                          //       listen:
+                                          //           false,
+                                          //     ).currentEmployee!.role
+                                          //     : '',
                                         );
                                       },
                                     ),

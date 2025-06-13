@@ -31,10 +31,10 @@ class _HomeState extends State<Home> {
     shopFuture = getUserShop();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        returnCompProvider(
-          context,
-          listen: false,
-        ).setVisible();
+        // returnCompProvider(
+        //   context,
+        //   listen: false,
+        // ).setVisible();
         _safeHandlePostFrameLogic();
       }
     });

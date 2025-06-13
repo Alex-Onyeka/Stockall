@@ -52,11 +52,16 @@ class _MakeSalesMobileTwoState
   late Future<TempUserClass?> localUserFuture;
 
   Future<TempUserClass?> getLocalUser() async {
-    var tempUser =
-        await returnLocalDatabase(
-          context,
-          listen: false,
-        ).getUser();
+    var tempUser = TempUserClass(
+      password: 'password',
+      name: 'name',
+      email: 'email',
+      role: 'role',
+    );
+    // await returnLocalDatabase(
+    //   context,
+    //   listen: false,
+    // ).getUser();
 
     return tempUser;
   }

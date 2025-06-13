@@ -87,11 +87,11 @@ class _TotalProductsPageState
           title: 'All Products',
         ),
         floatingActionButton: Visibility(
-          visible:
-              returnLocalDatabase(
-                context,
-              ).currentEmployee!.role ==
-              'Owner',
+          visible: true,
+          // returnLocalDatabase(
+          //   context,
+          // ).currentEmployee!.role ==
+          // 'Owner',
           child: FloatingActionButtonMain(
             action: () {
               Navigator.push(
