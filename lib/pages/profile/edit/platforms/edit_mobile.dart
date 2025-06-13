@@ -678,7 +678,7 @@ class _EditMobileState extends State<EditMobile> {
                             ? 'Update Details'
                             : widget.action == 'password'
                             ? 'Update Password'
-                            : widget.action == 'PIN' ||
+                            : widget.action == 'PIN' &&
                                 widget.main != null
                             ? 'Create PIN'
                             : widget.action == 'PIN'
@@ -687,7 +687,7 @@ class _EditMobileState extends State<EditMobile> {
                   ),
                   SizedBox(height: 10),
                   Visibility(
-                    visible: widget.main != null,
+                    visible: widget.main == null,
                     child: MainButtonTransparent(
                       themeProvider: theme,
                       constraints: BoxConstraints(),

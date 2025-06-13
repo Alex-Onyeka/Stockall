@@ -6,11 +6,13 @@ class InfoAlert extends StatelessWidget {
   final String title;
   final String message;
   final ThemeProvider theme;
+  final Function()? action;
   const InfoAlert({
     super.key,
     required this.theme,
     required this.message,
     required this.title,
+    this.action,
   });
 
   @override
@@ -121,6 +123,9 @@ class InfoAlert extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           Navigator.of(context).pop();
+                          if (action != null) {
+                            action!();
+                          }
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(

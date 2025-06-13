@@ -22,9 +22,9 @@ class MainBottomNav extends StatelessWidget {
       alignment: Alignment(-0.03, -2),
       children: [
         Container(
-          height: 95,
+          height: 100,
           color: Colors.white,
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment:
@@ -235,7 +235,7 @@ class MainBottomNav extends StatelessWidget {
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
-                      'Add New',
+                      'Add Item',
                     ),
                     SizedBox(height: 5),
                   ],

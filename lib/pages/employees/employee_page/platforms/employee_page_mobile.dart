@@ -171,7 +171,7 @@ class _EmployeePageMobileState
                                           //   widget
                                           //       .employeeId,
                                           // );
-
+                                          print('Started1');
                                           await shopProvider.removeEmployeeFromShop(
                                             employeeIdToRemove:
                                                 widget
@@ -183,7 +183,7 @@ class _EmployeePageMobileState
                                                       false,
                                                 ).userShop!.shopId!,
                                           );
-
+                                          print('Started2');
                                           await userProvider
                                               .updateEmployeeRole(
                                                 authUserId:
@@ -194,7 +194,7 @@ class _EmployeePageMobileState
                                                     widget
                                                         .employeeId,
                                               );
-
+                                          print('Started3');
                                           setState(() {
                                             isLoading =
                                                 false;

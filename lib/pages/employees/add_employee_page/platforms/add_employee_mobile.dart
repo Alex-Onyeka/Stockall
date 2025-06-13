@@ -8,6 +8,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:uuid/uuid.dart';
 
 class AddEmployeeMobile extends StatefulWidget {
   // final TextEditingController nameController;
@@ -573,7 +574,7 @@ class _AddEmployeeMobileState
                                       context,
                                       listen: false,
                                     );
-                                var safeContext = context;
+                                // var safeContext = context;
                                 var shopProvider =
                                     returnShopProvider(
                                       context,
@@ -589,26 +590,53 @@ class _AddEmployeeMobileState
                                       title:
                                           'Are you Sure?',
                                       action: () async {
-                                        Navigator.of(
-                                          dialogContext,
-                                        ).pop();
                                         setState(() {
                                           isLoading = true;
                                         });
-                                        await shopProvider
-                                            .addEmployeeToShop(
-                                              shopId:
-                                                  shopProvider
-                                                      .userShop!
-                                                      .shopId!,
-                                              newEmployeeId:
-                                                  widget
-                                                      .idC
-                                                      .text
-                                                      .trim(),
-                                            );
 
-                                        await userProvider
+                                        try {
+                                          // Validate UUID
+                                          final uuid =
+                                              Uuid.parse(
+                                                widget
+                                                    .idC
+                                                    .text
+                                                    .trim(),
+                                              );
+                                          if (uuid
+                                              .toString()
+                                              .isEmpty)
+                                            throw Exception();
+                                        } catch (_) {
+                                          setState(
+                                            () =>
+                                                isLoading =
+                                                    false,
+                                          );
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder:
+                                                (
+                                                  _,
+                                                ) => InfoAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'Employee Id is invalid.',
+                                                  title:
+                                                      'Invalid Employee Id.',
+                                                  action: () {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  },
+                                                ),
+                                          );
+                                          return;
+                                        }
+
+                                        final res = await userProvider
                                             .updateEmployeeRole(
                                               userId:
                                                   widget
@@ -623,24 +651,90 @@ class _AddEmployeeMobileState
                                                       .id,
                                             );
 
+                                        if (res != null &&
+                                            context
+                                                .mounted) {
+                                          setState(
+                                            () =>
+                                                isLoading =
+                                                    false,
+                                          );
+
+                                          if (res ==
+                                                  '121' ||
+                                              res ==
+                                                  '131') {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder:
+                                                  (
+                                                    _,
+                                                  ) => InfoAlert(
+                                                    theme:
+                                                        theme,
+                                                    message:
+                                                        res ==
+                                                                '121'
+                                                            ? 'Employee Id is invalid.'
+                                                            : 'User is not found in the database.',
+                                                    title:
+                                                        res ==
+                                                                '121'
+                                                            ? 'Invalid Employee Id.'
+                                                            : 'User not Found.',
+                                                    action: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
+                                                  ),
+                                            );
+                                            return;
+                                          }
+                                        }
+
+                                        await shopProvider
+                                            .addEmployeeToShop(
+                                              shopId:
+                                                  shopProvider
+                                                      .userShop!
+                                                      .shopId!,
+                                              newEmployeeId:
+                                                  widget
+                                                      .idC
+                                                      .text
+                                                      .trim(),
+                                            );
+
                                         setState(() {
                                           isLoading = false;
                                           showSuccess =
                                               true;
                                         });
 
-                                        Future.delayed(
-                                          Duration(
-                                            seconds: 2,
-                                          ),
-                                          () {
-                                            if (safeContext
-                                                .mounted) {
-                                              Navigator.of(
-                                                safeContext,
-                                              ).pop();
-                                            }
-                                          },
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // close confirmation dialog immediately
+
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (
+                                                _,
+                                              ) => InfoAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'Staff added successfully.',
+                                                title:
+                                                    'Success',
+                                                action: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                              ),
                                         );
                                       },
                                     );

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class UserProvider extends ChangeNotifier {
   //
@@ -230,23 +231,71 @@ class UserProvider extends ChangeNotifier {
     return updatedUser;
   }
 
-  Future<void> updateEmployeeRole({
+  // Future<String?> updateEmployeeRole({
+  //   required String userId,
+  //   required String newRole,
+  //   required String authUserId,
+  // }) async {
+  //   final supabase = Supabase.instance.client;
+
+  //   final response = await supabase
+  //       .from('users') // use your actual table name
+  //       .update({
+  //         'role': newRole,
+  //         'auth_user_id': authUserId,
+  //       })
+  //       .eq('user_id', userId);
+
+  //   if (response != null) {
+  //     print('Failed to update role: $response');
+  //     return '400';
+  //   }
+  //   return null;
+  // }
+
+  Future<String?> updateEmployeeRole({
     required String userId,
     required String newRole,
     required String authUserId,
   }) async {
-    final supabase = Supabase.instance.client;
+    try {
+      // Check if authUserId is a valid UUID
+      final isValidUuid = Uuid.parse(authUserId).isNotEmpty;
+      if (!isValidUuid) {
+        return '121';
+      }
 
-    final response = await supabase
-        .from('users') // use your actual table name
-        .update({
-          'role': newRole,
-          'auth_user_id': authUserId,
-        })
-        .eq('user_id', userId);
+      // Check if auth user exists
+      final authUserResponse =
+          await _supabase
+              .from(
+                'users',
+              ) // Adjust if your actual auth table is different
+              .select('user_id')
+              .eq('user_id', userId)
+              .maybeSingle();
 
-    if (response != null) {
-      throw Exception('Failed to update role: $response');
+      if (authUserResponse == null) {
+        return '131';
+      }
+
+      // Proceed with updating the role
+      await _supabase
+          .from('users')
+          .update({
+            'role': newRole,
+            'auth_user_id': authUserId,
+          })
+          .eq('user_id', userId);
+
+      // if (response == null) {
+      //   return '400'; // failed update
+      // }
+
+      return null; // success
+    } catch (e) {
+      print('Error updating employee role: $e');
+      return 'Error: ${e.toString()}';
     }
   }
 
