@@ -27,22 +27,22 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.white, // or any color
-      statusBarIconBrightness:
-          Brightness.dark, // for Android
-      systemNavigationBarContrastEnforced: true,
-      statusBarBrightness: Brightness.light, // for iOS
-    ),
-  );
-  // Lock to portrait only
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   SystemUiOverlayStyle(
+  //     statusBarColor: Colors.white, // or any color
+  //     statusBarIconBrightness:
+  //         Brightness.dark, // for Android
+  //     systemNavigationBarContrastEnforced: true,
+  //     statusBarBrightness: Brightness.light, // for iOS
+  //   ),
+  // );
+  // // Lock to portrait only
+  // await SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
 
-  Hive.registerAdapter(TempUserClassAdapter());
+  // Hive.registerAdapter(TempUserClassAdapter());
   // await LocalUserDatabase().init();
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
