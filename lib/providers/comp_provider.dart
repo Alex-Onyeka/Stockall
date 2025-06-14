@@ -183,16 +183,16 @@ class CompProvider extends ChangeNotifier {
   //
   //  Money Visibility
   bool isVisible = false;
-  // void setVisible() async {
-  //   final visible =
-  //       await LocalUserDatabase().getDataVisibility();
-  //   if (visible) {
-  //     isVisible = true;
-  //   } else {
-  //     isVisible = false;
-  //   }
-  //   notifyListeners();
-  // }
+  void setVisible() async {
+    final visible =
+        await LocalUserDatabase().getDataVisibility();
+    if (visible) {
+      isVisible = true;
+    } else {
+      isVisible = false;
+    }
+    notifyListeners();
+  }
 
   String returnMoney(String money) {
     if (isVisible) {
@@ -204,7 +204,7 @@ class CompProvider extends ChangeNotifier {
   }
 
   void toggleVisible() async {
-    // await LocalUserDatabase().toggleDataVisibility();
+    await LocalUserDatabase().toggleDataVisibility();
     isVisible = !isVisible;
     notifyListeners();
   }

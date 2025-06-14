@@ -119,137 +119,135 @@
 //   }
 // }
 
-// import 'package:flutter/material.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:stockall/classes/temp_user_class.dart';
 
-// class LocalUserDatabase extends ChangeNotifier {
-//   static final LocalUserDatabase _instance =
-//       LocalUserDatabase._internal();
+class LocalUserDatabase extends ChangeNotifier {
+  static final LocalUserDatabase _instance =
+      LocalUserDatabase._internal();
 
-//   factory LocalUserDatabase() => _instance;
+  factory LocalUserDatabase() => _instance;
 
-//   LocalUserDatabase._internal();
+  LocalUserDatabase._internal();
 
-//   static const String _boxName = 'usersBox';
-//   static const String _visibilityBoxName = 'visibilityBox';
-//   static const String _visibilityKey = 'isDataVisible';
+  // static const String _boxName = 'usersBox';
+  static const String _visibilityBoxName = 'visibilityBox';
+  static const String _visibilityKey = 'isDataVisible';
 
-//   Box<TempUserClass>? _box;
-//   Box<bool>? _visibilityBox;
+  // Box<TempUserClass>? _box;
+  Box<bool>? _visibilityBox;
 
-//   double userTotalSale = 0;
+  // double userTotalSale = 0;
 
-//   TempUserClass? currentEmployee;
-//   List<TempUserClass> currentEmployees = [];
+  // TempUserClass? currentEmployee;
+  // List<TempUserClass> currentEmployees = [];
 
-//   /// Set and notify userTotalSale
-//   void setUserTotalSale(double value) {
-//     userTotalSale = value;
-//     notifyListeners();
-//   }
+  // /// Set and notify userTotalSale
+  // void setUserTotalSale(double value) {
+  //   userTotalSale = value;
+  //   notifyListeners();
+  // }
 
-//   /// Initialize Hive and open user and visibility boxes
-//   Future<void> init() async {
-//     await Hive.initFlutter();
+  /// Initialize Hive and open user and visibility boxes
+  Future<void> init() async {
+    await Hive.initFlutter();
 
-//     if (!Hive.isAdapterRegistered(0)) {
-//       Hive.registerAdapter(TempUserClassAdapter());
-//     }
+    // if (!Hive.isAdapterRegistered(0)) {
+    //   Hive.registerAdapter(TempUserClassAdapter());
+    // }
 
-//     _box = await Hive.openBox<TempUserClass>(_boxName);
-//     _visibilityBox = await Hive.openBox<bool>(
-//       _visibilityBoxName,
-//     );
+    // _box = await Hive.openBox<TempUserClass>(_boxName);
+    _visibilityBox = await Hive.openBox<bool>(
+      _visibilityBoxName,
+    );
 
-//     // Set default value for visibility if not set
-//     if (!_visibilityBox!.containsKey(_visibilityKey)) {
-//       await _visibilityBox!.put(_visibilityKey, true);
-//     }
+    // Set default value for visibility if not set
+    if (!_visibilityBox!.containsKey(_visibilityKey)) {
+      await _visibilityBox!.put(_visibilityKey, true);
+    }
 
-//     print(
-//       "✅ Hive boxes '$_boxName' and '$_visibilityBoxName' opened",
-//     );
-//   }
+    print("✅ Hive box '$_visibilityBoxName' opened");
+  }
 
-//   /// Insert or update a user
-//   Future<void> insertUser(TempUserClass user) async {
-//     try {
-//       if (_box == null) {
-//         await init();
-//       }
+  // /// Insert or update a user
+  // Future<void> insertUser(TempUserClass user) async {
+  //   try {
+  //     if (_box == null) {
+  //       await init();
+  //     }
 
-//       final key =
-//           user.userId ??
-//           DateTime.now().millisecondsSinceEpoch.toString();
+  //     final key =
+  //         user.userId ??
+  //         DateTime.now().millisecondsSinceEpoch.toString();
 
-//       await _box!.put(key, user);
+  //     await _box!.put(key, user);
 
-//       currentEmployee = user;
-//       notifyListeners();
-//       print("✅ User inserted locally: ${user.email}");
-//     } catch (e) {
-//       print("❌ Failed to insert user locally: $e");
-//     }
-//     notifyListeners();
-//   }
+  //     currentEmployee = user;
+  //     notifyListeners();
+  //     print("✅ User inserted locally: ${user.email}");
+  //   } catch (e) {
+  //     print("❌ Failed to insert user locally: $e");
+  //   }
+  //   notifyListeners();
+  // }
 
-//   /// Get the first user (or null if empty)
-//   Future<TempUserClass?> getUser() async {
-//     try {
-//       if (_box == null) {
-//         await init();
-//       }
+  // /// Get the first user (or null if empty)
+  // Future<TempUserClass?> getUser() async {
+  //   try {
+  //     if (_box == null) {
+  //       await init();
+  //     }
 
-//       if (_box!.isNotEmpty) {
-//         currentEmployee = _box!.values.first;
-//         print("✅ User fetched locally");
-//         return currentEmployee;
-//       } else {
-//         print("⚠️ No user found in local DB");
-//         return null;
-//       }
-//     } catch (e) {
-//       print("❌ Failed to fetch user locally: $e");
-//       return null;
-//     }
-//   }
+  //     if (_box!.isNotEmpty) {
+  //       currentEmployee = _box!.values.first;
+  //       print("✅ User fetched locally");
+  //       return currentEmployee;
+  //     } else {
+  //       print("⚠️ No user found in local DB");
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print("❌ Failed to fetch user locally: $e");
+  //     return null;
+  //   }
+  // }
 
-//   /// Delete all users (logout)
-//   Future<void> deleteUser() async {
-//     try {
-//       if (_box == null) {
-//         await init();
-//       }
+  // /// Delete all users (logout)
+  // Future<void> deleteUser() async {
+  //   try {
+  //     if (_box == null) {
+  //       await init();
+  //     }
 
-//       await _box!.clear();
-//       currentEmployee = null;
-//       print("✅ Local user deleted");
-//       notifyListeners();
-//     } catch (e) {
-//       print("❌ Failed to delete local user: $e");
-//     }
-//   }
+  //     await _box!.clear();
+  //     currentEmployee = null;
+  //     print("✅ Local user deleted");
+  //     notifyListeners();
+  //   } catch (e) {
+  //     print("❌ Failed to delete local user: $e");
+  //   }
+  // }
 
-//   /// Set the data visibility flag
-//   Future<void> setDataVisibility(bool value) async {
-//     if (_visibilityBox == null) await init();
-//     await _visibilityBox!.put(_visibilityKey, value);
-//     notifyListeners();
-//   }
+  /// Set the data visibility flag
+  Future<void> setDataVisibility(bool value) async {
+    if (_visibilityBox == null) await init();
+    await _visibilityBox!.put(_visibilityKey, value);
+    notifyListeners();
+  }
 
-//   /// Get the current data visibility flag
-//   Future<bool> getDataVisibility() async {
-//     if (_visibilityBox == null) await init();
-//     return _visibilityBox!.get(
-//       _visibilityKey,
-//       defaultValue: true,
-//     )!;
-//   }
+  /// Get the current data visibility flag
+  Future<bool> getDataVisibility() async {
+    if (_visibilityBox == null) await init();
+    return _visibilityBox!.get(
+      _visibilityKey,
+      defaultValue: true,
+    )!;
+  }
 
-//   /// Toggle the visibility flag
-//   Future<void> toggleDataVisibility() async {
-//     final current = await getDataVisibility();
-//     await setDataVisibility(!current);
-//   }
-// }
+  /// Toggle the visibility flag
+  Future<void> toggleDataVisibility() async {
+    final current = await getDataVisibility();
+    await setDataVisibility(!current);
+  }
+}

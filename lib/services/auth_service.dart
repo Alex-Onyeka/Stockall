@@ -119,6 +119,10 @@ class AuthService extends ChangeNotifier {
       // ✅ Insert into local SQLite
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
+        returnNavProvider(
+          context,
+          listen: false,
+        ).offLoading();
         // await returnLocalDatabase(
         //   context,
         //   listen: false,
@@ -171,6 +175,10 @@ class AuthService extends ChangeNotifier {
       // 4. Store the user in local DB
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
+        returnNavProvider(
+          context,
+          listen: false,
+        ).offLoading();
         // await returnLocalDatabase(
         //   context,
         //   listen: false,

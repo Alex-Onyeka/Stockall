@@ -33,4 +33,11 @@ class NavProvider extends ChangeNotifier {
     isNotVerified = false;
     notifyListeners();
   }
+
+  bool isLoadingMain = true;
+
+  void offLoading() {
+    isLoadingMain = false;
+    notifyListeners();
+  }
 }

@@ -49,6 +49,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
+    print('DashBoard init 1: ${DateTime.now()}');
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
