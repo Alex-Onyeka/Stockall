@@ -47284,7 +47284,7 @@ aI(){A.hV("LaunchScreen Init: "+new A.cy(Date.now(),0,!1).k(0))
 this.be()},
 a_(a){var s=null
 A.hV("LaunchScreen Build: "+new A.cy(Date.now(),0,!1).k(0))
-return new A.qt(A.aaw(new A.p0(A.adR(s,s,new A.nE("assets/images/logos/App_Png.png",s,s)),170,s),s,s),B.i,s)}}
+return new A.qt(A.aaw(new A.p0(A.adR(s,s,new A.nE("assets/images/small_images/shop_icon.png",s,s)),170,s),s,s),B.i,s)}}
 A.Vk.prototype={}
 A.Vl.prototype={}
 A.aT.prototype={

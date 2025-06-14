@@ -34,7 +34,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/images/logos/App_Png.png',
+          'assets/images/small_images/shop_icon.png',
           width: 170, // Adjust size as needed
         ),
         // returnCompProvider(
