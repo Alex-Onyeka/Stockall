@@ -55,6 +55,7 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:stockall/local_database/local_user/local_user_database.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
@@ -71,7 +72,7 @@ class BasePage extends StatefulWidget {
 class _BasePageState extends State<BasePage> {
   // bool isLoading = true;
   void switchLoading() {
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(milliseconds: 500), () {
       if (context.mounted) {
         returnNavProvider(
           context,
@@ -85,10 +86,20 @@ class _BasePageState extends State<BasePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      switchLoading();
+      // _initializeSupabase();
       setState(() {});
     });
   }
+
+  // Future<void> _initializeSupabase() async {
+  //   await Supabase.initialize(
+  //     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
+  //     anonKey:
+  //         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
+  //   );
+  //   await LocalUserDatabase().init();
+  //   switchLoading();
+  // }
 
   @override
   Widget build(BuildContext context) {

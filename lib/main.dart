@@ -50,7 +50,7 @@ void main() async {
   //   url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
   //   anonKey:
   //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
-  // );
+  // // );
   // print('Start 3 ${DateTime.now()}');
   // await LocalUserDatabase().init();
   // print('Start 4 ${DateTime.now()}');
@@ -342,114 +342,87 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('Start 6 ${DateTime.now()}');
-    return MaterialApp(
-      initialRoute: "/launch",
-      routes: {
-        // '/': (context) => BasePage(),
-        '/launch': (context) => LaunchScreen(),
-        // '/forgot-password':
-        //     (context) => ForgotPasswordPage(),
-        // '/login': (context) => LoginPage(),
-        // '/splash': (context) => SplashScreen(),
-        // '/reset-password': (context) => EnterNewPassword(),
-      },
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            systemStatusBarContrastEnforced: true,
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 0,
-          toolbarHeight: 80,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(),
         ),
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Plus Jakarta Sans',
-        primaryColor: const Color.fromRGBO(25, 43, 117, 1),
+        ChangeNotifierProvider(
+          create: (_) => SalesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CompProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NavProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DataProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CustomersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ValidateInputProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ShopProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ReceiptsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocalUserDatabase(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AuthService(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ExpensesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ReportProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        initialRoute: "/",
+        routes: {
+          '/launch': (context) => BasePage(),
+          '/': (context) => LaunchScreen(),
+          // '/forgot-password':
+          //     (context) => ForgotPasswordPage(),
+          '/login': (context) => LoginPage(),
+          '/splash': (context) => SplashScreen(),
+          '/reset-password':
+              (context) => EnterNewPassword(),
+        },
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              systemStatusBarContrastEnforced: true,
+            ),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            elevation: 0,
+            toolbarHeight: 80,
+          ),
+          scaffoldBackgroundColor: Colors.white,
+          fontFamily: 'Plus Jakarta Sans',
+          primaryColor: const Color.fromRGBO(
+            25,
+            43,
+            117,
+            1,
+          ),
+        ),
       ),
     );
-    // MultiProvider(
-    //   providers: [
-    //     ChangeNotifierProvider(
-    //       create: (_) => ThemeProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => SalesProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => CompProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => NavProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => DataProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => CustomersProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => ValidateInputProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => ShopProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => UserProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => ReceiptsProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => LocalUserDatabase(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => AuthService(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => NotificationProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => ExpensesProvider(),
-    //     ),
-    //     ChangeNotifierProvider(
-    //       create: (_) => ReportProvider(),
-    //     ),
-    //   ],
-    //   child: MaterialApp(
-    //     initialRoute: "/",
-    //     routes: {
-    //       '/': (context) => BasePage(),
-    //       '/launch': (context) => LaunchScreen(),
-    //       // '/forgot-password':
-    //       //     (context) => ForgotPasswordPage(),
-    //       '/login': (context) => LoginPage(),
-    //       '/splash': (context) => SplashScreen(),
-    //       '/reset-password':
-    //           (context) => EnterNewPassword(),
-    //     },
-    //     debugShowCheckedModeBanner: false,
-    //     theme: ThemeData(
-    //       appBarTheme: AppBarTheme(
-    //         systemOverlayStyle: SystemUiOverlayStyle(
-    //           systemStatusBarContrastEnforced: true,
-    //         ),
-    //         backgroundColor: Colors.white,
-    //         centerTitle: true,
-    //         elevation: 0,
-    //         toolbarHeight: 80,
-    //       ),
-    //       scaffoldBackgroundColor: Colors.white,
-    //       fontFamily: 'Plus Jakarta Sans',
-    //       primaryColor: const Color.fromRGBO(
-    //         25,
-    //         43,
-    //         117,
-    //         1,
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }
