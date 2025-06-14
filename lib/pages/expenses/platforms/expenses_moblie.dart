@@ -122,7 +122,14 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                     Material(
                       color: Colors.transparent,
                       child: SizedBox(
-                        height: 260,
+                        height:
+                            userGeneral(
+                                      context,
+                                      listen: false,
+                                    ).role ==
+                                    'Owner'
+                                ? 250
+                                : 235,
                         child: Stack(
                           children: [
                             TopBanner(

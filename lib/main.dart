@@ -109,8 +109,14 @@ String userId() {
   return 'user_001';
 }
 
-TempUserClass userGeneral(BuildContext context) {
-  return returnUserProvider(context).currentUserMain!;
+TempUserClass userGeneral(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return returnUserProvider(
+    context,
+    listen: listen,
+  ).currentUserMain!;
 }
 
 // String userIdMain() {

@@ -153,7 +153,14 @@ class MainBottomNav extends StatelessWidget {
               //     listen: false,
               //   ).currentEmployee!.role !=
               user?.role != 'Owner') {
-                return;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return MakeSalesPage();
+                    },
+                  ),
+                );
               } else {
                 action!();
               }
@@ -177,12 +184,15 @@ class MainBottomNav extends StatelessWidget {
               Visibility(
                 visible:
                     returnNavProvider(
-                              context,
-                              listen: false,
-                            ).currentPage ==
-                            1
-                        ? true
-                        : false,
+                          context,
+                          listen: false,
+                        ).currentPage ==
+                        1 &&
+                    userGeneral(
+                          context,
+                          listen: false,
+                        ).role ==
+                        'Owner',
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -250,12 +260,15 @@ class MainBottomNav extends StatelessWidget {
               Visibility(
                 visible:
                     returnNavProvider(
-                              context,
-                              listen: false,
-                            ).currentPage ==
-                            1
-                        ? false
-                        : true,
+                          context,
+                          listen: false,
+                        ).currentPage !=
+                        1 ||
+                    userGeneral(
+                          context,
+                          listen: false,
+                        ).role !=
+                        'Owner',
                 child: Column(
                   spacing: 3,
                   mainAxisSize: MainAxisSize.min,
