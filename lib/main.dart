@@ -347,51 +347,51 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => SalesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CompProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => NavProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DataProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CustomersProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ValidateInputProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ShopProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ReceiptsProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LocalUserDatabase(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AuthService(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => NotificationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ExpensesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ReportProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (_) => SalesProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => CompProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => NavProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => DataProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => CustomersProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => ValidateInputProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => ShopProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => UserProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => ReceiptsProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => LocalUserDatabase(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => AuthService(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => NotificationProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => ExpensesProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => ReportProvider(),
+        // ),
       ],
       child: MaterialApp(
-        initialRoute: "/",
+        initialRoute: "/launch",
         routes: {
           '/': (context) => BasePage(),
           '/launch': (context) => LaunchScreen(),
