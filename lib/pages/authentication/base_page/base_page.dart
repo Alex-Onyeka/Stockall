@@ -86,6 +86,10 @@ class _BasePageState extends State<BasePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       switchLoading();
+      returnCompProvider(
+        context,
+        listen: false,
+      ).setVisible();
       setState(() {});
     });
   }

@@ -5,7 +5,7 @@ import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
-import 'package:stockall/components/text_fields/phone_number_text_field.dart';
+// import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -55,347 +55,383 @@ class _CopyStaffIdState extends State<CopyStaffId> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Scaffold(
-      appBar: appBar(context: context, title: 'Add Shop'),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40.0,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.h3.fontSize,
-                  fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap:
+          () =>
+              FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: appBar(context: context, title: 'Add Shop'),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 40.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.h3.fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  'Add yourself to a shop',
                 ),
-                'Add yourself to a shop',
-              ),
-              SizedBox(height: 15),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
-                children: [
-                  Text(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          theme.lightModeColor.secColor200,
+                SizedBox(height: 15),
+                Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  spacing: 10,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            theme
+                                .lightModeColor
+                                .secColor200,
+                      ),
+                      hideText(
+                        AuthService().currentUser!.id,
+                      ),
                     ),
-                    hideText(AuthService().currentUser!.id),
-                  ),
-                  Row(
-                    spacing: 10,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            showId = !showId;
-                            // whatsapp = false;
-                            // sendEmail = false;
-                          });
-                          // phoneC.clear();
-                          // emailC.clear();
-                        },
-                        icon: Column(
-                          spacing: 5,
-                          children: [
-                            Icon(
-                              size: 22,
-                              showId
-                                  ? Icons.visibility
-                                  : Icons
-                                      .visibility_off_outlined,
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                              showId
-                                  ? 'Hide Id'
-                                  : 'Show Id',
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          // setState(() {
-                          //   whatsapp = false;
-                          //   sendEmail = false;
-                          // });
-                          // phoneC.clear();
-                          // emailC.clear();
-                          await Clipboard.setData(
-                            ClipboardData(
-                              text:
-                                  AuthService()
-                                      .currentUser!
-                                      .id,
-                            ),
-                          );
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Copied to clipboard',
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        icon: Column(
-                          spacing: 5,
-                          children: [
-                            Icon(size: 20, Icons.copy),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                              'Copy Id',
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            whatsapp = !whatsapp;
-                            sendEmail = false;
-                          });
-                          phoneC.clear();
-                          emailC.clear();
-                        },
-                        icon: Column(
-                          spacing: 5,
-                          children: [
-                            // Icon(size: 20, Icons.copy),
-                            SvgPicture.asset(
-                              whatsappIconSvg,
-                              height: 18,
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                              'Send',
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            sendEmail = !sendEmail;
-                            whatsapp = false;
-                          });
-                          phoneC.clear();
-                          emailC.clear();
-                        },
-                        icon: Column(
-                          spacing: 5,
-                          children: [
-                            Icon(
-                              size: 20,
-                              Icons.mail_outline_outlined,
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                              'Send',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Visibility(
-                    visible: sendEmail,
-                    child: Column(
+                    Row(
+                      spacing: 10,
                       mainAxisAlignment:
                           MainAxisAlignment.center,
-                      spacing: 5,
                       children: [
-                        SizedBox(height: 20),
-                        // Text(),
-                        // SizedBox(height: 5),
-                        GeneralTextField(
-                          hint: 'Enter Employers\' Email',
-                          title: 'Enter Employers\' Email',
-                          controller: emailC,
-                          lines: 1,
-                          theme: theme,
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              showId = !showId;
+                              // whatsapp = false;
+                              // sendEmail = false;
+                            });
+                            // phoneC.clear();
+                            // emailC.clear();
+                          },
+                          icon: Column(
+                            spacing: 5,
+                            children: [
+                              Icon(
+                                size: 22,
+                                showId
+                                    ? Icons.visibility
+                                    : Icons
+                                        .visibility_off_outlined,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                showId
+                                    ? 'Hide Id'
+                                    : 'Show Id',
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 10),
-                        FutureBuilder(
-                          future: userFuture,
-                          builder: (context, snapshot) {
-                            return MainButtonP(
-                              themeProvider: theme,
-                              action: () async {
-                                final userId =
+                        IconButton(
+                          onPressed: () async {
+                            // setState(() {
+                            //   whatsapp = false;
+                            //   sendEmail = false;
+                            // });
+                            // phoneC.clear();
+                            // emailC.clear();
+                            await Clipboard.setData(
+                              ClipboardData(
+                                text:
                                     AuthService()
                                         .currentUser!
-                                        .id; // or wherever your user ID is
-                                final email = Uri.encodeFull(
-                                  'mailto:${emailC.text.trim()}?subject=My ID&body=Hello Sir/Ma. My Name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: $userId',
-                                );
-
-                                if (emailC.text.isEmpty) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Email Field cannot be empty.',
-                                        title:
-                                            'Empty Email Field',
-                                      );
-                                    },
-                                  );
-                                } else if (!isValidEmail(
-                                  emailC.text,
-                                )) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Please enter a Valid email and try again.',
-                                        title:
-                                            'Email Invalid',
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  if (await canLaunchUrl(
-                                    Uri.parse(email),
-                                  )) {
-                                    await launchUrl(
-                                      Uri.parse(email),
-                                    );
-                                  } else {
-                                    // You can show a snackbar or dialog here
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Email Opening Failed. Try again.',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                }
-                              },
-                              text:
-                                  'Send Your ID Via Email',
+                                        .id,
+                              ),
                             );
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Copied to clipboard',
+                                  ),
+                                ),
+                              );
+                            }
                           },
+                          icon: Column(
+                            spacing: 5,
+                            children: [
+                              Icon(size: 20, Icons.copy),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                'Copy Id',
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              whatsapp = !whatsapp;
+                              sendEmail = false;
+                            });
+                            phoneC.clear();
+                            emailC.clear();
+                          },
+                          icon: Column(
+                            spacing: 5,
+                            children: [
+                              // Icon(size: 20, Icons.copy),
+                              SvgPicture.asset(
+                                whatsappIconSvg,
+                                height: 18,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                'Send',
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              sendEmail = !sendEmail;
+                              whatsapp = false;
+                            });
+                            phoneC.clear();
+                            emailC.clear();
+                          },
+                          icon: Column(
+                            spacing: 5,
+                            children: [
+                              Icon(
+                                size: 20,
+                                Icons.mail_outline_outlined,
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                'Send',
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  Visibility(
-                    visible: whatsapp,
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      spacing: 5,
-                      children: [
-                        SizedBox(height: 20),
-                        // Text('Enter Employers\' Phone Number'),
-                        // SizedBox(height: 5),
-                        PhoneNumberTextField(
-                          hint:
-                              'Enter Employers\' Phone Number',
-                          controller: phoneC,
-                          theme: theme,
-                          title:
-                              'Enter Employers\' Phone Number',
-                        ),
-                        SizedBox(height: 10),
-                        FutureBuilder(
-                          future: userFuture,
-                          builder: (context, snapshot) {
-                            return MainButtonP(
-                              themeProvider: theme,
-                              action: () async {
-                                final phone =
-                                    phoneC.text.length == 11
-                                        ? '234${phoneC.text.substring(1, phoneC.text.length)}'
-                                        : '234${phoneC.text}';
-                                final message =
-                                    Uri.encodeComponent(
-                                      "Hello!. My name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: ${AuthService().currentUser!.id}",
-                                    );
-
-                                final url = Uri.parse(
-                                  "https://wa.me/$phone?text=$message",
-                                );
-
-                                if (phoneC.text.isEmpty) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Phone Number Field cannot be empty.',
-                                        title:
-                                            'Empty Phone Number',
-                                      );
-                                    },
+                    Visibility(
+                      visible: sendEmail,
+                      child: Column(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        spacing: 5,
+                        children: [
+                          SizedBox(height: 20),
+                          // Text(),
+                          // SizedBox(height: 5),
+                          GeneralTextField(
+                            hint: 'Enter Employers\' Email',
+                            title:
+                                'Enter Employers\' Email',
+                            controller: emailC,
+                            lines: 1,
+                            theme: theme,
+                          ),
+                          SizedBox(height: 10),
+                          FutureBuilder(
+                            future: userFuture,
+                            builder: (context, snapshot) {
+                              return MainButtonP(
+                                themeProvider: theme,
+                                action: () async {
+                                  final userId =
+                                      AuthService()
+                                          .currentUser!
+                                          .id; // or wherever your user ID is
+                                  final email = Uri.encodeFull(
+                                    'mailto:${emailC.text.trim()}?subject=My ID&body=Hello Sir/Ma. My Name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: $userId',
                                   );
-                                } else {
+
+                                  if (emailC.text.isEmpty) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Email Field cannot be empty.',
+                                          title:
+                                              'Empty Email Field',
+                                        );
+                                      },
+                                    );
+                                  } else if (!isValidEmail(
+                                    emailC.text,
+                                  )) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Please enter a Valid email and try again.',
+                                          title:
+                                              'Email Invalid',
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    if (await canLaunchUrl(
+                                      Uri.parse(email),
+                                    )) {
+                                      await launchUrl(
+                                        Uri.parse(email),
+                                      );
+                                    } else {
+                                      // You can show a snackbar or dialog here
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Email Opening Failed. Try again.',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                                text:
+                                    'Send Your ID Via Email',
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: whatsapp,
+                      child: Column(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        spacing: 5,
+                        children: [
+                          // SizedBox(height: 20),
+                          // Text('Enter Employers\' Phone Number'),
+                          // SizedBox(height: 5),
+                          // PhoneNumberTextField(
+                          //   hint:
+                          //       'Enter Employers\' Phone Number',
+                          //   controller: phoneC,
+                          //   theme: theme,
+                          //   title:
+                          //       'Enter Employers\' Phone Number',
+                          // ),
+                          SizedBox(height: 10),
+                          FutureBuilder(
+                            future: userFuture,
+                            builder: (context, snapshot) {
+                              return MainButtonP(
+                                themeProvider: theme,
+                                action: () async {
+                                  // final phone =
+                                  //     phoneC.text.length ==
+                                  //             11
+                                  //         ? '234${phoneC.text.substring(1, phoneC.text.length)}'
+                                  //         : '234${phoneC.text}';
+                                  // final message =
+                                  //     Uri.encodeComponent(
+                                  //       "Hello!. My name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: ${AuthService().currentUser!.id}",
+                                  //     );
+
+                                  // final url = Uri.parse(
+                                  //   "https://wa.me/$phone?text=$message",
+                                  // );
+
+                                  // // if (phoneC.text.isEmpty) {
+                                  // //   showDialog(
+                                  // //     context: context,
+                                  // //     builder: (context) {
+                                  // //       return InfoAlert(
+                                  // //         theme: theme,
+                                  // //         message:
+                                  // //             'Phone Number Field cannot be empty.',
+                                  // //         title:
+                                  // //             'Empty Phone Number',
+                                  // //       );
+                                  // //     },
+                                  // //   );
+                                  // // } else {
+                                  final messagee =
+                                      Uri.encodeComponent(
+                                        AuthService()
+                                            .currentUser!
+                                            .id,
+                                      );
+                                  final uri = Uri.parse(
+                                    "https://wa.me/?text=$messagee",
+                                  );
+
                                   if (await canLaunchUrl(
-                                    url,
+                                    uri,
                                   )) {
                                     await launchUrl(
-                                      url,
+                                      uri,
                                       mode:
                                           LaunchMode
                                               .externalApplication,
                                     );
-                                  } else {
+                                  }
+                                  // if (await canLaunchUrl(
+                                  //   url,
+                                  // )) {
+                                  //   await launchUrl(
+                                  //     url,
+                                  //     mode:
+                                  //         LaunchMode
+                                  //             .externalApplication,
+                                  //   );
+                                  // }
+                                  else {
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(
                                         context,
@@ -408,19 +444,20 @@ class _CopyStaffIdState extends State<CopyStaffId> {
                                       );
                                     }
                                   }
-                                }
-                              },
-                              text:
-                                  'Send Your ID on Whatsapp',
-                            );
-                          },
-                        ),
-                      ],
+                                },
+                                // },
+                                text:
+                                    'Send Your ID on Whatsapp',
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
