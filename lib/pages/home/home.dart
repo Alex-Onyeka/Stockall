@@ -24,6 +24,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // bool _navigated = false;
   // bool _providersInitialized = false;
+  bool _handledNoShop = false;
 
   @override
   void initState() {
@@ -135,16 +136,13 @@ class _HomeState extends State<Home> {
               print(
                 'Home FutureBuilder 2: ${DateTime.now()}',
               );
-              WidgetsBinding.instance.addPostFrameCallback((
-                _,
-              ) async {
-                print(
-                  'Home FutureBuilder 3: ${DateTime.now()}',
-                );
-                if (mounted) {
-                  _handleNoShop();
-                }
-              });
+              if (!_handledNoShop) {
+                _handledNoShop = true;
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                      if (mounted) _handleNoShop();
+                    });
+              }
               return ShopBannerScreen();
             } else {
               print(
