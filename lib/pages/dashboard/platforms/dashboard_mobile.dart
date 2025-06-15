@@ -9,7 +9,6 @@ import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';

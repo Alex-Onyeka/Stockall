@@ -9,7 +9,6 @@ import 'package:stockall/components/text_fields/number_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class AddExpensesMobile extends StatefulWidget {
   final TextEditingController nameController;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
-import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
@@ -16,6 +15,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -522,6 +522,28 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                               mainReceipt =
                                                   mainReceipts[index];
                                               return MainReceiptTile(
+                                                action: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return ReceiptPage(
+                                                          mainReceipt:
+                                                              mainReceipt,
+                                                          isMain:
+                                                              false,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ).then((
+                                                    _,
+                                                  ) {
+                                                    mainReceiptFuture =
+                                                        getMainReceipts();
+                                                  });
+                                                },
                                                 mainReceipt:
                                                     mainReceipt,
                                                 key: ValueKey(

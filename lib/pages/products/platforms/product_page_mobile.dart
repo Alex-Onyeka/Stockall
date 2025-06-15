@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -106,9 +105,13 @@ class _ProductPageMobileState
               },
             ),
           ).then((_) {
-            setState(() {
-              _productsFuture = getProductList(context);
-            });
+            if (context.mounted) {
+              setState(() {
+                _productsFuture = getProductList(context);
+              });
+            } else {
+              print('Context not mounted');
+            }
           });
         },
         globalKey: _scaffoldKey,

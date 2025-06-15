@@ -7,13 +7,14 @@ import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
 class MainReceiptTile extends StatefulWidget {
   final TempMainReceipt mainReceipt;
+  final Function()? action;
   const MainReceiptTile({
     super.key,
     required this.mainReceipt,
+    required this.action,
   });
 
   @override
@@ -189,19 +190,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
               ),
               child: InkWell(
                 borderRadius: BorderRadius.circular(5),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ReceiptPage(
-                          mainReceipt: widget.mainReceipt,
-                          isMain: false,
-                        );
-                      },
-                    ),
-                  );
-                },
+                onTap: widget.action,
                 child: Container(
                   padding: EdgeInsetsDirectional.all(15),
                   child: Column(

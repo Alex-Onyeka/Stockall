@@ -230,14 +230,18 @@ class AuthService extends ChangeNotifier {
               .maybeSingle();
 
       // 3. Convert Supabase response into TempUserClass
-      final tempUser = TempUserClass.fromJson({
-        ...updateResponse!,
-      });
+      // final tempUser = TempUserClass.fromJson({
+      //   ...updateResponse!,
+      // });
 
       // 4. Store the user in local DB
       print("context.mounted = ${context.mounted}");
       if (context.mounted) {
         print("✅ Inserting Users into the Local");
+        await returnUserProvider(
+          context,
+          listen: false,
+        ).fetchCurrentUser(context);
         // await returnLocalDatabase(
         //   context,
         //   listen: false,

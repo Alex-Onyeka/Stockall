@@ -230,7 +230,14 @@ class ReceiptsProvider extends ChangeNotifier {
 
   // DELETE a receipt
   Future<void> deleteReceipt(int id) async {
-    await supabase.from('receipts').delete().eq('id', id);
+    // final response =
+    await supabase.rpc(
+      'delete_receipt_and_update_inventory',
+      params: {'target_receipt_id': id},
+    );
+
+    print('✅ Receipt and inventory successfully updated.');
+
     _receipts.removeWhere((r) => r.id == id);
     notifyListeners();
   }

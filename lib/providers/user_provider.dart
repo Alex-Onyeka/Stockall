@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_user_class.dart';
-import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 

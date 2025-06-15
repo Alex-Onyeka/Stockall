@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/local_database/local_user/local_user_database.dart';

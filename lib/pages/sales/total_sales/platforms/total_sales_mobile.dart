@@ -9,6 +9,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
 class TotalSalesMobile extends StatefulWidget {
   const TotalSalesMobile({super.key});
@@ -355,6 +356,26 @@ class _TotalSalesMobileState
                                     var receipt =
                                         mainReceipts[index];
                                     return MainReceiptTile(
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ReceiptPage(
+                                                mainReceipt:
+                                                    receipt,
+                                                isMain:
+                                                    false,
+                                              );
+                                            },
+                                          ),
+                                        ).then((_) {
+                                          mainReceiptFuture =
+                                              getMainReceipts();
+                                        });
+                                      },
                                       key: ValueKey(
                                         receipt.id,
                                       ),

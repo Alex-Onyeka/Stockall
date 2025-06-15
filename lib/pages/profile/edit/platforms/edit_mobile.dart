@@ -380,8 +380,9 @@ class _EditMobileState extends State<EditMobile> {
                                     safeContex,
                                   ).pop();
 
-                                  TempUserClass
-                                  user = await userProvider.updateUser(
+                                  // TempUserClass
+                                  // user =
+                                  await userProvider.updateUser(
                                     TempUserClass(
                                       userId:
                                           widget

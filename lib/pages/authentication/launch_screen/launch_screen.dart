@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/base_page/base_page.dart';
 
 class LaunchScreen extends StatefulWidget {
   const LaunchScreen({super.key});

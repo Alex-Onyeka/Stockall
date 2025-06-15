@@ -69,15 +69,19 @@ class MainBottomNav extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
-                  Provider.of<NavProvider>(
-                    context,
-                    listen: false,
-                  ).setSettings();
-                  returnReceiptProvider(
-                    context,
-                    listen: false,
-                  ).clearReceiptDate();
-                  globalKey.currentState?.openDrawer();
+                  if (context.mounted) {
+                    Provider.of<NavProvider>(
+                      context,
+                      listen: false,
+                    ).setSettings();
+                    returnReceiptProvider(
+                      context,
+                      listen: false,
+                    ).clearReceiptDate();
+                    globalKey.currentState?.openDrawer();
+                  } else {
+                    print('Context not mounted');
+                  }
                 },
                 child: SizedBox(
                   height: 42,
@@ -174,10 +178,14 @@ class MainBottomNav extends StatelessWidget {
                 ),
               );
             }
-            returnReceiptProvider(
-              context,
-              listen: false,
-            ).clearReceiptDate();
+            if (context.mounted) {
+              returnReceiptProvider(
+                context,
+                listen: false,
+              ).clearReceiptDate();
+            } else {
+              print("Context not Mounted");
+            }
           },
           child: Stack(
             children: [
