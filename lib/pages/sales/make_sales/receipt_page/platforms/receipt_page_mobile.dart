@@ -10,7 +10,6 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
-import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ReceiptPageMobile extends StatelessWidget {
