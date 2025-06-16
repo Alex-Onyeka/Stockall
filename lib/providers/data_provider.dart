@@ -8,12 +8,28 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> createProduct(
     TempProductClass product,
+    BuildContext context,
   ) async {
+    // var data =
     await supabase
         .from('products')
         .insert(product.toJson())
         .select()
         .single();
+    print('Product added successfully');
+    // final newProduct = TempProductClass.fromJson(data);
+
+    // productList.add(newProduct);
+    if (context.mounted) {
+      print('Mounted');
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+
     clearFields();
   }
 
@@ -57,6 +73,8 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<TempProductClass> productList = [];
+
   Future<List<TempProductClass>> getProducts(
     int shopId,
   ) async {
@@ -65,10 +83,13 @@ class DataProvider extends ChangeNotifier {
         .select()
         .eq('shop_id', shopId)
         .order('name', ascending: true);
-
-    return (data as List)
-        .map((json) => TempProductClass.fromJson(json))
-        .toList();
+    print('Products gotten');
+    productList =
+        (data as List)
+            .map((json) => TempProductClass.fromJson(json))
+            .toList();
+    notifyListeners();
+    return productList;
   }
 
   Future<List<TempProductClass>> searchProductName(
@@ -98,6 +119,7 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> updateProduct({
     required TempProductClass product,
+    required BuildContext context,
   }) async {
     final supabase = Supabase.instance.client;
 
@@ -110,12 +132,22 @@ class DataProvider extends ChangeNotifier {
           'id',
           product.id!,
         ); // use the id from the object
+    if (context.mounted) {
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+    notifyListeners();
   }
 
   Future<bool> updatePrices({
     required int productId,
     required double newCostPrice,
     required double newSellingPrice,
+    required BuildContext context,
   }) async {
     final response =
         await supabase
@@ -125,15 +157,23 @@ class DataProvider extends ChangeNotifier {
               'selling_price': newSellingPrice,
             })
             .eq('id', productId)
-            .maybeSingle(); // this ensures the query actually executes
-
-    // The response is a `PostgrestResponse`, which you can check for errors like this:
+            .maybeSingle();
+    if (context.mounted) {
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+    notifyListeners();
     return response != null;
   }
 
   Future<bool> updateQuantity({
     required int productId,
     required double newQuantity,
+    required BuildContext context,
   }) async {
     final response =
         await supabase
@@ -141,7 +181,15 @@ class DataProvider extends ChangeNotifier {
             .update({'quantity': newQuantity})
             .eq('id', productId)
             .maybeSingle();
-
+    if (context.mounted) {
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+    notifyListeners();
     return response != null;
   }
 
@@ -150,6 +198,7 @@ class DataProvider extends ChangeNotifier {
     required double? newDiscount,
     DateTime? statDate,
     DateTime? endDate,
+    required BuildContext context,
   }) async {
     final response =
         await supabase
@@ -170,14 +219,36 @@ class DataProvider extends ChangeNotifier {
             .eq('id', productId)
             .maybeSingle();
 
+    if (context.mounted) {
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+    notifyListeners();
     return response != null;
   }
 
-  Future<void> deleteProductMain(int productId) async {
+  Future<void> deleteProductMain(
+    int productId,
+    BuildContext context,
+  ) async {
     await supabase
         .from('products')
         .delete()
         .eq('id', productId);
+
+    if (context.mounted) {
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+    notifyListeners();
   }
 
   String name = '';

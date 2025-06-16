@@ -16,7 +16,10 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempMainReceipt> get receipts => _receipts;
 
   // CREATE a new receipt
-  Future<int> createReceipt(TempMainReceipt receipt) async {
+  Future<int> createReceipt(
+    TempMainReceipt receipt,
+    BuildContext context,
+  ) async {
     final res =
         await supabase
             .from('receipts')
@@ -26,7 +29,28 @@ class ReceiptsProvider extends ChangeNotifier {
 
     final newReceipt = TempMainReceipt.fromJson(res);
 
-    _receipts.add(newReceipt);
+    // _receipts.add(newReceipt);
+    if (context.mounted) {
+      // returnData(context, listen: false).getProducts(
+      //   returnShopProvider(
+      //     context,
+      //     listen: false,
+      //   ).userShop!.shopId!,
+      // );
+      // loadProductSalesRecord(
+      //   returnShopProvider(
+      //     context,
+      //     listen: false,
+      //   ).userShop!.shopId!,
+      // );
+      loadReceipts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+        context,
+      );
+    }
 
     notifyListeners();
     return newReceipt.id!;
@@ -35,6 +59,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // READ all receipts for a shop
   Future<List<TempMainReceipt>> loadReceipts(
     int shopId,
+    BuildContext context,
   ) async {
     try {
       final data = await supabase
@@ -47,8 +72,22 @@ class ReceiptsProvider extends ChangeNotifier {
           (data as List)
               .map((json) => TempMainReceipt.fromJson(json))
               .toList();
-
-      // notifyListeners();
+      if (context.mounted) {
+        print('Loaded');
+        returnData(context, listen: false).getProducts(
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop!.shopId!,
+        );
+        loadProductSalesRecord(
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop!.shopId!,
+        );
+      }
+      notifyListeners();
       return _receipts;
     } catch (e) {
       return [];
@@ -57,6 +96,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
   Future<List<TempMainReceipt>> loadReceiptsByUserId({
     required int shopId,
+    required BuildContext context,
     required String userId,
   }) async {
     try {
@@ -86,6 +126,16 @@ class ReceiptsProvider extends ChangeNotifier {
           .lte('created_at', endOfDay)
           .order('created_at', ascending: false);
 
+      if (context.mounted) {
+        loadReceipts(
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop!.shopId!,
+          context,
+        );
+      }
+      notifyListeners();
       return (data as List)
           .map((json) => TempMainReceipt.fromJson(json))
           .toList();
@@ -229,7 +279,10 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   // DELETE a receipt
-  Future<void> deleteReceipt(int id) async {
+  Future<void> deleteReceipt(
+    int id,
+    BuildContext context,
+  ) async {
     // final response =
     await supabase.rpc(
       'delete_receipt_and_update_inventory',
@@ -238,7 +291,16 @@ class ReceiptsProvider extends ChangeNotifier {
 
     print('✅ Receipt and inventory successfully updated.');
 
-    _receipts.removeWhere((r) => r.id == id);
+    if (context.mounted) {
+      loadReceipts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+        context,
+      );
+      notifyListeners();
+    }
     notifyListeners();
   }
 
@@ -255,6 +317,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // CREATE a new product sale record
   Future<void> createProductSaleRecord(
     List<TempProductSaleRecord> records,
+    BuildContext context,
   ) async {
     final dataToInsert =
         records.map((e) => e.toJson()).toList();
@@ -262,8 +325,20 @@ class ReceiptsProvider extends ChangeNotifier {
     await supabase
         .from('product_sales')
         .insert(dataToInsert);
-
-    // You can optionally fetch updated records here if needed
+    if (context.mounted) {
+      returnData(context, listen: false).getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+      loadProductSalesRecord(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
 
     notifyListeners();
   }
@@ -285,6 +360,8 @@ class ReceiptsProvider extends ChangeNotifier {
             )
             .toList();
 
+    print('Products Records gotten');
+
     notifyListeners();
     return _sales;
   }
@@ -292,6 +369,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // UPDATE a sale record
   Future<void> updateProductSaleRecord(
     TempProductSaleRecord record,
+    BuildContext context,
   ) async {
     // Use toJson but remove the ID because you don't update the primary key
     final updateData =
@@ -302,24 +380,43 @@ class ReceiptsProvider extends ChangeNotifier {
         .update(updateData)
         .eq('product_record_id', record.productRecordId!);
 
-    final index = _sales.indexWhere(
-      (r) => r.productRecordId == record.productRecordId,
-    );
-    if (index != -1) {
-      _sales[index] = record;
-      notifyListeners();
+    // final index = _sales.indexWhere(
+    //   (r) => r.productRecordId == record.productRecordId,
+    // );
+    // if (index != -1) {
+    //   _sales[index] = record;
+    if (context.mounted) {
+      loadProductSalesRecord(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
     }
+    notifyListeners();
+    // }
   }
 
   // DELETE a sale record
-  Future<void> deleteProductSaleRecord(int recordId) async {
+  Future<void> deleteProductSaleRecord(
+    int recordId,
+    BuildContext context,
+  ) async {
     await supabase
         .from('product_sales')
         .delete()
         .eq('product_record_id', recordId);
-    _sales.removeWhere(
-      (r) => r.productRecordId == recordId,
-    );
+    // _sales.removeWhere(
+    //   (r) => r.productRecordId == recordId,
+    // );
+    if (context.mounted) {
+      loadProductSalesRecord(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
     notifyListeners();
   }
 

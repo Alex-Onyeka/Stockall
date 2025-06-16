@@ -979,6 +979,11 @@ class _ReceiptDetailsContainerState
                                   context,
                                   listen: false,
                                 );
+                            final shopId =
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).userShop!.shopId!;
                             var safeContext = context;
                             showDialog(
                               context: context,
@@ -1001,7 +1006,17 @@ class _ReceiptDetailsContainerState
                                           widget
                                               .mainReceipt
                                               .id!,
+                                          context,
                                         );
+
+                                    if (safeContext
+                                        .mounted) {
+                                      await receiptP
+                                          .loadReceipts(
+                                            shopId,
+                                            context,
+                                          );
+                                    }
 
                                     setState(() {
                                       isLoading = false;

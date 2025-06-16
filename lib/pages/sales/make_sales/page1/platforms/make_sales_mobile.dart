@@ -448,25 +448,25 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   bool isFocus = false;
   bool listEmpty = true;
 
-  late Future<List<TempProductClass>> _productsFuture;
-  @override
-  void initState() {
-    super.initState();
-    // returnData(
-    //   context,
-    //   listen: false,
-    // ).toggleFloatingAction(context);
-    _productsFuture = getProductList(context);
-  }
+  // late Future<List<TempProductClass>> _productsFuture;
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // returnData(
+  //   //   context,
+  //   //   listen: false,
+  //   // ).toggleFloatingAction(context);
+  //   _productsFuture = getProductList(context);
+  // }
 
-  Future<List<TempProductClass>> getProductList(
-    BuildContext context,
-  ) async {
-    return await returnData(
-      context,
-      listen: false,
-    ).getProducts(shopId(context));
-  }
+  // Future<List<TempProductClass>> getProductList(
+  //   BuildContext context,
+  // ) async {
+  //   return await returnData(
+  //     context,
+  //     listen: false,
+  //   ).getProducts(shopId(context));
+  // }
 
   @override
   void didChangeDependencies() {
@@ -477,6 +477,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    var products = returnData(context).productList;
     return GestureDetector(
       onTap:
           () =>
@@ -548,519 +549,521 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             ),
           ),
         ),
-        body: FutureBuilder(
-          future: _productsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState ==
-                ConnectionState.waiting) {
-              return returnCompProvider(
-                context,
-                listen: false,
-              ).showLoader('Loading');
-            } else if (snapshot.hasError) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10.0,
-                ),
-                child: EmptyWidgetDisplayOnly(
-                  title: 'An Error Occoured',
+        body:
+        // FutureBuilder(
+        //   future: _productsFuture,
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState ==
+        //         ConnectionState.waiting) {
+        //       return returnCompProvider(
+        //         context,
+        //         listen: false,
+        //       ).showLoader('Loading');
+        //     } else if (snapshot.hasError) {
+        //       return Padding(
+        //         padding: const EdgeInsets.symmetric(
+        //           horizontal: 10.0,
+        //         ),
+        //         child: EmptyWidgetDisplayOnly(
+        //           title: 'An Error Occoured',
+        //           subText:
+        //               'Check your internet connection and Try again',
+        //           theme: theme,
+        //           height: 30,
+        //           icon: Icons.clear,
+        //         ),
+        //       );
+        //     } else {
+        //     }
+        //   },
+        // ),
+        Builder(
+          builder: (context) {
+            if (products.isEmpty) {
+              if (
+              // returnLocalDatabase(
+              //     context,
+              //     listen: false,
+              //   ).currentEmployee!.role ==
+              userGeneral(context).role == 'Cashier') {
+                return EmptyWidgetDisplayOnly(
+                  title: 'No Products',
                   subText:
-                      'Check your internet connection and Try again',
+                      'No Products have been added to your stock.',
                   theme: theme,
                   height: 30,
                   icon: Icons.clear,
-                ),
-              );
-            } else {
-              var products = snapshot.data!;
-              if (products.isEmpty) {
-                if (
-                // returnLocalDatabase(
-                //     context,
-                //     listen: false,
-                //   ).currentEmployee!.role ==
-                userGeneral(context).role == 'Cashier') {
-                  return EmptyWidgetDisplayOnly(
-                    title: 'No Products',
-                    subText:
-                        'No Products have been added to your stock.',
-                    theme: theme,
-                    height: 30,
-                    icon: Icons.clear,
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      children: [
-                        EmptyWidgetDisplay(
-                          title: 'No products',
-                          subText:
-                              'You currently do not have have any product. Add products to start making sales.',
-                          theme: theme,
-                          height: 30,
-                          svg: productIconSvg,
-                          buttonText: 'Add Product',
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AddProduct();
-                                },
-                              ),
-                            ).then((_) {
-                              setState(() {
-                                _productsFuture =
-                                    getProductList(context);
-                              });
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                );
               } else {
-                return Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 0.0,
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 10.0,
-                                  ),
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 10),
-                                  Expanded(
-                                    child: Builder(
-                                      builder: (context) {
-                                        List<TempCartItem>
-                                        items =
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .cartItems
-                                                .reversed
-                                                .toList();
-
-                                        if (items.isEmpty) {
-                                          return Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            children: [
-                                              EmptyWidgetDisplay(
-                                                title:
-                                                    'Cart List Empty',
-                                                subText:
-                                                    'Start Adding Items to Cart To make Sales',
-                                                buttonText:
-                                                    'Add Item',
-                                                svg:
-                                                    productIconSvg,
-                                                theme:
-                                                    theme,
-                                                height: 40,
-                                                action: () {
-                                                  showGeneralDialog(
-                                                    context:
-                                                        context,
-                                                    pageBuilder: (
-                                                      context,
-                                                      animation,
-                                                      secondaryAnimation,
-                                                    ) {
-                                                      return CustomBottomPanel(
-                                                        searchController:
-                                                            widget.searchController,
-                                                        close: () {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                          widget.searchController.clear();
-                                                        },
-                                                        products:
-                                                            products,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        } else {
-                                          return ListView.builder(
-                                            itemCount:
-                                                returnSalesProvider(
-                                                      context,
-                                                    )
-                                                    .cartItems
-                                                    .length,
-                                            itemBuilder: (
-                                              context,
-                                              index,
-                                            ) {
-                                              return CartItemMain(
-                                                deleteCartItem: () {
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return ConfirmationAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'You want to remove an Item from the List, are you sure you want to proceed?',
-                                                        title:
-                                                            'Remove Item?',
-                                                        action: () {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).removeItemFromCart(
-                                                            items[index],
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                editAction: () {
-                                                  // final rootContext =
-                                                  //     context; // or pass this from above
-
-                                                  var salesProvider = returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  );
-
-                                                  // editCartItemBottomSheet(
-                                                  //   items[index]
-                                                  //       .item
-                                                  //       .quantity,
-                                                  //   rootContext,
-                                                  //   () {
-                                                  //     salesProvider.editCartItemQuantity(
-                                                  //       cartItem:
-                                                  //           items[index],
-                                                  //       number: double.parse(
-                                                  //         numberController.text,
-                                                  //       ),
-                                                  //       customPrice: double.tryParse(
-                                                  //         priceController.text,
-                                                  //       ),
-                                                  //       setCustomPrice:
-                                                  //           priceController.text.isNotEmpty,
-                                                  //     );
-
-                                                  //     // Delay pop to avoid context issues
-
-                                                  //     Navigator.of(
-                                                  //       rootContext,
-                                                  //     ).pop();
-                                                  //   },
-                                                  //   items[index],
-                                                  //   numberController,
-                                                  //   priceController,
-                                                  // );
-                                                  editCartItem(
-                                                    productQuantity:
-                                                        items[index].quantity,
-                                                    context:
-                                                        context,
-                                                    updateAction: () {
-                                                      salesProvider.editCartItemQuantity(
-                                                        cartItem:
-                                                            items[index],
-                                                        number: double.parse(
-                                                          quantityController.text,
-                                                        ),
-                                                        customPrice: double.tryParse(
-                                                          priceController.text.replaceAll(
-                                                            ',',
-                                                            '',
-                                                          ),
-                                                        ),
-                                                        setCustomPrice:
-                                                            priceController.text.isNotEmpty,
-                                                      );
-
-                                                      // Delay pop to avoid context issues
-
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    },
-                                                    cartItem:
-                                                        items[index],
-                                                  );
-                                                },
-                                                theme:
-                                                    theme,
-                                                cartItem:
-                                                    items[index],
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    children: [
+                      EmptyWidgetDisplay(
+                        title: 'No products',
+                        subText:
+                            'You currently do not have have any product. Add products to start making sales.',
+                        theme: theme,
+                        height: 30,
+                        svg: productIconSvg,
+                        buttonText: 'Add Product',
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return AddProduct();
+                              },
                             ),
-                          ),
-                          Visibility(
-                            visible:
-                                returnSalesProvider(
-                                  context,
-                                ).cartItems.isNotEmpty,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 0.0,
-                                  ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color:
-                                      Colors.grey.shade100,
-                                  borderRadius:
-                                      BorderRadius.only(
-                                        topLeft:
-                                            Radius.circular(
-                                              30,
-                                            ),
-                                        topRight:
-                                            Radius.circular(
-                                              30,
-                                            ),
-                                      ),
+                          ).then((_) {
+                            setState(() {
+                              // _productsFuture =
+                              //     getProductList(context);
+                            });
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
+            } else {
+              return Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 0.0,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
                                 ),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(
-                                        30,
-                                        30,
-                                        30,
-                                        0,
-                                      ),
-                                  child: Column(
-                                    children: [
-                                      Material(
-                                        child: SmallButtonMain(
-                                          theme: theme,
-                                          action: () {
-                                            showGeneralDialog(
-                                              context:
-                                                  context,
-                                              pageBuilder: (
+                            child: Column(
+                              children: [
+                                SizedBox(height: 10),
+                                Expanded(
+                                  child: Builder(
+                                    builder: (context) {
+                                      List<TempCartItem>
+                                      items =
+                                          returnSalesProvider(
                                                 context,
-                                                animation,
-                                                secondaryAnimation,
-                                              ) {
-                                                return CustomBottomPanel(
-                                                  searchController:
-                                                      widget
-                                                          .searchController,
-                                                  close: () {
+                                              )
+                                              .cartItems
+                                              .reversed
+                                              .toList();
+
+                                      if (items.isEmpty) {
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            EmptyWidgetDisplay(
+                                              title:
+                                                  'Cart List Empty',
+                                              subText:
+                                                  'Start Adding Items to Cart To make Sales',
+                                              buttonText:
+                                                  'Add Item',
+                                              svg:
+                                                  productIconSvg,
+                                              theme: theme,
+                                              height: 40,
+                                              action: () {
+                                                showGeneralDialog(
+                                                  context:
+                                                      context,
+                                                  pageBuilder: (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) {
+                                                    return CustomBottomPanel(
+                                                      searchController:
+                                                          widget.searchController,
+                                                      close: () {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                        widget.searchController.clear();
+                                                      },
+                                                      products:
+                                                          products,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      } else {
+                                        return ListView.builder(
+                                          itemCount:
+                                              returnSalesProvider(
+                                                    context,
+                                                  )
+                                                  .cartItems
+                                                  .length,
+                                          itemBuilder: (
+                                            context,
+                                            index,
+                                          ) {
+                                            return CartItemMain(
+                                              deleteCartItem: () {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ConfirmationAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'You want to remove an Item from the List, are you sure you want to proceed?',
+                                                      title:
+                                                          'Remove Item?',
+                                                      action: () {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                        returnSalesProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).removeItemFromCart(
+                                                          items[index],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              editAction: () {
+                                                // final rootContext =
+                                                //     context; // or pass this from above
+
+                                                var salesProvider =
+                                                    returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    );
+
+                                                // editCartItemBottomSheet(
+                                                //   items[index]
+                                                //       .item
+                                                //       .quantity,
+                                                //   rootContext,
+                                                //   () {
+                                                //     salesProvider.editCartItemQuantity(
+                                                //       cartItem:
+                                                //           items[index],
+                                                //       number: double.parse(
+                                                //         numberController.text,
+                                                //       ),
+                                                //       customPrice: double.tryParse(
+                                                //         priceController.text,
+                                                //       ),
+                                                //       setCustomPrice:
+                                                //           priceController.text.isNotEmpty,
+                                                //     );
+
+                                                //     // Delay pop to avoid context issues
+
+                                                //     Navigator.of(
+                                                //       rootContext,
+                                                //     ).pop();
+                                                //   },
+                                                //   items[index],
+                                                //   numberController,
+                                                //   priceController,
+                                                // );
+                                                editCartItem(
+                                                  productQuantity:
+                                                      items[index]
+                                                          .quantity,
+                                                  context:
+                                                      context,
+                                                  updateAction: () {
+                                                    salesProvider.editCartItemQuantity(
+                                                      cartItem:
+                                                          items[index],
+                                                      number: double.parse(
+                                                        quantityController.text,
+                                                      ),
+                                                      customPrice: double.tryParse(
+                                                        priceController.text.replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                      ),
+                                                      setCustomPrice:
+                                                          priceController.text.isNotEmpty,
+                                                    );
+
+                                                    // Delay pop to avoid context issues
+
                                                     Navigator.of(
                                                       context,
                                                     ).pop();
                                                   },
-                                                  products:
-                                                      products,
+                                                  cartItem:
+                                                      items[index],
                                                 );
                                               },
+                                              theme: theme,
+                                              cartItem:
+                                                  items[index],
                                             );
                                           },
-                                          buttonText:
-                                              'Add New Item',
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
-                                              // fontWeight: FontWeight.bold,
-                                            ),
-                                            'Subtotal',
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              returnSalesProvider(
+                                context,
+                              ).cartItems.isNotEmpty,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 0.0,
+                                ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius:
+                                    BorderRadius.only(
+                                      topLeft:
+                                          Radius.circular(
+                                            30,
                                           ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
-                                              // fontWeight: FontWeight.bold,
-                                            ),
-                                            formatMoneyBig(
-                                              returnSalesProvider(
-                                                context,
-                                              ).calcTotalMain(
-                                                returnSalesProvider(
-                                                  context,
-                                                ).cartItems,
-                                              ),
-                                            ),
+                                      topRight:
+                                          Radius.circular(
+                                            30,
                                           ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 5),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
-                                              // fontWeight: FontWeight.bold,
-                                            ),
-                                            'Discount',
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
-                                              // fontWeight: FontWeight.bold,
-                                            ),
-                                            '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 5),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .h4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'Total',
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .h4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            formatMoneyBig(
-                                              returnSalesProvider(
-                                                context,
-                                              ).calcFinalTotalMain(
-                                                returnSalesProvider(
-                                                  context,
-                                                ).cartItems,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 20),
-                                      MainButtonP(
-                                        themeProvider:
-                                            theme,
+                                    ),
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(
+                                      30,
+                                      30,
+                                      30,
+                                      0,
+                                    ),
+                                child: Column(
+                                  children: [
+                                    Material(
+                                      child: SmallButtonMain(
+                                        theme: theme,
                                         action: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
+                                          showGeneralDialog(
+                                            context:
                                                 context,
-                                              ) {
-                                                return MakeSalesTwo(
-                                                  totalAmount: returnSalesProvider(
+                                            pageBuilder: (
+                                              context,
+                                              animation,
+                                              secondaryAnimation,
+                                            ) {
+                                              return CustomBottomPanel(
+                                                searchController:
+                                                    widget
+                                                        .searchController,
+                                                close: () {
+                                                  Navigator.of(
                                                     context,
-                                                  ).calcFinalTotalMain(
-                                                    returnSalesProvider(
-                                                      context,
-                                                    ).cartItems,
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                                  ).pop();
+                                                },
+                                                products:
+                                                    products,
+                                              );
+                                            },
                                           );
                                         },
-                                        text:
-                                            'Proceed to Check Out',
+                                        buttonText:
+                                            'Add New Item',
                                       ),
-                                      SizedBox(height: 20),
-                                    ],
-                                  ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          'Subtotal',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          formatMoneyBig(
+                                            returnSalesProvider(
+                                              context,
+                                            ).calcTotalMain(
+                                              returnSalesProvider(
+                                                context,
+                                              ).cartItems,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          'Discount',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .h4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Total',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .h4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          formatMoneyBig(
+                                            returnSalesProvider(
+                                              context,
+                                            ).calcFinalTotalMain(
+                                              returnSalesProvider(
+                                                context,
+                                              ).cartItems,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 20),
+                                    MainButtonP(
+                                      themeProvider: theme,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return MakeSalesTwo(
+                                                totalAmount: returnSalesProvider(
+                                                  context,
+                                                ).calcFinalTotalMain(
+                                                  returnSalesProvider(
+                                                    context,
+                                                  ).cartItems,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      text:
+                                          'Proceed to Check Out',
+                                    ),
+                                    SizedBox(height: 20),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Visibility(
-                      visible: showBottomPanel,
-                      child: CustomBottomPanel(
-                        products: products,
-                        searchController:
-                            widget.searchController,
-                        close: () {
-                          setState(() {
-                            showBottomPanel = false;
-                            widget.searchController.clear();
-                          });
-                        },
-                      ),
+                  ),
+                  Visibility(
+                    visible: showBottomPanel,
+                    child: CustomBottomPanel(
+                      products: products,
+                      searchController:
+                          widget.searchController,
+                      close: () {
+                        setState(() {
+                          showBottomPanel = false;
+                          widget.searchController.clear();
+                        });
+                      },
                     ),
-                  ],
-                );
-              }
+                  ),
+                ],
+              );
             }
           },
         ),

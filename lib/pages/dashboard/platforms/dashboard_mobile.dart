@@ -68,7 +68,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempReceipts = returnReceiptProvider(
       context,
       listen: false,
-    ).loadReceipts(widget.shopId!);
+    ).loadReceipts(widget.shopId!, context);
 
     return tempReceipts;
   }

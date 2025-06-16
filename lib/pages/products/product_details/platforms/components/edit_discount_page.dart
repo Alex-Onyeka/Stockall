@@ -334,6 +334,7 @@ class _EditDiscountPageState
                                       isLoading = true;
                                     });
                                     await dataProvider.updateDiscount(
+                                      context: context,
                                       endDate:
                                           dataProvider
                                               .endDate,
@@ -433,6 +434,8 @@ class _EditDiscountPageState
                                         });
                                         await dataProvider
                                             .updateDiscount(
+                                              context:
+                                                  context,
                                               productId:
                                                   widget
                                                       .product

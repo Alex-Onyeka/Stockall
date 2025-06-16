@@ -62,17 +62,21 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
     }
   }
 
-  Future<List<TempProductSaleRecord>>
-  getProductRecord() async {
-    var tempRecords = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+  List<TempProductSaleRecord> getProductRecord() {
+    var tempRecords =
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).produtRecordSalesMain;
+    // await returnReceiptProvider(
+    //   context,
+    //   listen: false,
+    // ).loadProductSalesRecord(
+    //   returnShopProvider(
+    //     context,
+    //     listen: false,
+    //   ).userShop!.shopId!,
+    // );
 
     return tempRecords
         .where(
@@ -86,158 +90,329 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
   @override
   void initState() {
     super.initState();
-    productFuture = getProductRecord();
+    // productFuture = getProductRecord();
     customerFuture = getCustomer();
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return FutureBuilder(
-      future: productFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState ==
-            ConnectionState.waiting) {
-          return Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.white,
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                vertical: 5,
-                horizontal: 15,
-              ),
-              height: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.grey.shade400,
-              ),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Container(
-            margin: EdgeInsets.symmetric(
-              vertical: 5,
-              horizontal: 15,
-            ),
-            height: 150,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.grey.shade400,
-            ),
-            child: Center(
-              child: Text('Error Loading Receipt'),
-            ),
-          );
-        } else {
-          double getTotal() {
-            double totalAmount = 0;
-            for (var element
-                in snapshot.data!
-                    .where(
-                      (test) =>
-                          test.recepitId ==
-                          widget.mainReceipt.id,
-                    )
-                    .toList()) {
-              totalAmount += element.revenue;
-            }
-            return totalAmount;
-          }
+    double getTotal() {
+      double totalAmount = 0;
+      for (var element
+          in getProductRecord()
+              .where(
+                (test) =>
+                    test.recepitId == widget.mainReceipt.id,
+              )
+              .toList()) {
+        totalAmount += element.revenue;
+      }
+      return totalAmount;
+    }
 
-          // var productReceipts =
-          //     snapshot.data!
-          //         .where(
-          //           (test) =>
-          //               test.recepitId ==
-          //               widget.mainReceipt.id,
-          //         )
-          //         .toList();
+    return
+    // FutureBuilder(
+    //   future: productFuture,
+    //   builder: (context, snapshot) {
+    //     if (snapshot.connectionState ==
+    //         ConnectionState.waiting) {
+    //       return Shimmer.fromColors(
+    //         baseColor: Colors.grey.shade300,
+    //         highlightColor: Colors.white,
+    //         child: Container(
+    //           margin: EdgeInsets.symmetric(
+    //             vertical: 5,
+    //             horizontal: 15,
+    //           ),
+    //           height: 150,
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(5),
+    //             color: Colors.grey.shade400,
+    //           ),
+    //         ),
+    //       );
+    //     } else if (snapshot.hasError) {
+    //       return Container(
+    //         margin: EdgeInsets.symmetric(
+    //           vertical: 5,
+    //           horizontal: 15,
+    //         ),
+    //         height: 150,
+    //         decoration: BoxDecoration(
+    //           borderRadius: BorderRadius.circular(5),
+    //           color: Colors.grey.shade400,
+    //         ),
+    //         child: Center(
+    //           child: Text('Error Loading Receipt'),
+    //         ),
+    //       );
+    //     } else {
+    //       double getTotal() {
+    //         double totalAmount = 0;
+    //         for (var element
+    //             in snapshot.data!
+    //                 .where(
+    //                   (test) =>
+    //                       test.recepitId ==
+    //                       widget.mainReceipt.id,
+    //                 )
+    //                 .toList()) {
+    //           totalAmount += element.revenue;
+    //         }
+    //         return totalAmount;
+    //       }
+    //       // var productReceipts =
+    //       //     snapshot.data!
+    //       //         .where(
+    //       //           (test) =>
+    //       //               test.recepitId ==
+    //       //               widget.mainReceipt.id,
+    //       //         )
+    //       //         .toList();
+    //       // var firstProductId =
+    //       //     productReceipts
+    //       //         .firstWhere(
+    //       //           (test) =>
+    //       //               test.recepitId ==
+    //       //               widget.mainReceipt.id,
+    //       //         )
+    //       //         .productId;
+    //       // var firstProduct = returnData(
+    //       //       context,
+    //       //       listen: false,
+    //       //     )
+    //       //     .getProducts(
+    //       //       returnShopProvider(
+    //       //         context,
+    //       //         listen: false,
+    //       //       ).userShop!.shopId!,
+    //       //     )
+    //       //     .then((products) {
+    //       //       final product = products.firstWhere(
+    //       //         (product) => product.id == firstProductId,
+    //       //       );
+    //       //       return product;
+    //       //     });
+    //     }
+    //   },
+    // );
+    Padding(
+      padding: const EdgeInsets.only(bottom: 15.0),
+      child: Ink(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade200),
 
-          // var firstProductId =
-          //     productReceipts
-          //         .firstWhere(
-          //           (test) =>
-          //               test.recepitId ==
-          //               widget.mainReceipt.id,
-          //         )
-          //         .productId;
-          // var firstProduct = returnData(
-          //       context,
-          //       listen: false,
-          //     )
-          //     .getProducts(
-          //       returnShopProvider(
-          //         context,
-          //         listen: false,
-          //       ).userShop!.shopId!,
-          //     )
-          //     .then((products) {
-          //       final product = products.firstWhere(
-          //         (product) => product.id == firstProductId,
-          //       );
-          //       return product;
-          //     });
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 15.0),
-            child: Ink(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.white,
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(5),
+          onTap: widget.action,
+          child: Container(
+            padding: EdgeInsetsDirectional.all(15),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.start,
+                      spacing: 5,
+                      children: [
+                        SvgPicture.asset(receiptIconSvg),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatDateWithDay(
+                            widget.mainReceipt.createdAt,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Icon(
+                      color: Colors.grey,
+                      size: 20,
+                      Icons.arrow_forward_ios_rounded,
+                    ),
+                  ],
                 ),
-
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.white,
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(5),
-                onTap: widget.action,
-                child: Container(
-                  padding: EdgeInsetsDirectional.all(15),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.start,
-                            spacing: 5,
-                            children: [
-                              SvgPicture.asset(
-                                receiptIconSvg,
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                formatDateWithDay(
-                                  widget
-                                      .mainReceipt
-                                      .createdAt,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            color: Colors.grey,
-                            size: 20,
-                            Icons.arrow_forward_ios_rounded,
-                          ),
-                        ],
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            theme
+                                .lightModeColor
+                                .secColor200,
                       ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
+                      '${widget.mainReceipt.paymentMethod} Payment',
+                    ),
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                      '${getProductRecord().length} Item(s) Sold',
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Container(
+                  padding: EdgeInsets.all(13),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromARGB(
+                      162,
+                      245,
+                      245,
+                      245,
+                    ),
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                    ),
+                  ),
+                  child: Row(
+                    spacing: 5,
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Column(
+                          spacing: 3,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'Product Name',
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              cutLongText(
+                                getProductRecord()
+                                        .isNotEmpty
+                                    ? getProductRecord()
+                                        .first
+                                        .productName
+                                    : '',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Expanded(
+                      //   flex: 3,
+                      //   child: Column(
+                      //     spacing: 3,
+                      //     crossAxisAlignment:
+                      //         CrossAxisAlignment
+                      //             .start,
+                      //     children: [
+                      //       Text(
+                      //         style: TextStyle(
+                      //           fontSize:
+                      //               theme
+                      //                   .mobileTexts
+                      //                   .b3
+                      //                   .fontSize,
+                      //         ),
+                      //         'Receipt NO.',
+                      //       ),
+                      //       Text(
+                      //         textAlign:
+                      //             TextAlign.left,
+                      //         style: TextStyle(
+                      //           fontSize:
+                      //               theme
+                      //                   .mobileTexts
+                      //                   .b2
+                      //                   .fontSize,
+                      //           fontWeight:
+                      //               FontWeight.bold,
+                      //         ),
+                      //         cutLongText2(
+                      //           '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          spacing: 3,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              'Total',
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    FutureBuilder<TempCustomersClass?>(
+                      future: customerFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text(
                             style: TextStyle(
                               fontSize:
                                   theme
@@ -250,9 +425,10 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                       .lightModeColor
                                       .secColor200,
                             ),
-                            '${widget.mainReceipt.paymentMethod} Payment',
-                          ),
-                          Text(
+                            'Customer',
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text(
                             style: TextStyle(
                               fontSize:
                                   theme
@@ -260,238 +436,52 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                       .b2
                                       .fontSize,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
                             ),
-                            '${snapshot.data!.length} Item(s) Sold',
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        padding: EdgeInsets.all(13),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          color: const Color.fromARGB(
-                            162,
-                            245,
-                            245,
-                            245,
-                          ),
-                          border: Border.all(
-                            color: Colors.grey.shade200,
-                          ),
-                        ),
-                        child: Row(
-                          spacing: 5,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 5,
-                              child: Column(
-                                spacing: 3,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                    ),
-                                    'Product Name',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    cutLongText(
-                                      snapshot
-                                          .data!
-                                          .first
-                                          .productName,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            'Not Sett',
+                          );
+                        } else {
+                          TempCustomersClass? customer =
+                              snapshot.data;
+                          return Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
                             ),
-                            // Expanded(
-                            //   flex: 3,
-                            //   child: Column(
-                            //     spacing: 3,
-                            //     crossAxisAlignment:
-                            //         CrossAxisAlignment
-                            //             .start,
-                            //     children: [
-                            //       Text(
-                            //         style: TextStyle(
-                            //           fontSize:
-                            //               theme
-                            //                   .mobileTexts
-                            //                   .b3
-                            //                   .fontSize,
-                            //         ),
-                            //         'Receipt NO.',
-                            //       ),
-                            //       Text(
-                            //         textAlign:
-                            //             TextAlign.left,
-                            //         style: TextStyle(
-                            //           fontSize:
-                            //               theme
-                            //                   .mobileTexts
-                            //                   .b2
-                            //                   .fontSize,
-                            //           fontWeight:
-                            //               FontWeight.bold,
-                            //         ),
-                            //         cutLongText2(
-                            //           '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                spacing: 3,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                    ),
-                                    'Total',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          FutureBuilder<
-                            TempCustomersClass?
-                          >(
-                            future: customerFuture,
-                            builder: (context, snapshot) {
-                              if (snapshot
-                                      .connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                  ),
-                                  'Customer',
-                                );
-                              } else if (snapshot
-                                  .hasError) {
-                                return Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                  ),
-                                  'Not Sett',
-                                );
-                              } else {
-                                TempCustomersClass?
-                                customer = snapshot.data;
-                                return Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                  ),
 
-                                  "Customer: ${cutLongText2(customer != null ? customer.name.split(' ').first : 'Not Set')}",
-                                );
-                              }
-                            },
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade700,
-                            ),
-                            'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])} ${widget.mainReceipt.staffName.split(' ').length > 1 ? widget.mainReceipt.staffName.split(' ')[1].split('')[0] : ''}.',
-                          ),
-                        ],
+                            "Customer: ${cutLongText2(customer != null ? customer.name.split(' ').first : 'Not Set')}",
+                          );
+                        }
+                      },
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade700,
                       ),
-                    ],
-                  ),
+                      'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])} ${widget.mainReceipt.staffName.split(' ').length > 1 ? widget.mainReceipt.staffName.split(' ')[1].split('')[0] : ''}.',
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
-          );
-        }
-      },
+          ),
+        ),
+      ),
     );
   }
 }

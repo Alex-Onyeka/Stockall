@@ -6,7 +6,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/items_summary.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/components/major/top_banner.dart';
@@ -28,28 +27,29 @@ class SalesPageMobile extends StatefulWidget {
 }
 
 class _SalesPageMobileState extends State<SalesPageMobile> {
-  Future<List<TempMainReceipt>> getMainReceipts() {
-    var tempReceipts = returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+  // Future<List<TempMainReceipt>> getMainReceipts() {
+  //   var tempReceipts = returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadReceipts(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //     context,
+  //   );
 
-    return tempReceipts;
-  }
+  //   return tempReceipts;
+  // }
 
-  late Future<List<TempMainReceipt>> mainReceiptFuture;
+  // late Future<List<TempMainReceipt>> mainReceiptFuture;
 
   @override
   void initState() {
     super.initState();
 
-    mainReceiptFuture = getMainReceipts();
-    getProdutRecordsFuture = getProductSalesRecord();
+    // mainReceiptFuture = getMainReceipts();
+    // getProdutRecordsFuture = getProductSalesRecord();
     notificationsFuture = fetchNotifications();
   }
 
@@ -70,19 +70,38 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
     return tempGet;
   }
 
-  late Future<List<TempProductSaleRecord>>
-  getProdutRecordsFuture;
-  Future<List<TempProductSaleRecord>>
-  getProductSalesRecord() async {
-    var tempRecords = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+  // late Future<List<TempProductSaleRecord>>
+  // getProdutRecordsFuture;
+  // Future<List<TempProductSaleRecord>>
+  // getProductSalesRecord() async {
+  //   var tempRecords = await returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadProductSalesRecord(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
+
+  //   return tempRecords
+  //       .where(
+  //         (beans) =>
+  //             beans.shopId ==
+  //             returnShopProvider(
+  //               context,
+  //               listen: false,
+  //             ).userShop!.shopId!,
+  //       )
+  //       .toList();
+  // }
+
+  List<TempProductSaleRecord> getProductSalesRecord() {
+    var tempRecords =
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).produtRecordSalesMain;
 
     return tempRecords
         .where(
@@ -102,17 +121,18 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    mainReceiptFuture = getMainReceipts();
-    getProdutRecordsFuture = getProductSalesRecord();
+    // mainReceiptFuture = getMainReceipts();
+    // getProdutRecordsFuture = getProductSalesRecord();
   }
 
   @override
   Widget build(BuildContext context) {
-    var receiptProvider = returnReceiptProvider(
-      context,
-      listen: false,
-    );
     var theme = returnTheme(context);
+
+    List<TempProductSaleRecord> records =
+        getProductSalesRecord();
+    // var mainReceipts =
+    //     returnReceiptProvider(context).receipts;
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: MainBottomNav(
@@ -185,486 +205,467 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           }
         },
       ),
-      body: FutureBuilder(
-        future: mainReceiptFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
-            return returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader('Loading');
-          } else if (snapshot.hasError) {
-            return EmptyWidgetDisplayOnly(
-              title: 'An Error Occured',
-              subText:
-                  'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
-              theme: theme,
-              height: 35,
-            );
-          } else {
-            var mainReceipts = returnReceiptProvider(
-              context,
-              listen: false,
-            ).returnOwnReceiptsByDayOrWeek(
-              context,
-              snapshot.data!,
-            );
-            return SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: SizedBox(
-                          height: 250,
-                          child: Stack(
-                            children: [
-                              TopBanner(
-                                subTitle:
-                                    'Data of All Sales Records',
-                                title: 'Sales',
-                                theme: theme,
-                                bottomSpace: 80,
-                                topSpace: 20,
-                                iconSvg: salesIconSvg,
+      body:
+      // FutureBuilder(
+      //   future: mainReceiptFuture,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState ==
+      //         ConnectionState.waiting) {
+      //       return returnCompProvider(
+      //         context,
+      //         listen: false,
+      //       ).showLoader('Loading');
+      //     } else if (snapshot.hasError) {
+      //       return EmptyWidgetDisplayOnly(
+      //         title: 'An Error Occured',
+      //         subText:
+      //             'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
+      //         theme: theme,
+      //         height: 35,
+      //       );
+      //     } else {
+      //       var mainReceipts = returnReceiptProvider(
+      //         context,
+      //         listen: false,
+      //       ).returnOwnReceiptsByDayOrWeek(
+      //         context,
+      //         snapshot.data!,
+      //       );
+      //     }
+      //   },
+      // ),
+      SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: SizedBox(
+                    height: 250,
+                    child: Stack(
+                      children: [
+                        TopBanner(
+                          subTitle:
+                              'Data of All Sales Records',
+                          title: 'Sales',
+                          theme: theme,
+                          bottomSpace: 80,
+                          topSpace: 20,
+                          iconSvg: salesIconSvg,
+                        ),
+                        Align(
+                          alignment: Alignment(0, 1),
+                          child: InkWell(
+                            onTap: () {
+                              returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).clearReceiptDate();
+                            },
+                            child:
+                            // FutureBuilder<
+                            //   List<
+                            //     TempProductSaleRecord
+                            //   >
+                            // >(
+                            //   future:
+                            //       getProdutRecordsFuture,
+                            //   builder: (
+                            //     context,
+                            //     snapshot,
+                            //   ) {
+                            //     if (snapshot
+                            //             .connectionState ==
+                            //         ConnectionState
+                            //             .waiting) {
+                            //       return ItemsSummary(
+                            //         isMoney1: true,
+                            //         mainTitle:
+                            //             'Sales Summary',
+                            //         subTitle:
+                            //             returnReceiptProvider(
+                            //               context,
+                            //             ).dateSet ??
+                            //             'For Today',
+                            //         firsRow: true,
+                            //         color1:
+                            //             Colors.green,
+                            //         title1:
+                            //             'Sales Revenue',
+                            //         value1: 0,
+                            //         color2:
+                            //             Colors.amber,
+                            //         title2:
+                            //             'Sales Number',
+                            //         value2:
+                            //             mainReceipts
+                            //                 .length
+                            //                 .toDouble(),
+                            //         secondRow: false,
+                            //         onSearch: false,
+                            //       );
+                            //     } else if (snapshot
+                            //         .hasError) {
+                            //       return ItemsSummary(
+                            //         isMoney1: true,
+                            //         mainTitle:
+                            //             'Sales Summary',
+                            //         subTitle:
+                            //             returnReceiptProvider(
+                            //               context,
+                            //             ).dateSet ??
+                            //             'For Today',
+                            //         firsRow: true,
+                            //         color1:
+                            //             Colors.green,
+                            //         title1:
+                            //             'Sales Revenue',
+                            //         value1: 0,
+                            //         color2:
+                            //             Colors.amber,
+                            //         title2:
+                            //             'Sales Number',
+                            //         value2: 0,
+                            //         secondRow: false,
+                            //         onSearch: false,
+                            //       );
+                            //     } else {
+                            //     }
+                            //   },
+                            // ),
+                            // List<
+                            //         TempProductSaleRecord
+                            //       >
+                            //       records =
+                            //           snapshot.data!;
+                            ItemsSummary(
+                              isFilter:
+                                  userGeneral(
+                                    context,
+                                  ).role ==
+                                  'Owner',
+                              isMoney1: true,
+                              mainTitle: 'Sales Summary',
+                              subTitle:
+                                  returnReceiptProvider(
+                                    context,
+                                  ).dateSet ??
+                                  'For Today',
+                              firsRow: true,
+                              color1: Colors.green,
+                              title1: 'Sales Revenue',
+                              value1: returnReceiptProvider(
+                                context,
+                              ).getTotalRevenueForSelectedDay(
+                                context,
+                                returnReceiptProvider(
+                                  context,
+                                ).receipts,
+                                records,
                               ),
-                              Align(
-                                alignment: Alignment(0, 1),
-                                child: InkWell(
-                                  onTap: () {
+                              color2: Colors.amber,
+                              title2: 'Sales Number',
+                              value2:
+                                  returnReceiptProvider(
+                                        context,
+                                      ).receipts.length
+                                      .toDouble(),
+                              secondRow: false,
+                              onSearch: false,
+                              isDateSet:
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).isDateSet,
+                              setDate:
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).setDate,
+                              filterAction: () {
+                                if (returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).isDateSet ||
                                     returnReceiptProvider(
                                       context,
                                       listen: false,
-                                    ).clearReceiptDate();
-                                  },
-                                  child: FutureBuilder<
-                                    List<
-                                      TempProductSaleRecord
-                                    >
-                                  >(
-                                    future:
-                                        getProdutRecordsFuture,
-                                    builder: (
-                                      context,
-                                      snapshot,
-                                    ) {
-                                      if (snapshot
-                                              .connectionState ==
-                                          ConnectionState
-                                              .waiting) {
-                                        return ItemsSummary(
-                                          isMoney1: true,
-                                          mainTitle:
-                                              'Sales Summary',
-                                          subTitle:
-                                              returnReceiptProvider(
-                                                context,
-                                              ).dateSet ??
-                                              'For Today',
-                                          firsRow: true,
-                                          color1:
-                                              Colors.green,
-                                          title1:
-                                              'Sales Revenue',
-                                          value1: 0,
-
-                                          color2:
-                                              Colors.amber,
-                                          title2:
-                                              'Sales Number',
-                                          value2:
-                                              mainReceipts
-                                                  .length
-                                                  .toDouble(),
-                                          secondRow: false,
-                                          onSearch: false,
-                                        );
-                                      } else if (snapshot
-                                          .hasError) {
-                                        return ItemsSummary(
-                                          isMoney1: true,
-                                          mainTitle:
-                                              'Sales Summary',
-                                          subTitle:
-                                              returnReceiptProvider(
-                                                context,
-                                              ).dateSet ??
-                                              'For Today',
-                                          firsRow: true,
-                                          color1:
-                                              Colors.green,
-                                          title1:
-                                              'Sales Revenue',
-                                          value1: 0,
-
-                                          color2:
-                                              Colors.amber,
-                                          title2:
-                                              'Sales Number',
-                                          value2: 0,
-                                          secondRow: false,
-                                          onSearch: false,
-                                        );
-                                      } else {
-                                        List<
-                                          TempProductSaleRecord
-                                        >
-                                        records =
-                                            snapshot.data!;
-                                        return ItemsSummary(
-                                          isFilter:
-                                              userGeneral(
-                                                context,
-                                              ).role ==
-                                              'Owner',
-                                          isMoney1: true,
-                                          mainTitle:
-                                              'Sales Summary',
-                                          subTitle:
-                                              returnReceiptProvider(
-                                                context,
-                                              ).dateSet ??
-                                              'For Today',
-                                          firsRow: true,
-                                          color1:
-                                              Colors.green,
-                                          title1:
-                                              'Sales Revenue',
-                                          value1: returnReceiptProvider(
-                                            context,
-                                          ).getTotalRevenueForSelectedDay(
-                                            context,
-                                            mainReceipts,
-                                            records,
-                                          ),
-                                          color2:
-                                              Colors.amber,
-                                          title2:
-                                              'Sales Number',
-                                          value2:
-                                              mainReceipts
-                                                  .length
-                                                  .toDouble(),
-                                          secondRow: false,
-                                          onSearch: false,
-                                          isDateSet:
-                                              receiptProvider
-                                                  .isDateSet,
-                                          setDate:
-                                              receiptProvider
-                                                  .setDate,
-                                          filterAction: () {
-                                            if (returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).isDateSet ||
-                                                returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setDate) {
-                                              returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).clearReceiptDate();
-                                            } else {
-                                              returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).openDatePicker();
-                                            }
-                                          },
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ),
-                              //
-                            ],
+                                    ).setDate) {
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).clearReceiptDate();
+                                } else {
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).openDatePicker();
+                                }
+                              },
+                            ),
                           ),
                         ),
+                        //
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        10,
+                        10,
+                        10,
                       ),
-                      Expanded(
-                        child: SizedBox(
-                          child: Padding(
+                      child: Column(
+                        children: [
+                          Padding(
                             padding:
-                                const EdgeInsets.fromLTRB(
-                                  10.0,
-                                  10,
-                                  10,
-                                  10,
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
                                 ),
-                            child: Column(
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
                               children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 10.0,
-                                      ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          style: TextStyle(
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                            fontSize: 16,
-                                          ),
-                                          returnReceiptProvider(
-                                                context,
-                                              ).dateSet ??
-                                              'Sales For Today',
-                                        ),
-                                      ),
-                                      MaterialButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return TotalSalesPage();
-                                              },
-                                            ),
-                                          ).then((_) {
-                                            setState(() {
-                                              mainReceiptFuture =
-                                                  getMainReceipts();
-                                              getProdutRecordsFuture =
-                                                  getProductSalesRecord();
-                                            });
-                                          });
+                                Expanded(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                    returnReceiptProvider(
+                                          context,
+                                        ).dateSet ??
+                                        'Sales For Today',
+                                  ),
+                                ),
+                                MaterialButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return TotalSalesPage();
                                         },
-                                        child: Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor100,
-                                              ),
-                                              'See All',
-                                            ),
-                                            Icon(
-                                              size: 16,
-                                              color:
-                                                  theme
-                                                      .lightModeColor
-                                                      .secColor100,
-                                              Icons
-                                                  .arrow_forward_ios_rounded,
-                                            ),
-                                          ],
+                                      ),
+                                    ).then((_) {
+                                      setState(() {
+                                        // mainReceiptFuture =
+                                        //     getMainReceipts();
+                                        // getProdutRecordsFuture =
+                                        //     getProductSalesRecord();
+                                      });
+                                    });
+                                  },
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .secColor100,
                                         ),
+                                        'See All',
+                                      ),
+                                      Icon(
+                                        size: 16,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor100,
+                                        Icons
+                                            .arrow_forward_ios_rounded,
                                       ),
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 10.0,
-                                        ),
-                                    child: Builder(
-                                      builder: (context) {
-                                        if (mainReceipts
-                                            .isEmpty) {
-                                          return EmptyWidgetDisplay(
-                                            buttonText:
-                                                'Make Sales',
-                                            subText:
-                                                'Click on the button below to start adding Sales to your Record.',
-                                            title:
-                                                'No Sales Recorded Yet',
-                                            svg:
-                                                productIconSvg,
-                                            height: 35,
-                                            action: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return MakeSalesPage();
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                            theme: theme,
-                                          );
-                                        } else {
-                                          return ListView.builder(
-                                            itemCount:
-                                                mainReceipts
-                                                    .length,
-                                            itemBuilder: (
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                  ),
+                              child: Builder(
+                                builder: (context) {
+                                  if (returnReceiptProvider(
+                                    context,
+                                  ).receipts.isEmpty) {
+                                    return EmptyWidgetDisplay(
+                                      buttonText:
+                                          'Make Sales',
+                                      subText:
+                                          'Click on the button below to start adding Sales to your Record.',
+                                      title:
+                                          'No Sales Recorded Yet',
+                                      svg: productIconSvg,
+                                      height: 35,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
                                               context,
-                                              index,
                                             ) {
-                                              TempMainReceipt
-                                              mainReceipt =
-                                                  mainReceipts[index];
-                                              return MainReceiptTile(
-                                                action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return ReceiptPage(
-                                                          mainReceipt:
-                                                              mainReceipt,
-                                                          isMain:
-                                                              false,
-                                                        );
-                                                      },
-                                                    ),
-                                                  ).then((
-                                                    _,
-                                                  ) {
-                                                    mainReceiptFuture =
-                                                        getMainReceipts();
-                                                  });
-                                                },
-                                                mainReceipt:
-                                                    mainReceipt,
-                                                key: ValueKey(
-                                                  mainReceipt
-                                                      .id!,
-                                                ),
-                                              );
-                                              // return ListTile(
-                                              //   title: Text(
-                                              //     mainReceipt
-                                              //         .staffName,
-                                              //   ),
-                                              // );
+                                              return MakeSalesPage();
                                             },
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Overlayed search results container
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (returnReceiptProvider(
-                    context,
-                  ).setDate)
-                    GestureDetector(
-                      onTap: () {
-                        returnReceiptProvider(
-                          context,
-                          listen: false,
-                        ).clearReceiptDate();
-                      },
-                      child: Material(
-                        color: const Color.fromARGB(
-                          100,
-                          0,
-                          0,
-                          0,
-                        ),
-                        child: SizedBox(
-                          height:
-                              MediaQuery.of(
-                                context,
-                              ).size.height,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        context,
-                                      ).size.height *
-                                      0.15,
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 15.0,
-                                        ),
-                                    child: Container(
-                                      height: 500,
-                                      width: 400,
-                                      padding:
-                                          EdgeInsets.all(
-                                            20,
                                           ),
-                                      color: Colors.white,
-
-                                      child: CalendarWidget(
-                                        onDaySelected: (
-                                          selectedDay,
-                                          focusedDay,
-                                        ) {
+                                        );
+                                      },
+                                      theme: theme,
+                                    );
+                                  } else {
+                                    return ListView.builder(
+                                      itemCount:
                                           returnReceiptProvider(
                                             context,
-                                            listen: false,
-                                          ).setReceiptDay(
-                                            selectedDay,
-                                          );
-                                        },
-                                        actionWeek: (
-                                          startOfWeek,
-                                          endOfWeek,
-                                        ) {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).setReceiptWeek(
-                                            startOfWeek,
-                                            endOfWeek,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(
+                                          ).receipts.length,
+                                      itemBuilder: (
                                         context,
-                                      ).size.height *
-                                      0.3,
-                                ),
-                              ],
+                                        index,
+                                      ) {
+                                        TempMainReceipt
+                                        mainReceipt =
+                                            returnReceiptProvider(
+                                              context,
+                                            ).receipts[index];
+                                        return MainReceiptTile(
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ReceiptPage(
+                                                    mainReceipt:
+                                                        mainReceipt,
+                                                    isMain:
+                                                        false,
+                                                  );
+                                                },
+                                              ),
+                                            ).then((_) {
+                                              // mainReceiptFuture =
+                                            });
+                                          },
+                                          mainReceipt:
+                                              mainReceipt,
+                                          key: ValueKey(
+                                            mainReceipt.id!,
+                                          ),
+                                        );
+                                        // return ListTile(
+                                        //   title: Text(
+                                        //     mainReceipt
+                                        //         .staffName,
+                                        //   ),
+                                        // );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                ],
+                    // Overlayed search results container
+                  ),
+                ),
+              ],
+            ),
+            if (returnReceiptProvider(context).setDate)
+              GestureDetector(
+                onTap: () {
+                  returnReceiptProvider(
+                    context,
+                    listen: false,
+                  ).clearReceiptDate();
+                },
+                child: Material(
+                  color: const Color.fromARGB(100, 0, 0, 0),
+                  child: SizedBox(
+                    height:
+                        MediaQuery.of(context).size.height,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height:
+                                MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.15,
+                          ),
+                          Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 15.0,
+                                  ),
+                              child: Container(
+                                height: 500,
+                                width: 400,
+                                padding: EdgeInsets.all(20),
+                                color: Colors.white,
+
+                                child: CalendarWidget(
+                                  onDaySelected: (
+                                    selectedDay,
+                                    focusedDay,
+                                  ) {
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).setReceiptDay(
+                                      selectedDay,
+                                    );
+                                  },
+                                  actionWeek: (
+                                    startOfWeek,
+                                    endOfWeek,
+                                  ) {
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).setReceiptWeek(
+                                      startOfWeek,
+                                      endOfWeek,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height:
+                                MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.3,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            );
-          }
-        },
+          ],
+        ),
       ),
     );
   }

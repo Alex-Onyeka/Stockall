@@ -279,6 +279,7 @@ class _DetailsPageContainerState
         await returnReceiptProvider(
           context,
         ).loadReceiptsByUserId(
+          context: context,
           shopId:
               returnShopProvider(
                 context,

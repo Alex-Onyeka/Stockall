@@ -29,6 +29,7 @@ class _GeneralReportMobileState
         context,
         listen: false,
       ).userShop!.shopId!,
+      context,
     );
     return tempRece;
   }

@@ -234,6 +234,7 @@ class DetailsPageContainer extends StatelessWidget {
                                 context,
                                 listen: false,
                               ).userShop!.shopId!,
+                              context,
                             )
                             .then((receipts) {
                               final receipt = receipts.where(

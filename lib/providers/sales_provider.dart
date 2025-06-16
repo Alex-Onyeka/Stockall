@@ -376,12 +376,12 @@ class SalesProvider extends ChangeNotifier {
     await returnReceiptProvider(
       context,
       listen: false,
-    ).createReceipt(mainReceipt);
+    ).createReceipt(mainReceipt, context);
     if (!context.mounted) return;
     returnReceiptProvider(
       context,
       listen: false,
-    ).createProductSaleRecord(productRecords);
+    ).createProductSaleRecord(productRecords, context);
     notifyListeners();
   }
 
@@ -394,7 +394,7 @@ class SalesProvider extends ChangeNotifier {
     await returnReceiptProvider(
       context,
       listen: false,
-    ).createReceipt(mainReceipt);
+    ).createReceipt(mainReceipt, context);
     if (!context.mounted) return;
     returnReceiptProvider(
       context,

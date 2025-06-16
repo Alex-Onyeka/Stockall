@@ -458,6 +458,8 @@ class _ProductDetailsMobileState
                                                                         },
                                                                       );
                                                                       await dataProvider.updatePrices(
+                                                                        context:
+                                                                            context,
                                                                         productId:
                                                                             product.id!,
                                                                         newCostPrice: double.parse(
@@ -958,6 +960,8 @@ class _ProductDetailsMobileState
                                                                                     },
                                                                                   );
                                                                                   await dataProvider.updateQuantity(
+                                                                                    context:
+                                                                                        context,
                                                                                     productId:
                                                                                         product.id!,
 
@@ -1332,6 +1336,14 @@ class _ProductDetailsMobileState
                                             context,
                                             listen: false,
                                           );
+                                      var shopId =
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .shopId!;
                                       return ConfirmationAlert(
                                         theme: returnTheme(
                                           context,
@@ -1355,8 +1367,12 @@ class _ProductDetailsMobileState
                                               .deleteProductMain(
                                                 widget
                                                     .productId,
+                                                context,
                                               );
-
+                                          await provider
+                                              .getProducts(
+                                                shopId,
+                                              );
                                           setState(() {
                                             isLoading =
                                                 false;

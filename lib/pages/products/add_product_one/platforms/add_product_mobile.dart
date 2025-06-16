@@ -48,6 +48,7 @@ class _AddProductMobileState
   bool barCodeSet = false;
   bool isLoading = false;
   bool showSuccess = false;
+  bool expand = false;
 
   String? barcode;
   //
@@ -80,17 +81,14 @@ class _AddProductMobileState
           );
         },
       );
-    } else if (widget.quantityController.text.isEmpty ||
-        returnData(context, listen: false).selectedUnit ==
-            null) {
+    } else if (widget.quantityController.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Product Quantity and Unit Must be set',
+            message: 'Product Quantity Must be set',
             title: 'Empty Input',
           );
         },
@@ -136,11 +134,17 @@ class _AddProductMobileState
                 safeContext,
                 listen: false,
               );
+              final shopId =
+                  returnShopProvider(
+                    context,
+                    listen: false,
+                  ).userShop!.shopId;
 
               await dataProvider.createProduct(
                 TempProductClass(
                   name: widget.nameController.text.trim(),
-                  unit: dataProvider.selectedUnit!,
+                  unit:
+                      dataProvider.selectedUnit ?? 'Others',
                   sizeType: dataProvider.selectedSize,
                   isRefundable:
                       dataProvider.isProductRefundable,
@@ -174,12 +178,17 @@ class _AddProductMobileState
                         .replaceAll(',', ''),
                   ),
                   startDate:
-                      dataProvider.startDate ??
-                      DateTime.now(),
+                      widget.discountController.text.isEmpty
+                          ? null
+                          : (dataProvider.startDate ??
+                              DateTime.now()),
                   endDate: dataProvider.endDate,
                   category: dataProvider.selectedCategory,
                 ),
+                context,
               );
+
+              await dataProvider.getProducts(shopId!);
 
               setState(() {
                 isLoading = false;
@@ -223,6 +232,10 @@ class _AddProductMobileState
               context,
               listen: false,
             );
+            final shopProvider = returnShopProvider(
+              context,
+              listen: false,
+            );
 
             if (safeContext.mounted) {
               Navigator.of(safeContext).pop();
@@ -233,6 +246,7 @@ class _AddProductMobileState
             });
 
             await provider.updateProduct(
+              context: context,
               product: TempProductClass(
                 setCustomPrice: provider.setCustomPrice,
                 id: widget.product!.id,
@@ -278,6 +292,9 @@ class _AddProductMobileState
                 sizeType: provider.selectedSize,
                 startDate: provider.startDate,
               ),
+            );
+            await provider.getProducts(
+              shopProvider.userShop!.shopId!,
             );
 
             setState(() {
@@ -496,28 +513,6 @@ class _AddProductMobileState
                                     widget.nameController,
                               ),
                               SizedBox(height: 10),
-                              BarcodeScanner(
-                                valueSet: barCodeSet,
-                                onTap: () async {
-                                  String? info =
-                                      await scanCode(
-                                        context,
-                                        'Not Saved',
-                                      );
-
-                                  setState(() {
-                                    barcode = info;
-                                    barCodeSet = true;
-                                  });
-                                },
-                                title:
-                                    'Product Barcode (Optional)',
-                                hint:
-                                    barcode ??
-                                    'Click to Scan Product Barcode',
-                                theme: theme,
-                              ),
-                              SizedBox(height: 10),
                               Row(
                                 spacing: 15,
                                 children: [
@@ -581,482 +576,15 @@ class _AddProductMobileState
                                 ],
                               ),
                               SizedBox(height: 10),
-                              MainDropdown(
-                                valueSet:
-                                    returnData(
-                                      context,
-                                    ).unitValueSet,
-                                onTap: () {
-                                  unitsBottomSheet(
-                                    context,
-                                    () {
-                                      setState(() {
-                                        isOpenUnit =
-                                            !isOpenUnit;
-                                      });
-                                    },
-                                  );
-                                  setState(() {
-                                    isOpenUnit =
-                                        !isOpenUnit;
-                                  });
-                                },
-                                isOpen: isOpenUnit,
-                                title: 'Unit',
-                                hint:
-                                    returnData(
-                                      context,
-                                    ).selectedUnit ??
-                                    'Select Product Unit',
-                                theme: theme,
-                              ),
-                              SizedBox(height: 10),
-                              MainDropdown(
-                                valueSet:
-                                    returnData(
-                                      context,
-                                    ).sizeValueSet,
-                                onTap: () {
-                                  sizeTypeBottomSheet(
-                                    context,
-                                    () {
-                                      setState(() {
-                                        isSizedTypeOpen =
-                                            !isSizedTypeOpen;
-                                      });
-                                    },
-                                  );
-                                  setState(() {
-                                    isSizedTypeOpen =
-                                        !isSizedTypeOpen;
-                                  });
-                                },
-                                isOpen: isSizedTypeOpen,
-                                title:
-                                    'Size Type (Optional)',
-                                hint:
-                                    returnData(
-                                      context,
-                                    ).selectedSize ??
-                                    'Select Product Size Type',
-                                theme: theme,
-                              ),
-
-                              SizedBox(height: 10),
-                              MainDropdown(
-                                valueSet:
-                                    returnData(
-                                      context,
-                                    ).catValueSet,
-                                onTap: () {
-                                  categoriesBottomSheet(
-                                    context,
-                                    () {
-                                      setState(() {
-                                        isOpen = false;
-                                      });
-                                    },
-                                  );
-                                  setState(() {
-                                    isOpen = !isOpen;
-                                  });
-                                },
-                                isOpen: isOpen,
-                                title:
-                                    'Category (Optional)',
-                                hint:
-                                    returnData(
-                                      context,
-                                    ).selectedCategory ??
-                                    'Select Product Category',
-                                theme: theme,
-                              ),
-                              SizedBox(height: 10),
-                              Row(
-                                spacing: 15,
-                                children: [
-                                  Expanded(
-                                    child: EditCartTextField(
-                                      theme: theme,
-                                      hint:
-                                          'Enter Quantity',
-                                      title: 'Quantity',
-                                      controller:
-                                          widget
-                                              .quantityController,
-                                    ),
-                                  ),
-
-                                  Expanded(
-                                    child: EditCartTextField(
-                                      theme: theme,
-                                      hint: 'Enter Limit',
-                                      title:
-                                          'Low Quantity Limit',
-                                      controller:
-                                          widget
-                                              .lowQttyController,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
                               EditCartTextField(
-                                discount: true,
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value
-                                            .toString()
-                                            .length >
-                                        2) {
-                                      discount = 100;
-                                    } else {
-                                      discount =
-                                          double.tryParse(
-                                            value,
-                                          ) ??
-                                          0;
-                                    }
-                                  });
-                                  checkDiscount();
-
-                                  if (value.isEmpty) {
-                                    returnData(
-                                      context,
-                                      listen: false,
-                                    ).clearEndDate();
-                                    returnData(
-                                      context,
-                                      listen: false,
-                                    ).clearStartDate();
-                                    widget
-                                        .discountController
-                                        .text = '';
-                                  } else if (int.parse(
-                                        widget
-                                            .discountController
-                                            .text,
-                                      ) >
-                                      99) {
-                                    widget
-                                        .discountController
-                                        .text = '100';
-                                    value = '100';
-                                  }
-                                },
                                 theme: theme,
-                                hint: 'Set Discount %',
-                                title:
-                                    'Discount (Optional)',
+                                hint: 'Enter Quantity',
+                                title: 'Quantity',
                                 controller:
                                     widget
-                                        .discountController,
-                              ),
-                              Visibility(
-                                visible:
-                                    widget
-                                        .discountController
-                                        .text
-                                        .isNotEmpty,
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 5),
-                                    Row(
-                                      spacing: 15,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
-                                      children: [
-                                        Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    Colors
-                                                        .grey,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Selling-price',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor200,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              '$nairaSymbol${formatLargeNumberDouble(sellingDiscount)}',
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    Colors
-                                                        .grey,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Discount:',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor200,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              '$nairaSymbol${formatLargeNumberDouble(costDiscount)}',
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 15),
-                              Visibility(
-                                visible:
-                                    widget
-                                        .discountController
-                                        .text
-                                        .isNotEmpty,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  spacing: 10,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          setDate = true;
-                                        });
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).changeDateBoolToTrue();
-                                        FocusManager
-                                            .instance
-                                            .primaryFocus
-                                            ?.unfocus();
-                                      },
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10,
-                                              vertical: 5,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade200,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              formatDateTime(
-                                                returnData(
-                                                      context,
-                                                    ).startDate ??
-                                                    DateTime.now(),
-                                              ),
-                                            ),
-                                            Icon(
-                                              size: 20,
-                                              Icons
-                                                  .calendar_month_outlined,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          setDate = true;
-                                        });
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).clearEndDate();
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).changeDateBoolToFalse();
-                                        FocusManager
-                                            .instance
-                                            .primaryFocus
-                                            ?.unfocus();
-                                      },
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10,
-                                              vertical: 5,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade200,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              returnData(
-                                                        context,
-                                                      ).endDate !=
-                                                      null
-                                                  ? formatDateTime(
-                                                    returnData(
-                                                          context,
-                                                        ).endDate ??
-                                                        DateTime.now(),
-                                                  )
-                                                  : 'Set End Date',
-                                            ),
-                                            Icon(
-                                              size: 20,
-                                              Icons
-                                                  .calendar_month_outlined,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                        .quantityController,
                               ),
                               SizedBox(height: 20),
-                              InkWell(
-                                onTap: () {
-                                  returnData(
-                                    context,
-                                    listen: false,
-                                  ).toggleRefundable();
-                                  FocusManager
-                                      .instance
-                                      .primaryFocus
-                                      ?.unfocus();
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Flexible(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .start,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'Refundable?',
-                                          ),
-                                          Text(
-                                            'Allow Customers return this product after Purchase?',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Checkbox(
-                                      activeColor:
-                                          theme
-                                              .lightModeColor
-                                              .secColor100,
-                                      value:
-                                          returnData(
-                                            context,
-                                          ).isProductRefundable,
-                                      onChanged: (value) {
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).toggleRefundable();
-                                        FocusManager
-                                            .instance
-                                            .primaryFocus
-                                            ?.unfocus();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 10),
                               InkWell(
                                 onTap: () {
                                   returnData(
@@ -1126,6 +654,527 @@ class _AddProductMobileState
                                             ?.unfocus();
                                       },
                                     ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 15),
+                              Divider(),
+                              SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'More Details',
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        expand = !expand;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            left: 35.0,
+                                            top: 5,
+                                            bottom: 5,
+                                          ),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            expand
+                                                ? 'Colapse'
+                                                : 'Expand',
+                                          ),
+                                          Icon(
+                                            expand
+                                                ? Icons
+                                                    .keyboard_arrow_up_outlined
+                                                : Icons
+                                                    .keyboard_arrow_down,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Divider(),
+                              SizedBox(height: 15),
+                              Visibility(
+                                visible: expand,
+                                child: Column(
+                                  children: [
+                                    BarcodeScanner(
+                                      valueSet: barCodeSet,
+                                      onTap: () async {
+                                        String? info =
+                                            await scanCode(
+                                              context,
+                                              'Not Saved',
+                                            );
+
+                                        setState(() {
+                                          barcode = info;
+                                          barCodeSet = true;
+                                        });
+                                      },
+                                      title:
+                                          'Product Barcode (Optional)',
+                                      hint:
+                                          barcode ??
+                                          'Click to Scan Product Barcode',
+                                      theme: theme,
+                                    ),
+                                    SizedBox(height: 10),
+                                    EditCartTextField(
+                                      theme: theme,
+                                      hint: 'Enter Limit',
+                                      title:
+                                          'Low Quantity Limit',
+                                      controller:
+                                          widget
+                                              .lowQttyController,
+                                    ),
+                                    SizedBox(height: 10),
+                                    MainDropdown(
+                                      valueSet:
+                                          returnData(
+                                            context,
+                                          ).unitValueSet,
+                                      onTap: () {
+                                        unitsBottomSheet(
+                                          context,
+                                          () {
+                                            setState(() {
+                                              isOpenUnit =
+                                                  !isOpenUnit;
+                                            });
+                                          },
+                                        );
+                                        setState(() {
+                                          isOpenUnit =
+                                              !isOpenUnit;
+                                        });
+                                      },
+                                      isOpen: isOpenUnit,
+                                      title:
+                                          'Product Unit (Optional)',
+                                      hint:
+                                          returnData(
+                                            context,
+                                          ).selectedUnit ??
+                                          'Select Product Unit',
+                                      theme: theme,
+                                    ),
+                                    SizedBox(height: 10),
+                                    MainDropdown(
+                                      valueSet:
+                                          returnData(
+                                            context,
+                                          ).sizeValueSet,
+                                      onTap: () {
+                                        sizeTypeBottomSheet(
+                                          context,
+                                          () {
+                                            setState(() {
+                                              isSizedTypeOpen =
+                                                  !isSizedTypeOpen;
+                                            });
+                                          },
+                                        );
+                                        setState(() {
+                                          isSizedTypeOpen =
+                                              !isSizedTypeOpen;
+                                        });
+                                      },
+                                      isOpen:
+                                          isSizedTypeOpen,
+                                      title:
+                                          'Size Type (Optional)',
+                                      hint:
+                                          returnData(
+                                            context,
+                                          ).selectedSize ??
+                                          'Select Product Size Type',
+                                      theme: theme,
+                                    ),
+
+                                    SizedBox(height: 10),
+                                    MainDropdown(
+                                      valueSet:
+                                          returnData(
+                                            context,
+                                          ).catValueSet,
+                                      onTap: () {
+                                        categoriesBottomSheet(
+                                          context,
+                                          () {
+                                            setState(() {
+                                              isOpen =
+                                                  false;
+                                            });
+                                          },
+                                        );
+                                        setState(() {
+                                          isOpen = !isOpen;
+                                        });
+                                      },
+                                      isOpen: isOpen,
+                                      title:
+                                          'Category (Optional)',
+                                      hint:
+                                          returnData(
+                                            context,
+                                          ).selectedCategory ??
+                                          'Select Product Category',
+                                      theme: theme,
+                                    ),
+                                    SizedBox(height: 10),
+                                    EditCartTextField(
+                                      discount: true,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value
+                                                  .toString()
+                                                  .length >
+                                              2) {
+                                            discount = 100;
+                                          } else {
+                                            discount =
+                                                double.tryParse(
+                                                  value,
+                                                ) ??
+                                                0;
+                                          }
+                                        });
+                                        checkDiscount();
+
+                                        if (value.isEmpty) {
+                                          returnData(
+                                            context,
+                                            listen: false,
+                                          ).clearEndDate();
+                                          returnData(
+                                            context,
+                                            listen: false,
+                                          ).clearStartDate();
+                                          widget
+                                              .discountController
+                                              .text = '';
+                                        } else if (int.parse(
+                                              widget
+                                                  .discountController
+                                                  .text,
+                                            ) >
+                                            99) {
+                                          widget
+                                              .discountController
+                                              .text = '100';
+                                          value = '100';
+                                        }
+                                      },
+                                      theme: theme,
+                                      hint:
+                                          'Set Discount %',
+                                      title:
+                                          'Discount (Optional)',
+                                      controller:
+                                          widget
+                                              .discountController,
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          widget
+                                              .discountController
+                                              .text
+                                              .isNotEmpty,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            spacing: 15,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.grey,
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Selling-price',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          theme.lightModeColor.secColor200,
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    '$nairaSymbol${formatLargeNumberDouble(sellingDiscount)}',
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.grey,
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Discount:',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          theme.lightModeColor.secColor200,
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    '$nairaSymbol${formatLargeNumberDouble(costDiscount)}',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 15),
+                                    Visibility(
+                                      visible:
+                                          widget
+                                              .discountController
+                                              .text
+                                              .isNotEmpty,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        spacing: 10,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                setDate =
+                                                    true;
+                                              });
+                                              returnData(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).changeDateBoolToTrue();
+                                              FocusManager
+                                                  .instance
+                                                  .primaryFocus
+                                                  ?.unfocus();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        10,
+                                                    vertical:
+                                                        5,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade200,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    formatDateTime(
+                                                      returnData(
+                                                            context,
+                                                          ).startDate ??
+                                                          DateTime.now(),
+                                                    ),
+                                                  ),
+                                                  Icon(
+                                                    size:
+                                                        20,
+                                                    Icons
+                                                        .calendar_month_outlined,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                setDate =
+                                                    true;
+                                              });
+                                              returnData(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).clearEndDate();
+                                              returnData(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).changeDateBoolToFalse();
+                                              FocusManager
+                                                  .instance
+                                                  .primaryFocus
+                                                  ?.unfocus();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        10,
+                                                    vertical:
+                                                        5,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade200,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    returnData(
+                                                              context,
+                                                            ).endDate !=
+                                                            null
+                                                        ? formatDateTime(
+                                                          returnData(
+                                                                context,
+                                                              ).endDate ??
+                                                              DateTime.now(),
+                                                        )
+                                                        : 'Set End Date',
+                                                  ),
+                                                  Icon(
+                                                    size:
+                                                        20,
+                                                    Icons
+                                                        .calendar_month_outlined,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    InkWell(
+                                      onTap: () {
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).toggleRefundable();
+                                        FocusManager
+                                            .instance
+                                            .primaryFocus
+                                            ?.unfocus();
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Flexible(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b1.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'Refundable?',
+                                                ),
+                                                Text(
+                                                  'Allow Customers return this product after Purchase?',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Checkbox(
+                                            activeColor:
+                                                theme
+                                                    .lightModeColor
+                                                    .secColor100,
+                                            value:
+                                                returnData(
+                                                  context,
+                                                ).isProductRefundable,
+                                            onChanged: (
+                                              value,
+                                            ) {
+                                              returnData(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).toggleRefundable();
+                                              FocusManager
+                                                  .instance
+                                                  .primaryFocus
+                                                  ?.unfocus();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
                                   ],
                                 ),
                               ),
