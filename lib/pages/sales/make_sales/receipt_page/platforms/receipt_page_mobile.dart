@@ -10,6 +10,8 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ReceiptPageMobile extends StatelessWidget {
@@ -154,6 +156,7 @@ class _ReceiptDetailsContainerState
                 subText: 'Something Happened',
                 theme: widget.theme,
                 height: 35,
+                icon: Icons.clear,
               );
             } else {
               return Column(
@@ -463,7 +466,9 @@ class _ReceiptDetailsContainerState
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
-                                                        ' $nairaSymbol${formatMoney(widget.mainReceipt.cashAlt)}',
+                                                        formatMoney(
+                                                          widget.mainReceipt.cashAlt,
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -946,7 +951,8 @@ class _ReceiptDetailsContainerState
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) => Home(),
+                                    (context) =>
+                                        MakeSalesPage(),
                               ),
                             );
                             returnNavProvider(

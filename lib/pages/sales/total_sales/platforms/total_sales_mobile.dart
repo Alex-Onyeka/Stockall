@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
+// import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
@@ -19,20 +19,19 @@ class TotalSalesMobile extends StatefulWidget {
 
 class _TotalSalesMobileState
     extends State<TotalSalesMobile> {
-  // Future<List<TempMainReceipt>> getMainReceipts() {
-  //   var tempReceipts = returnReceiptProvider(
-  //     context,
-  //     listen: false,
-  //   ).loadReceipts(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ).userShop!.shopId!,
-  //     context,
-  //   );
-
-  //   return tempReceipts;
-  // }
+  Future<void> getMainReceipts() async {
+    await returnReceiptProvider(
+      context,
+      listen: false,
+    ).loadReceipts(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+      context,
+    );
+    setState(() {});
+  }
 
   // late Future<List<TempMainReceipt>> mainReceiptFuture;
 
@@ -55,35 +54,35 @@ class _TotalSalesMobileState
 
   // late Future<List<TempProductSaleRecord>>
   // getProdutRecordsFuture;
-  List<TempProductSaleRecord> getProductSalesRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).produtRecordSalesMain;
+  // List<TempProductSaleRecord> getProductSalesRecord() {
+  //   var tempRecords =
+  //       returnReceiptProvider(
+  //         context,
+  //         listen: false,
+  //       ).produtRecordSalesMain;
 
-    return tempRecords
-        .where(
-          (beans) =>
-              beans.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop!.shopId!,
-        )
-        .toList();
-  }
+  //   return tempRecords
+  //       .where(
+  //         (beans) =>
+  //             beans.shopId ==
+  //             returnShopProvider(
+  //               context,
+  //               listen: false,
+  //             ).userShop!.shopId!,
+  //       )
+  //       .toList();
+  // }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    List<TempProductSaleRecord> records =
-        getProductSalesRecord();
-    var mainReceipts =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).receipts;
+    // List<TempProductSaleRecord> records =
+    //     getProductSalesRecord();
+    // var mainReceipts =
+    //     returnReceiptProvider(
+    //       context,
+    //       listen: false,
+    //     ).receipts;
     return GestureDetector(
       onTap: () {
         returnReceiptProvider(
@@ -213,13 +212,20 @@ class _TotalSalesMobileState
                                 listen: false,
                               ).getTotalRevenueForSelectedDay(
                                 context,
-                                mainReceipts,
-                                records,
+                                returnReceiptProvider(
+                                  context,
+                                ).receipts,
+                                returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).produtRecordSalesMain,
                               ),
                             ),
                             ValueSummaryTabSmall(
                               value:
-                                  mainReceipts.length
+                                  returnReceiptProvider(
+                                        context,
+                                      ).receipts.length
                                       .toDouble(),
                               title: 'Sales Number',
                               color: Colors.green,
@@ -316,7 +322,9 @@ class _TotalSalesMobileState
                   Expanded(
                     child: Builder(
                       builder: (context) {
-                        if (mainReceipts.isEmpty) {
+                        if (returnReceiptProvider(
+                          context,
+                        ).receipts.isEmpty) {
                           return EmptyWidgetDisplay(
                             title: 'Empty List',
                             subText:
@@ -335,35 +343,56 @@ class _TotalSalesMobileState
                                 ),
                               );
                             },
+                            altAction: () {
+                              getMainReceipts();
+                            },
+                            altActionText: 'Refresh List',
                           );
                         } else {
-                          return ListView.builder(
-                            itemCount: mainReceipts.length,
-                            itemBuilder: (context, index) {
-                              var receipt =
-                                  mainReceipts[index];
-                              return MainReceiptTile(
-                                action: () {
-                                  Navigator.push(
+                          return RefreshIndicator(
+                            onRefresh: getMainReceipts,
+                            backgroundColor: Colors.white,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .prColor300,
+                            displacement: 10,
+                            child: ListView.builder(
+                              itemCount:
+                                  returnReceiptProvider(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ReceiptPage(
-                                          mainReceipt:
-                                              receipt,
-                                          isMain: false,
-                                        );
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    // mainReceiptFuture =
-                                    //     getMainReceipts();
-                                  });
-                                },
-                                key: ValueKey(receipt.id),
-                                mainReceipt: receipt,
-                              );
-                            },
+                                  ).receipts.length,
+                              itemBuilder: (
+                                context,
+                                index,
+                              ) {
+                                var receipt =
+                                    returnReceiptProvider(
+                                      context,
+                                    ).receipts[index];
+                                return MainReceiptTile(
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ReceiptPage(
+                                            mainReceipt:
+                                                receipt,
+                                            isMain: false,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      // mainReceiptFuture =
+                                      //     getMainReceipts();
+                                    });
+                                  },
+                                  key: ValueKey(receipt.id),
+                                  mainReceipt: receipt,
+                                );
+                              },
+                            ),
                           );
                         }
                       },

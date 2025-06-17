@@ -27,20 +27,19 @@ class SalesPageMobile extends StatefulWidget {
 }
 
 class _SalesPageMobileState extends State<SalesPageMobile> {
-  // Future<List<TempMainReceipt>> getMainReceipts() {
-  //   var tempReceipts = returnReceiptProvider(
-  //     context,
-  //     listen: false,
-  //   ).loadReceipts(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ).userShop!.shopId!,
-  //     context,
-  //   );
-
-  //   return tempReceipts;
-  // }
+  Future<void> getMainReceipts() async {
+    await returnReceiptProvider(
+      context,
+      listen: false,
+    ).loadReceipts(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+      context,
+    );
+    setState(() {});
+  }
 
   // late Future<List<TempMainReceipt>> mainReceiptFuture;
 
@@ -129,8 +128,8 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
 
-    List<TempProductSaleRecord> records =
-        getProductSalesRecord();
+    // List<TempProductSaleRecord> records =
+    //     getProductSalesRecord();
     // var mainReceipts =
     //     returnReceiptProvider(context).receipts;
     return Scaffold(
@@ -364,7 +363,9 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                 returnReceiptProvider(
                                   context,
                                 ).receipts,
-                                records,
+                                returnReceiptProvider(
+                                  context,
+                                ).produtRecordSalesMain,
                               ),
                               color2: Colors.amber,
                               title2: 'Sales Number',
@@ -524,56 +525,75 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                           ),
                                         );
                                       },
+                                      altAction: () {
+                                        getMainReceipts();
+                                      },
+                                      altActionText:
+                                          'Refresh List',
                                       theme: theme,
                                     );
                                   } else {
-                                    return ListView.builder(
-                                      itemCount:
-                                          returnReceiptProvider(
-                                            context,
-                                          ).receipts.length,
-                                      itemBuilder: (
-                                        context,
-                                        index,
-                                      ) {
-                                        TempMainReceipt
-                                        mainReceipt =
+                                    return RefreshIndicator(
+                                      onRefresh:
+                                          getMainReceipts,
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: ListView.builder(
+                                        itemCount:
                                             returnReceiptProvider(
-                                              context,
-                                            ).receipts[index];
-                                        return MainReceiptTile(
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
                                                   context,
-                                                ) {
-                                                  return ReceiptPage(
-                                                    mainReceipt:
-                                                        mainReceipt,
-                                                    isMain:
-                                                        false,
-                                                  );
-                                                },
-                                              ),
-                                            ).then((_) {
-                                              // mainReceiptFuture =
-                                            });
-                                          },
-                                          mainReceipt:
-                                              mainReceipt,
-                                          key: ValueKey(
-                                            mainReceipt.id!,
-                                          ),
-                                        );
-                                        // return ListTile(
-                                        //   title: Text(
-                                        //     mainReceipt
-                                        //         .staffName,
-                                        //   ),
-                                        // );
-                                      },
+                                                )
+                                                .receipts
+                                                .length,
+                                        itemBuilder: (
+                                          context,
+                                          index,
+                                        ) {
+                                          TempMainReceipt
+                                          mainReceipt =
+                                              returnReceiptProvider(
+                                                context,
+                                              ).receipts[index];
+                                          return MainReceiptTile(
+                                            action: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ReceiptPage(
+                                                      mainReceipt:
+                                                          mainReceipt,
+                                                      isMain:
+                                                          false,
+                                                    );
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                // mainReceiptFuture =
+                                              });
+                                            },
+                                            mainReceipt:
+                                                mainReceipt,
+                                            key: ValueKey(
+                                              mainReceipt
+                                                  .id!,
+                                            ),
+                                          );
+                                          // return ListTile(
+                                          //   title: Text(
+                                          //     mainReceipt
+                                          //         .staffName,
+                                          //   ),
+                                          // );
+                                        },
+                                      ),
                                     );
                                   }
                                 },

@@ -31,7 +31,7 @@ class SearchProductTile extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
-            'N${formatLargeNumberDouble(product.sellingPrice)}',
+            'N${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
           ),
         ],
       ),

@@ -65,13 +65,12 @@ class _TotalProductsPageState
     // _productsFuture = getProductList(context);
   }
 
-  Future<List<TempProductClass>> getProductList(
-    BuildContext context,
-  ) async {
-    return await returnData(
+  Future<void> getProductList() async {
+    await returnData(
       context,
       listen: false,
     ).getProducts(shopId(context));
+    setState(() {});
   }
 
   @override
@@ -219,32 +218,42 @@ class _TotalProductsPageState
                         if (products.isEmpty) {
                           return Center(
                             child: SingleChildScrollView(
-                              child: EmptyWidgetDisplay(
-                                buttonText: 'Add Product',
-                                subText:
-                                    'Click on the button below to start adding Products to your store.',
-                                title:
-                                    'You have no Products Yet',
-                                svg: productIconSvg,
-                                height: 35,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AddProduct();
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    if (context.mounted) {
-                                      // _productsFuture =
-                                      // getProductList(
-                                      //   context,
-                                      // );
-                                    }
-                                  });
-                                },
-                                theme: widget.theme,
+                              child: RefreshIndicator(
+                                onRefresh: getProductList,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor300,
+                                backgroundColor:
+                                    Colors.white,
+                                displacement: 10,
+                                child: EmptyWidgetDisplay(
+                                  buttonText: 'Add Product',
+                                  subText:
+                                      'Click on the button below to start adding Products to your store.',
+                                  title:
+                                      'You have no Products Yet',
+                                  svg: productIconSvg,
+                                  height: 35,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return AddProduct();
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      if (context.mounted) {
+                                        // _productsFuture =
+                                        // getProductList(
+                                        //   context,
+                                        // );
+                                      }
+                                    });
+                                  },
+                                  theme: widget.theme,
+                                ),
                               ),
                             ),
                           );
@@ -349,55 +358,69 @@ class _TotalProductsPageState
                                     builder: (context) {
                                       if (filterProducts()
                                           .isNotEmpty) {
-                                        return ListView.builder(
-                                          itemCount:
-                                              filterProducts()
-                                                  .length,
-                                          itemBuilder: (
-                                            context,
-                                            index,
-                                          ) {
-                                            List<
+                                        return RefreshIndicator(
+                                          onRefresh:
+                                              getProductList,
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .prColor300,
+                                          backgroundColor:
+                                              Colors.white,
+                                          displacement: 10,
+                                          child: ListView.builder(
+                                            itemCount:
+                                                filterProducts()
+                                                    .length,
+                                            itemBuilder: (
+                                              context,
+                                              index,
+                                            ) {
+                                              List<
+                                                TempProductClass
+                                              >
+                                              products =
+                                                  filterProducts();
+
                                               TempProductClass
-                                            >
-                                            products =
-                                                filterProducts();
+                                              product =
+                                                  products[index];
 
-                                            TempProductClass
-                                            product =
-                                                products[index];
-
-                                            return ProductTileMain(
-                                              action: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return ProductDetailsPage(
-                                                        productId:
-                                                            product.id!,
-                                                      );
-                                                    },
-                                                  ),
-                                                ).then((_) {
-                                                  if (context
-                                                      .mounted) {
-                                                    setState(() {
-                                                      // _productsFuture =
-                                                      // getProductList(
-                                                      //   context,
-                                                      // );
-                                                    });
-                                                  }
-                                                });
-                                              },
-                                              theme: theme,
-                                              product:
-                                                  product,
-                                            );
-                                          },
+                                              return ProductTileMain(
+                                                action: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return ProductDetailsPage(
+                                                          productId:
+                                                              product.id!,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ).then((
+                                                    _,
+                                                  ) {
+                                                    if (context
+                                                        .mounted) {
+                                                      setState(() {
+                                                        // _productsFuture =
+                                                        // getProductList(
+                                                        //   context,
+                                                        // );
+                                                      });
+                                                    }
+                                                  });
+                                                },
+                                                theme:
+                                                    theme,
+                                                product:
+                                                    product,
+                                              );
+                                            },
+                                          ),
                                         );
                                       } else {
                                         return Padding(
@@ -636,7 +659,7 @@ class _TotalProductsPageState
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
-                                                      'N${formatLargeNumberDouble(product.sellingPrice)}',
+                                                      'N${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
                                                     ),
                                                   ],
                                                 ),

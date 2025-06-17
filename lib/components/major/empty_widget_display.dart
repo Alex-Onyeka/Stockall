@@ -13,6 +13,8 @@ class EmptyWidgetDisplay extends StatelessWidget {
   final Function()? action;
   final ThemeProvider theme;
   final double height;
+  final Function()? altAction;
+  final String? altActionText;
 
   const EmptyWidgetDisplay({
     super.key,
@@ -24,6 +26,8 @@ class EmptyWidgetDisplay extends StatelessWidget {
     this.icon,
     required this.theme,
     required this.height,
+    this.altAction,
+    this.altActionText,
   });
 
   @override
@@ -95,6 +99,34 @@ class EmptyWidgetDisplay extends StatelessWidget {
                   theme: theme,
                   action: action,
                   buttonText: buttonText,
+                ),
+              ),
+              Visibility(
+                visible: altAction != null,
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    InkWell(
+                      onTap: () {
+                        altAction!();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 50,
+                          vertical: 15,
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Text(altActionText ?? ''),
+                            Icon(size: 20, Icons.refresh),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

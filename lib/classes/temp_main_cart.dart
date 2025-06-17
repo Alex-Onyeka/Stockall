@@ -8,7 +8,7 @@ class TempMainCart {
   double total() {
     double tempTotal = 0;
     for (var item in cartItems) {
-      tempTotal += item.item.sellingPrice;
+      tempTotal += item.item.sellingPrice ?? 0;
     }
     return tempTotal;
   }

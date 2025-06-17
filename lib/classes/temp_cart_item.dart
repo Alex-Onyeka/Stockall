@@ -17,7 +17,8 @@ class TempCartItem {
 
   double discountCost() {
     if (item.discount != null) {
-      return (item.sellingPrice * (item.discount! / 100)) *
+      return (item.sellingPrice ??
+              0 * (item.discount! / 100)) *
           quantity;
     }
     return 0;
@@ -27,7 +28,7 @@ class TempCartItem {
     if (customPrice != null) {
       return customPrice!;
     } else {
-      return item.sellingPrice * quantity;
+      return item.sellingPrice ?? 0 * quantity;
     }
   }
 
@@ -44,6 +45,7 @@ class TempCartItem {
   }
 
   double profitOrLoss() {
-    return (item.sellingPrice - item.costPrice) * quantity;
+    return (item.sellingPrice ?? 0 - item.costPrice) *
+        quantity;
   }
 }

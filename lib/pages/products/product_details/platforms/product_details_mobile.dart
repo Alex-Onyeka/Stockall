@@ -43,6 +43,7 @@ class _ProductDetailsMobileState
         listen: false,
       ).userShop!.shopId!,
     );
+    setState(() {});
 
     return tempProduct.firstWhere(
       (product) => product.id == widget.productId,
@@ -98,16 +99,20 @@ class _ProductDetailsMobileState
             listen: false,
           ).showLoader('Loading');
         } else if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 30.0),
-              child: EmptyWidgetDisplayOnly(
-                title: 'An Error Occured',
-                subText:
-                    'Please Check your internet connection and try again',
-                theme: widget.theme,
-                height: 30,
-                icon: Icons.clear,
+          return Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 30.0,
+                ),
+                child: EmptyWidgetDisplayOnly(
+                  title: 'An Error Occured',
+                  subText:
+                      'Please Check your internet connection and try again',
+                  theme: widget.theme,
+                  height: 30,
+                  icon: Icons.clear,
+                ),
               ),
             ),
           );
@@ -261,7 +266,8 @@ class _ProductDetailsMobileState
                                               'Selling Price',
                                           price:
                                               product
-                                                  .sellingPrice,
+                                                  .sellingPrice ??
+                                              0,
                                           theme:
                                               widget.theme,
                                           backGround:

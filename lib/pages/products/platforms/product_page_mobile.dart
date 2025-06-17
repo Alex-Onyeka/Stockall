@@ -75,15 +75,16 @@ class _ProductPageMobileState
     return tempGet;
   }
 
-  // List<TempProductClass> getProductList(
-  //   BuildContext context,
-  // ) {
-  //   return returnData(context, listen: false).productList;
-  //   // return await returnData(
-  //   //   context,
-  //   //   listen: false,
-  //   // ).getProducts(shopId(context));
-  // }
+  Future<void> getProductList(
+    // BuildContext context,
+  ) async {
+    // return returnData(context, listen: false).productList;
+    await returnData(
+      context,
+      listen: false,
+    ).getProducts(shopId(context));
+    setState(() {});
+  }
 
   @override
   void didChangeDependencies() {
@@ -456,48 +457,68 @@ class _ProductPageMobileState
                             'Owner') {
                           return Center(
                             child: SingleChildScrollView(
-                              child: EmptyWidgetDisplayOnly(
-                                subText:
-                                    'No Product has been added to this store yet.',
-                                title:
-                                    'You have no Products Yet',
-                                height: 35,
-                                icon: Icons.clear,
+                              child: RefreshIndicator(
+                                onRefresh: getProductList,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor300,
+                                backgroundColor:
+                                    Colors.white,
+                                displacement: 10,
+                                child: EmptyWidgetDisplayOnly(
+                                  subText:
+                                      'No Product has been added to this store yet.',
+                                  title:
+                                      'You have no Products Yet',
+                                  height: 35,
+                                  icon: Icons.clear,
 
-                                theme: widget.theme,
+                                  theme: widget.theme,
+                                ),
                               ),
                             ),
                           );
                         } else {
                           return Center(
                             child: SingleChildScrollView(
-                              child: EmptyWidgetDisplay(
-                                buttonText: 'Add Product',
-                                subText:
-                                    'Click on the button below to start adding Products to your store.',
-                                title:
-                                    'You have no Products Yet',
-                                svg: productIconSvg,
-                                height: 35,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AddProduct();
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    if (context.mounted) {
-                                      setState(() {
-                                        // getProductList(
-                                        //   context,
-                                        // );
-                                      });
-                                    }
-                                  });
-                                },
-                                theme: widget.theme,
+                              child: RefreshIndicator(
+                                onRefresh: getProductList,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor300,
+                                backgroundColor:
+                                    Colors.white,
+                                displacement: 10,
+                                child: EmptyWidgetDisplay(
+                                  buttonText: 'Add Product',
+                                  subText:
+                                      'Click on the button below to start adding Products to your store.',
+                                  title:
+                                      'You have no Products Yet',
+                                  svg: productIconSvg,
+                                  height: 35,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return AddProduct();
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      if (context.mounted) {
+                                        setState(() {
+                                          // getProductList(
+                                          //   context,
+                                          // );
+                                        });
+                                      }
+                                    });
+                                  },
+                                  theme: widget.theme,
+                                ),
                               ),
                             ),
                           );
@@ -577,47 +598,57 @@ class _ProductPageMobileState
                                 ),
                               ),
                               Expanded(
-                                child: ListView.builder(
-                                  itemCount:
-                                      products.length,
-                                  itemBuilder: (
-                                    context,
-                                    index,
-                                  ) {
-                                    TempProductClass
-                                    product =
-                                        products[index];
+                                child: RefreshIndicator(
+                                  onRefresh: getProductList,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  backgroundColor:
+                                      Colors.white,
+                                  displacement: 10,
+                                  child: ListView.builder(
+                                    itemCount:
+                                        products.length,
+                                    itemBuilder: (
+                                      context,
+                                      index,
+                                    ) {
+                                      TempProductClass
+                                      product =
+                                          products[index];
 
-                                    return ProductTileMain(
-                                      action: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return ProductDetailsPage(
-                                                productId:
-                                                    product
-                                                        .id!,
-                                              );
-                                            },
-                                          ),
-                                        ).then((_) {
-                                          if (context
-                                              .mounted) {
-                                            setState(() {
-                                              // getProductList(
-                                              //   context,
-                                              // );
-                                            });
-                                          }
-                                        });
-                                      },
-                                      theme: theme,
-                                      product: product,
-                                    );
-                                  },
+                                      return ProductTileMain(
+                                        action: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ProductDetailsPage(
+                                                  productId:
+                                                      product
+                                                          .id!,
+                                                );
+                                              },
+                                            ),
+                                          ).then((_) {
+                                            if (context
+                                                .mounted) {
+                                              setState(() {
+                                                // getProductList(
+                                                //   context,
+                                                // );
+                                              });
+                                            }
+                                          });
+                                        },
+                                        theme: theme,
+                                        product: product,
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             ],

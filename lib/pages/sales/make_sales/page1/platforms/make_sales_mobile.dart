@@ -485,6 +485,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
       child: Scaffold(
         appBar: appBar(
+          isMain: true,
           context: context,
           title: 'Cart Items',
           widget: Visibility(
@@ -697,8 +698,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         ).pop();
                                                         widget.searchController.clear();
                                                       },
-                                                      products:
-                                                          products,
+                                                      // products:
+                                                      //     products,
                                                     );
                                                   },
                                                 );
@@ -892,8 +893,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     context,
                                                   ).pop();
                                                 },
-                                                products:
-                                                    products,
+                                                // products:
+                                                //     products,
                                               );
                                             },
                                           );
@@ -1051,7 +1052,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                   Visibility(
                     visible: showBottomPanel,
                     child: CustomBottomPanel(
-                      products: products,
+                      // products: products,
                       searchController:
                           widget.searchController,
                       close: () {

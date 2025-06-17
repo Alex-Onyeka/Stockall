@@ -67,8 +67,7 @@ class _AddProductMobileState
 
   void checkFields() async {
     if (widget.nameController.text.isEmpty ||
-        widget.costController.text.isEmpty ||
-        widget.sellingController.text.isEmpty) {
+        widget.costController.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
@@ -76,7 +75,7 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Product Name, Cost Price and Selling Price Must be set',
+                'Product Name and Cost Price Must be set',
             title: 'Empty Input',
           );
         },
@@ -157,10 +156,16 @@ class _AddProductMobileState
                     ),
                   ),
                   shopId: userShop!.shopId!,
-                  sellingPrice: double.parse(
-                    widget.sellingController.text
-                        .replaceAll(',', ''),
-                  ),
+                  sellingPrice:
+                      widget
+                              .sellingController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.sellingController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
                   quantity: double.parse(
                     widget.quantityController.text
                         .replaceAll(',', ''),
@@ -259,12 +264,13 @@ class _AddProductMobileState
                     '',
                   ),
                 ),
-                sellingPrice: double.parse(
-                  widget.sellingController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ),
+                sellingPrice:
+                    widget.sellingController.text.isNotEmpty
+                        ? double.parse(
+                          widget.sellingController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
                 quantity: double.parse(
                   widget.quantityController.text.replaceAll(
                     ',',
@@ -348,9 +354,11 @@ class _AddProductMobileState
             '.',
           )[0];
       widget.sellingController.text =
-          widget.product!.sellingPrice.toString().split(
-            '.',
-          )[0];
+          widget.product!.sellingPrice != null
+              ? widget.product!.sellingPrice
+                  .toString()
+                  .split('.')[0]
+              : '';
       widget.quantityController.text =
           widget.product!.quantity.toString();
 
@@ -391,16 +399,18 @@ class _AddProductMobileState
       );
       setState(() {
         costDiscount =
-            widget.product!.discount != null
-                ? widget.product!.sellingPrice *
+            widget.product!.discount != null &&
+                    widget.product!.sellingPrice != null
+                ? widget.product!.sellingPrice! *
                     (widget.product!.discount! / 100)
-                : costDiscount;
+                : 0;
         sellingDiscount =
-            widget.product!.discount != null
-                ? widget.product!.sellingPrice -
-                    (widget.product!.sellingPrice *
+            widget.product!.discount != null &&
+                    widget.product!.sellingPrice != null
+                ? widget.product!.sellingPrice! -
+                    (widget.product!.sellingPrice! *
                         (widget.product!.discount! / 100))
-                : costDiscount;
+                : 0;
         selling = double.parse(
           widget.sellingController.text.replaceAll(',', ''),
         );
@@ -495,7 +505,7 @@ class _AddProductMobileState
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
+                        horizontal: 20.0,
                       ),
                       child: SingleChildScrollView(
                         child: Padding(
@@ -514,7 +524,7 @@ class _AddProductMobileState
                               ),
                               SizedBox(height: 10),
                               Row(
-                                spacing: 15,
+                                spacing: 10,
                                 children: [
                                   Expanded(
                                     child: MoneyTextfield(
@@ -567,7 +577,7 @@ class _AddProductMobileState
                                       hint:
                                           'Enter Sale Price',
                                       title:
-                                          'Selling - Price',
+                                          'Selling-Price (Optional)',
                                       controller:
                                           widget
                                               .sellingController,
@@ -670,7 +680,9 @@ class _AddProductMobileState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    'More Details',
+                                    expand
+                                        ? 'Hide Details'
+                                        : 'More Details',
                                   ),
                                   InkWell(
                                     onTap: () {

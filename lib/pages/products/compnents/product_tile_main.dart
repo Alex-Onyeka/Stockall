@@ -199,7 +199,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   .lightModeColor
                                                   .prColor300,
                                         ),
-                                        'N${widget.product.discount == null ? formatLargeNumberDouble(widget.product.sellingPrice) : formatLargeNumberDouble((widget.product.sellingPrice * (1 - (widget.product.discount! / 100))))}',
+                                        'N${widget.product.discount == null ? formatLargeNumberDouble(widget.product.sellingPrice ?? 0) : formatLargeNumberDouble((widget.product.sellingPrice ?? 0 * (1 - (widget.product.discount! / 100))))}',
                                       ),
                                     ),
                                     Visibility(
@@ -233,7 +233,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                           color:
                                               Colors.grey,
                                         ),
-                                        'N${formatLargeNumberDouble(widget.product.sellingPrice)}',
+                                        'N${formatLargeNumberDouble(widget.product.sellingPrice ?? 0)}',
                                       ),
                                     ),
                                   ],

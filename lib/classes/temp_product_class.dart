@@ -12,7 +12,7 @@ class TempProductClass {
   String? sizeType;
   String? size;
   double costPrice;
-  double sellingPrice;
+  double? sellingPrice;
   double? discount;
   DateTime? startDate;
   DateTime? endDate;
@@ -34,7 +34,7 @@ class TempProductClass {
     this.sizeType,
     this.size,
     required this.costPrice,
-    required this.sellingPrice,
+    this.sellingPrice,
     this.discount,
     this.startDate,
     this.endDate,
@@ -65,7 +65,9 @@ class TempProductClass {
       lowQtty: (json['low_qtty'] as num).toDouble(),
       costPrice: (json['cost_price'] as num).toDouble(),
       sellingPrice:
-          (json['selling_price'] as num).toDouble(),
+          json['selling_price'] != null
+              ? (json['selling_price'] as num).toDouble()
+              : null,
       discount:
           json['discount'] != null
               ? (json['discount'] as num).toDouble()

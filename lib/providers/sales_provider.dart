@@ -117,12 +117,13 @@ class SalesProvider extends ChangeNotifier {
   double discountCheck(TempProductClass product) {
     double tempValue = 0;
     if (product.discount == null || product.discount == 0) {
-      tempValue = product.sellingPrice;
+      tempValue = product.sellingPrice ?? 0;
     } else {
       tempValue =
-          product.sellingPrice -
-          (product.sellingPrice *
-              (product.discount! / 100));
+          product.sellingPrice ??
+          0 -
+              (product.sellingPrice ??
+                  0 * (product.discount! / 100));
     }
     return tempValue;
   }
@@ -141,8 +142,8 @@ class SalesProvider extends ChangeNotifier {
       if (item.item.discount != null &&
           item.customPrice == null) {
         double discountPerUnit =
-            item.item.sellingPrice *
-            (item.item.discount! / 100);
+            item.item.sellingPrice ??
+            0 * (item.item.discount! / 100);
         tempTotalDiscount +=
             discountPerUnit * item.quantity;
       }
