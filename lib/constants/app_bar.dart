@@ -27,6 +27,15 @@ PreferredSizeWidget appBar({
           // Navigator.of(context).pop();
         } else if (main == true) {
           return;
+        } else if (!Navigator.of(context).canPop()) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return Home();
+              },
+            ),
+          );
         } else {
           Navigator.of(context).pop();
         }

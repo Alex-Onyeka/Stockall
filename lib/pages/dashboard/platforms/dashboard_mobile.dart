@@ -25,7 +25,7 @@ import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
-import 'package:stockall/pages/report/general_report/general_report_page.dart';
+import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -864,7 +864,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return GeneralReportPage();
+                                                                    return ReportPage();
                                                                   },
                                                                 ),
                                                               );
@@ -1054,7 +1054,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return GeneralReportPage();
+                                                                    return ReportPage();
                                                                   },
                                                                 ),
                                                               );

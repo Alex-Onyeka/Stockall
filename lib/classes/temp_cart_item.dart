@@ -28,7 +28,9 @@ class TempCartItem {
     if (customPrice != null) {
       return customPrice!;
     } else {
-      return item.sellingPrice ?? 0 * quantity;
+      return item.sellingPrice != null
+          ? item.sellingPrice! * quantity
+          : 0;
     }
   }
 

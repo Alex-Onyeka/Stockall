@@ -225,7 +225,15 @@ class _TotalSalesMobileState
                               value:
                                   returnReceiptProvider(
                                         context,
-                                      ).receipts.length
+                                      )
+                                      .returnOwnReceiptsByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
+                                      )
+                                      .toList()
+                                      .length
                                       .toDouble(),
                               title: 'Sales Number',
                               color: Colors.green,
@@ -322,9 +330,15 @@ class _TotalSalesMobileState
                   Expanded(
                     child: Builder(
                       builder: (context) {
-                        if (returnReceiptProvider(
-                          context,
-                        ).receipts.isEmpty) {
+                        if (returnReceiptProvider(context)
+                            .returnOwnReceiptsByDayOrWeek(
+                              context,
+                              returnReceiptProvider(
+                                context,
+                              ).receipts,
+                            )
+                            .toList()
+                            .isEmpty) {
                           return EmptyWidgetDisplay(
                             title: 'Empty List',
                             subText:
@@ -360,16 +374,31 @@ class _TotalSalesMobileState
                             child: ListView.builder(
                               itemCount:
                                   returnReceiptProvider(
-                                    context,
-                                  ).receipts.length,
+                                        context,
+                                      )
+                                      .returnOwnReceiptsByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
+                                      )
+                                      .toList()
+                                      .length,
                               itemBuilder: (
                                 context,
                                 index,
                               ) {
                                 var receipt =
                                     returnReceiptProvider(
-                                      context,
-                                    ).receipts[index];
+                                          context,
+                                        )
+                                        .returnOwnReceiptsByDayOrWeek(
+                                          context,
+                                          returnReceiptProvider(
+                                            context,
+                                          ).receipts,
+                                        )
+                                        .toList()[index];
                                 return MainReceiptTile(
                                   action: () {
                                     Navigator.push(
@@ -555,7 +584,11 @@ class ValueSummaryTabSmall extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         color: Colors.grey.shade700,
                       ),
-                      formatMoney(value),
+                      isMoney
+                          ? formatMoney(value)
+                          : formatLargeNumberDoubleWidgetDecimal(
+                            value,
+                          ),
                     ),
                   ],
                 ),

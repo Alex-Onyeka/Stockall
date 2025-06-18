@@ -5,7 +5,8 @@ import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart'
 import 'package:stockall/services/auth_service.dart';
 
 class MakeSalesPage extends StatefulWidget {
-  const MakeSalesPage({super.key});
+  final bool? isMain;
+  const MakeSalesPage({super.key, this.isMain});
 
   @override
   State<MakeSalesPage> createState() =>
@@ -56,6 +57,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
           return MakeSalesMobile(
+            isMain: widget.isMain,
             searchController: searchController,
           );
         } else if (constraints.maxWidth > 550 &&

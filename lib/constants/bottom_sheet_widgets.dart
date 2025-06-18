@@ -1747,6 +1747,10 @@ class _CustomBottomPanelState
                                   cartItem.quantity =
                                       qqty.toDouble();
                                   cartItem.setCustomPrice =
+                                      cartItem
+                                              .item
+                                              .sellingPrice ==
+                                          null ||
                                       returnSalesProvider(
                                         context,
                                         listen: false,

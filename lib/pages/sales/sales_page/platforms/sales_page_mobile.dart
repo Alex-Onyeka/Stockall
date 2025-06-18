@@ -372,7 +372,15 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                               value2:
                                   returnReceiptProvider(
                                         context,
-                                      ).receipts.length
+                                      )
+                                      .returnOwnReceiptsByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
+                                      )
+                                      .toList()
+                                      .length
                                       .toDouble(),
                               secondRow: false,
                               onSearch: false,
@@ -502,8 +510,16 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                               child: Builder(
                                 builder: (context) {
                                   if (returnReceiptProvider(
-                                    context,
-                                  ).receipts.isEmpty) {
+                                        context,
+                                      )
+                                      .returnOwnReceiptsByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
+                                      )
+                                      .toList()
+                                      .isEmpty) {
                                     return EmptyWidgetDisplay(
                                       buttonText:
                                           'Make Sales',
@@ -511,7 +527,8 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                           'Click on the button below to start adding Sales to your Record.',
                                       title:
                                           'No Sales Recorded Yet',
-                                      svg: productIconSvg,
+                                      // svg: productIconSvg,
+                                      icon: Icons.clear,
                                       height: 35,
                                       action: () {
                                         Navigator.push(
@@ -548,7 +565,13 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                             returnReceiptProvider(
                                                   context,
                                                 )
-                                                .receipts
+                                                .returnOwnReceiptsByDayOrWeek(
+                                                  context,
+                                                  returnReceiptProvider(
+                                                    context,
+                                                  ).receipts,
+                                                )
+                                                .toList()
                                                 .length,
                                         itemBuilder: (
                                           context,
@@ -557,8 +580,15 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                           TempMainReceipt
                                           mainReceipt =
                                               returnReceiptProvider(
-                                                context,
-                                              ).receipts[index];
+                                                    context,
+                                                  )
+                                                  .returnOwnReceiptsByDayOrWeek(
+                                                    context,
+                                                    returnReceiptProvider(
+                                                      context,
+                                                    ).receipts,
+                                                  )
+                                                  .toList()[index];
                                           return MainReceiptTile(
                                             action: () {
                                               Navigator.push(

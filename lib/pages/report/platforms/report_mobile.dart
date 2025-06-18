@@ -4,6 +4,7 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
+import 'package:stockall/pages/report/sales_and_revenue/sales_and_revenue_report.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ReportMobile extends StatelessWidget {
@@ -55,7 +56,16 @@ class ReportMobile extends StatelessWidget {
                       ),
                       ReportListTile(
                         theme: theme,
-                        action: () {},
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SalesAndRevenueReport();
+                              },
+                            ),
+                          );
+                        },
                         subText:
                             'Veiw A Summary of your business Report',
                         title: 'Sales and Revenue',
@@ -135,21 +145,6 @@ class ReportListTile extends StatelessWidget {
               Row(
                 spacing: 10,
                 children: [
-                  // Container(
-                  //   padding: EdgeInsets.all(
-                  //     10,
-                  //   ),
-                  //   decoration:
-                  //       BoxDecoration(
-                  //         shape:
-                  //             BoxShape
-                  //                 .circle,
-                  //         color:
-                  //             Colors
-                  //                 .grey
-                  //                 .shade100,
-                  //       ),
-                  //   child:
                   SvgPicture.asset(receiptIconSvg),
                   Column(
                     crossAxisAlignment:

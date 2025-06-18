@@ -4,7 +4,7 @@ import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -104,14 +104,20 @@ class _ProductDetailsMobileState
               child: Padding(
                 padding: const EdgeInsets.only(
                   bottom: 30.0,
+                  left: 30,
+                  right: 30,
                 ),
-                child: EmptyWidgetDisplayOnly(
+                child: EmptyWidgetDisplay(
                   title: 'An Error Occured',
                   subText:
                       'Please Check your internet connection and try again',
                   theme: widget.theme,
                   height: 30,
                   icon: Icons.clear,
+                  buttonText: 'Go Back',
+                  action: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
               ),
             ),
@@ -306,12 +312,15 @@ class _ProductDetailsMobileState
                                         setState(() {
                                           sellingController
                                                   .text =
-                                              product
-                                                  .sellingPrice
-                                                  .toString()
-                                                  .split(
-                                                    '.',
-                                                  )[0];
+                                              product.sellingPrice !=
+                                                      null
+                                                  ? product
+                                                      .sellingPrice
+                                                      .toString()
+                                                      .split(
+                                                        '.',
+                                                      )[0]
+                                                  : '';
 
                                           costController
                                                   .text =
@@ -431,8 +440,7 @@ class _ProductDetailsMobileState
                                                           action: () {
                                                             final safeContext =
                                                                 context;
-                                                            if (sellingController.text.isNotEmpty ||
-                                                                costController.text.isNotEmpty) {
+                                                            if (costController.text.isNotEmpty) {
                                                               showDialog(
                                                                 context:
                                                                     safeContext,
@@ -474,12 +482,15 @@ class _ProductDetailsMobileState
                                                                             '',
                                                                           ),
                                                                         ),
-                                                                        newSellingPrice: double.parse(
-                                                                          sellingController.text.replaceAll(
-                                                                            ',',
-                                                                            '',
-                                                                          ),
-                                                                        ),
+                                                                        newSellingPrice:
+                                                                            sellingController.text.isNotEmpty
+                                                                                ? double.tryParse(
+                                                                                  sellingController.text.replaceAll(
+                                                                                    ',',
+                                                                                    '',
+                                                                                  ),
+                                                                                )
+                                                                                : null,
                                                                       );
 
                                                                       setState(

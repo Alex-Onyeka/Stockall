@@ -146,7 +146,7 @@ class DataProvider extends ChangeNotifier {
   Future<bool> updatePrices({
     required int productId,
     required double newCostPrice,
-    required double newSellingPrice,
+    required double? newSellingPrice,
     required BuildContext context,
   }) async {
     final response =

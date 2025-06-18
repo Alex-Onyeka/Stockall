@@ -43,7 +43,7 @@ class ReceiptsProvider extends ChangeNotifier {
       //     listen: false,
       //   ).userShop!.shopId!,
       // );
-      loadReceipts(
+      await loadReceipts(
         returnShopProvider(
           context,
           listen: false,
@@ -74,18 +74,23 @@ class ReceiptsProvider extends ChangeNotifier {
               .toList();
       if (context.mounted) {
         print('Loaded');
-        returnData(context, listen: false).getProducts(
+        await returnData(
+          context,
+          listen: false,
+        ).getProducts(
           returnShopProvider(
             context,
             listen: false,
           ).userShop!.shopId!,
         );
-        loadProductSalesRecord(
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop!.shopId!,
-        );
+        if (context.mounted) {
+          await loadProductSalesRecord(
+            returnShopProvider(
+              context,
+              listen: false,
+            ).userShop!.shopId!,
+          );
+        }
       }
       notifyListeners();
       return _receipts;
@@ -127,7 +132,7 @@ class ReceiptsProvider extends ChangeNotifier {
           .order('created_at', ascending: false);
 
       if (context.mounted) {
-        loadReceipts(
+        await loadReceipts(
           returnShopProvider(
             context,
             listen: false,
@@ -292,7 +297,7 @@ class ReceiptsProvider extends ChangeNotifier {
     print('✅ Receipt and inventory successfully updated.');
 
     if (context.mounted) {
-      loadReceipts(
+      await loadReceipts(
         returnShopProvider(
           context,
           listen: false,
@@ -326,18 +331,20 @@ class ReceiptsProvider extends ChangeNotifier {
         .from('product_sales')
         .insert(dataToInsert);
     if (context.mounted) {
-      returnData(context, listen: false).getProducts(
+      await returnData(context, listen: false).getProducts(
         returnShopProvider(
           context,
           listen: false,
         ).userShop!.shopId!,
       );
-      loadProductSalesRecord(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
-      );
+      if (context.mounted) {
+        await loadProductSalesRecord(
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop!.shopId!,
+        );
+      }
     }
 
     notifyListeners();
@@ -386,7 +393,7 @@ class ReceiptsProvider extends ChangeNotifier {
     // if (index != -1) {
     //   _sales[index] = record;
     if (context.mounted) {
-      loadProductSalesRecord(
+      await loadProductSalesRecord(
         returnShopProvider(
           context,
           listen: false,

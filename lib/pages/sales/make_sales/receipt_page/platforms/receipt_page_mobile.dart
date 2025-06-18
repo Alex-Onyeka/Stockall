@@ -11,7 +11,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
-import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ReceiptPageMobile extends StatelessWidget {
@@ -952,7 +951,9 @@ class _ReceiptDetailsContainerState
                               MaterialPageRoute(
                                 builder:
                                     (context) =>
-                                        MakeSalesPage(),
+                                        MakeSalesPage(
+                                          isMain: true,
+                                        ),
                               ),
                             );
                             returnNavProvider(

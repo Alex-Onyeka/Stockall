@@ -669,55 +669,70 @@ class _AddProductMobileState
                               ),
                               SizedBox(height: 15),
                               Divider(),
-                              SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    expand
-                                        ? 'Hide Details'
-                                        : 'More Details',
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        expand = !expand;
-                                      });
-                                    },
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            left: 35.0,
-                                            top: 5,
-                                            bottom: 5,
-                                          ),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            expand
-                                                ? 'Colapse'
-                                                : 'Expand',
-                                          ),
-                                          Icon(
-                                            expand
-                                                ? Icons
-                                                    .keyboard_arrow_up_outlined
-                                                : Icons
-                                                    .keyboard_arrow_down,
-                                          ),
-                                        ],
+                              // SizedBox(height: 5),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    expand = !expand;
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 5,
                                       ),
-                                    ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        expand
+                                            ? 'Hide Details'
+                                            : 'More Details',
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            expand =
+                                                !expand;
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                left: 35.0,
+                                                top: 5,
+                                                bottom: 5,
+                                              ),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                expand
+                                                    ? 'Colapse'
+                                                    : 'Expand',
+                                              ),
+                                              Icon(
+                                                expand
+                                                    ? Icons
+                                                        .keyboard_arrow_up_outlined
+                                                    : Icons
+                                                        .keyboard_arrow_down,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                              SizedBox(height: 5),
+                              // SizedBox(height: 5),
                               Divider(),
                               SizedBox(height: 15),
                               Visibility(

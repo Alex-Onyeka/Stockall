@@ -15,6 +15,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
   final double height;
   final Function()? altAction;
   final String? altActionText;
+  final IconData? altIcon;
 
   const EmptyWidgetDisplay({
     super.key,
@@ -28,6 +29,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
     required this.height,
     this.altAction,
     this.altActionText,
+    this.altIcon,
   });
 
   @override
@@ -105,7 +107,7 @@ class EmptyWidgetDisplay extends StatelessWidget {
                 visible: altAction != null,
                 child: Column(
                   children: [
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     InkWell(
                       onTap: () {
                         altAction!();
@@ -116,12 +118,15 @@ class EmptyWidgetDisplay extends StatelessWidget {
                           vertical: 15,
                         ),
                         child: Row(
-                          spacing: 10,
+                          spacing: 5,
                           mainAxisAlignment:
                               MainAxisAlignment.center,
                           children: [
                             Text(altActionText ?? ''),
-                            Icon(size: 20, Icons.refresh),
+                            Icon(
+                              size: 20,
+                              altIcon ?? Icons.refresh,
+                            ),
                           ],
                         ),
                       ),
