@@ -66,12 +66,21 @@ class _SalesAndRevenueReportMobileState
           productName: name,
           quantity: existing.quantity + record.quantity,
           total: existing.total + record.revenue,
+          costTotal:
+              existing.costTotal + (record.costPrice ?? 0),
+          profit:
+              (existing.total + record.revenue) -
+              (existing.costTotal +
+                  (record.costPrice ?? 0)),
         );
       } else {
         summaryMap[name] = ProductReportSummary(
           productName: name,
           quantity: record.quantity,
           total: record.revenue,
+          costTotal: record.costPrice ?? 0,
+          profit:
+              (record.revenue) - (record.costPrice ?? 0),
         );
       }
     }
@@ -258,250 +267,351 @@ class _SalesAndRevenueReportMobileState
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10.0,
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          color: Colors.grey.shade100,
-                        ),
-                        child: Row(
-                          spacing: 0,
-                          mainAxisAlignment:
-                              MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 3,
-                                      vertical: 10,
-                                    ),
-                                child: Center(
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'S/N',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 3,
-                                      vertical: 10,
-                                    ),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    // right: BorderSide(
-                                    //   color: Colors.grey,
-                                    // ),
-                                    left: BorderSide(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Name',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 3,
-                                      vertical: 10,
-                                    ),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    right: BorderSide(
-                                      color: Colors.grey,
-                                    ),
-                                    left: BorderSide(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        MediaQuery.of(
-                                                  context,
-                                                ).size.width <
-                                                355
-                                            ? 'Qtty'
-                                            : 'Quantity',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 3,
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 3,
-                                      vertical: 10,
-                                    ),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Price',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: RefreshIndicator(
-                          onRefresh: () {
-                            return returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).loadProductSalesRecord(
-                              returnShopProvider(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width:
+                          salesRecords.isEmpty
+                              ? MediaQuery.of(
                                 context,
-                                listen: false,
-                              ).userShop!.shopId!,
-                            );
-                          },
-                          backgroundColor: Colors.white,
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .prColor300,
-                          displacement: 10,
-                          child: Builder(
-                            builder: (context) {
-                              if (salesRecords.isEmpty) {
-                                return EmptyWidgetDisplayOnly(
-                                  title: 'Empty List',
-                                  subText:
-                                      'No Sales Recorded Yet',
-                                  theme: theme,
-                                  height: 35,
-                                  icon: Icons.clear,
-                                );
-                              } else {
-                                if (isSummary) {
-                                  var summary =
-                                      generateProductReportSummary(
-                                        salesRecords,
-                                      );
-                                  return ListView.builder(
-                                    itemCount:
-                                        summary.length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      var record =
-                                          summary[index];
-                                      var recordIndex =
-                                          summary.indexOf(
-                                            record,
-                                          ) +
-                                          1;
-
-                                      return TableRowRecordWidgetSummary(
-                                        theme: theme,
-                                        recordIndex:
-                                            recordIndex,
-                                        record: record,
-                                      );
-                                    },
+                              ).size.width
+                              : MediaQuery.of(
+                                    context,
+                                  ).size.width <
+                                  555
+                              ? MediaQuery.of(
+                                    context,
+                                  ).size.width +
+                                  150
+                              : MediaQuery.of(
+                                        context,
+                                      ).size.width >
+                                      555 &&
+                                  MediaQuery.of(
+                                        context,
+                                      ).size.width <
+                                      755
+                              ? MediaQuery.of(
+                                    context,
+                                  ).size.width +
+                                  100
+                              : MediaQuery.of(
+                                context,
+                              ).size.width,
+                      // height:
+                      //     MediaQuery.of(
+                      //       context,
+                      //     ).size.height -
+                      //     200,
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey,
+                              ),
+                              color: Colors.grey.shade100,
+                            ),
+                            child: Row(
+                              spacing: 0,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 3,
+                                          vertical: 10,
+                                        ),
+                                    child: Center(
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'S/N',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 10,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        // right: BorderSide(
+                                        //   color: Colors.grey,
+                                        // ),
+                                        left: BorderSide(
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Name',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 10,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        right: BorderSide(
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                        left: BorderSide(
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Quantity',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 10,
+                                        ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Selling-Price',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      salesRecords
+                                          .isNotEmpty,
+                                  child: Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          right: BorderSide(
+                                            color:
+                                                Colors.grey,
+                                          ),
+                                          left: BorderSide(
+                                            color:
+                                                Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 10,
+                                          ),
+                                      child: Center(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Cost-Price',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      salesRecords
+                                          .isNotEmpty,
+                                  child: Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 10,
+                                          ),
+                                      child: Center(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Profit/Loss',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Builder(
+                              builder: (context) {
+                                if (salesRecords.isEmpty) {
+                                  return EmptyWidgetDisplayOnly(
+                                    title: 'Empty List',
+                                    subText:
+                                        'No Sales Recorded Yet',
+                                    theme: theme,
+                                    height: 35,
+                                    icon: Icons.clear,
                                   );
                                 } else {
-                                  return ListView.builder(
-                                    itemCount:
-                                        salesRecords.length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      var record =
-                                          salesRecords[index];
-                                      var recordIndex =
-                                          salesRecords
-                                              .indexOf(
-                                                record,
-                                              ) +
-                                          1;
+                                  if (isSummary) {
+                                    var summary =
+                                        generateProductReportSummary(
+                                          salesRecords,
+                                        );
+                                    return ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount:
+                                          summary.length,
+                                      itemBuilder: (
+                                        context,
+                                        index,
+                                      ) {
+                                        var record =
+                                            summary[index];
+                                        var recordIndex =
+                                            summary.indexOf(
+                                              record,
+                                            ) +
+                                            1;
 
-                                      return TableRowRecordWidget(
-                                        theme: theme,
-                                        recordIndex:
-                                            recordIndex,
-                                        record: record,
-                                      );
-                                    },
-                                  );
+                                        return TableRowRecordWidgetSummary(
+                                          theme: theme,
+                                          recordIndex:
+                                              recordIndex,
+                                          record: record,
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    // return Container();
+                                    return ListView.builder(
+                                      itemCount:
+                                          salesRecords
+                                              .length,
+                                      itemBuilder: (
+                                        context,
+                                        index,
+                                      ) {
+                                        var record =
+                                            salesRecords[index];
+                                        var recordIndex =
+                                            salesRecords
+                                                .indexOf(
+                                                  record,
+                                                ) +
+                                            1;
+
+                                        return TableRowRecordWidget(
+                                          theme: theme,
+                                          recordIndex:
+                                              recordIndex,
+                                          record: record,
+                                        );
+                                      },
+                                    );
+                                  }
                                 }
-                              }
-                            },
+                              },
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -725,7 +835,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 4,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -798,6 +908,52 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               ),
             ),
           ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.grey),
+                  left: BorderSide(color: Colors.grey),
+                ),
+              ),
+              padding: EdgeInsets.all(5),
+              child: Center(
+                child: Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      formatMoneyMid(record.costTotal),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: EdgeInsets.all(5),
+              child: Center(
+                child: Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      "${(record.profit) >= 0 ? '+' : ''}${formatMoneyMid(record.profit)}",
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -846,7 +1002,7 @@ class TableRowRecordWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 4,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -913,6 +1069,52 @@ class TableRowRecordWidget extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                       formatMoneyMid(record.revenue),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.grey),
+                  left: BorderSide(color: Colors.grey),
+                ),
+              ),
+              padding: EdgeInsets.all(5),
+              child: Center(
+                child: Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      formatMoneyMid(record.costPrice ?? 0),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: EdgeInsets.all(5),
+              child: Center(
+                child: Row(
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      "${(record.revenue - (record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyMid(record.revenue - (record.costPrice ?? 0))}",
                     ),
                   ],
                 ),

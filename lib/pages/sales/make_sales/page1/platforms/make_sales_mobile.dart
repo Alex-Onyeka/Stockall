@@ -923,6 +923,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       nameC.clear();
       pQuantity.clear();
       costPriceC.clear();
+      sellingPriceC.clear();
       if (context.mounted) {
         returnSalesProvider(
           context,
