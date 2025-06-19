@@ -24,7 +24,7 @@ class SalesProvider extends ChangeNotifier {
     required double bank,
     int? customerId,
   }) async {
-    final createdAt = DateTime.now();
+    final createdAt = DateTime.now().toUtc(); // ✅ FIXED
 
     // Step 1: Create the receipt
     final receiptData = {

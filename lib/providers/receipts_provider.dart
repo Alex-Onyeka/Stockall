@@ -31,18 +31,6 @@ class ReceiptsProvider extends ChangeNotifier {
 
     // _receipts.add(newReceipt);
     if (context.mounted) {
-      // returnData(context, listen: false).getProducts(
-      //   returnShopProvider(
-      //     context,
-      //     listen: false,
-      //   ).userShop!.shopId!,
-      // );
-      // loadProductSalesRecord(
-      //   returnShopProvider(
-      //     context,
-      //     listen: false,
-      //   ).userShop!.shopId!,
-      // );
       await loadReceipts(
         returnShopProvider(
           context,
@@ -610,39 +598,42 @@ class ReceiptsProvider extends ChangeNotifier {
     List<TempMainReceipt> receipts,
   ) {
     if (weekStartDate != null) {
-      final weekStartUtc = weekStartDate!.toUtc();
-      final weekEndUtc = weekStartUtc.add(
+      final weekStartLocal = weekStartDate!;
+      final weekEndLocal = weekStartLocal.add(
         const Duration(days: 7),
-      ); // end exclusive
+      );
 
       return receipts.where((receipt) {
-        final created = receipt.createdAt.toUtc();
-        return created.isAfter(
-              weekStartUtc.subtract(
-                const Duration(seconds: 1),
-              ),
-            ) &&
-            created.isBefore(weekEndUtc);
+        final created =
+            receipt.createdAt
+                .toLocal(); // convert UTC to local
+        return !created.isBefore(weekStartLocal) &&
+            created.isBefore(weekEndLocal);
       }).toList();
     }
 
-    final targetDate =
-        (singleDay ?? DateTime.now()).toUtc();
-    final startOfDay = DateTime.utc(
-      targetDate.year,
-      targetDate.month,
-      targetDate.day,
+    // Force local date without UTC logic
+    final localNow = DateTime.now();
+    final localTarget = singleDay?.toLocal() ?? localNow;
+
+    final startOfDay = DateTime(
+      localTarget.year,
+      localTarget.month,
+      localTarget.day,
     );
     final endOfDay = startOfDay.add(
       const Duration(days: 1),
     );
 
     return receipts.where((receipt) {
-      final created = receipt.createdAt.toUtc();
-      return created.isAfter(
-            startOfDay.subtract(const Duration(seconds: 1)),
-          ) &&
+      final created =
+          receipt.createdAt
+              .toLocal(); // ALWAYS convert to local
+      final inRange =
+          !created.isBefore(startOfDay) &&
           created.isBefore(endOfDay);
+
+      return inRange;
     }).toList();
   }
 
@@ -652,38 +643,33 @@ class ReceiptsProvider extends ChangeNotifier {
     List<TempProductSaleRecord> records,
   ) {
     if (weekStartDate != null) {
-      final weekStartUtc = weekStartDate!.toUtc();
-      final weekEndUtc = weekStartUtc.add(
+      final weekStartLocal = weekStartDate!;
+      final weekEndLocal = weekStartLocal.add(
         const Duration(days: 7),
-      ); // end exclusive
+      );
 
       return records.where((record) {
-        final created = record.createdAt.toUtc();
-        return created.isAfter(
-              weekStartUtc.subtract(
-                const Duration(seconds: 1),
-              ),
-            ) &&
-            created.isBefore(weekEndUtc);
+        final created = record.createdAt.toLocal();
+        return !created.isBefore(weekStartLocal) &&
+            created.isBefore(weekEndLocal);
       }).toList();
     }
 
-    final targetDate =
-        (singleDay ?? DateTime.now()).toUtc();
-    final startOfDay = DateTime.utc(
-      targetDate.year,
-      targetDate.month,
-      targetDate.day,
+    final localNow = DateTime.now();
+    final localTarget = singleDay?.toLocal() ?? localNow;
+
+    final startOfDay = DateTime(
+      localTarget.year,
+      localTarget.month,
+      localTarget.day,
     );
     final endOfDay = startOfDay.add(
       const Duration(days: 1),
     );
 
     return records.where((record) {
-      final created = record.createdAt.toUtc();
-      return created.isAfter(
-            startOfDay.subtract(const Duration(seconds: 1)),
-          ) &&
+      final created = record.createdAt.toLocal();
+      return !created.isBefore(startOfDay) &&
           created.isBefore(endOfDay);
     }).toList();
   }

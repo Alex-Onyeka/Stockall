@@ -946,6 +946,15 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                         fontSize:
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
+                        color:
+                            (record.profit) >= 0
+                                ? null
+                                : const Color.fromARGB(
+                                  255,
+                                  218,
+                                  86,
+                                  76,
+                                ),
                       ),
                       "${(record.profit) >= 0 ? '+' : ''}${formatMoneyMid(record.profit)}",
                     ),
@@ -1113,6 +1122,18 @@ class TableRowRecordWidget extends StatelessWidget {
                         fontSize:
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
+                        color:
+                            (record.revenue -
+                                        (record.costPrice ??
+                                            0)) >=
+                                    0
+                                ? null
+                                : const Color.fromARGB(
+                                  255,
+                                  218,
+                                  86,
+                                  76,
+                                ),
                       ),
                       "${(record.revenue - (record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyMid(record.revenue - (record.costPrice ?? 0))}",
                     ),

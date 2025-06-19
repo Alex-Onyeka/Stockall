@@ -33,7 +33,8 @@ class TempMainReceipt {
     return TempMainReceipt(
       id: json['id'] as int?,
       barcode: json['barcode'] as String?,
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt:
+          DateTime.parse(json['created_at']).toLocal(),
       shopId: json['shop_id'],
       staffId: json['staff_id'],
       staffName: json['staff_name'],
