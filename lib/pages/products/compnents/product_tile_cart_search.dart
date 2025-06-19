@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductTileCartSearch extends StatefulWidget {
@@ -179,7 +180,7 @@ class _ProductTileCartSearchState
                                               .lightModeColor
                                               .prColor300,
                                     ),
-                                    'N${widget.product.discount == null ? formatLargeNumberDouble(widget.product.sellingPrice ?? 0) : formatLargeNumberDouble((widget.product.sellingPrice ?? 0 * (1 - (widget.product.discount! / 100))))}',
+                                    '${widget.product.sellingPrice != null ? nairaSymbol : ''} ${widget.product.discount == null ? (widget.product.sellingPrice != null ? formatLargeNumberDouble(widget.product.sellingPrice ?? 0) : 'Price Not Set') : formatLargeNumberDouble((widget.product.sellingPrice ?? 0.0 * (1 - (widget.product.discount! / 100))))}',
                                   ),
                                 ),
                                 Visibility(

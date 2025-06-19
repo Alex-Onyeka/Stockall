@@ -11,7 +11,7 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/referrals/referrals.dart';
-import 'package:stockall/pages/report/general_report/general_report_page.dart';
+import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -284,7 +284,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return GeneralReportPage();
+                                      return ReportPage();
                                     },
                                   ),
                                 );

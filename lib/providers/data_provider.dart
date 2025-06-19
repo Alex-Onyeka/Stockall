@@ -166,6 +166,14 @@ class DataProvider extends ChangeNotifier {
         ).userShop!.shopId!,
       );
     }
+    // var newRes = TempProductClass.fromJson(response!);
+    // int index = productList.indexWhere(
+    //   (c) => c.id == newRes.id,
+    // );
+    // if (index != -1) {
+    //   productList[index] = newRes;
+    //   notifyListeners();
+    // }
     notifyListeners();
     return response != null;
   }

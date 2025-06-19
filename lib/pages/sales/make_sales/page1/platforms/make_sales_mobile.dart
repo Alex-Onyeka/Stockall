@@ -1249,7 +1249,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               svg:
                                                   productIconSvg,
                                               theme: theme,
-                                              height: 40,
+                                              height: 35,
                                               action: () {
                                                 showGeneralDialog(
                                                   context:

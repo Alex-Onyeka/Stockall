@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/temp_customers_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -94,515 +93,189 @@ class _ReceiptDetailsContainerState
     extends State<ReceiptDetailsContainer> {
   bool isLoading = false;
   bool showSuccess = false;
-  Future<String?> getCustomer() async {
-    if (widget.mainReceipt.customerId != null) {
-      var customerName = await returnCustomers(
-        context,
-        listen: false,
-      ).fetchCustomers(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
-      );
-      return customerName
-          .firstWhere(
-            (customer) =>
-                customer.id ==
-                widget.mainReceipt.customerId,
-          )
-          .name;
-    }
+  // Future<String?> getCustomer() async {
+  //   if (widget.mainReceipt.customerId != null) {
+  //     var customerName = await returnCustomers(
+  //       context,
+  //       listen: false,
+  //     ).fetchCustomers(
+  //       returnShopProvider(
+  //         context,
+  //         listen: false,
+  //       ).userShop!.shopId!,
+  //     );
+  //     return customerName
+  //         .firstWhere(
+  //           (customer) =>
+  //               customer.id ==
+  //               widget.mainReceipt.customerId,
+  //         )
+  //         .name;
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
-  Future<List<TempProductSaleRecord>>
-  returnProductRecords() async {
-    var tempRecords = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-    return tempRecords
-        .where(
-          (record) =>
-              record.recepitId == widget.mainReceipt.id!,
-        )
-        .toList();
-  }
+  // Future<List<TempProductSaleRecord>>
+  // returnProductRecords() async {
+  //   var tempRecords = await returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadProductSalesRecord(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
+  //   return tempRecords
+  //       .where(
+  //         (record) =>
+  //             record.recepitId == widget.mainReceipt.id!,
+  //       )
+  //       .toList();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    var records =
+        returnReceiptProvider(context).produtRecordSalesMain
+            .where(
+              (record) =>
+                  record.recepitId ==
+                  widget.mainReceipt.id!,
+            )
+            .toList();
+    TempCustomersClass? customer;
+
+    try {
+      customer = returnCustomers(
+        context,
+      ).customersMain.firstWhere(
+        (c) => c.id == widget.mainReceipt.customerId,
+      );
+    } catch (e) {
+      customer = null; // not found
+    }
     return Stack(
       children: [
-        FutureBuilder(
-          future: returnProductRecords(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState ==
-                ConnectionState.waiting) {
-              return returnCompProvider(
-                context,
-                listen: false,
-              ).showLoader('Loading');
-            } else if (snapshot.hasError) {
-              return EmptyWidgetDisplayOnly(
-                title: 'An Error Occured',
-                subText: 'Something Happened',
-                theme: widget.theme,
-                height: 35,
-                icon: Icons.clear,
-              );
-            } else {
-              return Column(
-                children: [
-                  Container(
-                    width:
-                        MediaQuery.of(context).size.width -
-                        40,
-                    height:
-                        MediaQuery.of(context).size.height -
-                        180,
-                    padding: EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(
-                            32,
-                            0,
-                            0,
-                            0,
-                          ),
-                          blurRadius: 5,
-                        ),
-                      ],
+        // FutureBuilder(
+        //   future: returnProductRecords(),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState ==
+        //         ConnectionState.waiting) {
+        //       return returnCompProvider(
+        //         context,
+        //         listen: false,
+        //       ).showLoader('Loading');
+        //     } else if (snapshot.hasError) {
+        //       return EmptyWidgetDisplayOnly(
+        //         title: 'An Error Occured',
+        //         subText: 'Something Happened',
+        //         theme: widget.theme,
+        //         height: 35,
+        //         icon: Icons.clear,
+        //       );
+        //     } else {
+        //       return
+        //     }
+        //   },
+        // ),
+        Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width - 40,
+              height:
+                  MediaQuery.of(context).size.height - 180,
+              padding: EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(
+                      32,
+                      0,
+                      0,
+                      0,
                     ),
-                    child: SizedBox(
-                      height:
-                          MediaQuery.of(
-                            context,
-                          ).size.height -
-                          200,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 5),
-                                  Image.asset(
-                                    mainLogoIcon,
-                                    height: 40,
-                                  ),
-                                  SizedBox(height: 15),
-                                  Column(
-                                    spacing: 8,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .h4
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        widget.shop.name,
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade700,
-                                        ),
-                                        widget.shop.email,
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                        ),
+                    blurRadius: 5,
+                  ),
+                ],
+              ),
+              child: SizedBox(
+                height:
+                    MediaQuery.of(context).size.height -
+                    200,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 5),
+                            Image.asset(
+                              mainLogoIcon,
+                              height: 40,
+                            ),
+                            SizedBox(height: 15),
+                            Column(
+                              spacing: 8,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
                                         widget
-                                                .shop
-                                                .shopAddress ??
-                                            'Address Not Set',
-                                      ),
-                                    ],
+                                            .theme
+                                            .mobileTexts
+                                            .h4
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
                                   ),
-                                  SizedBox(height: 20),
-                                  Row(
-                                    spacing: 10,
-                                    children: [
-                                      Expanded(
-                                        flex: 5,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Casheir',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              widget
-                                                  .mainReceipt
-                                                  .staffName,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Customer Name',
-                                            ),
-                                            FutureBuilder(
-                                              future:
-                                                  getCustomer(),
-                                              builder: (
-                                                context,
-                                                snapshot,
-                                              ) {
-                                                if (snapshot
-                                                        .connectionState ==
-                                                    ConnectionState
-                                                        .waiting) {
-                                                  return Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          widget.theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                    ),
-
-                                                    'Not Saved',
-                                                  );
-                                                } else if (snapshot
-                                                    .hasError) {
-                                                  return Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          widget.theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                    ),
-
-                                                    'Not Saved',
-                                                  );
-                                                } else {
-                                                  return Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          widget.theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                    ),
-                                                    snapshot.data ??
-                                                        'Not Saved',
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                  widget.shop.name,
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade700,
                                   ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    spacing: 10,
-                                    children: [
-                                      Expanded(
-                                        flex: 5,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Payment Method',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              widget
-                                                  .mainReceipt
-                                                  .paymentMethod,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Amount(s)',
-                                            ),
-                                            Column(
-                                              children: [
-                                                Visibility(
-                                                  visible:
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Split' ||
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Cash',
-                                                  child: Row(
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        'Cash:',
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        formatMoney(
-                                                          widget.mainReceipt.cashAlt,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Visibility(
-                                                  visible:
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Split' ||
-                                                      widget.mainReceipt.paymentMethod ==
-                                                          'Bank',
-                                                  child: Row(
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        'Bank:',
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        '$nairaSymbol${formatMoney(widget.mainReceipt.bank)}',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                  widget.shop.email,
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
                                   ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    spacing: 10,
-                                    children: [
-                                      Expanded(
-                                        flex: 5,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Date',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              formatDateTime(
-                                                widget
-                                                    .mainReceipt
-                                                    .createdAt,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Time',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              formatTime(
-                                                widget
-                                                    .mainReceipt
-                                                    .createdAt,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10),
-                                  Divider(),
-                                  Row(
+                                  widget.shop.shopAddress ??
+                                      'Address Not Set',
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
                                     children: [
                                       Text(
                                         style: TextStyle(
@@ -616,490 +289,846 @@ class _ReceiptDetailsContainerState
                                               FontWeight
                                                   .bold,
                                         ),
-                                        'Product Record',
+                                        'Casheir',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        widget
+                                            .mainReceipt
+                                            .staffName,
                                       ),
                                     ],
                                   ),
-                                  ListView.builder(
-                                    physics:
-                                        NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount:
-                                        snapshot
-                                            .data!
-                                            .length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      var productRecord =
-                                          snapshot
-                                              .data![index];
-                                      // var product = returnData(
-                                      //       context,
-                                      //       listen: false,
-                                      //     )
-                                      //     .getProducts(
-                                      //       returnShopProvider(
-                                      //         context,
-                                      //         listen: false,
-                                      //       ).userShop!.shopId!,
-                                      //     )
-                                      //     .then((products) {
-                                      //       final product = products
-                                      //           .firstWhere(
-                                      //             (product) =>
-                                      //                 product
-                                      //                     .id ==
-                                      //                 productRecord
-                                      //                     .productId,
-                                      //           );
-                                      //       return product;
-                                      //     });
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Customer Name',
+                                      ),
+                                      // FutureBuilder(
+                                      //   future:
+                                      //       getCustomer(),
+                                      //   builder: (
+                                      //     context,
+                                      //     snapshot,
+                                      //   ) {
+                                      //     if (snapshot
+                                      //             .connectionState ==
+                                      //         ConnectionState
+                                      //             .waiting) {
+                                      //       return Text(
+                                      //         style: TextStyle(
+                                      //           fontSize:
+                                      //               widget
+                                      //                   .theme
+                                      //                   .mobileTexts
+                                      //                   .b2
+                                      //                   .fontSize,
+                                      //           fontWeight:
+                                      //               FontWeight
+                                      //                   .normal,
+                                      //         ),
 
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              vertical: 8.0,
-                                            ),
-                                        child: SizedBox(
-                                          child: Row(
-                                            spacing: 10,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                flex: 4,
-                                                child: Column(
-                                                  spacing:
-                                                      3,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            widget.theme.mobileTexts.b1.fontSize,
-                                                      ),
-                                                      productRecord
-                                                          .productName,
-                                                    ),
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            widget.theme.mobileTexts.b3.fontSize,
-                                                      ),
-                                                      'Qty: ${productRecord.quantity.toStringAsFixed(0)} Item(s)',
-                                                    ),
-                                                  ],
+                                      //         'Not Saved',
+                                      //       );
+                                      //     } else if (snapshot
+                                      //         .hasError) {
+                                      //       return Text(
+                                      //         style: TextStyle(
+                                      //           fontSize:
+                                      //               widget
+                                      //                   .theme
+                                      //                   .mobileTexts
+                                      //                   .b2
+                                      //                   .fontSize,
+                                      //           fontWeight:
+                                      //               FontWeight
+                                      //                   .normal,
+                                      //         ),
+
+                                      //         'Not Saved',
+                                      //       );
+                                      //     } else {
+
+                                      //     }
+                                      //   },
+                                      // ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        customer?.name ??
+                                            'Not Saved',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Payment Method',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        widget
+                                            .mainReceipt
+                                            .paymentMethod,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Amount(s)',
+                                      ),
+                                      Column(
+                                        children: [
+                                          Visibility(
+                                            visible:
+                                                widget
+                                                        .mainReceipt
+                                                        .paymentMethod ==
+                                                    'Split' ||
+                                                widget
+                                                        .mainReceipt
+                                                        .paymentMethod ==
+                                                    'Cash',
+                                            child: Row(
+                                              spacing: 5,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                  'Cash:',
                                                 ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  formatMoney(
+                                                    widget
+                                                        .mainReceipt
+                                                        .cashAlt,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                widget
+                                                        .mainReceipt
+                                                        .paymentMethod ==
+                                                    'Split' ||
+                                                widget
+                                                        .mainReceipt
+                                                        .paymentMethod ==
+                                                    'Bank',
+                                            child: Row(
+                                              spacing: 5,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                  'Bank:',
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  '$nairaSymbol${formatMoney(widget.mainReceipt.bank)}',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Date',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        formatDateTime(
+                                          widget
+                                              .mainReceipt
+                                              .createdAt,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Time',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                        ),
+                                        formatTime(
+                                          widget
+                                              .mainReceipt
+                                              .createdAt,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Divider(),
+                            Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b1
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Product Record',
+                                ),
+                              ],
+                            ),
+                            ListView.builder(
+                              physics:
+                                  NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: records.length,
+                              itemBuilder: (
+                                context,
+                                index,
+                              ) {
+                                var productRecord =
+                                    records[index];
+                                // var product = returnData(
+                                //       context,
+                                //       listen: false,
+                                //     )
+                                //     .getProducts(
+                                //       returnShopProvider(
+                                //         context,
+                                //         listen: false,
+                                //       ).userShop!.shopId!,
+                                //     )
+                                //     .then((products) {
+                                //       final product = products
+                                //           .firstWhere(
+                                //             (product) =>
+                                //                 product
+                                //                     .id ==
+                                //                 productRecord
+                                //                     .productId,
+                                //           );
+                                //       return product;
+                                //     });
+
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                  child: SizedBox(
+                                    child: Row(
+                                      spacing: 10,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          flex: 4,
+                                          child: Column(
+                                            spacing: 3,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      widget
+                                                          .theme
+                                                          .mobileTexts
+                                                          .b1
+                                                          .fontSize,
+                                                ),
+                                                productRecord
+                                                    .productName,
                                               ),
-                                              // Visibility(
-                                              //   visible:
-                                              //       widget.isMain ==
-                                              //               true
-                                              //           ? false
-                                              //           : true,
-                                              //   child: Checkbox(
-                                              //     value: returnSalesProvider(
-                                              //       context,
-                                              //     ).productIdsToRefund.contains(
-                                              //       productRecord
-                                              //           .productRecordId,
-                                              //     ),
-                                              //     onChanged: (
-                                              //       value,
-                                              //     ) {
-                                              //       if (returnSalesProvider(
-                                              //         context,
-                                              //         listen:
-                                              //             false,
-                                              //       ).productIdsToRefund.contains(
-                                              //         productRecord
-                                              //             .productRecordId,
-                                              //       )) {
-                                              //         returnSalesProvider(
-                                              //           context,
-                                              //           listen:
-                                              //               false,
-                                              //         ).removeProductIdFromRefund(
-                                              //           productRecord
-                                              //               .productRecordId!,
-                                              //         );
-                                              //       } else {
-                                              //         returnSalesProvider(
-                                              //           context,
-                                              //           listen:
-                                              //               false,
-                                              //         ).addproductIdToRefund(
-                                              //           productRecord
-                                              //               .productRecordId!,
-                                              //         );
-                                              //       }
-                                              //     },
-                                              //   ),
-                                              // ),
-                                              Expanded(
-                                                flex: 3,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            widget.theme.mobileTexts.b1.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.revenue)}',
-                                                    ),
-                                                    Visibility(
-                                                      visible:
-                                                          productRecord.discount !=
-                                                              null &&
-                                                          !productRecord.customPriceSet,
-                                                      child: Text(
-                                                        style: TextStyle(
-                                                          decoration:
-                                                              TextDecoration.lineThrough,
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b2.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.originalCost!)}',
-                                                      ),
-                                                    ),
-                                                  ],
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      widget
+                                                          .theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                ),
+                                                'Qty: ${productRecord.quantity.toStringAsFixed(0)} Item(s)',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Visibility(
+                                        //   visible:
+                                        //       widget.isMain ==
+                                        //               true
+                                        //           ? false
+                                        //           : true,
+                                        //   child: Checkbox(
+                                        //     value: returnSalesProvider(
+                                        //       context,
+                                        //     ).productIdsToRefund.contains(
+                                        //       productRecord
+                                        //           .productRecordId,
+                                        //     ),
+                                        //     onChanged: (
+                                        //       value,
+                                        //     ) {
+                                        //       if (returnSalesProvider(
+                                        //         context,
+                                        //         listen:
+                                        //             false,
+                                        //       ).productIdsToRefund.contains(
+                                        //         productRecord
+                                        //             .productRecordId,
+                                        //       )) {
+                                        //         returnSalesProvider(
+                                        //           context,
+                                        //           listen:
+                                        //               false,
+                                        //         ).removeProductIdFromRefund(
+                                        //           productRecord
+                                        //               .productRecordId!,
+                                        //         );
+                                        //       } else {
+                                        //         returnSalesProvider(
+                                        //           context,
+                                        //           listen:
+                                        //               false,
+                                        //         ).addproductIdToRefund(
+                                        //           productRecord
+                                        //               .productRecordId!,
+                                        //         );
+                                        //       }
+                                        //     },
+                                        //   ),
+                                        // ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      widget
+                                                          .theme
+                                                          .mobileTexts
+                                                          .b1
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.revenue)}',
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    productRecord.discount !=
+                                                        null &&
+                                                    !productRecord
+                                                        .customPriceSet,
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration.lineThrough,
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b2.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.originalCost!)}',
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Divider(),
-                          Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                      ),
-                                      'Subtotal',
+                                      ],
                                     ),
                                   ),
-
-                                  Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, snapshot.data!))}',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                      ),
-                                      'Discount',
-                                    ),
-                                  ),
-
-                                  Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(snapshot.data!, context) - returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, snapshot.data!))}',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                      ),
-                                      'Total',
-                                    ),
-                                  ),
-
-                                  Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-
-                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(snapshot.data!, context))}',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  //  await returnReceiptProvider(
-                  //                       context,
-                  //                       listen: false,
-                  //                     ).deleteReceipt(
-                  //                       widget.mainReceipt.id!,
-                  //                     );
-                  //                     if (context.mounted) {
-                  //                       Navigator.of(
-                  //                         context,
-                  //                       ).pop();
-                  //                     }
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    spacing: 10,
-                    children: [
-                      BottomActionButton(
-                        text:
-                            widget.isMain
-                                ? 'Finish Sale'
-                                : 'Go Back',
-                        color: Colors.grey.shade600,
-                        iconSize: 20,
-                        theme: widget.theme,
-                        icon:
-                            widget.isMain
-                                ? Icons.check
-                                : Icons
-                                    .arrow_back_ios_new_rounded,
-                        action: () {
-                          if (widget.isMain) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        MakeSalesPage(
-                                          isMain: true,
-                                        ),
-                              ),
-                            );
-                            returnNavProvider(
-                              context,
-                              listen: false,
-                            ).navigate(2);
-                          } else {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                      ),
-                      Visibility(
-                        visible:
-                            userGeneral(context).role ==
-                            'Owner',
-                        child: BottomActionButton(
-                          text: 'Delete',
-                          color:
-                              widget
-                                  .theme
-                                  .lightModeColor
-                                  .errorColor200,
-                          iconSize: 20,
-                          theme: widget.theme,
-                          icon:
-                              Icons.delete_outline_rounded,
-                          action: () {
-                            final receiptP =
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                );
-                            final shopId =
-                                returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).userShop!.shopId!;
-                            var safeContext = context;
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return ConfirmationAlert(
-                                  theme: widget.theme,
-                                  message:
-                                      'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
-                                  title: 'Delete Receipt?',
-                                  action: () async {
-                                    Navigator.of(
-                                      safeContext,
-                                    ).pop();
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    await receiptP
-                                        .deleteReceipt(
-                                          widget
-                                              .mainReceipt
-                                              .id!,
-                                          context,
-                                        );
-
-                                    if (safeContext
-                                        .mounted) {
-                                      await receiptP
-                                          .loadReceipts(
-                                            shopId,
-                                            context,
-                                          );
-                                    }
-
-                                    setState(() {
-                                      isLoading = false;
-                                      showSuccess = true;
-                                    });
-
-                                    await Future.delayed(
-                                      Duration(
-                                        milliseconds: 1500,
-                                      ),
-                                    );
-                                    // Navigator.popUntil(
-                                    //   safeContext,
-                                    //   ModalRoute.withName(
-                                    //     '/',
-                                    //   ),
-                                    // );
-
-                                    if (safeContext
-                                        .mounted) {
-                                      Navigator.pushReplacement(
-                                        safeContext,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (
-                                                safeContext,
-                                              ) => Home(),
-                                        ),
-                                      );
-                                      returnNavProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).navigate(2);
-                                    }
-
-                                    // if (widget.isMain &&
-                                    //     safeContext.mounted) {
-
-                                    // } else {
-                                    //   if (safeContext
-                                    //       .mounted) {
-                                    //     Navigator.of(
-                                    //       safeContext,
-                                    //     ).pop();
-                                    //   }
-                                    // }
-                                  },
                                 );
                               },
-                            );
-                          },
+                            ),
+                          ],
                         ),
                       ),
-                      // BottomActionButton(
-                      //   text:
-                      //       widget.isMain ? 'Print' : 'Refund',
-                      //   color: Colors.grey.shade600,
-                      //   iconSize: 23,
-                      //   theme: widget.theme,
-                      //   icon:
-                      //       widget.isMain
-                      //           ? Icons.print_outlined
-                      //           : Icons
-                      //               .settings_backup_restore_rounded,
-                      //   action: () {
-                      //     if (widget.isMain) {
-                      //       return;
-                      //     } else {}
-                      //   },
-                      // ),
-                    ],
+                    ),
+                    SizedBox(height: 5),
+                    Divider(),
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                ),
+                                'Subtotal',
+                              ),
+                            ),
+
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, records))}',
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 0),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                ),
+                                'Discount',
+                              ),
+                            ),
+
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(records, context) - returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, records))}',
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 0),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                ),
+                                'Total',
+                              ),
+                            ),
+
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+
+                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(records, context))}',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            //  await returnReceiptProvider(
+            //                       context,
+            //                       listen: false,
+            //                     ).deleteReceipt(
+            //                       widget.mainReceipt.id!,
+            //                     );
+            //                     if (context.mounted) {
+            //                       Navigator.of(
+            //                         context,
+            //                       ).pop();
+            //                     }
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 10,
+              children: [
+                BottomActionButton(
+                  text:
+                      widget.isMain
+                          ? 'Finish Sale'
+                          : 'Go Back',
+                  color: Colors.grey.shade600,
+                  iconSize: 20,
+                  theme: widget.theme,
+                  icon:
+                      widget.isMain
+                          ? Icons.check
+                          : Icons
+                              .arrow_back_ios_new_rounded,
+                  action: () {
+                    if (widget.isMain) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => MakeSalesPage(
+                                isMain: true,
+                              ),
+                        ),
+                      );
+                      returnNavProvider(
+                        context,
+                        listen: false,
+                      ).navigate(2);
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+                Visibility(
+                  visible:
+                      userGeneral(context).role == 'Owner',
+                  child: BottomActionButton(
+                    text: 'Delete',
+                    color:
+                        widget
+                            .theme
+                            .lightModeColor
+                            .errorColor200,
+                    iconSize: 20,
+                    theme: widget.theme,
+                    icon: Icons.delete_outline_rounded,
+                    action: () {
+                      final receiptP =
+                          returnReceiptProvider(
+                            context,
+                            listen: false,
+                          );
+                      final shopId =
+                          returnShopProvider(
+                            context,
+                            listen: false,
+                          ).userShop!.shopId!;
+                      var safeContext = context;
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ConfirmationAlert(
+                            theme: widget.theme,
+                            message:
+                                'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
+                            title: 'Delete Receipt?',
+                            action: () async {
+                              Navigator.of(
+                                safeContext,
+                              ).pop();
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              await receiptP.deleteReceipt(
+                                widget.mainReceipt.id!,
+                                context,
+                              );
+
+                              if (safeContext.mounted) {
+                                await receiptP.loadReceipts(
+                                  shopId,
+                                  context,
+                                );
+                              }
+
+                              setState(() {
+                                isLoading = false;
+                                showSuccess = true;
+                              });
+
+                              await Future.delayed(
+                                Duration(
+                                  milliseconds: 1500,
+                                ),
+                              );
+                              // Navigator.popUntil(
+                              //   safeContext,
+                              //   ModalRoute.withName(
+                              //     '/',
+                              //   ),
+                              // );
+
+                              if (safeContext.mounted) {
+                                Navigator.pushReplacement(
+                                  safeContext,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (safeContext) =>
+                                            Home(),
+                                  ),
+                                );
+                                returnNavProvider(
+                                  safeContext,
+                                  listen: false,
+                                ).navigate(2);
+                              }
+
+                              // if (widget.isMain &&
+                              //     safeContext.mounted) {
+
+                              // } else {
+                              //   if (safeContext
+                              //       .mounted) {
+                              //     Navigator.of(
+                              //       safeContext,
+                              //     ).pop();
+                              //   }
+                              // }
+                            },
+                          );
+                        },
+                      );
+                    },
                   ),
-                ],
-              );
-            }
-          },
+                ),
+                // BottomActionButton(
+                //   text:
+                //       widget.isMain ? 'Print' : 'Refund',
+                //   color: Colors.grey.shade600,
+                //   iconSize: 23,
+                //   theme: widget.theme,
+                //   icon:
+                //       widget.isMain
+                //           ? Icons.print_outlined
+                //           : Icons
+                //               .settings_backup_restore_rounded,
+                //   action: () {
+                //     if (widget.isMain) {
+                //       return;
+                //     } else {}
+                //   },
+                // ),
+              ],
+            ),
+          ],
         ),
         Visibility(
           visible: isLoading,

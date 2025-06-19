@@ -110,13 +110,13 @@ class _SalesAndRevenueReportMobileState
       context,
       returnReceiptProvider(context).produtRecordSalesMain,
     );
-    double getTotal() {
-      double tempTotal = 0;
-      for (var element in salesRecords) {
-        tempTotal += element.revenue;
-      }
-      return tempTotal;
-    }
+    // double getTotal() {
+    //   double tempTotal = 0;
+    //   for (var element in salesRecords) {
+    //     tempTotal += element.revenue;
+    //   }
+    //   return tempTotal;
+    // }
 
     return Stack(
       children: [
@@ -268,6 +268,7 @@ class _SalesAndRevenueReportMobileState
                     horizontal: 10.0,
                   ),
                   child: SingleChildScrollView(
+                    primary: false,
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width:
@@ -305,235 +306,10 @@ class _SalesAndRevenueReportMobileState
                       //     200,
                       child: Column(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey,
-                              ),
-                              color: Colors.grey.shade100,
-                            ),
-                            child: Row(
-                              spacing: 0,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 3,
-                                          vertical: 10,
-                                        ),
-                                    child: Center(
-                                      child: Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'S/N',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 4,
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 10,
-                                        ),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        // right: BorderSide(
-                                        //   color: Colors.grey,
-                                        // ),
-                                        left: BorderSide(
-                                          color:
-                                              Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'Name',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 10,
-                                        ),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        right: BorderSide(
-                                          color:
-                                              Colors.grey,
-                                        ),
-                                        left: BorderSide(
-                                          color:
-                                              Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'Quantity',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 10,
-                                        ),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b3
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'Selling-Price',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Visibility(
-                                  visible:
-                                      salesRecords
-                                          .isNotEmpty,
-                                  child: Expanded(
-                                    flex: 3,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color:
-                                                Colors.grey,
-                                          ),
-                                          left: BorderSide(
-                                            color:
-                                                Colors.grey,
-                                          ),
-                                        ),
-                                      ),
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            horizontal: 5,
-                                            vertical: 10,
-                                          ),
-                                      child: Center(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Cost-Price',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Visibility(
-                                  visible:
-                                      salesRecords
-                                          .isNotEmpty,
-                                  child: Expanded(
-                                    flex: 3,
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            horizontal: 5,
-                                            vertical: 10,
-                                          ),
-                                      child: Center(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Profit/Loss',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          SummaryTableHeadingBar(
+                            isHeading: true,
+                            theme: theme,
+                            salesRecords: salesRecords,
                           ),
                           Expanded(
                             child: Builder(
@@ -553,56 +329,159 @@ class _SalesAndRevenueReportMobileState
                                         generateProductReportSummary(
                                           salesRecords,
                                         );
-                                    return ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount:
-                                          summary.length,
-                                      itemBuilder: (
-                                        context,
-                                        index,
-                                      ) {
-                                        var record =
-                                            summary[index];
-                                        var recordIndex =
-                                            summary.indexOf(
-                                              record,
-                                            ) +
-                                            1;
-
-                                        return TableRowRecordWidgetSummary(
-                                          theme: theme,
-                                          recordIndex:
-                                              recordIndex,
-                                          record: record,
+                                    return RefreshIndicator(
+                                      onRefresh: () {
+                                        return returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).loadReceipts(
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .shopId!,
+                                          context,
                                         );
                                       },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            ListView.builder(
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              shrinkWrap:
+                                                  true,
+                                              itemCount:
+                                                  summary
+                                                      .length,
+                                              itemBuilder: (
+                                                context,
+                                                index,
+                                              ) {
+                                                var record =
+                                                    summary[index];
+                                                var recordIndex =
+                                                    summary.indexOf(
+                                                      record,
+                                                    ) +
+                                                    1;
+
+                                                return TableRowRecordWidgetSummary(
+                                                  theme:
+                                                      theme,
+                                                  recordIndex:
+                                                      recordIndex,
+                                                  record:
+                                                      record,
+                                                );
+                                              },
+                                            ),
+                                            SummaryTableHeadingBar(
+                                              isHeading:
+                                                  false,
+                                              theme: theme,
+                                              salesRecords:
+                                                  salesRecords,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     );
                                   } else {
                                     // return Container();
-                                    return ListView.builder(
-                                      itemCount:
-                                          salesRecords
-                                              .length,
-                                      itemBuilder: (
-                                        context,
-                                        index,
-                                      ) {
-                                        var record =
-                                            salesRecords[index];
-                                        var recordIndex =
-                                            salesRecords
-                                                .indexOf(
-                                                  record,
-                                                ) +
-                                            1;
-
-                                        return TableRowRecordWidget(
-                                          theme: theme,
-                                          recordIndex:
-                                              recordIndex,
-                                          record: record,
+                                    return RefreshIndicator(
+                                      onRefresh: () {
+                                        return returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).loadReceipts(
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .shopId!,
+                                          context,
                                         );
                                       },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: SingleChildScrollView(
+                                        primary: true,
+                                        child: Column(
+                                          children: [
+                                            ListView.builder(
+                                              shrinkWrap:
+                                                  true,
+                                              itemCount:
+                                                  salesRecords
+                                                      .length,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+
+                                              itemBuilder: (
+                                                context,
+                                                index,
+                                              ) {
+                                                var record =
+                                                    salesRecords[index];
+                                                var recordIndex =
+                                                    salesRecords.indexOf(
+                                                      record,
+                                                    ) +
+                                                    1;
+
+                                                // return Container(
+                                                //   margin:
+                                                //       EdgeInsets.symmetric(
+                                                //         vertical:
+                                                //             5,
+                                                //       ),
+                                                //   padding:
+                                                //       EdgeInsets.symmetric(
+                                                //         vertical:
+                                                //             20,
+                                                //       ),
+                                                //   color:
+                                                //       Colors
+                                                //           .teal,
+                                                // );
+
+                                                return TableRowRecordWidget(
+                                                  theme:
+                                                      theme,
+                                                  recordIndex:
+                                                      recordIndex,
+                                                  record:
+                                                      record,
+                                                );
+                                              },
+                                            ),
+                                            SummaryTableHeadingBar(
+                                              isHeading:
+                                                  false,
+                                              theme: theme,
+                                              salesRecords:
+                                                  salesRecords,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     );
                                   }
                                 }
@@ -615,50 +494,50 @@ class _SalesAndRevenueReportMobileState
                   ),
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                  color: Colors.grey.shade100,
-                ),
-                padding: EdgeInsets.fromLTRB(
-                  30,
-                  15,
-                  30,
-                  25,
-                ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey,
-                      ),
-                      top: BorderSide(color: Colors.grey),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Total'),
-                      Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize:
-                              theme.mobileTexts.h4.fontSize,
-                        ),
-                        formatMoneyBig(getTotal()),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // Container(
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.only(
+              //       topLeft: Radius.circular(10),
+              //       topRight: Radius.circular(10),
+              //     ),
+              //     color: Colors.grey.shade100,
+              //   ),
+              //   padding: EdgeInsets.fromLTRB(
+              //     30,
+              //     15,
+              //     30,
+              //     25,
+              //   ),
+              //   child: Container(
+              //     padding: EdgeInsets.symmetric(
+              //       vertical: 5,
+              //       horizontal: 5,
+              //     ),
+              //     decoration: BoxDecoration(
+              //       border: Border(
+              //         bottom: BorderSide(
+              //           color: Colors.grey,
+              //         ),
+              //         top: BorderSide(color: Colors.grey),
+              //       ),
+              //     ),
+              //     child: Row(
+              //       mainAxisAlignment:
+              //           MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Text('Total'),
+              //         Text(
+              //           style: TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             fontSize:
+              //                 theme.mobileTexts.h4.fontSize,
+              //           ),
+              //           formatMoneyBig(getTotal()),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -793,6 +672,300 @@ class _SalesAndRevenueReportMobileState
   }
 }
 
+class SummaryTableHeadingBar extends StatefulWidget {
+  const SummaryTableHeadingBar({
+    super.key,
+    required this.theme,
+    required this.salesRecords,
+    required this.isHeading,
+  });
+
+  final ThemeProvider theme;
+  final List<TempProductSaleRecord> salesRecords;
+  final bool isHeading;
+  @override
+  State<SummaryTableHeadingBar> createState() =>
+      _SummaryTableHeadingBarState();
+}
+
+class _SummaryTableHeadingBarState
+    extends State<SummaryTableHeadingBar> {
+  double getTotal() {
+    double tempTotal = 0;
+    for (var item in widget.salesRecords) {
+      tempTotal += item.revenue;
+    }
+    return tempTotal;
+  }
+
+  double getTotalCostPrice() {
+    double tempTotal = 0;
+    for (var item in widget.salesRecords) {
+      tempTotal += (item.costPrice ?? 0);
+    }
+    return tempTotal;
+  }
+
+  double getTotalQuantity() {
+    double tempTotal = 0;
+    for (var item in widget.salesRecords) {
+      tempTotal += item.quantity;
+    }
+    return tempTotal;
+  }
+
+  double getTotalProfit() {
+    double tempTotal = 0;
+    for (var item in widget.salesRecords) {
+      tempTotal += item.revenue - (item.costPrice ?? 0);
+    }
+    return tempTotal;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border:
+            widget.isHeading
+                ? Border(
+                  left: BorderSide(color: Colors.grey),
+                  right: BorderSide(color: Colors.grey),
+                  bottom: BorderSide(color: Colors.grey),
+                  top: BorderSide(color: Colors.grey),
+                )
+                : Border(
+                  left: BorderSide(color: Colors.grey),
+                  right: BorderSide(color: Colors.grey),
+                  bottom: BorderSide(color: Colors.grey),
+                ),
+        color:
+            widget.isHeading
+                ? Colors.grey.shade100
+                : Colors.grey.shade200,
+      ),
+      child: Row(
+        spacing: 0,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 3,
+                vertical: 10,
+              ),
+              child: Center(
+                child: Text(
+                  style: TextStyle(
+                    fontSize:
+                        widget
+                            .theme
+                            .mobileTexts
+                            .b3
+                            .fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  widget.isHeading ? 'S/N' : '',
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  // right: BorderSide(
+                  //   color: Colors.grey,
+                  // ),
+                  left: BorderSide(color: Colors.grey),
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget.isHeading
+                                  ? widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize
+                                  : widget
+                                      .theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading ? 'Name' : 'TOTAL',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.grey),
+                  left: BorderSide(color: Colors.grey),
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'Quantity'
+                            : getTotalQuantity().toString(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 10,
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'Selling-Price'
+                            : formatMoneyBig(getTotal()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: widget.salesRecords.isNotEmpty,
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    left: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Cost-Price'
+                              : formatMoneyBig(
+                                getTotalCostPrice(),
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: widget.salesRecords.isNotEmpty,
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Profit/Loss'
+                              : formatMoneyBig(
+                                getTotalProfit(),
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class TableRowRecordWidgetSummary extends StatelessWidget {
   const TableRowRecordWidgetSummary({
     super.key,
@@ -820,7 +993,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -835,7 +1008,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 6,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -863,7 +1036,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -889,7 +1062,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -901,7 +1074,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      formatMoneyMid(record.total),
+                      formatMoneyBig(record.total),
                     ),
                   ],
                 ),
@@ -909,7 +1082,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -927,7 +1100,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      formatMoneyMid(record.costTotal),
+                      formatMoneyBig(record.costTotal),
                     ),
                   ],
                 ),
@@ -935,7 +1108,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -956,7 +1129,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                                   76,
                                 ),
                       ),
-                      "${(record.profit) >= 0 ? '+' : ''}${formatMoneyMid(record.profit)}",
+                      "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(record.profit)}",
                     ),
                   ],
                 ),
@@ -996,7 +1169,7 @@ class TableRowRecordWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -1011,7 +1184,7 @@ class TableRowRecordWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 6,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -1025,13 +1198,15 @@ class TableRowRecordWidget extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        record.productName,
                       ),
-                      record.productName,
                     ),
                   ],
                 ),
@@ -1039,7 +1214,7 @@ class TableRowRecordWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -1065,7 +1240,7 @@ class TableRowRecordWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -1077,7 +1252,7 @@ class TableRowRecordWidget extends StatelessWidget {
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      formatMoneyMid(record.revenue),
+                      formatMoneyBig(record.revenue),
                     ),
                   ],
                 ),
@@ -1085,7 +1260,7 @@ class TableRowRecordWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -1103,7 +1278,7 @@ class TableRowRecordWidget extends StatelessWidget {
                             theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      formatMoneyMid(record.costPrice ?? 0),
+                      formatMoneyBig(record.costPrice ?? 0),
                     ),
                   ],
                 ),
@@ -1111,7 +1286,7 @@ class TableRowRecordWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -1135,7 +1310,7 @@ class TableRowRecordWidget extends StatelessWidget {
                                   76,
                                 ),
                       ),
-                      "${(record.revenue - (record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyMid(record.revenue - (record.costPrice ?? 0))}",
+                      "${(record.revenue - (record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(record.revenue - (record.costPrice ?? 0))}",
                     ),
                   ],
                 ),

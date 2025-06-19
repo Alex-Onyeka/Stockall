@@ -55,6 +55,11 @@ class _EditDiscountPageState
 
   @override
   Widget build(BuildContext context) {
+    final shopI =
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!;
     return Stack(
       children: [
         Material(
@@ -368,6 +373,13 @@ class _EditDiscountPageState
                                       isLoading = false;
                                       showSuccess = true;
                                     });
+                                    if (safeContext
+                                        .mounted) {
+                                      await dataProvider
+                                          .getProducts(
+                                            shopI,
+                                          );
+                                    }
 
                                     Future.delayed(
                                       Duration(seconds: 2),
@@ -449,6 +461,13 @@ class _EditDiscountPageState
 
                                         dataProvider
                                             .clearFields();
+                                        if (safeContext
+                                            .mounted) {
+                                          await dataProvider
+                                              .getProducts(
+                                                shopI,
+                                              );
+                                        }
 
                                         setState(() {
                                           isLoading = false;
