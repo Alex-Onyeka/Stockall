@@ -137,6 +137,7 @@ class _AddExpensesMobileState
                         ).userShop!.shopId!,
                     description: widget.descController.text,
                   ),
+                  context,
                 );
               } else {
                 await expensesProvider.updateExpense(
@@ -177,6 +178,7 @@ class _AddExpensesMobileState
                     description: widget.descController.text,
                     id: widget.expenses!.id!,
                   ),
+                  context,
                 );
               }
 

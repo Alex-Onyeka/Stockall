@@ -12,7 +12,7 @@ import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class ReceiptPageMobile extends StatelessWidget {
+class ReceiptPageMobile extends StatefulWidget {
   final bool isMain;
   final TempMainReceipt mainReceipt;
   const ReceiptPageMobile({
@@ -20,6 +20,31 @@ class ReceiptPageMobile extends StatelessWidget {
     required this.mainReceipt,
     required this.isMain,
   });
+
+  @override
+  State<ReceiptPageMobile> createState() =>
+      _ReceiptPageMobileState();
+}
+
+class _ReceiptPageMobileState
+    extends State<ReceiptPageMobile> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).loadReceipts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+        context,
+      );
+    });
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +63,7 @@ class ReceiptPageMobile extends StatelessWidget {
                   Align(
                     alignment: Alignment(0, -1),
                     child: TopBannerTwo(
-                      isMain: isMain,
+                      isMain: widget.isMain,
                       title: 'Receipt',
                       theme: theme,
                       bottomSpace: 200,
@@ -54,9 +79,9 @@ class ReceiptPageMobile extends StatelessWidget {
                           ).size.height -
                           50,
                       child: ReceiptDetailsContainer(
-                        isMain: isMain,
+                        isMain: widget.isMain,
                         shop: shop!,
-                        mainReceipt: mainReceipt,
+                        mainReceipt: widget.mainReceipt,
                         theme: theme,
                       ),
                     ),

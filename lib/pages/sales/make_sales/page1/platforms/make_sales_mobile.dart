@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/product_suggestions_class.dart';
 import 'package:stockall/classes/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -35,6 +36,7 @@ class MakeSalesMobile extends StatefulWidget {
 }
 
 class _MakeSalesMobileState extends State<MakeSalesMobile> {
+  bool isLoading = false;
   TextEditingController quantityController =
       TextEditingController();
   TextEditingController priceController =
@@ -97,7 +99,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           SizedBox(
                             width: 450,
                             child: MoneyTextfield(
-                              title: 'Enter Custom Price',
+                              title: 'Enter Selling Price',
                               hint: 'Enter Price',
                               controller: priceController,
                               theme: theme,
@@ -118,7 +120,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               double.tryParse(value) ?? 0;
                           if (parsedValue >
                                   cartItem.item.quantity &&
-                              cartItem.item.id! != 000) {
+                              cartItem.item.id! > 80) {
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -331,8 +333,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         cartItem
                                             .item
                                             .quantity &&
-                                    cartItem.item.id! !=
-                                        000) {
+                                    cartItem.item.id! >
+                                        80) {
                                   showDialog(
                                     context: context,
                                     builder:
@@ -401,26 +403,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 },
                               );
                             } else {
-                              // if (priceController
-                              //     .text
-                              //     .isNotEmpty) {
-                              //   cartItem.customPrice =
-                              //       double.tryParse(
-                              //         priceController.text,
-                              //       );
-                              // }
-                              // cartItem.quantity =
-                              //     qqty.toDouble();
-                              // cartItem.setCustomPrice =
-                              //     returnSalesProvider(
-                              //       context,
-                              //       listen: false,
-                              //     ).isSetCustomPrice;
-                              // returnSalesProvider(
-                              //   context,
-                              //   listen: false,
-                              // ).addItemToCart(cartItem);
-                              // Navigator.of(context).pop();
                               updateAction!();
                             }
                           },
@@ -455,6 +437,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   TextEditingController sellingPriceC =
       TextEditingController();
   TextEditingController nameC = TextEditingController();
+  bool resultOn = false;
 
   void makeCustomSale({
     required TempCartItem cartItem,
@@ -489,430 +472,629 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                   ),
                 ),
                 content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Stack(
                     children: [
                       Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          GeneralTextField(
-                            title: 'Product Name',
-                            hint: 'Enter Product name',
-                            controller: nameC,
-                            lines: 1,
-                            theme: theme,
-                            onChanged: (p0) {
-                              setState(() {});
-                            },
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            spacing: 10,
+                          Column(
                             children: [
-                              Expanded(
-                                child: MoneyTextfield(
-                                  title:
-                                      'Cost Price (Optional)',
-                                  hint: 'Enter Price',
-                                  controller: costPriceC,
-                                  theme: theme,
-                                  onChanged: (p0) {
-                                    setState(() {});
-                                  },
-                                ),
+                              GeneralTextField(
+                                title: 'Product Name',
+                                hint: 'Enter Product name',
+                                controller: nameC,
+                                lines: 1,
+                                theme: theme,
+                                onChanged: (value) {
+                                  final suggestions =
+                                      returnSuggestionProvider(
+                                        context,
+                                        listen: false,
+                                      ).suggestions;
+
+                                  if (nameC
+                                      .text
+                                      .isNotEmpty) {
+                                    final hasMatch =
+                                        suggestions.any(
+                                          (item) => item
+                                              .name!
+                                              .toLowerCase()
+                                              .contains(
+                                                value
+                                                    .toLowerCase(),
+                                              ),
+                                        );
+
+                                    setState(() {
+                                      resultOn = hasMatch;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      resultOn = false;
+                                    });
+                                  }
+                                },
                               ),
-                              Expanded(
-                                child: MoneyTextfield(
-                                  title: 'Selling Price',
-                                  hint: 'Enter Price',
-                                  controller: sellingPriceC,
-                                  theme: theme,
-                                  onChanged: (p0) {
-                                    setState(() {});
-                                  },
-                                ),
+
+                              SizedBox(height: 10),
+                              Row(
+                                spacing: 10,
+                                children: [
+                                  Expanded(
+                                    child: MoneyTextfield(
+                                      title:
+                                          'Cost Price (Optional)',
+                                      hint: 'Enter Price',
+                                      controller:
+                                          costPriceC,
+                                      theme: theme,
+                                      onChanged: (p0) {
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: MoneyTextfield(
+                                      title:
+                                          'Selling Price',
+                                      hint: 'Enter Price',
+                                      controller:
+                                          sellingPriceC,
+                                      theme: theme,
+                                      onChanged: (p0) {
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
+                              SizedBox(height: 20),
                             ],
                           ),
+                          SizedBox(
+                            width: 450,
+                            child: EditCartTextField(
+                              onChanged: (value) {
+                                double entered =
+                                    double.tryParse(
+                                      value,
+                                    ) ??
+                                    0;
+
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    pQuantity.text = '0';
+                                  });
+                                }
+
+                                setState(() {
+                                  qqty = entered;
+                                  // cartItem.quantity = qqty;
+                                });
+                              },
+
+                              title:
+                                  'Enter Product Quantity',
+                              hint: 'Quantity',
+                              controller: pQuantity,
+                              theme: theme,
+                            ),
+                          ),
                           SizedBox(height: 20),
-                        ],
-                      ),
-                      SizedBox(
-                        width: 450,
-                        child: EditCartTextField(
-                          onChanged: (value) {
-                            double entered =
-                                double.tryParse(value) ?? 0;
-                            // if ((entered +
-                            //         cartItem.quantity) >
-                            //     cartItem.item.quantity) {
-                            //   showDialog(
-                            //     context: context,
-                            //     builder:
-                            //         (_) => InfoAlert(
-                            //           title:
-                            //               "Quantity Limit Reached",
-                            //           message:
-                            //               "Only ${cartItem.item.quantity} available in stock.",
-                            //           theme: theme,
-                            //         ),
-                            //   );
 
-                            //   Future.delayed(
-                            //     Duration(milliseconds: 300),
-                            //     () {
-                            //       setState(() {
-                            //         qqty = 1;
-                            //         quantityController
-                            //             .text = '1';
-                            //       });
-                            //     },
-                            //   );
-
-                            //   return;
-                            // }
-
-                            if (value.isEmpty) {
-                              setState(() {
-                                pQuantity.text = '0';
-                              });
-                            }
-
-                            setState(() {
-                              qqty = entered;
-                              // cartItem.quantity = qqty;
-                            });
-                          },
-
-                          title: 'Enter Product Quantity',
-                          hint: 'Quantity',
-                          controller: pQuantity,
-                          theme: theme,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      // Visibility(
-                      //   visible:
-                      //       cartItem.item.setCustomPrice,
-                      //   child: InkWell(
-                      //     onTap: () {
-                      //       returnSalesProvider(
-                      //         context,
-                      //         listen: false,
-                      //       ).toggleSetCustomPrice();
-                      //       priceController.clear();
-                      //     },
-                      //     child: Container(
-                      //       padding: EdgeInsets.symmetric(
-                      //         vertical: 5,
-                      //         horizontal: 10,
-                      //       ),
-                      //       child: Row(
-                      //         mainAxisSize:
-                      //             MainAxisSize.min,
-                      //         mainAxisAlignment:
-                      //             MainAxisAlignment.center,
-                      //         spacing: 5,
-                      //         children: [
-                      //           Text(
-                      //             style: TextStyle(
-                      //               fontSize:
-                      //                   theme
-                      //                       .mobileTexts
-                      //                       .b1
-                      //                       .fontSize,
-                      //               fontWeight:
-                      //                   FontWeight.bold,
-                      //             ),
-                      //             returnSalesProvider(
-                      //                   context,
-                      //                 ).isSetCustomPrice
-                      //                 ? 'Cancel Custom Price'
-                      //                 : 'Set Custom Price',
-                      //           ),
-                      //           Stack(
-                      //             children: [
-                      //               Visibility(
-                      //                 visible:
-                      //                     returnSalesProvider(
-                      //                       context,
-                      //                     ).isSetCustomPrice ==
-                      //                     false,
-                      //                 child:
-                      //                     SvgPicture.asset(
-                      //                       editIconSvg,
-                      //                       height: 20,
-                      //                     ),
-                      //               ),
-                      //               Visibility(
-                      //                 visible:
-                      //                     returnSalesProvider(
-                      //                       context,
-                      //                     ).isSetCustomPrice ==
-                      //                     true,
-                      //                 child: Icon(
-                      //                   Icons.clear,
-                      //                 ),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      // SizedBox(height: 20),
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     borderRadius:
-                      //         BorderRadius.circular(10),
-                      //     color: Colors.grey.shade100,
-                      //   ),
-                      //   padding: const EdgeInsets.symmetric(
-                      //     horizontal: 20.0,
-                      //     vertical: 10,
-                      //   ),
-                      //   child: Row(
-                      //     mainAxisAlignment:
-                      //         MainAxisAlignment
-                      //             .spaceBetween,
-                      //     children: [
-                      //       Text(
-                      //         style: TextStyle(
-                      //           fontSize:
-                      //               theme
-                      //                   .mobileTexts
-                      //                   .b1
-                      //                   .fontSize,
-                      //         ),
-                      //         'Total',
-                      //       ),
-                      //       Text(
-                      //         style: TextStyle(
-                      //           fontSize:
-                      //               theme
-                      //                   .mobileTexts
-                      //                   .b1
-                      //                   .fontSize,
-                      //           fontWeight:
-                      //               theme
-                      //                   .mobileTexts
-                      //                   .b1
-                      //                   .fontWeightBold,
-                      //         ),
-                      //         priceController.text.isEmpty
-                      //             ? formatMoneyBig(
-                      //               qqty *
-                      //                   (returnSalesProvider(
-                      //                     context,
-                      //                     listen: false,
-                      //                   ).discountCheck(
-                      //                     cartItem.item,
-                      //                   )),
-                      //             )
-                      //             : formatMoneyBig(
-                      //               double.tryParse(
-                      //                     priceController
-                      //                         .text
-                      //                         .replaceAll(
-                      //                           ',',
-                      //                           '',
-                      //                         ),
-                      //                   ) ??
-                      //                   0,
-                      //             ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          spacing: 15,
-                          children: [
-                            Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: () {
-                                  setState(() {
-                                    if (qqty > 0) qqty--;
-                                    pQuantity.text =
-                                        qqty.toString();
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 50,
-                                  child: Icon(Icons.remove),
+                          SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
                                 ),
-                              ),
-                            ),
-                            Text(
-                              qqty.toString(),
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              spacing: 15,
+                              children: [
+                                Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                  ),
+                                  child: InkWell(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    onTap: () {
+                                      setState(() {
+                                        if (qqty > 0) {
+                                          qqty--;
+                                        }
+                                        pQuantity.text =
+                                            qqty.toString();
+                                      });
+                                    },
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 50,
+                                      child: Icon(
+                                        Icons.remove,
+                                      ),
                                     ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: () {
-                                  // if (qqty +
-                                  //         cartItem
-                                  //             .quantity >=
-                                  //     cartItem
-                                  //         .item
-                                  //         .quantity) {
-                                  //   showDialog(
-                                  //     context: context,
-                                  //     builder:
-                                  //         (_) => InfoAlert(
-                                  //           title:
-                                  //               "Quantity Limit Reached",
-                                  //           message:
-                                  //               "Only (${cartItem.item.quantity}) items available in stock.",
-                                  //           theme: theme,
-                                  //         ),
-                                  //   );
-                                  //   return;
-                                  // }
-                                  setState(() {
-                                    qqty++;
-                                    pQuantity.text =
-                                        qqty.toString();
-                                  });
-                                },
-
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 50,
-                                  child: Center(
-                                    child: Icon(Icons.add),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        spacing: 5,
-                        children: [
-                          MaterialButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              costPriceC.clear();
-                              nameC.clear();
-                              pQuantity.clear();
-                              qqty = 0;
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          SmallButtonMain(
-                            theme: theme,
-                            action: () {
-                              if (pQuantity.text.isEmpty ||
-                                  qqty == 0) {
-                                // Navigator.of(context).pop();
-
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'Item quantity cannot be set to (0)',
-                                      title:
-                                          'Invalid Quantity',
-                                    );
-                                  },
-                                );
-                              } else {
-                                if (sellingPriceC
-                                    .text
-                                    .isEmpty) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Selling Price Must be set before sales can be recorded.',
-                                        title:
-                                            'Selling Price not set.',
-                                      );
+                                Text(
+                                  qqty.toString(),
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .h4
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                                Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                  ),
+                                  child: InkWell(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    onTap: () {
+                                      setState(() {
+                                        qqty++;
+                                        pQuantity.text =
+                                            qqty.toString();
+                                      });
                                     },
-                                  );
-                                } else {
-                                  cartItem.customPrice =
-                                      double.tryParse(
-                                        sellingPriceC.text
-                                            .replaceAll(
-                                              ',',
-                                              '',
-                                            ),
+
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 50,
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.add,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 5,
+                            children: [
+                              MaterialButton(
+                                onPressed: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                  costPriceC.clear();
+                                  nameC.clear();
+                                  pQuantity.clear();
+                                  qqty = 0;
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              SmallButtonMain(
+                                theme: theme,
+                                action: () {
+                                  var sugP =
+                                      returnSuggestionProvider(
+                                        context,
+                                        listen: false,
                                       );
-                                  cartItem.quantity =
-                                      qqty.toDouble();
-                                  cartItem.setCustomPrice =
-                                      true;
-                                  cartItem.item.name =
-                                      nameC.text;
-                                  cartItem.item.costPrice =
-                                      // double.parse(
-                                      //   costPriceC.text,
-                                      // );
-                                      (double.tryParse(
-                                            costPriceC.text
+                                  if (pQuantity
+                                          .text
+                                          .isEmpty ||
+                                      qqty == 0) {
+                                    // Navigator.of(context).pop();
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Item quantity cannot be set to (0)',
+                                          title:
+                                              'Invalid Quantity',
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    if (sellingPriceC
+                                        .text
+                                        .isEmpty) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'Selling Price Must be set before sales can be recorded.',
+                                            title:
+                                                'Selling Price not set.',
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      cartItem.customPrice =
+                                          double.tryParse(
+                                            sellingPriceC
+                                                .text
                                                 .replaceAll(
                                                   ',',
                                                   '',
                                                 ),
-                                          ) ??
-                                          0);
-                                  returnSalesProvider(
-                                    context,
-                                    listen: false,
-                                  ).addItemToCart(cartItem);
-                                  closeAction();
-                                }
-                              }
-                            },
-                            buttonText: 'Add To Cart',
+                                          );
+                                      cartItem.quantity =
+                                          qqty.toDouble();
+                                      cartItem.setCustomPrice =
+                                          true;
+                                      cartItem.item.name =
+                                          nameC.text;
+                                      cartItem
+                                              .item
+                                              .costPrice =
+                                          (double.tryParse(
+                                                costPriceC
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0);
+                                      cartItem.item.id =
+                                          returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .cartItems
+                                                  .isNotEmpty
+                                              ? returnSalesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      )
+                                                      .cartItems
+                                                      .last
+                                                      .item
+                                                      .id! +
+                                                  1
+                                              : 1;
+
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).addItemToCart(
+                                        cartItem,
+                                      );
+                                      sugP.addTempSugg(
+                                        ProductSuggestion(
+                                          createdAt:
+                                              DateTime.now(),
+                                          shopId: shopId(
+                                            context,
+                                          ),
+                                          costPrice:
+                                              double.tryParse(
+                                                costPriceC
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ),
+                                          name: nameC.text,
+                                          id:
+                                              cartItem
+                                                  .item
+                                                  .id,
+                                        ),
+                                      );
+                                      closeAction();
+                                    }
+                                  }
+                                },
+                                buttonText: 'Add To Cart',
+                              ),
+                            ],
                           ),
                         ],
+                      ),
+                      Visibility(
+                        visible: resultOn,
+                        child: Positioned(
+                          top: 80,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Container(
+                              width:
+                                  MediaQuery.of(
+                                    context,
+                                  ).size.width -
+                                  60,
+                              padding: EdgeInsets.fromLTRB(
+                                20,
+                                5,
+                                20,
+                                20,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 5,
+                                    color:
+                                        const Color.fromARGB(
+                                          27,
+                                          0,
+                                          0,
+                                          0,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                // crossAxisAlignment:
+                                //     CrossAxisAlignment.end,
+                                mainAxisSize:
+                                    MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                        ),
+                                        'Suggestion Results',
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            resultOn =
+                                                false;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.clear,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 180,
+                                    child: ListView.builder(
+                                      itemCount:
+                                          returnSuggestionProvider(
+                                                context,
+                                              ).suggestions
+                                              .where(
+                                                (
+                                                  sugg,
+                                                ) => sugg
+                                                    .name!
+                                                    .toLowerCase()
+                                                    .contains(
+                                                      nameC
+                                                          .text
+                                                          .toLowerCase(),
+                                                    ),
+                                              )
+                                              .length,
+                                      itemBuilder: (
+                                        context,
+                                        index,
+                                      ) {
+                                        var suggestions =
+                                            returnSuggestionProvider(
+                                                  context,
+                                                )
+                                                .suggestions
+                                                .where(
+                                                  (
+                                                    sugg,
+                                                  ) => sugg
+                                                      .name!
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        nameC.text.toLowerCase(),
+                                                      ),
+                                                )
+                                                .toList();
+
+                                        var suggestion =
+                                            suggestions[index];
+                                        return Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: Ink(
+                                            child: InkWell(
+                                              onTap: () {
+                                                nameC.text =
+                                                    suggestion
+                                                        .name!;
+                                                costPriceC
+                                                        .text =
+                                                    suggestion
+                                                        .costPrice
+                                                        .toString()
+                                                        .split(
+                                                          '.',
+                                                        )[0];
+
+                                                setState(() {
+                                                  resultOn =
+                                                      false;
+                                                });
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color:
+                                                          Colors.grey.shade400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                padding:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          10,
+                                                    ),
+
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b2.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      suggestion
+                                                          .name!,
+                                                    ),
+                                                    Row(
+                                                      spacing:
+                                                          5,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                          '$nairaSymbol ${suggestion.costPrice}',
+                                                        ),
+                                                        Icon(
+                                                          size:
+                                                              20,
+                                                          Icons.add,
+                                                        ),
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            var sugP = returnSuggestionProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            );
+                                                            var safeContext =
+                                                                context;
+                                                            showDialog(
+                                                              context:
+                                                                  context,
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return ConfirmationAlert(
+                                                                  theme:
+                                                                      theme,
+                                                                  message:
+                                                                      'Are you sure you want to delete your product suggestion?',
+                                                                  title:
+                                                                      isLoading
+                                                                          ? 'Deleting'
+                                                                          : 'Are you sure?',
+                                                                  action: () async {
+                                                                    Navigator.of(
+                                                                      safeContext,
+                                                                    ).pop();
+                                                                    setState(
+                                                                      () {
+                                                                        isLoading =
+                                                                            true;
+                                                                      },
+                                                                    );
+                                                                    await sugP.deleteSuggestion(
+                                                                      suggestion.id!,
+                                                                    );
+                                                                    setState(
+                                                                      () {
+                                                                        isLoading =
+                                                                            false;
+                                                                      },
+                                                                    );
+
+                                                                    if (context.mounted) {
+                                                                      Navigator.of(
+                                                                        context,
+                                                                      ).pop();
+                                                                    }
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                          icon: Icon(
+                                                            size:
+                                                                20,
+                                                            color: const Color.fromARGB(
+                                                              255,
+                                                              191,
+                                                              76,
+                                                              67,
+                                                            ),
+                                                            Icons.delete_outline_rounded,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -929,6 +1111,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       costPriceC.clear();
       sellingPriceC.clear();
       if (context.mounted) {
+        setState(() {
+          resultOn = false;
+        });
         returnSalesProvider(
           context,
           listen: false,
@@ -1049,43 +1234,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             ),
           ),
         ),
-        body:
-        // FutureBuilder(
-        //   future: _productsFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState ==
-        //         ConnectionState.waiting) {
-        //       return returnCompProvider(
-        //         context,
-        //         listen: false,
-        //       ).showLoader('Loading');
-        //     } else if (snapshot.hasError) {
-        //       return Padding(
-        //         padding: const EdgeInsets.symmetric(
-        //           horizontal: 10.0,
-        //         ),
-        //         child: EmptyWidgetDisplayOnly(
-        //           title: 'An Error Occoured',
-        //           subText:
-        //               'Check your internet connection and Try again',
-        //           theme: theme,
-        //           height: 30,
-        //           icon: Icons.clear,
-        //         ),
-        //       );
-        //     } else {
-        //     }
-        //   },
-        // ),
-        Builder(
+        body: Builder(
           builder: (context) {
             if (products.isEmpty) {
-              if (
-              // returnLocalDatabase(
-              //     context,
-              //     listen: false,
-              //   ).currentEmployee!.role ==
-              userGeneral(context).role == 'Cashier') {
+              if (userGeneral(context).role == 'Cashier') {
                 return EmptyWidgetDisplayOnly(
                   title: 'No Products',
                   subText:
@@ -1100,7 +1252,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       },
                       cartItem: TempCartItem(
                         item: TempProductClass(
-                          id: 000,
+                          id: 111,
                           name: nameC.text,
                           unit: 'Others',
                           isRefundable: false,
@@ -1362,6 +1514,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               false,
                                                         ).removeItemFromCart(
                                                           items[index],
+                                                        );
+                                                        returnSuggestionProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).deleteTempSugg(
+                                                          items[index].item.id!,
                                                         );
                                                       },
                                                     );

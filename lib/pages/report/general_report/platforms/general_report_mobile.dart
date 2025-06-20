@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/product_summary_class.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class.dart';
@@ -147,14 +148,6 @@ class _GeneralReportMobileState
                             ).dateSet ??
                             'For Today',
                       ),
-                      // Visibility(
-                      //   visible:
-                      //       returnLocalDatabase(
-                      //         context,
-                      //       ).currentEmployee!.role !=
-                      //       'Owner',
-                      //   child: SizedBox(height: 30),
-                      // ),
                       Visibility(
                         visible:
                             userGeneral(context).role ==
@@ -262,7 +255,7 @@ class _GeneralReportMobileState
                                         padding:
                                             EdgeInsets.symmetric(
                                               horizontal:
-                                                  20,
+                                                  10,
                                               vertical: 20,
                                             ),
                                         decoration: BoxDecoration(
@@ -303,7 +296,7 @@ class _GeneralReportMobileState
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                               ),
                                               'Sales',
@@ -399,7 +392,7 @@ class _GeneralReportMobileState
                                                                         FontWeight.w700,
                                                                   ),
 
-                                                                  '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptSnapshot.data!).length}',
+                                                                  '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptSnapshot.data!).length}',
                                                                 );
                                                               }
                                                             },
@@ -409,7 +402,7 @@ class _GeneralReportMobileState
                                                     ),
                                                     Expanded(
                                                       flex:
-                                                          4,
+                                                          3,
                                                       child: Column(
                                                         spacing:
                                                             10,
@@ -438,7 +431,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -450,7 +443,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -463,7 +456,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -487,7 +480,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -526,7 +519,7 @@ class _GeneralReportMobileState
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                               ),
                                               'Expenses',
@@ -580,14 +573,14 @@ class _GeneralReportMobileState
                                                                 ? '0'
                                                                 : expensesSnapshot.hasError
                                                                 ? '0'
-                                                                : '${returnExpensesProvider(context, listen: false).returnExpensesByDayOrWeek(context, expensesSnapshot.data!).length}',
+                                                                : '#${returnExpensesProvider(context, listen: false).returnExpensesByDayOrWeek(context, expensesSnapshot.data!).length}',
                                                           ),
                                                         ],
                                                       ),
                                                     ),
                                                     Expanded(
                                                       flex:
-                                                          4,
+                                                          3,
                                                       child: Column(
                                                         spacing:
                                                             10,
@@ -616,7 +609,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -628,7 +621,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -658,7 +651,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -685,6 +678,9 @@ class _GeneralReportMobileState
                                                       .shade500,
                                               height: 30,
                                             ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
                                             Text(
                                               style: TextStyle(
                                                 fontWeight:
@@ -697,11 +693,12 @@ class _GeneralReportMobileState
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                               ),
                                               'Revenue Minus Expenses',
                                             ),
+
                                             Divider(
                                               height: 10,
                                               color:
@@ -748,7 +745,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -761,7 +758,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -811,7 +808,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -827,7 +824,7 @@ class _GeneralReportMobileState
                                                     ),
                                                     Expanded(
                                                       flex:
-                                                          4,
+                                                          3,
                                                       child: Column(
                                                         spacing:
                                                             10,
@@ -859,7 +856,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b2.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                         fontWeight:
@@ -872,7 +869,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b2.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                         fontWeight:
@@ -922,7 +919,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -962,6 +959,44 @@ class _GeneralReportMobileState
                                                       .shade500,
                                               height: 30,
                                             ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b1.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'Standard Product Sales Profit',
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b4.fontSize,
+                                                  ),
+                                                  '(Products with both Cost Price and Selling Price)',
+                                                ),
+                                              ],
+                                            ),
+                                            // SizedBox(
+                                            //   height: 20,
+                                            // ),
+                                            Divider(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade300,
+                                              height: 20,
+                                            ),
+
                                             Text(
                                               style: TextStyle(
                                                 fontWeight:
@@ -974,7 +1009,7 @@ class _GeneralReportMobileState
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                               ),
                                               'Gross Profit/Loss',
@@ -1023,7 +1058,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -1035,7 +1070,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -1052,12 +1087,13 @@ class _GeneralReportMobileState
                                                                   context,
                                                                   receiptSnapshot.data!,
                                                                 );
+
                                                                 if (productRecordSnapShot.connectionState ==
                                                                     ConnectionState.waiting) {
                                                                   return Text(
                                                                     style: TextStyle(
                                                                       fontSize:
-                                                                          theme.mobileTexts.b2.fontSize,
+                                                                          theme.mobileTexts.b3.fontSize,
                                                                       color:
                                                                           Colors.grey.shade700,
                                                                       fontWeight:
@@ -1069,7 +1105,7 @@ class _GeneralReportMobileState
                                                                   return Text(
                                                                     style: TextStyle(
                                                                       fontSize:
-                                                                          theme.mobileTexts.b2.fontSize,
+                                                                          theme.mobileTexts.b3.fontSize,
                                                                       color:
                                                                           Colors.grey.shade700,
                                                                       fontWeight:
@@ -1088,7 +1124,15 @@ class _GeneralReportMobileState
                                                                     productRecordSnapShot.connectionState ==
                                                                             ConnectionState.waiting
                                                                         ? []
-                                                                        : productRecordSnapShot.data!,
+                                                                        : productRecordSnapShot.data!
+                                                                            .where(
+                                                                              (
+                                                                                record,
+                                                                              ) =>
+                                                                                  record.costPrice !=
+                                                                                  0,
+                                                                            )
+                                                                            .toList(),
                                                                   );
 
                                                                   var totalCostPrice = returnReceiptProvider(
@@ -1101,12 +1145,20 @@ class _GeneralReportMobileState
                                                                     productRecordSnapShot.connectionState ==
                                                                             ConnectionState.waiting
                                                                         ? []
-                                                                        : productRecordSnapShot.data!,
+                                                                        : productRecordSnapShot.data!
+                                                                            .where(
+                                                                              (
+                                                                                record,
+                                                                              ) =>
+                                                                                  record.costPrice !=
+                                                                                  0,
+                                                                            )
+                                                                            .toList(),
                                                                   );
                                                                   return Text(
                                                                     style: TextStyle(
                                                                       fontSize:
-                                                                          theme.mobileTexts.b2.fontSize,
+                                                                          theme.mobileTexts.b3.fontSize,
                                                                       color:
                                                                           Colors.grey.shade700,
                                                                       fontWeight:
@@ -1123,7 +1175,7 @@ class _GeneralReportMobileState
                                                     ),
                                                     Expanded(
                                                       flex:
-                                                          4,
+                                                          3,
                                                       child: Column(
                                                         spacing:
                                                             10,
@@ -1153,7 +1205,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color: const Color.fromARGB(
@@ -1169,7 +1221,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color: const Color.fromARGB(
@@ -1195,7 +1247,7 @@ class _GeneralReportMobileState
                                                                       return Text(
                                                                         style: TextStyle(
                                                                           fontSize:
-                                                                              theme.mobileTexts.b1.fontSize,
+                                                                              theme.mobileTexts.b3.fontSize,
                                                                           fontWeight:
                                                                               FontWeight.bold,
                                                                           color: const Color.fromARGB(
@@ -1211,7 +1263,7 @@ class _GeneralReportMobileState
                                                                       return Text(
                                                                         style: TextStyle(
                                                                           fontSize:
-                                                                              theme.mobileTexts.b1.fontSize,
+                                                                              theme.mobileTexts.b3.fontSize,
                                                                           fontWeight:
                                                                               FontWeight.bold,
                                                                           color: const Color.fromARGB(
@@ -1234,7 +1286,15 @@ class _GeneralReportMobileState
                                                                         productRecordSnapShot.connectionState ==
                                                                                 ConnectionState.waiting
                                                                             ? []
-                                                                            : productRecordSnapShot.data!,
+                                                                            : productRecordSnapShot.data!
+                                                                                .where(
+                                                                                  (
+                                                                                    record,
+                                                                                  ) =>
+                                                                                      record.costPrice !=
+                                                                                      0,
+                                                                                )
+                                                                                .toList(),
                                                                       );
 
                                                                       var totalCostPrice = returnReceiptProvider(
@@ -1247,13 +1307,21 @@ class _GeneralReportMobileState
                                                                         productRecordSnapShot.connectionState ==
                                                                                 ConnectionState.waiting
                                                                             ? []
-                                                                            : productRecordSnapShot.data!,
+                                                                            : productRecordSnapShot.data!
+                                                                                .where(
+                                                                                  (
+                                                                                    record,
+                                                                                  ) =>
+                                                                                      record.costPrice !=
+                                                                                      0,
+                                                                                )
+                                                                                .toList(),
                                                                       );
 
                                                                       return Text(
                                                                         style: TextStyle(
                                                                           fontSize:
-                                                                              theme.mobileTexts.b1.fontSize,
+                                                                              theme.mobileTexts.b3.fontSize,
                                                                           fontWeight:
                                                                               FontWeight.bold,
                                                                           color:
@@ -1291,7 +1359,7 @@ class _GeneralReportMobileState
                                               color:
                                                   Colors
                                                       .grey
-                                                      .shade500,
+                                                      .shade300,
                                               height: 30,
                                             ),
                                             Text(
@@ -1306,7 +1374,7 @@ class _GeneralReportMobileState
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                               ),
                                               'Net Profit/Loss',
@@ -1359,7 +1427,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -1373,7 +1441,7 @@ class _GeneralReportMobileState
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -1421,7 +1489,15 @@ class _GeneralReportMobileState
                                                                   productRecordSnapShot.connectionState ==
                                                                           ConnectionState.waiting
                                                                       ? []
-                                                                      : productRecordSnapShot.data!,
+                                                                      : productRecordSnapShot.data!
+                                                                          .where(
+                                                                            (
+                                                                              record,
+                                                                            ) =>
+                                                                                record.costPrice !=
+                                                                                0,
+                                                                          )
+                                                                          .toList(),
                                                                 );
 
                                                                 var totalCostPrice = returnReceiptProvider(
@@ -1434,13 +1510,21 @@ class _GeneralReportMobileState
                                                                   productRecordSnapShot.connectionState ==
                                                                           ConnectionState.waiting
                                                                       ? []
-                                                                      : productRecordSnapShot.data!,
+                                                                      : productRecordSnapShot.data!
+                                                                          .where(
+                                                                            (
+                                                                              record,
+                                                                            ) =>
+                                                                                record.costPrice !=
+                                                                                0,
+                                                                          )
+                                                                          .toList(),
                                                                 );
 
                                                                 return Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b3.fontSize,
                                                                     color:
                                                                         Colors.grey.shade700,
                                                                     fontWeight:
@@ -1456,7 +1540,7 @@ class _GeneralReportMobileState
                                                     ),
                                                     Expanded(
                                                       flex:
-                                                          4,
+                                                          3,
                                                       child: Column(
                                                         spacing:
                                                             10,
@@ -1489,7 +1573,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color: const Color.fromARGB(
@@ -1507,7 +1591,7 @@ class _GeneralReportMobileState
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color: const Color.fromARGB(
@@ -1559,7 +1643,15 @@ class _GeneralReportMobileState
                                                                       productRecordSnapShot.connectionState ==
                                                                               ConnectionState.waiting
                                                                           ? []
-                                                                          : productRecordSnapShot.data!,
+                                                                          : productRecordSnapShot.data!
+                                                                              .where(
+                                                                                (
+                                                                                  record,
+                                                                                ) =>
+                                                                                    record.costPrice !=
+                                                                                    0,
+                                                                              )
+                                                                              .toList(),
                                                                     );
 
                                                                     var totalCostPrice = returnReceiptProvider(
@@ -1572,13 +1664,21 @@ class _GeneralReportMobileState
                                                                       productRecordSnapShot.connectionState ==
                                                                               ConnectionState.waiting
                                                                           ? []
-                                                                          : productRecordSnapShot.data!,
+                                                                          : productRecordSnapShot.data!
+                                                                              .where(
+                                                                                (
+                                                                                  record,
+                                                                                ) =>
+                                                                                    record.costPrice !=
+                                                                                    0,
+                                                                              )
+                                                                              .toList(),
                                                                     );
 
                                                                     return Text(
                                                                       style: TextStyle(
                                                                         fontSize:
-                                                                            theme.mobileTexts.b1.fontSize,
+                                                                            theme.mobileTexts.b3.fontSize,
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                         color:
@@ -1633,12 +1733,18 @@ class _GeneralReportMobileState
                                                       .waiting) {
                                             return StockSummaryContainer(
                                               theme: theme,
+                                              leastThree:
+                                                  [],
+                                              topThree: [],
                                             );
                                           } else if (snapshot
                                                   .hasError ||
                                               productRecordSnapShot
                                                   .hasError) {
                                             return StockSummaryContainer(
+                                              leastThree:
+                                                  [],
+                                              topThree: [],
                                               theme: theme,
                                             );
                                           } else {
@@ -1665,6 +1771,7 @@ class _GeneralReportMobileState
                                                           0,
                                                     )
                                                     .length;
+
                                             var productRecord =
                                                 returnReceiptProvider(
                                                   context,
@@ -1676,77 +1783,164 @@ class _GeneralReportMobileState
                                                       .data!,
                                                 );
 
-                                            var items = returnReportProvider(
-                                              context,
-                                              listen: false,
-                                            ).getTopThreeProductsByQuantity(
-                                              products,
-                                              productRecord,
+                                            List<
+                                              ProductSummaryClass
+                                            >
+                                            getProducts() {
+                                              List<
+                                                ProductSummaryClass
+                                              >
+                                              tempProducts =
+                                                  [];
+                                              for (var item
+                                                  in productRecord) {
+                                                tempProducts.add(
+                                                  ProductSummaryClass(
+                                                    name:
+                                                        item.productName,
+                                                    quantity:
+                                                        item.quantity,
+                                                  ),
+                                                );
+                                              }
+                                              return tempProducts;
+                                            }
+
+                                            List<
+                                              ProductSummaryClass
+                                            >
+                                            groupProductSummaries() {
+                                              final Map<
+                                                String,
+                                                double
+                                              >
+                                              groupedMap =
+                                                  {};
+
+                                              for (var product
+                                                  in getProducts()) {
+                                                groupedMap.update(
+                                                  product
+                                                      .name,
+                                                  (
+                                                    existing,
+                                                  ) =>
+                                                      existing +
+                                                      product
+                                                          .quantity,
+                                                  ifAbsent:
+                                                      () =>
+                                                          product.quantity,
+                                                );
+                                              }
+
+                                              return groupedMap
+                                                  .entries
+                                                  .map(
+                                                    (
+                                                      entry,
+                                                    ) => ProductSummaryClass(
+                                                      name:
+                                                          entry.key,
+                                                      quantity:
+                                                          entry.value,
+                                                    ),
+                                                  )
+                                                  .toList();
+                                            }
+
+                                            groupProductSummaries().sort(
+                                              (a, b) => b
+                                                  .quantity
+                                                  .compareTo(
+                                                    a.quantity,
+                                                  ),
                                             );
 
-                                            var leastItems =
-                                                returnReportProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).getBottomThreeProductsByQuantity(
-                                                  products,
-                                                  productRecord,
-                                                );
+                                            List<
+                                              ProductSummaryClass
+                                            >
+                                            getTopThreeProducts(
+                                              List<
+                                                ProductSummaryClass
+                                              >
+                                              groupedList,
+                                            ) {
+                                              if (groupedList
+                                                  .isEmpty) {
+                                                return [];
+                                              }
 
-                                            return StockSummaryContainer(
-                                              theme: theme,
-                                              inStock:
-                                                  inStock,
-                                              outOfStock:
-                                                  outOfStock,
-                                              total:
-                                                  products
-                                                      .length,
-                                              bestSelling:
-                                                  items ==
-                                                          null
-                                                      ? 0
-                                                      : items
-                                                          .isEmpty
-                                                      ? 0
-                                                      : items[0]
-                                                          .totalQuantity
-                                                          .toInt(),
-                                              bestName:
-                                                  productRecord
-                                                          .isEmpty
-                                                      ? 'No Sales Yet'
-                                                      : items ==
-                                                          null
-                                                      ? ''
-                                                      : items
-                                                          .isEmpty
-                                                      ? ''
-                                                      : items[0]
-                                                          .productName,
-                                              leastSelling:
-                                                  leastItems ==
-                                                          null
-                                                      ? 0
-                                                      : leastItems
-                                                          .isEmpty
-                                                      ? 0
-                                                      : leastItems[0]
-                                                          .totalQuantity
-                                                          .toInt(),
-                                              leastName:
-                                                  productRecord
-                                                          .isEmpty
-                                                      ? 'No Sales Yet'
-                                                      : leastItems ==
-                                                          null
-                                                      ? ''
-                                                      : leastItems
-                                                          .isEmpty
-                                                      ? ''
-                                                      : leastItems[0]
-                                                          .productName,
+                                              final sorted = List<
+                                                ProductSummaryClass
+                                              >.from(
+                                                groupedList,
+                                              )..sort(
+                                                (a, b) => b
+                                                    .quantity
+                                                    .compareTo(
+                                                      a.quantity,
+                                                    ),
+                                              );
+
+                                              return sorted
+                                                  .take(3)
+                                                  .toList();
+                                            }
+
+                                            List<
+                                              ProductSummaryClass
+                                            >
+                                            getBottomThreeProducts(
+                                              List<
+                                                ProductSummaryClass
+                                              >
+                                              groupedList,
+                                            ) {
+                                              if (groupedList
+                                                  .isEmpty) {
+                                                return [];
+                                              }
+
+                                              final sorted = List<
+                                                ProductSummaryClass
+                                              >.from(
+                                                groupedList,
+                                              )..sort(
+                                                (a, b) => a
+                                                    .quantity
+                                                    .compareTo(
+                                                      b.quantity,
+                                                    ),
+                                              );
+
+                                              return sorted
+                                                  .take(3)
+                                                  .toList();
+                                            }
+
+                                            return Column(
+                                              children: [
+                                                StockSummaryContainer(
+                                                  leastThree:
+                                                      getBottomThreeProducts(
+                                                        groupProductSummaries(),
+                                                      ),
+                                                  topThree:
+                                                      getTopThreeProducts(
+                                                        groupProductSummaries(),
+                                                      ),
+                                                  theme:
+                                                      theme,
+                                                  inStock:
+                                                      inStock,
+                                                  outOfStock:
+                                                      outOfStock,
+                                                  total:
+                                                      products
+                                                          .length,
+                                                ),
+                                              ],
                                             );
                                           }
                                         },
@@ -1903,10 +2097,8 @@ class StockSummaryContainer extends StatelessWidget {
   final int? inStock;
   final int? outOfStock;
   final int? total;
-  final int? bestSelling;
-  final int? leastSelling;
-  final String? bestName;
-  final String? leastName;
+  final List<ProductSummaryClass> topThree;
+  final List<ProductSummaryClass> leastThree;
 
   const StockSummaryContainer({
     super.key,
@@ -1914,17 +2106,15 @@ class StockSummaryContainer extends StatelessWidget {
     this.inStock,
     this.outOfStock,
     this.total,
-    this.bestSelling,
-    this.leastSelling,
-    this.bestName,
-    this.leastName,
+    required this.topThree,
+    required this.leastThree,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 20,
+        horizontal: 10,
         vertical: 20,
       ),
       decoration: BoxDecoration(
@@ -1944,7 +2134,7 @@ class StockSummaryContainer extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: theme.lightModeColor.secColor200,
-              fontSize: theme.mobileTexts.b2.fontSize,
+              fontSize: theme.mobileTexts.b3.fontSize,
             ),
             'Stock Summary',
           ),
@@ -1984,7 +2174,7 @@ class StockSummaryContainer extends StatelessWidget {
                             color: Colors.grey.shade700,
                             fontWeight: FontWeight.w700,
                           ),
-                          total?.toString() ?? '0',
+                          "#${total != null ? total!.toString() : '0'}",
                         ),
                       ],
                     ),
@@ -2021,7 +2211,7 @@ class StockSummaryContainer extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey.shade700,
                               ),
-                              inStock?.toString() ?? '0',
+                              "#${inStock != null ? inStock!.toString() : '0'}",
                             ),
                           ],
                         ),
@@ -2060,7 +2250,7 @@ class StockSummaryContainer extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey.shade700,
                               ),
-                              outOfStock?.toString() ?? '0',
+                              "#${outOfStock != null ? outOfStock?.toString() : '0'}",
                             ),
                           ],
                         ),
@@ -2070,220 +2260,26 @@ class StockSummaryContainer extends StatelessWidget {
                 ],
               ),
               Divider(height: 20),
-              Row(
+              Column(
                 spacing: 10,
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.normal,
-                          ),
-                          'Best Selling Product:',
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              spacing: 0,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b1
-                                            .fontSize,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
-                                    fontWeight:
-                                        FontWeight.w700,
-                                  ),
-                                  bestName ?? '',
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade700,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        'Sold ',
-                                      ),
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .secColor200,
-                                        fontWeight:
-                                            FontWeight.w700,
-                                      ),
-                                      '(${bestSelling?.toString() ?? '0'})',
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        fontWeight:
-                                            FontWeight
-                                                .normal,
-                                      ),
-                                      ' Items',
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                  BestAndLeastSellingRow(
+                    index: 0,
+                    leastThree: leastThree,
+                    topThree: topThree,
+                    theme: theme,
                   ),
-                  Expanded(
-                    child: Column(
-                      spacing: 10,
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight:
-                                    FontWeight.normal,
-                              ),
-                              'Least Selling Product',
-                            ),
-                            Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              spacing: 0,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b1
-                                            .fontSize,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
-                                    fontWeight:
-                                        FontWeight.w700,
-                                  ),
-                                  leastName ?? '',
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade700,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        'Sold ',
-                                      ),
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .secColor200,
-                                        fontWeight:
-                                            FontWeight.w700,
-                                      ),
-                                      '(${leastSelling?.toString() ?? '0'})',
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        fontWeight:
-                                            FontWeight
-                                                .normal,
-                                      ),
-                                      ' Items',
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  BestAndLeastSellingRow(
+                    index: 1,
+                    leastThree: leastThree,
+                    topThree: topThree,
+                    theme: theme,
+                  ),
+                  BestAndLeastSellingRow(
+                    index: 2,
+                    leastThree: leastThree,
+                    topThree: topThree,
+                    theme: theme,
                   ),
                 ],
               ),
@@ -2291,6 +2287,203 @@ class StockSummaryContainer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class BestAndLeastSellingRow extends StatelessWidget {
+  const BestAndLeastSellingRow({
+    super.key,
+    required this.theme,
+    required this.topThree,
+    required this.leastThree,
+    required this.index,
+  });
+
+  final ThemeProvider theme;
+  final List<ProductSummaryClass> topThree;
+  final List<ProductSummaryClass> leastThree;
+  final int index;
+
+  // int number() {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 10,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                  fontWeight: FontWeight.normal,
+                ),
+                'Top Three Selling Items:',
+              ),
+              SizedBox(height: 5),
+              Builder(
+                builder: (context) {
+                  return Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    spacing: 0,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        topThree.isEmpty
+                            ? 'Not Set'
+                            : topThree[index].name,
+                      ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color: Colors.grey.shade700,
+                                fontWeight:
+                                    FontWeight.normal,
+                              ),
+                              'Sold ',
+                            ),
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            '(${topThree.isEmpty ? 0 : topThree[index].quantity.toStringAsFixed(0)})',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            ' Items',
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            spacing: 10,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    'Least Selling Items',
+                  ),
+                  SizedBox(height: 5),
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    spacing: 0,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        leastThree.isEmpty
+                            ? 'Not Set'
+                            : leastThree[index].name,
+                      ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                color: Colors.grey.shade700,
+                                fontWeight:
+                                    FontWeight.normal,
+                              ),
+                              'Sold ',
+                            ),
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            '(${leastThree.isEmpty ? 0 : leastThree[index].quantity.toStringAsFixed(0)})',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            ' Items',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

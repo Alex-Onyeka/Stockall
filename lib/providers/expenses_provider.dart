@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
 
-  Future<void> addExpense(TempExpensesClass expense) async {
+  List<TempExpensesClass> expenses = [];
+
+  Future<void> addExpense(
+    TempExpensesClass expense,
+    BuildContext context,
+  ) async {
     await supabase
         .from('expenses')
         .insert(expense.toJson());
+    if (context.mounted) {
+      await getExpenses(shopId(context));
+    }
+    notifyListeners();
   }
 
   //
@@ -32,9 +42,13 @@ class ExpensesProvider extends ChangeNotifier {
         .eq('shop_id', shopId)
         .order('created_date', ascending: false);
 
-    return (response as List)
-        .map((e) => TempExpensesClass.fromJson(e))
-        .toList();
+    var exp =
+        (response as List)
+            .map((e) => TempExpensesClass.fromJson(e))
+            .toList();
+    expenses.addAll(exp);
+    notifyListeners();
+    return exp;
   }
 
   //
@@ -225,6 +239,7 @@ class ExpensesProvider extends ChangeNotifier {
   //
   Future<void> updateExpense(
     TempExpensesClass expense,
+    BuildContext context,
   ) async {
     final supabase = Supabase.instance.client;
 
@@ -232,6 +247,11 @@ class ExpensesProvider extends ChangeNotifier {
         .from('expenses')
         .update(expense.toJson())
         .eq('id', expense.id!);
+
+    if (context.mounted) {
+      await getExpenses(shopId(context));
+    }
+    notifyListeners();
   }
   //
   //
@@ -241,10 +261,18 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> deleteExpense(int id) async {
+  Future<void> deleteExpense(
+    int id,
+    BuildContext context,
+  ) async {
     final supabase = Supabase.instance.client;
 
     await supabase.from('expenses').delete().eq('id', id);
+
+    if (context.mounted) {
+      await getExpenses(shopId(context));
+    }
+    notifyListeners();
   }
 
   //

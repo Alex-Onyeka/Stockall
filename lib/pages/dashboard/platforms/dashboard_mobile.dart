@@ -44,6 +44,20 @@ class DashboardMobile extends StatefulWidget {
 }
 
 class _DashboardMobileState extends State<DashboardMobile> {
+  Future<void> loadSuggestions() async {
+    print('Start Loading Dashboard');
+    await returnSuggestionProvider(
+      context,
+      listen: false,
+    ).loadSuggestions(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+    print('Loaded Dashboard');
+  }
+
   bool isFloatOpen = false;
 
   void openFloat() {
@@ -174,6 +188,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProdutRecordsFuture = getProductSalesRecord();
     expensesFuture = getExpenses();
     productsFuture = getProducts();
+    loadSuggestions();
     // shopFuture = getUserShop();
   }
 

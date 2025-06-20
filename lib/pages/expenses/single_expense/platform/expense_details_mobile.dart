@@ -293,6 +293,7 @@ class _DetailsPageContainerState
                                     listen: false,
                                   ).deleteExpense(
                                     expense.id!,
+                                    context,
                                   );
                                   await Future.delayed(
                                     Duration(

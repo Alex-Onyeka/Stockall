@@ -62,6 +62,53 @@ class _MakeSalesMobileTwoState
     return tempUser;
   }
 
+  // List<ProductSuggestion> suggestions() {
+  //   List<ProductSuggestion> tempSugg = [];
+  //   for (var item
+  //       in returnSalesProvider(
+  //         context,
+  //         listen: false,
+  //       ).cartItems) {
+  //     tempSugg.add(
+  //       ProductSuggestion(
+  //         createdAt: DateTime.now(),
+  //         shopId:
+  //             returnShopProvider(
+  //               context,
+  //               listen: false,
+  //             ).userShop!.shopId!,
+  //         costPrice: item.costPrice(),
+  //         name: item.item.name,
+  //       ),
+  //     );
+  //   }
+  //   return tempSugg;
+  // }
+
+  // List<ProductSuggestion> suggestions(
+  //   BuildContext context,
+  // ) {
+  //   final cartItems =
+  //       returnSalesProvider(
+  //         context,
+  //         listen: false,
+  //       ).cartItems;
+  //   final shopId =
+  //       returnShopProvider(
+  //         context,
+  //         listen: false,
+  //       ).userShop!.shopId!;
+
+  //   return cartItems.map((item) {
+  //     return ProductSuggestion(
+  //       createdAt: DateTime.now(),
+  //       shopId: shopId,
+  //       costPrice: 200,
+  //       name: 'item.item.name',
+  //     );
+  //   }).toList();
+  // }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -586,6 +633,11 @@ class _MakeSalesMobileTwoState
                               child: MainButtonP(
                                 themeProvider: theme,
                                 action: () {
+                                  var suggP =
+                                      returnSuggestionProvider(
+                                        context,
+                                        listen: false,
+                                      );
                                   BuildContext safeContext =
                                       context;
                                   showDialog(
@@ -709,6 +761,11 @@ class _MakeSalesMobileTwoState
                                               ).selectedCustomerId,
                                             ),
                                           );
+
+                                          await suggP
+                                              .createSuggestions();
+                                          suggP
+                                              .clearSuggestions();
                                           setState(() {
                                             isLoading =
                                                 false;
