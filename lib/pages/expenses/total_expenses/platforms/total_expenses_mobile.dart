@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -21,32 +19,33 @@ class TotalExpensesMobile extends StatefulWidget {
 
 class _TotalExpensesMobileState
     extends State<TotalExpensesMobile> {
-  Future<List<TempExpensesClass>> getExpenses() {
-    var tempExpenses = returnExpensesProvider(
-      context,
-      listen: false,
-    ).getExpenses(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+  // Future<List<TempExpensesClass>> getExpenses() {
+  //   var tempExpenses = returnExpensesProvider(
+  //     context,
+  //     listen: false,
+  //   ).getExpenses(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
 
-    return tempExpenses;
-  }
+  //   return tempExpenses;
+  // }
 
-  late Future<List<TempExpensesClass>> expensesFuture;
+  // late Future<List<TempExpensesClass>> expensesFuture;
 
   @override
   void initState() {
     super.initState();
-    expensesFuture = getExpenses();
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    // expensesFuture = getExpenses();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
+      returnData(
+        context,
+        listen: false,
+      ).toggleFloatingAction(context);
     });
   }
 
@@ -60,6 +59,9 @@ class _TotalExpensesMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    var expensesMain =
+        returnExpensesProvider(context).expenses;
+
     return GestureDetector(
       onTap: () {
         returnExpensesProvider(
@@ -109,7 +111,7 @@ class _TotalExpensesMobileState
               ),
             ).then((_) {
               setState(() {
-                expensesFuture = getExpenses();
+                // expensesFuture = getExpenses();
               });
             });
           },
@@ -117,46 +119,61 @@ class _TotalExpensesMobileState
           text: 'Add Expenses',
           theme: theme,
         ),
-        body: FutureBuilder(
-          future: expensesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState ==
-                ConnectionState.waiting) {
-              return returnCompProvider(
-                context,
-                listen: false,
-              ).showLoader('Loading');
-            } else if (snapshot.hasError) {
-              return EmptyWidgetDisplayOnly(
-                title: 'An Error Occured',
-                subText:
-                    'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
-                theme: theme,
-                height: 30,
-                icon: Icons.clear,
-              );
-            } else {
-              var expenses = returnExpensesProvider(
-                context,
-                listen: false,
-              ).returnExpensesByDayOrWeek(
-                context,
-                snapshot.data!,
-              );
-              double getTotalExpenses() {
-                double tempTotal = 0;
-                for (var item in expenses) {
-                  tempTotal += item.amount;
-                }
-                return tempTotal;
+        body:
+        //  FutureBuilder(
+        //   future: expensesFuture,
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState ==
+        //         ConnectionState.waiting) {
+        //       return returnCompProvider(
+        //         context,
+        //         listen: false,
+        //       ).showLoader('Loading');
+        //     } else if (snapshot.hasError) {
+        //       return EmptyWidgetDisplayOnly(
+        //         title: 'An Error Occured',
+        //         subText:
+        //             'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
+        //         theme: theme,
+        //         height: 30,
+        //         icon: Icons.clear,
+        //       );
+        //     } else {
+        //     }
+        //   },
+        // ),
+        Builder(
+          builder: (context) {
+            var expenses = returnExpensesProvider(
+              context,
+            ).returnExpensesByDayOrWeek(
+              context,
+              expensesMain,
+            );
+            double getTotalExpenses() {
+              double tempTotal = 0;
+              for (var item in expenses) {
+                tempTotal += item.amount;
               }
+              return tempTotal;
+            }
 
-              return Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                    ),
+            return Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      return returnExpensesProvider(
+                        context,
+                        listen: false,
+                      ).getExpenses(shopId(context));
+                    },
+                    backgroundColor: Colors.white,
+                    color: theme.lightModeColor.prColor300,
+                    displacement: 10,
                     child: Column(
                       children: [
                         Material(
@@ -169,7 +186,7 @@ class _TotalExpensesMobileState
                                   ValueSummaryTabSmall(
                                     color: Colors.amber,
                                     isMoney: true,
-                                    title: 'Total Revenue',
+                                    title: 'Expenses Cost',
                                     value:
                                         getTotalExpenses(),
                                   ),
@@ -177,7 +194,8 @@ class _TotalExpensesMobileState
                                     value:
                                         expenses.length
                                             .toDouble(),
-                                    title: 'Sales Number',
+                                    title:
+                                        'Expenses Number',
                                     color: Colors.green,
                                     isMoney: false,
                                   ),
@@ -299,35 +317,7 @@ class _TotalExpensesMobileState
                                     );
                                   },
                                 );
-                              }
-                              // else if (expenses.isEmpty &&
-                              //     returnLocalDatabase(
-                              //               context,
-                              //               listen: false,
-                              //             )
-                              //             .currentEmployee!
-                              //             .role !=
-                              //         'Owner') {
-                              //   return SizedBox(
-                              //     height:
-                              //         MediaQuery.of(
-                              //           context,
-                              //         ).size.height -
-                              //         400,
-                              //     child: Center(
-                              //       child: EmptyWidgetDisplayOnly(
-                              //         subText:
-                              //             'Come back later after expenses has been recorded to view expenses.',
-                              //         title:
-                              //             'No Expenses Recorded Yet',
-                              //         svg: expensesIconSvg,
-                              //         height: 35,
-                              //         theme: theme,
-                              //       ),
-                              //     ),
-                              //   );
-                              // }
-                              else {
+                              } else {
                                 return ListView.builder(
                                   itemCount:
                                       expenses.length,
@@ -365,152 +355,148 @@ class _TotalExpensesMobileState
                       ],
                     ),
                   ),
-                  if (returnExpensesProvider(
-                    context,
-                  ).setDate)
-                    Material(
-                      color: const Color.fromARGB(
-                        75,
-                        0,
-                        0,
-                        0,
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          returnExpensesProvider(
-                            context,
-                            listen: false,
-                          ).clearExpenseDate();
-                        },
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
-                            child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        context,
-                                      ).size.height *
-                                      0.05,
-                                ),
-                                Ink(
-                                  color: Colors.white,
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.only(
-                                          top: 20,
-                                          bottom: 20,
+                ),
+                if (returnExpensesProvider(context).setDate)
+                  Material(
+                    color: const Color.fromARGB(
+                      75,
+                      0,
+                      0,
+                      0,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        returnExpensesProvider(
+                          context,
+                          listen: false,
+                        ).clearExpenseDate();
+                      },
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
+                          child: Column(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(
+                                      context,
+                                    ).size.height *
+                                    0.05,
+                              ),
+                              Ink(
+                                color: Colors.white,
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                    top: 20,
+                                    bottom: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          10,
                                         ),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            10,
+                                    color: Colors.white,
+                                  ),
+                                  child: Center(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 5.0,
                                           ),
-                                      color: Colors.white,
-                                    ),
-                                    child: Center(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal:
-                                                  5.0,
-                                            ),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: 100,
-                                              height: 4,
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade400,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      5,
-                                                    ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 20,
-                                            ),
-                                            Container(
-                                              height: 480,
-                                              width: 380,
-                                              padding:
-                                                  EdgeInsets.all(
-                                                    15,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: 100,
+                                            height: 4,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade400,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    5,
                                                   ),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      10,
-                                                    ),
-                                                color:
-                                                    Colors
-                                                        .white,
-                                                // border: Border.all(
-                                                //   color:
-                                                //       Colors
-                                                //           .grey,
-                                                // ),
-                                              ),
-                                              child: CalendarWidget(
-                                                onDaySelected: (
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Container(
+                                            height: 480,
+                                            width: 380,
+                                            padding:
+                                                EdgeInsets.all(
+                                                  15,
+                                                ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    10,
+                                                  ),
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              // border: Border.all(
+                                              //   color:
+                                              //       Colors
+                                              //           .grey,
+                                              // ),
+                                            ),
+                                            child: CalendarWidget(
+                                              onDaySelected: (
+                                                selectedDay,
+                                                focusedDay,
+                                              ) {
+                                                returnExpensesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setExpenseDay(
                                                   selectedDay,
-                                                  focusedDay,
-                                                ) {
-                                                  returnExpensesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).setExpenseDay(
-                                                    selectedDay,
-                                                  );
-                                                },
-                                                actionWeek: (
+                                                );
+                                              },
+                                              actionWeek: (
+                                                startOfWeek,
+                                                endOfWeek,
+                                              ) {
+                                                returnExpensesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setExpenseWeek(
                                                   startOfWeek,
                                                   endOfWeek,
-                                                ) {
-                                                  returnExpensesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).setExpenseWeek(
-                                                    startOfWeek,
-                                                    endOfWeek,
-                                                  );
-                                                },
-                                              ),
+                                                );
+                                              },
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        context,
-                                      ).size.height *
-                                      0.4,
-                                ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(
+                                      context,
+                                    ).size.height *
+                                    0.4,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                ],
-              );
-            }
+                  ),
+              ],
+            );
           },
         ),
       ),

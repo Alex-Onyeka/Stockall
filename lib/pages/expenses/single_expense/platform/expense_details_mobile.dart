@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -72,279 +70,291 @@ class DetailsPageContainer extends StatefulWidget {
 
 class _DetailsPageContainerState
     extends State<DetailsPageContainer> {
-  late Future<TempExpensesClass> expenseFuture;
-  Future<TempExpensesClass> getExpense() async {
-    var tempEx = await returnExpensesProvider(
-      context,
-      listen: false,
-    ).getExpenses(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-
-    return tempEx.firstWhere(
-      (exp) => exp.id! == widget.expenseId,
-    );
-  }
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    expenseFuture = getExpense();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    expenseFuture = getExpense();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: expenseFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState ==
-            ConnectionState.waiting) {
-          return Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.white,
-            child: Container(
-              width: MediaQuery.of(context).size.width - 40,
-              height:
-                  MediaQuery.of(context).size.height -
-                  (MediaQuery.of(context).size.height *
-                      0.25),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.grey,
-              ),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return EmptyWidgetDisplayOnly(
-            title: 'An Error Occured',
-            subText:
-                'Your data could not Load. Check your internet and try again.',
-            theme: widget.theme,
-            height: 30,
-            icon: Icons.clear,
-          );
-        } else {
-          var expense = snapshot.data!;
+    // return FutureBuilder(
+    //   future: expenseFuture,
+    //   builder: (context, snapshot) {
+    //     if (snapshot.connectionState ==
+    //         ConnectionState.waiting) {
+    //       return Shimmer.fromColors(
+    //         baseColor: Colors.grey.shade300,
+    //         highlightColor: Colors.white,
+    //         child: Container(
+    //           width: MediaQuery.of(context).size.width - 40,
+    //           height:
+    //               MediaQuery.of(context).size.height -
+    //               (MediaQuery.of(context).size.height *
+    //                   0.25),
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(5),
+    //             color: Colors.grey,
+    //           ),
+    //         ),
+    //       );
+    //     } else if (snapshot.hasError) {
+    //       return EmptyWidgetDisplayOnly(
+    //         title: 'An Error Occured',
+    //         subText:
+    //             'Your data could not Load. Check your internet and try again.',
+    //         theme: widget.theme,
+    //         height: 30,
+    //         icon: Icons.clear,
+    //       );
+    //     } else {
 
-          return Container(
-            margin: EdgeInsets.only(bottom: 30),
-            width: MediaQuery.of(context).size.width - 40,
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromARGB(32, 0, 0, 0),
-                  blurRadius: 5,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      spacing: 10,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey.shade200,
-                          ),
-                          child: SvgPicture.asset(
-                            expensesIconSvg,
-                            color: Colors.grey.shade600,
-                            height: 20,
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontWeight:
-                                    FontWeight.normal,
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                              ),
-                              'Expense Name',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                              ),
-                              expense.name,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          5,
-                        ),
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            color:
-                                widget
-                                    .theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                          'Expense',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Divider(color: Colors.grey.shade300),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                  ),
-                  child: ExpenseDetailsContainer(
-                    expense: expense,
-                    theme: widget.theme,
-                  ),
-                ),
-                Visibility(
-                  visible: true,
-                  // returnLocalDatabase(
-                  //   context,
-                  // ).currentEmployee!.role ==
-                  // 'Owner',
-                  child: Row(
-                    spacing: 15,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+    //     }
+    //   },
+    // );
+
+    final matching = returnExpensesProvider(
+      context,
+    ).expenses.where((e) => e.id == widget.expenseId);
+
+    if (matching.isEmpty) {
+      return Scaffold(
+        body: returnCompProvider(
+          context,
+          listen: false,
+        ).showLoader('Loading'),
+      );
+    }
+
+    // final expense = matching.first;
+
+    var expense = matching.firstWhere(
+      (exp) => exp.id! == widget.expenseId,
+    );
+
+    return Stack(
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 30),
+          width: MediaQuery.of(context).size.width - 40,
+          padding: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(32, 0, 0, 0),
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    spacing: 10,
                     children: [
-                      SizedBox(height: 15),
-                      CustomerActionButton(
-                        icon: Icons.delete_outline_rounded,
-                        color:
-                            widget
-                                .theme
-                                .lightModeColor
-                                .errorColor200,
-                        iconSize: 18,
-                        text: 'Delete',
-                        action: () {
-                          final safeContext = context;
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ConfirmationAlert(
-                                theme: widget.theme,
-                                message:
-                                    'You are about to delete your Expenses, are you sure you want to proceed?',
-                                title: 'Are you sure?',
-                                action: () async {
-                                  if (safeContext.mounted) {
-                                    Navigator.of(
-                                      safeContext,
-                                    ).pop();
-                                  }
-                                  returnExpensesProvider(
-                                    context,
-                                    listen: false,
-                                  ).deleteExpense(
-                                    expense.id!,
-                                    context,
-                                  );
-                                  await Future.delayed(
-                                    Duration(
-                                      microseconds: 500,
-                                    ),
-                                    () {},
-                                  );
-                                  if (context.mounted) {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                  }
-                                },
-                              );
-                            },
-                          );
-                        },
-                        theme: widget.theme,
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade200,
+                        ),
+                        child: SvgPicture.asset(
+                          expensesIconSvg,
+                          color: Colors.grey.shade600,
+                          height: 20,
+                        ),
                       ),
-                      CustomerActionButton(
-                        svg: editIconSvg,
-                        color: Colors.grey,
-                        iconSize: 15,
-                        text: 'Edit',
-                        action: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return AddExpenses(
-                                  expense: expense,
-                                );
-                              },
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
                             ),
-                          ).then((_) {
-                            setState(() {
-                              expenseFuture = getExpense();
-                            });
-                          });
-                        },
-                        theme: widget.theme,
+                            'Expense Name',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            expense.name,
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          color:
+                              widget
+                                  .theme
+                                  .lightModeColor
+                                  .secColor200,
+                        ),
+                        'Expense',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Divider(color: Colors.grey.shade300),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15.0,
                 ),
-                SizedBox(height: 10),
-              ],
-            ),
-          );
-        }
-      },
+                child: ExpenseDetailsContainer(
+                  expense: expense,
+                  theme: widget.theme,
+                ),
+              ),
+              Visibility(
+                visible: true,
+                // returnLocalDatabase(
+                //   context,
+                // ).currentEmployee!.role ==
+                // 'Owner',
+                child: Row(
+                  spacing: 15,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 15),
+                    CustomerActionButton(
+                      icon: Icons.delete_outline_rounded,
+                      color:
+                          widget
+                              .theme
+                              .lightModeColor
+                              .errorColor200,
+                      iconSize: 18,
+                      text: 'Delete',
+                      action: () {
+                        var expP = returnExpensesProvider(
+                          context,
+                          listen: false,
+                        );
+                        final safeContext = context;
+
+                        showDialog(
+                          context: safeContext,
+                          builder: (_) {
+                            return ConfirmationAlert(
+                              theme: widget.theme,
+                              message:
+                                  'You are about to delete your Expenses, are you sure you want to proceed?',
+                              title: 'Are you sure?',
+                              action: () async {
+                                if (safeContext.mounted) {
+                                  Navigator.of(
+                                    safeContext,
+                                  ).pop(); // Close the dialog first
+                                }
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                await expP.deleteExpense(
+                                  expense.id!,
+                                  safeContext,
+                                );
+
+                                if (safeContext.mounted) {
+                                  Navigator.of(
+                                    safeContext,
+                                  ).pop(); // Pop the page
+                                }
+                                // setState(() {
+                                //   isLoading = false;
+                                // });
+                              },
+                            );
+                          },
+                        );
+                      },
+                      theme: widget.theme,
+                    ),
+
+                    CustomerActionButton(
+                      svg: editIconSvg,
+                      color: Colors.grey,
+                      iconSize: 15,
+                      text: 'Edit',
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AddExpenses(
+                                expense: expense,
+                              );
+                            },
+                          ),
+                        ).then((_) {
+                          setState(() {
+                            // expenseFuture = getExpense();
+                          });
+                        });
+                      },
+                      theme: widget.theme,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        ),
+        Visibility(
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Loading'),
+        ),
+      ],
     );
   }
 }

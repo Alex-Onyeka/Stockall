@@ -17,6 +17,7 @@ class ExpensesProvider extends ChangeNotifier {
         .from('expenses')
         .insert(expense.toJson());
     if (context.mounted) {
+      print('Mounted: Add Expense');
       await getExpenses(shopId(context));
     }
     notifyListeners();
@@ -41,12 +42,13 @@ class ExpensesProvider extends ChangeNotifier {
         .select()
         .eq('shop_id', shopId)
         .order('created_date', ascending: false);
+    print('Expenses Gotten: Get Expenses');
 
     var exp =
         (response as List)
             .map((e) => TempExpensesClass.fromJson(e))
             .toList();
-    expenses.addAll(exp);
+    expenses = exp;
     notifyListeners();
     return exp;
   }
@@ -129,62 +131,6 @@ class ExpensesProvider extends ChangeNotifier {
     dateSet = null;
     notifyListeners();
   }
-
-  // Future<List<TempExpensesClass>> loadExpensesByDayOrWeek({
-  //   required int shopId,
-  // }) async {
-  //   try {
-  //     final now = DateTime.now();
-  //     late final List data;
-
-  //     if (expenseWeekStartDate != null) {
-  //       final weekEndDate = expenseWeekStartDate!.add(
-  //         const Duration(days: 6),
-  //       );
-
-  //       data = await Supabase.instance.client
-  //           .from('expenses')
-  //           .select()
-  //           .eq('shop_id', shopId)
-  //           .gte(
-  //             'created_date',
-  //             expenseWeekStartDate!.toIso8601String(),
-  //           )
-  //           .lte(
-  //             'created_date',
-  //             weekEndDate.toIso8601String(),
-  //           )
-  //           .order('created_date', ascending: false);
-  //     } else {
-  //       final targetDate = expenseSingleDay ?? now;
-  //       final startOfDay = DateTime(
-  //         targetDate.year,
-  //         targetDate.month,
-  //         targetDate.day,
-  //       );
-  //       final endOfDay = startOfDay.add(
-  //         const Duration(days: 1),
-  //       );
-
-  //       data = await Supabase.instance.client
-  //           .from('expenses')
-  //           .select()
-  //           .eq('shop_id', shopId)
-  //           .gte(
-  //             'created_date',
-  //             startOfDay.toIso8601String(),
-  //           )
-  //           .lt('created_date', endOfDay.toIso8601String())
-  //           .order('created_date', ascending: false);
-  //     }
-
-  //     return data
-  //         .map((json) => TempExpensesClass.fromJson(json))
-  //         .toList();
-  //   } catch (e) {
-  //     return [];
-  //   }
-  // }
 
   List<TempExpensesClass> returnExpensesByDayOrWeek(
     BuildContext context,

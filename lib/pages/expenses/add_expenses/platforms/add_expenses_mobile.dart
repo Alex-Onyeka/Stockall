@@ -69,14 +69,17 @@ class _AddExpensesMobileState
       showDialog(
         context: safeContext,
         builder: (context) {
+          var shopId =
+              returnShopProvider(
+                context,
+                listen: false,
+              ).userShop!.shopId!;
+
           var dataProvider = returnData(
             context,
             listen: false,
           );
-          // final localProvider = returnLocalDatabase(
-          //   context,
-          //   listen: false,
-          // );
+
           final expensesProvider = returnExpensesProvider(
             safeContext,
             listen: false,
@@ -90,9 +93,7 @@ class _AddExpensesMobileState
             title: 'Are you sure?',
             action: () async {
               if (safeContext.mounted) {
-                Navigator.of(
-                  safeContext,
-                ).pop(); // close dialog
+                Navigator.of(safeContext).pop();
               }
 
               setState(() {
@@ -130,14 +131,10 @@ class _AddExpensesMobileState
                       widget.amountController.text
                           .replaceAll(',', ''),
                     ),
-                    shopId:
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).userShop!.shopId!,
+                    shopId: shopId,
                     description: widget.descController.text,
                   ),
-                  context,
+                  safeContext,
                 );
               } else {
                 await expensesProvider.updateExpense(
@@ -170,18 +167,16 @@ class _AddExpensesMobileState
                       widget.amountController.text
                           .replaceAll(',', ''),
                     ),
-                    shopId:
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).userShop!.shopId!,
+                    shopId: shopId,
                     description: widget.descController.text,
                     id: widget.expenses!.id!,
                   ),
-                  context,
+                  safeContext,
                 );
               }
-
+              // if (context.mounted) {
+              //   await expensesProvider.getExpenses(shopId);
+              // }
               setState(() {
                 isLoading = false;
                 showSuccess = true;
