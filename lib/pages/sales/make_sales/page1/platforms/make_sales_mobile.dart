@@ -704,7 +704,34 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         context,
                                         listen: false,
                                       );
-                                  if (pQuantity
+                                  var cartItems =
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).cartItems;
+                                  final index = cartItems
+                                      .indexWhere((item) {
+                                        return item
+                                                .item
+                                                .name
+                                                .toLowerCase() ==
+                                            nameC.text
+                                                .toLowerCase();
+                                      });
+                                  if (index != -1) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Item Already Available in cart. Please Edit the Item to increase quantity or change prince.',
+                                          title:
+                                              'Duplicate Item.',
+                                        );
+                                      },
+                                    );
+                                  } else if (pQuantity
                                           .text
                                           .isEmpty ||
                                       qqty == 0) {
@@ -1192,6 +1219,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           context,
                           listen: false,
                         ).clearCart();
+                        returnSuggestionProvider(
+                          context,
+                          listen: false,
+                        ).clearSuggestions();
                         Navigator.of(context).pop();
                       },
                     );

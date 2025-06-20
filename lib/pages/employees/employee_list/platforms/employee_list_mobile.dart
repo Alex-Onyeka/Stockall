@@ -157,7 +157,7 @@ class _EmployeeListMobileState
                         .where(
                           (emp) =>
                               emp.userId ==
-                              AuthService().currentUser!.id,
+                              AuthService().currentUser!.id
                         )
                         .toList();
 

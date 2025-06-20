@@ -392,6 +392,9 @@ class _SalesAndRevenueReportMobileState
                                               salesRecords:
                                                   salesRecords,
                                             ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -479,6 +482,9 @@ class _SalesAndRevenueReportMobileState
                                               salesRecords:
                                                   salesRecords,
                                             ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -494,50 +500,6 @@ class _SalesAndRevenueReportMobileState
                   ),
                 ),
               ),
-              // Container(
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.only(
-              //       topLeft: Radius.circular(10),
-              //       topRight: Radius.circular(10),
-              //     ),
-              //     color: Colors.grey.shade100,
-              //   ),
-              //   padding: EdgeInsets.fromLTRB(
-              //     30,
-              //     15,
-              //     30,
-              //     25,
-              //   ),
-              //   child: Container(
-              //     padding: EdgeInsets.symmetric(
-              //       vertical: 5,
-              //       horizontal: 5,
-              //     ),
-              //     decoration: BoxDecoration(
-              //       border: Border(
-              //         bottom: BorderSide(
-              //           color: Colors.grey,
-              //         ),
-              //         top: BorderSide(color: Colors.grey),
-              //       ),
-              //     ),
-              //     child: Row(
-              //       mainAxisAlignment:
-              //           MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         Text('Total'),
-              //         Text(
-              //           style: TextStyle(
-              //             fontWeight: FontWeight.bold,
-              //             fontSize:
-              //                 theme.mobileTexts.h4.fontSize,
-              //           ),
-              //           formatMoneyBig(getTotal()),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
