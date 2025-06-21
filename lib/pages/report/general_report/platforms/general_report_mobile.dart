@@ -1907,10 +1907,10 @@ class _GeneralReportMobileState
                                               >.from(
                                                 groupedList,
                                               )..sort(
-                                                (a, b) => a
+                                                (a, b) => b
                                                     .quantity
                                                     .compareTo(
-                                                      b.quantity,
+                                                      a.quantity,
                                                     ),
                                               );
 
@@ -2272,7 +2272,7 @@ class StockSummaryContainer extends StatelessWidget {
                   BestAndLeastSellingRow(
                     index: 1,
                     leastThree:
-                        leastThree.length < 2
+                        leastThree.length < 4
                             ? []
                             : leastThree,
                     topThree:
@@ -2282,7 +2282,7 @@ class StockSummaryContainer extends StatelessWidget {
                   BestAndLeastSellingRow(
                     index: 2,
                     leastThree:
-                        leastThree.length < 3
+                        leastThree.length < 4
                             ? []
                             : leastThree,
                     topThree:
