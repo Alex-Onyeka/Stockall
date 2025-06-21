@@ -51,8 +51,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
     required BuildContext context,
     required Function()? updateAction,
     required TempCartItem cartItem,
-    //  required TextEditingController numberController,
-    //  required TextEditingController priceController,
   }) {
     var theme = returnTheme(context, listen: false);
     quantityController.text = cartItem.quantity.toString();
@@ -90,10 +88,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                     Visibility(
                       visible:
                           (returnSalesProvider(
-                                context,
-                              ).isSetCustomPrice ||
-                              cartItem.setCustomPrice) &&
-                          cartItem.item.setCustomPrice,
+                                    context,
+                                  ).isSetCustomPrice ||
+                                  cartItem
+                                      .setCustomPrice) &&
+                              cartItem
+                                  .item
+                                  .setCustomPrice ||
+                          cartItem.item.sellingPrice ==
+                              null,
                       child: Column(
                         children: [
                           SizedBox(
@@ -807,10 +810,32 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             false,
                                                       )
                                                       .cartItems
-                                                      .last
-                                                      .item
-                                                      .id! +
-                                                  1
+                                                      .where(
+                                                        (
+                                                          item,
+                                                        ) =>
+                                                            item.item.id! <
+                                                            100,
+                                                      )
+                                                      .isNotEmpty
+                                                  ? returnSalesProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          )
+                                                          .cartItems
+                                                          .where(
+                                                            (
+                                                              item,
+                                                            ) =>
+                                                                item.item.id! <
+                                                                100,
+                                                          )
+                                                          .last
+                                                          .item
+                                                          .id! +
+                                                      1
+                                                  : 1
                                               : 1;
 
                                       returnSalesProvider(

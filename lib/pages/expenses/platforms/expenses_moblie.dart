@@ -54,7 +54,11 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
       context,
       listen: false,
     );
-    var expenses = returnExpensesProvider(context).expenses;
+    var expenses = expenseProvider
+        .returnExpensesByDayOrWeek(
+          context,
+          returnExpensesProvider(context).expenses,
+        );
     var theme = returnTheme(context);
     return Scaffold(
       floatingActionButton: Builder(

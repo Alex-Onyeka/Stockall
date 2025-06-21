@@ -26,75 +26,95 @@ class ReportMobile extends StatelessWidget {
             iconSvg: reportIconSvg,
           ),
           SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-            ),
-            child: Column(
-              children: [
-                Row(children: [Text('Reports List:')]),
-                SizedBox(height: 15),
-                SingleChildScrollView(
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      ReportListTile(
-                        theme: theme,
-                        action: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return GeneralReportPage();
-                              },
-                            ),
-                          );
-                        },
-                        subText:
-                            'Veiw A Summary of your business Report',
-                        title: 'General Overview',
-                      ),
-                      ReportListTile(
-                        theme: theme,
-                        action: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return SalesAndRevenueReport();
-                              },
-                            ),
-                          );
-                        },
-                        subText:
-                            'Veiw A Summary of your business Report',
-                        title: 'Sales and Revenue',
-                      ),
-                      ReportListTile(
-                        theme: theme,
-                        action: () {},
-                        subText:
-                            'Veiw A Summary of your business Report',
-                        title: 'General Overview',
-                      ),
-                      ReportListTile(
-                        theme: theme,
-                        action: () {},
-                        subText:
-                            'Veiw A Summary of your business Report',
-                        title: 'General Overview',
-                      ),
-                      ReportListTile(
-                        theme: theme,
-                        action: () {},
-                        subText:
-                            'Veiw A Summary of your business Report',
-                        title: 'General Overview',
-                      ),
-                    ],
-                  ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(children: [Text('Reports List:')]),
+                    SizedBox(height: 15),
+                    Column(
+                      spacing: 10,
+                      children: [
+                        ReportListTile(
+                          isActive: true,
+                          theme: theme,
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return GeneralReportPage();
+                                },
+                              ),
+                            );
+                          },
+                          subText:
+                              'Veiw A Summary of your business Report',
+                          title: 'General Overview',
+                        ),
+                        ReportListTile(
+                          isActive: true,
+                          theme: theme,
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SalesAndRevenueReport();
+                                },
+                              ),
+                            );
+                          },
+                          subText:
+                              'Veiw a breakdown of your Sales, revenue and Profit',
+                          title: 'Sales and Revenue',
+                        ),
+                        ReportListTile(
+                          isActive: false,
+                          theme: theme,
+                          action: () {},
+                          subText:
+                              'Veiw A Summary of your Stock and Inventory',
+                          title:
+                              'Product Report (Coming Soon)',
+                        ),
+                        ReportListTile(
+                          isActive: false,
+                          theme: theme,
+                          action: () {},
+                          subText:
+                              'Veiw A break down of employee activities',
+                          title:
+                              'Employee Report (Coming Soon)',
+                        ),
+                        ReportListTile(
+                          isActive: false,
+                          theme: theme,
+                          action: () {},
+                          subText:
+                              'View a detailed breakdown of your expenses.',
+                          title:
+                              'Expenses Report (Coming Soon)',
+                        ),
+                        ReportListTile(
+                          isActive: false,
+                          theme: theme,
+                          action: () {},
+                          subText:
+                              'View a detailed your customers.',
+                          title:
+                              'Customer Report (Coming Soon)',
+                        ),
+                        SizedBox(height: 30),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -108,6 +128,7 @@ class ReportListTile extends StatelessWidget {
   final String title;
   final String subText;
   final Function() action;
+  final bool isActive;
 
   const ReportListTile({
     super.key,
@@ -115,6 +136,7 @@ class ReportListTile extends StatelessWidget {
     required this.title,
     required this.subText,
     required this.action,
+    required this.isActive,
   });
 
   @override
@@ -123,7 +145,10 @@ class ReportListTile extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(22, 0, 0, 0),
+            color:
+                isActive
+                    ? const Color.fromARGB(22, 0, 0, 0)
+                    : Colors.transparent,
             blurRadius: 10,
           ),
         ],
@@ -135,42 +160,53 @@ class ReportListTile extends StatelessWidget {
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: 20,
+            horizontal: 15,
             vertical: 20,
           ),
           child: Row(
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                spacing: 10,
-                children: [
-                  SvgPicture.asset(receiptIconSvg),
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        title,
+              Flexible(
+                child: Row(
+                  spacing: 10,
+                  children: [
+                    SvgPicture.asset(receiptIconSvg),
+                    Flexible(
+                      child: Column(
+                        spacing: 5,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            title,
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              color: Colors.grey,
+                              // fontWeight:
+                              //     FontWeight.bold,
+                            ),
+                            subText,
+                          ),
+                        ],
                       ),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          color: Colors.grey,
-                          // fontWeight:
-                          //     FontWeight.bold,
-                        ),
-                        subText,
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
               Icon(
                 color: Colors.grey.shade400,

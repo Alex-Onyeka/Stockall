@@ -90,27 +90,26 @@ class _DashboardMobileState extends State<DashboardMobile> {
   bool isLoading = false;
   bool showSuccess = false;
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   notificationsFuture = fetchNotifications();
-  //   mainReceiptFuture = getMainReceipts();
-  //   getProdutRecordsFuture = getProductSalesRecord();
-  //   expensesFuture = getExpenses();
-  //   // shopFuture = getShop();
-  //   shop =
-  //       returnShopProvider(
-  //         context,
-  //         listen: false,
-  //       ).userShop!;
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     clearDate();
-  //     returnExpensesProvider(
-  //       context,
-  //       listen: false,
-  //     ).clearExpenseDate();
-  //   });
-  // }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      clearDate();
+    });
+  }
+
+  void clearDate() {
+    // returnExpensesProvider(
+    //   context,
+    //   listen: false,
+    // ).clearExpenseDate();
+    returnReportProvider(
+      context,
+      listen: false,
+    ).clearDate(context);
+  }
+
   late Future<List<TempProductClass>> productsFuture;
   Future<List<TempProductClass>> getProducts() async {
     var tempP = await returnData(
@@ -748,9 +747,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             theme:
                                                                 theme,
                                                             icon:
-                                                                custBookIconSvg,
+                                                                reportIconSvg,
                                                             title:
-                                                                'Customers',
+                                                                'Report',
                                                             action: () {
                                                               Navigator.push(
                                                                 context,
@@ -758,9 +757,19 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return CustomerList();
+                                                                    return ReportPage();
                                                                   },
                                                                 ),
+                                                              ).then(
+                                                                (
+                                                                  context,
+                                                                ) {
+                                                                  setState(
+                                                                    () {
+                                                                      clearDate();
+                                                                    },
+                                                                  );
+                                                                },
                                                               );
                                                             },
                                                           ),
@@ -855,6 +864,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     () {
                                                                       expensesFuture =
                                                                           getExpenses();
+                                                                      clearDate();
                                                                     },
                                                                   );
                                                                 },
@@ -869,9 +879,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             theme:
                                                                 theme,
                                                             icon:
-                                                                reportIconSvg,
+                                                                custBookIconSvg,
                                                             title:
-                                                                'Report',
+                                                                'Customers',
                                                             action: () {
                                                               Navigator.push(
                                                                 context,
@@ -879,7 +889,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return ReportPage();
+                                                                    return CustomerList();
                                                                   },
                                                                 ),
                                                               );

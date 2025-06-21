@@ -137,7 +137,17 @@ class _SalesAndRevenueReportMobileState
                           isSummary = false;
                         });
                       },
-                      child: Text('View Total Sales'),
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              !isSummary
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'View Total Sales',
+                      ),
                     ),
                     PopupMenuItem(
                       onTap: () {
@@ -145,7 +155,17 @@ class _SalesAndRevenueReportMobileState
                           isSummary = true;
                         });
                       },
-                      child: Text('View Summary of Sales'),
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              isSummary
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'View Summary of Sales',
+                      ),
                     ),
                   ];
                 },
@@ -1104,7 +1124,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
   }
 }
 
-class TableRowRecordWidget extends StatelessWidget {
+class TableRowRecordWidget extends StatefulWidget {
   const TableRowRecordWidget({
     super.key,
     required this.theme,
@@ -1116,6 +1136,13 @@ class TableRowRecordWidget extends StatelessWidget {
   final int recordIndex;
   final TempProductSaleRecord record;
 
+  @override
+  State<TableRowRecordWidget> createState() =>
+      _TableRowRecordWidgetState();
+}
+
+class _TableRowRecordWidgetState
+    extends State<TableRowRecordWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1137,10 +1164,15 @@ class TableRowRecordWidget extends StatelessWidget {
               child: Center(
                 child: Text(
                   style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontSize:
+                        widget
+                            .theme
+                            .mobileTexts
+                            .b3
+                            .fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  recordIndex.toString(),
+                  widget.recordIndex.toString(),
                 ),
               ),
             ),
@@ -1164,10 +1196,14 @@ class TableRowRecordWidget extends StatelessWidget {
                       child: Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.b3.fontSize,
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        record.productName,
+                        widget.record.productName,
                       ),
                     ),
                   ],
@@ -1191,10 +1227,14 @@ class TableRowRecordWidget extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                            widget
+                                .theme
+                                .mobileTexts
+                                .b3
+                                .fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      record.quantity.toString(),
+                      widget.record.quantity.toString(),
                     ),
                   ],
                 ),
@@ -1211,10 +1251,14 @@ class TableRowRecordWidget extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                            widget
+                                .theme
+                                .mobileTexts
+                                .b3
+                                .fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      formatMoneyBig(record.revenue),
+                      formatMoneyBig(widget.record.revenue),
                     ),
                   ],
                 ),
@@ -1237,10 +1281,16 @@ class TableRowRecordWidget extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                            widget
+                                .theme
+                                .mobileTexts
+                                .b3
+                                .fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      formatMoneyBig(record.costPrice ?? 0),
+                      formatMoneyBig(
+                        widget.record.costPrice ?? 0,
+                      ),
                     ),
                   ],
                 ),
@@ -1257,11 +1307,17 @@ class TableRowRecordWidget extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                            widget
+                                .theme
+                                .mobileTexts
+                                .b3
+                                .fontSize,
                         fontWeight: FontWeight.bold,
                         color:
-                            (record.revenue -
-                                        (record.costPrice ??
+                            (widget.record.revenue -
+                                        (widget
+                                                .record
+                                                .costPrice ??
                                             0)) >=
                                     0
                                 ? null
@@ -1272,7 +1328,7 @@ class TableRowRecordWidget extends StatelessWidget {
                                   76,
                                 ),
                       ),
-                      "${(record.revenue - (record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(record.revenue - (record.costPrice ?? 0))}",
+                      "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0))}",
                     ),
                   ],
                 ),
