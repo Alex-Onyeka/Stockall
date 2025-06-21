@@ -121887,24 +121887,30 @@ $2(a,b){var s=this.a
 A.d(s,!1,t.YA).TU(s,a,b)},
 $S:31}
 A.a1Z.prototype={
-v(a){var s,r,q,p,o,n=this,m=null,l=A.ac(5),k=A.a([new A.cq(0,B.ai,B.q3,B.o,10)],t.V),j=n.c,i=j.b,h=i.r.a,g=A.i("Stock Summary",m,m,m,m,A.l(m,m,j.a.x,m,m,m,m,m,m,m,m,h,m,m,B.j,m,m,!0,m,m,m,m,m,m,m,m),m,m),f=A.eK(B.a9,10,m),e=A.i("Total Stock:",m,m,m,m,A.l(m,m,m,m,m,m,m,m,m,m,m,h,m,m,B.r,m,m,!0,m,m,m,m,m,m,m,m),m,m)
-i=i.e.a
-s=A.l(m,m,B.P,m,m,m,m,m,m,m,m,i,m,m,B.j,m,m,!0,m,m,m,m,m,m,m,m)
-r=n.f
+v(a){var s,r,q,p,o,n,m=this,l=null,k=A.ac(5),j=A.a([new A.cq(0,B.ai,B.q3,B.o,10)],t.V),i=m.c,h=i.b,g=h.r.a,f=A.i("Stock Summary",l,l,l,l,A.l(l,l,i.a.x,l,l,l,l,l,l,l,l,g,l,l,B.j,l,l,!0,l,l,l,l,l,l,l,l),l,l),e=A.eK(B.a9,10,l),d=A.i("Total Stock:",l,l,l,l,A.l(l,l,l,l,l,l,l,l,l,l,l,g,l,l,B.r,l,l,!0,l,l,l,l,l,l,l,l),l,l)
+h=h.e.a
+s=A.l(l,l,B.P,l,l,l,l,l,l,l,l,h,l,l,B.j,l,l,!0,l,l,l,l,l,l,l,l)
+r=m.f
 q=t.p
-s=A.ag(A.A(A.a([e,A.i("#"+(r!=null?B.k.j(r):"0"),m,m,m,m,s,m,m)],q),B.w,B.h,B.c,0),1)
-r=A.i("Total in Stock",m,m,m,m,A.l(m,m,m,m,m,m,m,m,m,m,m,h,m,m,B.r,m,m,!0,m,m,m,m,m,m,m,m),m,m)
-e=A.l(m,m,B.P,m,m,m,m,m,m,m,m,i,m,m,B.j,m,m,!0,m,m,m,m,m,m,m,m)
-p=n.d
-e=A.ag(A.A(A.a([A.A(A.a([r,A.i("#"+(p!=null?B.k.j(p):"0"),m,m,m,m,e,m,m)],q),B.w,B.h,B.c,0)],q),B.w,B.h,B.c,10),1)
-h=A.i("Out of Stock",m,m,m,m,A.l(m,m,m,m,m,m,m,m,m,m,m,h,m,m,B.r,m,m,!0,m,m,m,m,m,m,m,m),m,m)
-i=A.l(m,m,B.P,m,m,m,m,m,m,m,m,i,m,m,B.j,m,m,!0,m,m,m,m,m,m,m,m)
-r=n.e
+s=A.ag(A.A(A.a([d,A.i("#"+(r!=null?B.k.j(r):"0"),l,l,l,l,s,l,l)],q),B.w,B.h,B.c,0),1)
+r=A.i("Total in Stock",l,l,l,l,A.l(l,l,l,l,l,l,l,l,l,l,l,g,l,l,B.r,l,l,!0,l,l,l,l,l,l,l,l),l,l)
+d=A.l(l,l,B.P,l,l,l,l,l,l,l,l,h,l,l,B.j,l,l,!0,l,l,l,l,l,l,l,l)
+p=m.d
+d=A.ag(A.A(A.a([A.A(A.a([r,A.i("#"+(p!=null?B.k.j(p):"0"),l,l,l,l,d,l,l)],q),B.w,B.h,B.c,0)],q),B.w,B.h,B.c,10),1)
+g=A.i("Out of Stock",l,l,l,l,A.l(l,l,l,l,l,l,l,l,l,l,l,g,l,l,B.r,l,l,!0,l,l,l,l,l,l,l,l),l,l)
+h=A.l(l,l,B.P,l,l,l,l,l,l,l,l,h,l,l,B.j,l,l,!0,l,l,l,l,l,l,l,l)
+r=m.e
 if(r!=null)r=B.k.j(r)
 else r="0"
-p=n.w
-o=n.r
-return A.L(m,A.A(A.a([g,f,A.A(A.a([A.C(A.a([s,e,A.ag(A.A(A.a([A.A(A.a([h,A.i("#"+A.n(r),m,m,m,m,i,m,m)],q),B.w,B.h,B.c,0)],q),B.w,B.h,B.c,10),1)],q),B.w,B.z,B.c,10),A.eK(m,20,m),A.A(A.a([new A.zB(j,o,p,0,m),new A.zB(j,o,p,1,m),new A.zB(j,o,p,2,m)],q),B.d,B.h,B.c,10)],q),B.d,B.h,B.c,0)],q),B.w,B.h,B.c,0),B.i,m,m,new A.W(B.l,m,m,l,k,m,B.p),m,m,m,new A.D(10,20,10,20),m,m,m)}}
+h=A.C(A.a([s,d,A.ag(A.A(A.a([A.A(A.a([g,A.i("#"+A.n(r),l,l,l,l,h,l,l)],q),B.w,B.h,B.c,0)],q),B.w,B.h,B.c,10),1)],q),B.w,B.z,B.c,10)
+r=A.eK(l,20,l)
+g=m.w
+d=m.r
+s=g.length<2?A.a([],t.of):g
+p=d.length<2?A.a([],t.of):d
+o=g.length<3?A.a([],t.of):g
+n=d.length<3?A.a([],t.of):d
+return A.L(l,A.A(A.a([f,e,A.A(A.a([h,r,A.A(A.a([new A.zB(i,d,g,0,l),new A.zB(i,p,s,1,l),new A.zB(i,n,o,2,l)],q),B.d,B.h,B.c,10)],q),B.d,B.h,B.c,0)],q),B.w,B.h,B.c,0),B.i,l,l,new A.W(B.l,l,l,k,j,l,B.p),l,l,l,new A.D(10,20,10,20),l,l,l)}}
 A.zB.prototype={
 v(a){var s,r,q,p,o,n=this,m=null,l=n.c,k=l.b,j=k.r.a,i=t.p,h=A.ag(A.A(A.a([A.i("Top Three Selling Items:",m,m,m,m,A.l(m,m,m,m,m,m,m,m,m,m,m,j,m,m,B.r,m,m,!0,m,m,m,m,m,m,m,m),m,m),A.o(m,5,m),new A.c_(new A.aia(n),m)],i),B.w,B.h,B.c,0),1)
 j=A.i("Least Selling Items",m,m,m,m,A.l(m,m,m,m,m,m,m,m,m,m,m,j,m,m,B.r,m,m,!0,m,m,m,m,m,m,m,m),m,m)
