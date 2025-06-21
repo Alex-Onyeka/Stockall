@@ -185,65 +185,6 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<List<TempMainReceipt>> loadReceiptsByDayOrWeek({
-  //   required int shopId,
-  //   // DateTime? singleDay,
-  //   // DateTime? weekStartDate,
-  // }) async {
-  //   try {
-  //     final now = DateTime.now();
-  //     late final List data;
-
-  //     if (weekStartDate != null) {
-  //       final weekEndDate = weekStartDate!.add(
-  //         const Duration(days: 6),
-  //       );
-
-  //       data = await supabase
-  //           .from('receipts')
-  //           .select()
-  //           .eq('shop_id', shopId)
-  //           .gte(
-  //             'created_at',
-  //             weekStartDate!.toIso8601String(),
-  //           )
-  //           .lte(
-  //             'created_at',
-  //             weekEndDate.toIso8601String(),
-  //           )
-  //           .order('created_at', ascending: false);
-  //     } else {
-  //       final targetDate = singleDay ?? now;
-  //       final startOfDay = DateTime(
-  //         targetDate.year,
-  //         targetDate.month,
-  //         targetDate.day,
-  //       );
-  //       final endOfDay = startOfDay.add(
-  //         const Duration(days: 1),
-  //       );
-
-  //       data = await supabase
-  //           .from('receipts')
-  //           .select()
-  //           .eq('shop_id', shopId)
-  //           .gte('created_at', startOfDay.toIso8601String())
-  //           .lt('created_at', endOfDay.toIso8601String())
-  //           .order('created_at', ascending: false);
-  //     }
-
-  //     return data
-  //         .map((json) => TempMainReceipt.fromJson(json))
-  //         .toList();
-  //   } catch (e) {
-  //     return [];
-  //   }
-  // }
-
-  //
-  //
-  //
-
   // UPDATE a receipt
   Future<void> updateReceipt(
     TempMainReceipt updated,

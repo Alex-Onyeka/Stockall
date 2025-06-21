@@ -37,6 +37,8 @@ class _SalesAndRevenueReportMobileState
     return tempEx;
   }
 
+  int sortIndex = 1;
+
   late Future<List<TempProductClass>> productsFuture;
   Future<List<TempProductClass>> getProducts() async {
     var tempEx = await returnData(
@@ -110,13 +112,6 @@ class _SalesAndRevenueReportMobileState
       context,
       returnReceiptProvider(context).produtRecordSalesMain,
     );
-    // double getTotal() {
-    //   double tempTotal = 0;
-    //   for (var element in salesRecords) {
-    //     tempTotal += element.revenue;
-    //   }
-    //   return tempTotal;
-    // }
 
     return Stack(
       children: [
@@ -167,6 +162,98 @@ class _SalesAndRevenueReportMobileState
                         'View Summary of Sales',
                       ),
                     ),
+                    PopupMenuItem(
+                      onTap: () {
+                        setState(() {
+                          sortIndex = 1;
+                        });
+                      },
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              sortIndex == 1
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'Sort By Name',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      onTap: () {
+                        setState(() {
+                          sortIndex = 2;
+                        });
+                      },
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              sortIndex == 2
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'Sort By Quantity',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      onTap: () {
+                        setState(() {
+                          sortIndex = 3;
+                        });
+                      },
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              sortIndex == 3
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'Sort By Revenue',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      enabled: isSummary,
+                      onTap: () {
+                        setState(() {
+                          sortIndex = 4;
+                        });
+                      },
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              sortIndex == 4
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'Sort By Profit',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      enabled: !isSummary,
+                      onTap: () {
+                        setState(() {
+                          sortIndex = 5;
+                        });
+                      },
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b2.fontSize,
+                          fontWeight:
+                              sortIndex == 5
+                                  ? FontWeight.bold
+                                  : null,
+                        ),
+                        'Sort By Created Date',
+                      ),
+                    ),
                   ];
                 },
                 child: Row(
@@ -174,7 +261,44 @@ class _SalesAndRevenueReportMobileState
                       MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(isSummary ? 'Summary' : 'Total'),
+                    Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                          ),
+                          isSummary ? 'Summary' : 'Total',
+                        ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          "(${sortIndex == 1
+                              ? 'Name'
+                              : sortIndex == 2
+                              ? 'Quantity'
+                              : sortIndex == 3
+                              ? 'Revenue'
+                              : sortIndex == 4
+                              ? 'Profit'
+                              : sortIndex == 5
+                              ? 'Date/Time'
+                              : 'Name'})",
+                        ),
+                      ],
+                    ),
                     Icon(Icons.more_vert_rounded),
                   ],
                 ),
@@ -349,6 +473,37 @@ class _SalesAndRevenueReportMobileState
                                         generateProductReportSummary(
                                           salesRecords,
                                         );
+                                    summary.sort((a, b) {
+                                      switch (sortIndex) {
+                                        case 1:
+                                          return a
+                                              .productName
+                                              .compareTo(
+                                                b.productName,
+                                              );
+                                        case 2:
+                                          return b.quantity
+                                              .compareTo(
+                                                a.quantity,
+                                              );
+                                        case 3:
+                                          return b.total
+                                              .compareTo(
+                                                a.total,
+                                              );
+                                        case 4:
+                                          return b.profit
+                                              .compareTo(
+                                                a.profit,
+                                              );
+                                        default:
+                                          return a
+                                              .productName
+                                              .compareTo(
+                                                b.productName,
+                                              );
+                                      }
+                                    });
                                     return RefreshIndicator(
                                       onRefresh: () {
                                         return returnReceiptProvider(
@@ -461,6 +616,33 @@ class _SalesAndRevenueReportMobileState
                                                 context,
                                                 index,
                                               ) {
+                                                salesRecords.sort((
+                                                  a,
+                                                  b,
+                                                ) {
+                                                  switch (sortIndex) {
+                                                    case 1:
+                                                      return a.productName.compareTo(
+                                                        b.productName,
+                                                      );
+                                                    case 2:
+                                                      return b.quantity.compareTo(
+                                                        a.quantity,
+                                                      );
+                                                    case 3:
+                                                      return b.revenue.compareTo(
+                                                        a.revenue,
+                                                      );
+                                                    case 4:
+                                                      return a.productName.compareTo(
+                                                        b.productName,
+                                                      );
+                                                    default:
+                                                      return b.createdAt.compareTo(
+                                                        a.createdAt,
+                                                      );
+                                                  }
+                                                });
                                                 var record =
                                                     salesRecords[index];
                                                 var recordIndex =
