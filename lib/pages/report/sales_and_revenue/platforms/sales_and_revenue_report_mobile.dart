@@ -427,7 +427,7 @@ class _SalesAndRevenueReportMobileState
                               ? MediaQuery.of(
                                     context,
                                   ).size.width +
-                                  150
+                                  200
                               : MediaQuery.of(
                                         context,
                                       ).size.width >
@@ -439,7 +439,7 @@ class _SalesAndRevenueReportMobileState
                               ? MediaQuery.of(
                                     context,
                                   ).size.width +
-                                  100
+                                  130
                               : MediaQuery.of(
                                 context,
                               ).size.width,
@@ -1161,12 +1161,21 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
-                child: Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  recordIndex.toString(),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recordIndex.toString(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1186,13 +1195,15 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        record.productName,
                       ),
-                      record.productName,
                     ),
                   ],
                 ),
@@ -1212,13 +1223,15 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        record.quantity.toString(),
                       ),
-                      record.quantity.toString(),
                     ),
                   ],
                 ),
@@ -1232,13 +1245,15 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        formatMoneyBig(record.total),
                       ),
-                      formatMoneyBig(record.total),
                     ),
                   ],
                 ),
@@ -1258,13 +1273,15 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        formatMoneyBig(record.costTotal),
                       ),
-                      formatMoneyBig(record.costTotal),
                     ),
                   ],
                 ),
@@ -1274,26 +1291,29 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
           Expanded(
             flex: 5,
             child: Container(
+              // height: double.infinity,
               padding: EdgeInsets.all(5),
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            (record.profit) >= 0
-                                ? null
-                                : const Color.fromARGB(
-                                  255,
-                                  218,
-                                  86,
-                                  76,
-                                ),
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              (record.profit) >= 0
+                                  ? null
+                                  : const Color.fromARGB(
+                                    255,
+                                    218,
+                                    86,
+                                    76,
+                                  ),
+                        ),
+                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(record.profit)}",
                       ),
-                      "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(record.profit)}",
                     ),
                   ],
                 ),
@@ -1344,17 +1364,25 @@ class _TableRowRecordWidgetState
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
-                child: Text(
-                  style: TextStyle(
-                    fontSize:
-                        widget
-                            .theme
-                            .mobileTexts
-                            .b3
-                            .fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  widget.recordIndex.toString(),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.recordIndex.toString(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1406,17 +1434,19 @@ class _TableRowRecordWidgetState
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            widget
-                                .theme
-                                .mobileTexts
-                                .b3
-                                .fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.record.quantity.toString(),
                       ),
-                      widget.record.quantity.toString(),
                     ),
                   ],
                 ),
@@ -1430,17 +1460,21 @@ class _TableRowRecordWidgetState
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            widget
-                                .theme
-                                .mobileTexts
-                                .b3
-                                .fontSize,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        formatMoneyBig(
+                          widget.record.revenue,
+                        ),
                       ),
-                      formatMoneyBig(widget.record.revenue),
                     ),
                   ],
                 ),
@@ -1460,18 +1494,20 @@ class _TableRowRecordWidgetState
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            widget
-                                .theme
-                                .mobileTexts
-                                .b3
-                                .fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      formatMoneyBig(
-                        widget.record.costPrice ?? 0,
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        formatMoneyBig(
+                          widget.record.costPrice ?? 0,
+                        ),
                       ),
                     ),
                   ],
@@ -1486,31 +1522,33 @@ class _TableRowRecordWidgetState
               child: Center(
                 child: Row(
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            widget
-                                .theme
-                                .mobileTexts
-                                .b3
-                                .fontSize,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            (widget.record.revenue -
-                                        (widget
-                                                .record
-                                                .costPrice ??
-                                            0)) >=
-                                    0
-                                ? null
-                                : const Color.fromARGB(
-                                  255,
-                                  218,
-                                  86,
-                                  76,
-                                ),
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              (widget.record.revenue -
+                                          (widget
+                                                  .record
+                                                  .costPrice ??
+                                              0)) >=
+                                      0
+                                  ? null
+                                  : const Color.fromARGB(
+                                    255,
+                                    218,
+                                    86,
+                                    76,
+                                  ),
+                        ),
+                        "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0))}",
                       ),
-                      "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0))}",
                     ),
                   ],
                 ),

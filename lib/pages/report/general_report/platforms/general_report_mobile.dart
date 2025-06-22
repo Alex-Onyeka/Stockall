@@ -2265,7 +2265,10 @@ class StockSummaryContainer extends StatelessWidget {
                 children: [
                   BestAndLeastSellingRow(
                     index: 0,
-                    leastThree: leastThree,
+                    leastThree:
+                        leastThree.length < 4
+                            ? []
+                            : leastThree,
                     topThree: topThree,
                     theme: theme,
                   ),
