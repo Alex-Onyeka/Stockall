@@ -721,7 +721,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             nameC.text
                                                 .toLowerCase();
                                       });
-                                  if (index != -1) {
+                                  if (nameC.text.isEmpty) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'Item Name must be set before item can be added to cart.',
+                                          title:
+                                              'Item not set.',
+                                        );
+                                      },
+                                    );
+                                  } else if (index != -1) {
                                     showDialog(
                                       context: context,
                                       builder: (context) {

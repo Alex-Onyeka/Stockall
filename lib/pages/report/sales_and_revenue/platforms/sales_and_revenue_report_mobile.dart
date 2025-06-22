@@ -71,7 +71,10 @@ class _SalesAndRevenueReportMobileState
           costTotal:
               existing.costTotal + (record.costPrice ?? 0),
           profit:
-              (existing.total + record.revenue) -
+              (existing.total +
+                  (record.costPrice! == 0
+                      ? 0
+                      : record.revenue)) -
               (existing.costTotal +
                   (record.costPrice ?? 0)),
         );
@@ -82,7 +85,11 @@ class _SalesAndRevenueReportMobileState
           total: record.revenue,
           costTotal: record.costPrice ?? 0,
           profit:
-              (record.revenue) - (record.costPrice ?? 0),
+              (record.revenue) -
+              (record.costPrice == null ||
+                      record.costPrice == 0
+                  ? record.revenue
+                  : record.costPrice!),
         );
       }
     }
@@ -443,11 +450,6 @@ class _SalesAndRevenueReportMobileState
                               : MediaQuery.of(
                                 context,
                               ).size.width,
-                      // height:
-                      //     MediaQuery.of(
-                      //       context,
-                      //     ).size.height -
-                      //     200,
                       child: Column(
                         children: [
                           SummaryTableHeadingBar(
@@ -881,7 +883,11 @@ class _SummaryTableHeadingBarState
   double getTotalProfit() {
     double tempTotal = 0;
     for (var item in widget.salesRecords) {
-      tempTotal += item.revenue - (item.costPrice ?? 0);
+      tempTotal +=
+          item.revenue -
+          (item.costPrice == null || item.costPrice == 0
+              ? item.revenue
+              : item.costPrice!);
     }
     return tempTotal;
   }
@@ -1113,6 +1119,8 @@ class _SummaryTableHeadingBarState
                           ),
                           widget.isHeading
                               ? 'Profit/Loss'
+                              : getTotalProfit() == 0
+                              ? "Nill"
                               : formatMoneyBig(
                                 getTotalProfit(),
                               ),
@@ -1345,6 +1353,15 @@ class TableRowRecordWidget extends StatefulWidget {
 
 class _TableRowRecordWidgetState
     extends State<TableRowRecordWidget> {
+  String returnProfit() {
+    if (widget.record.costPrice == null ||
+        widget.record.costPrice == 0) {
+      return "Nill";
+    } else {
+      return "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0))}";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1547,7 +1564,7 @@ class _TableRowRecordWidgetState
                                     76,
                                   ),
                         ),
-                        "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0))}",
+                        returnProfit(),
                       ),
                     ),
                   ],

@@ -1,9 +1,9 @@
 import 'package:url_launcher/url_launcher.dart';
 
 void openWhatsApp() async {
-  final phone = '2347036301628'; // your number
+  final phone = '2347048507587'; // your number
   final message = Uri.encodeComponent(
-    "Hello, Please I want to enquire about: ",
+    "Hello, Stockall Solutions; ",
   );
   final url = 'https://wa.me/$phone?text=$message';
 
@@ -20,12 +20,12 @@ void openWhatsApp() async {
 void phoneCall() async {
   final Uri uri = Uri(
     scheme: 'tel',
-    path: '+2347036301628',
+    path: '+2347048507587',
   );
   if (await canLaunchUrl(uri)) {
     await launchUrl(uri);
   } else {
-    throw 'Could not launch +2347036301628';
+    throw 'Could not launch +2347048507587';
   }
 }
 
