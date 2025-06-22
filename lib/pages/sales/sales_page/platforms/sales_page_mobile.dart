@@ -69,32 +69,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
     return tempGet;
   }
 
-  // late Future<List<TempProductSaleRecord>>
-  // getProdutRecordsFuture;
-  // Future<List<TempProductSaleRecord>>
-  // getProductSalesRecord() async {
-  //   var tempRecords = await returnReceiptProvider(
-  //     context,
-  //     listen: false,
-  //   ).loadProductSalesRecord(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ).userShop!.shopId!,
-  //   );
-
-  //   return tempRecords
-  //       .where(
-  //         (beans) =>
-  //             beans.shopId ==
-  //             returnShopProvider(
-  //               context,
-  //               listen: false,
-  //             ).userShop!.shopId!,
-  //       )
-  //       .toList();
-  // }
-
   List<TempProductSaleRecord> getProductSalesRecord() {
     var tempRecords =
         returnReceiptProvider(
@@ -128,10 +102,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
 
-    // List<TempProductSaleRecord> records =
-    //     getProductSalesRecord();
-    // var mainReceipts =
-    //     returnReceiptProvider(context).receipts;
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: MainBottomNav(
@@ -204,36 +174,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           }
         },
       ),
-      body:
-      // FutureBuilder(
-      //   future: mainReceiptFuture,
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState ==
-      //         ConnectionState.waiting) {
-      //       return returnCompProvider(
-      //         context,
-      //         listen: false,
-      //       ).showLoader('Loading');
-      //     } else if (snapshot.hasError) {
-      //       return EmptyWidgetDisplayOnly(
-      //         title: 'An Error Occured',
-      //         subText:
-      //             'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
-      //         theme: theme,
-      //         height: 35,
-      //       );
-      //     } else {
-      //       var mainReceipts = returnReceiptProvider(
-      //         context,
-      //         listen: false,
-      //       ).returnOwnReceiptsByDayOrWeek(
-      //         context,
-      //         snapshot.data!,
-      //       );
-      //     }
-      //   },
-      // ),
-      SizedBox(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Stack(
@@ -264,83 +205,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                 listen: false,
                               ).clearReceiptDate();
                             },
-                            child:
-                            // FutureBuilder<
-                            //   List<
-                            //     TempProductSaleRecord
-                            //   >
-                            // >(
-                            //   future:
-                            //       getProdutRecordsFuture,
-                            //   builder: (
-                            //     context,
-                            //     snapshot,
-                            //   ) {
-                            //     if (snapshot
-                            //             .connectionState ==
-                            //         ConnectionState
-                            //             .waiting) {
-                            //       return ItemsSummary(
-                            //         isMoney1: true,
-                            //         mainTitle:
-                            //             'Sales Summary',
-                            //         subTitle:
-                            //             returnReceiptProvider(
-                            //               context,
-                            //             ).dateSet ??
-                            //             'For Today',
-                            //         firsRow: true,
-                            //         color1:
-                            //             Colors.green,
-                            //         title1:
-                            //             'Sales Revenue',
-                            //         value1: 0,
-                            //         color2:
-                            //             Colors.amber,
-                            //         title2:
-                            //             'Sales Number',
-                            //         value2:
-                            //             mainReceipts
-                            //                 .length
-                            //                 .toDouble(),
-                            //         secondRow: false,
-                            //         onSearch: false,
-                            //       );
-                            //     } else if (snapshot
-                            //         .hasError) {
-                            //       return ItemsSummary(
-                            //         isMoney1: true,
-                            //         mainTitle:
-                            //             'Sales Summary',
-                            //         subTitle:
-                            //             returnReceiptProvider(
-                            //               context,
-                            //             ).dateSet ??
-                            //             'For Today',
-                            //         firsRow: true,
-                            //         color1:
-                            //             Colors.green,
-                            //         title1:
-                            //             'Sales Revenue',
-                            //         value1: 0,
-                            //         color2:
-                            //             Colors.amber,
-                            //         title2:
-                            //             'Sales Number',
-                            //         value2: 0,
-                            //         secondRow: false,
-                            //         onSearch: false,
-                            //       );
-                            //     } else {
-                            //     }
-                            //   },
-                            // ),
-                            // List<
-                            //         TempProductSaleRecord
-                            //       >
-                            //       records =
-                            //           snapshot.data!;
-                            ItemsSummary(
+                            child: ItemsSummary(
                               isFilter:
                                   userGeneral(
                                     context,

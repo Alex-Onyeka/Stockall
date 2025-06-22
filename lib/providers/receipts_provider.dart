@@ -15,6 +15,12 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempMainReceipt> _receipts = [];
   List<TempMainReceipt> get receipts => _receipts;
 
+  bool isLoaded = false;
+  void load() {
+    isLoaded = true;
+    notifyListeners();
+  }
+
   // CREATE a new receipt
   Future<int> createReceipt(
     TempMainReceipt receipt,
