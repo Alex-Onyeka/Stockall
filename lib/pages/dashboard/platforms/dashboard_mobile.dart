@@ -1693,7 +1693,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                               ) {
                                                                 setState(
                                                                   () {
-                                                                    // clearDate();
+                                                                    clearDate();
                                                                   },
                                                                 );
                                                               },
@@ -1714,12 +1714,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 context,
                                                               ).role ==
                                                               'Owner',
-                                                          // returnLocalDatabase(
-                                                          //   context,
-                                                          //   listen:
-                                                          //       false,
-                                                          // ).currentEmployee?.role ==
-                                                          // 'Owner',
                                                           child: ButtonTab(
                                                             theme:
                                                                 theme,
@@ -1752,12 +1746,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 context,
                                                               ).role ==
                                                               'Owner',
-                                                          // returnLocalDatabase(
-                                                          //   context,
-                                                          //   listen:
-                                                          //       false,
-                                                          // ).currentEmployee?.role ==
-                                                          // 'Owner',
                                                           child: SizedBox(
                                                             width:
                                                                 15,
@@ -1789,9 +1777,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                               ) {
                                                                 setState(
                                                                   () {
-                                                                    // expensesFuture =
-                                                                    //     getExpenses();
-                                                                    // clearDate();
+                                                                    clearDate();
                                                                   },
                                                                 );
                                                               },
@@ -1921,12 +1907,11 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                               ),
                                                             ).then(
                                                               (
-                                                                _,
+                                                                context,
                                                               ) {
                                                                 setState(
                                                                   () {
-                                                                    // mainReceiptFuture =
-                                                                    //     getMainReceipts();
+                                                                    clearDate();
                                                                   },
                                                                 );
                                                               },
@@ -1943,12 +1928,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 context,
                                                               ).role ==
                                                               'Owner',
-                                                          // returnLocalDatabase(
-                                                          //   context,
-                                                          //   listen:
-                                                          //       false,
-                                                          // ).currentEmployee!.role ==
-                                                          // 'Owner',
                                                           child: ButtonTab(
                                                             theme:
                                                                 theme,
@@ -1981,12 +1960,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 context,
                                                               ).role ==
                                                               'Owner',
-                                                          // returnLocalDatabase(
-                                                          //   context,
-                                                          //   listen:
-                                                          //       false,
-                                                          // ).currentEmployee!.role ==
-                                                          // 'Owner',
                                                           child: SizedBox(
                                                             width:
                                                                 15,
@@ -2009,6 +1982,16 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   return ReportPage();
                                                                 },
                                                               ),
+                                                            ).then(
+                                                              (
+                                                                context,
+                                                              ) {
+                                                                setState(
+                                                                  () {
+                                                                    clearDate();
+                                                                  },
+                                                                );
+                                                              },
                                                             );
                                                           },
                                                         ),
@@ -2034,17 +2017,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                   ),
                   Visibility(
                     visible:
-                        // returnLocalDatabase(
-                        //           context,
-                        //         ).currentEmployee !=
-                        //         null
-                        //     ? returnLocalDatabase(
-                        //               context,
-                        //             )
-                        //             .currentEmployee!
-                        //             .role ==
-                        //         'Owner'
-                        //     :
                         userGeneral(context).role ==
                         'Owner',
                     child: Align(

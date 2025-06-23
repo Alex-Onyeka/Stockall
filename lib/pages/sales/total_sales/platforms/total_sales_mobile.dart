@@ -52,37 +52,9 @@ class _TotalSalesMobileState
     ).clearReceiptDate();
   }
 
-  // late Future<List<TempProductSaleRecord>>
-  // getProdutRecordsFuture;
-  // List<TempProductSaleRecord> getProductSalesRecord() {
-  //   var tempRecords =
-  //       returnReceiptProvider(
-  //         context,
-  //         listen: false,
-  //       ).produtRecordSalesMain;
-
-  //   return tempRecords
-  //       .where(
-  //         (beans) =>
-  //             beans.shopId ==
-  //             returnShopProvider(
-  //               context,
-  //               listen: false,
-  //             ).userShop!.shopId!,
-  //       )
-  //       .toList();
-  // }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    // List<TempProductSaleRecord> records =
-    //     getProductSalesRecord();
-    // var mainReceipts =
-    //     returnReceiptProvider(
-    //       context,
-    //       listen: false,
-    //     ).receipts;
     return GestureDetector(
       onTap: () {
         returnReceiptProvider(
@@ -95,37 +67,7 @@ class _TotalSalesMobileState
           context: context,
           title: 'All Sales',
         ),
-        body:
-        // FutureBuilder(
-        //   future: mainReceiptFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState ==
-        //         ConnectionState.waiting) {
-        //       return returnCompProvider(
-        //         context,
-        //         listen: false,
-        //       ).showLoader('Loading');
-        //     } else if (snapshot.hasError) {
-        //       return EmptyWidgetDisplayOnly(
-        //         title: 'An Error Occured',
-        //         subText:
-        //             'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
-        //         theme: theme,
-        //         height: 30,
-        //       );
-        //     } else {
-        //       var mainReceipts = returnReceiptProvider(
-        //         context,
-        //         listen: false,
-        //       ).returnOwnReceiptsByDayOrWeek(
-        //         context,
-        //         snapshot.data!,
-        //       );
-        //       return
-        //     }
-        //   },
-        // ),
-        Stack(
+        body: Stack(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -135,70 +77,7 @@ class _TotalSalesMobileState
                 children: [
                   Material(
                     color: Colors.white,
-                    child:
-                    // FutureBuilder<
-                    //   List<TempProductSaleRecord>
-                    // >(
-                    //   future: getProdutRecordsFuture,
-                    //   builder: (context, snapshot) {
-                    //     return Column(
-                    //       children: [
-                    //         snapshot.connectionState ==
-                    //                 ConnectionState
-                    //                     .waiting
-                    //             ? Row(
-                    //               spacing: 10,
-                    //               children: [
-                    //                 ValueSummaryTabSmall(
-                    //                   color:
-                    //                       Colors
-                    //                           .amber,
-                    //                   isMoney: true,
-                    //                   title:
-                    //                       'Total Revenue',
-                    //                   value: 2000,
-                    //                 ),
-                    //                 ValueSummaryTabSmall(
-                    //                   value: 2000,
-                    //                   title:
-                    //                       'Sales Number',
-                    //                   color:
-                    //                       Colors
-                    //                           .green,
-                    //                   isMoney: false,
-                    //                 ),
-                    //               ],
-                    //             )
-                    //             : snapshot.hasError
-                    //             ? Row(
-                    //               spacing: 10,
-                    //               children: [
-                    //                 ValueSummaryTabSmall(
-                    //                   color:
-                    //                       Colors
-                    //                           .amber,
-                    //                   isMoney: true,
-                    //                   title:
-                    //                       'Total Revenue',
-                    //                   value: 2000,
-                    //                 ),
-                    //                 ValueSummaryTabSmall(
-                    //                   value: 2000,
-                    //                   title:
-                    //                       'Sales Number',
-                    //                   color:
-                    //                       Colors
-                    //                           .green,
-                    //                   isMoney: false,
-                    //                 ),
-                    //               ],
-                    //             )
-                    //             :
-                    //       ],
-                    //     );
-                    //   },
-                    // ),
-                    Column(
+                    child: Column(
                       children: [
                         Row(
                           spacing: 10,

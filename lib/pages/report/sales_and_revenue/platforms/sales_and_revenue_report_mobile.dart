@@ -731,7 +731,7 @@ class _SalesAndRevenueReportMobileState
                             MediaQuery.of(
                               context,
                             ).size.height *
-                            0.2,
+                            0.15,
                       ),
                       Ink(
                         color: Colors.white,
@@ -780,11 +780,6 @@ class _SalesAndRevenueReportMobileState
                                             10,
                                           ),
                                       color: Colors.white,
-                                      // border: Border.all(
-                                      //   color:
-                                      //       Colors
-                                      //           .grey,
-                                      // ),
                                     ),
                                     child: CalendarWidget(
                                       onDaySelected: (

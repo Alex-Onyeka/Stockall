@@ -512,7 +512,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                 MediaQuery.of(
                                   context,
                                 ).size.height *
-                                0.15,
+                                0.12,
                           ),
                           Center(
                             child: Padding(
