@@ -98,6 +98,7 @@ class ExpensesProvider extends ChangeNotifier {
 
   void openExpenseDatePicker() {
     setDate = true;
+    print('Opened Date Picker');
     notifyListeners();
   }
 
@@ -107,6 +108,7 @@ class ExpensesProvider extends ChangeNotifier {
     isDateSet = true;
     setDate = false;
     dateSet = 'For ${formatDateTime(day)}';
+    print('Date Set');
     notifyListeners();
   }
 
@@ -120,6 +122,7 @@ class ExpensesProvider extends ChangeNotifier {
     setDate = false;
     dateSet =
         '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
+    print('Week Set');
     notifyListeners();
   }
 
@@ -129,6 +132,7 @@ class ExpensesProvider extends ChangeNotifier {
     setDate = false;
     isDateSet = false;
     dateSet = null;
+    print('Date Closed');
     notifyListeners();
   }
 
@@ -221,7 +225,6 @@ class ExpensesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //
   //
   //
   //

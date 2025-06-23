@@ -91,16 +91,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      clearDate();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   // clearDate();
+    // });
   }
 
   void clearDate() {
-    // returnExpensesProvider(
-    //   context,
-    //   listen: false,
-    // ).clearExpenseDate();
     returnReportProvider(
       context,
       listen: false,
@@ -195,6 +191,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProductSalesRecord();
     getExpenses();
     getProducts();
+    clearDate();
   }
 
   @override
