@@ -92,13 +92,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
       GlobalKey<ScaffoldState>();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // mainReceiptFuture = getMainReceipts();
-    // getProdutRecordsFuture = getProductSalesRecord();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
 
@@ -134,11 +127,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
           } else {
             List<TempNotification> notifications =
                 snapshot.data!;
-            // var localUser = userGeneral(context);
-            // // returnLocalDatabase(
-            // //   context,
-            // //   listen: false,
-            // // ).currentEmployee;
 
             return MyDrawerWidget(
               action: () {
@@ -332,10 +320,10 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                       ),
                                     ).then((_) {
                                       setState(() {
-                                        // mainReceiptFuture =
-                                        //     getMainReceipts();
-                                        // getProdutRecordsFuture =
-                                        //     getProductSalesRecord();
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).clearReceiptDate();
                                       });
                                     });
                                   },

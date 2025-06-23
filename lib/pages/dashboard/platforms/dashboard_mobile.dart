@@ -789,7 +789,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     ) {
                                                                       setState(
                                                                         () {
-                                                                          clearDate();
+                                                                          // clearDate();
                                                                         },
                                                                       );
                                                                     },
@@ -887,7 +887,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                         () {
                                                                           expensesFuture =
                                                                               getExpenses();
-                                                                          clearDate();
+                                                                          // clearDate();
                                                                         },
                                                                       );
                                                                     },
@@ -1693,7 +1693,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                               ) {
                                                                 setState(
                                                                   () {
-                                                                    clearDate();
+                                                                    // clearDate();
                                                                   },
                                                                 );
                                                               },
@@ -1791,7 +1791,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   () {
                                                                     // expensesFuture =
                                                                     //     getExpenses();
-                                                                    clearDate();
+                                                                    // clearDate();
                                                                   },
                                                                 );
                                                               },
