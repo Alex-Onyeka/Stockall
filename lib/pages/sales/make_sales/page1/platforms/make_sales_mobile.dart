@@ -1305,7 +1305,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
         ),
         body: Builder(
           builder: (context) {
-            if (products.isEmpty) {
+            if (products.isEmpty &&
+                returnSalesProvider(
+                  context,
+                ).cartItems.isEmpty) {
               if (userGeneral(context).role == 'Cashier') {
                 return EmptyWidgetDisplayOnly(
                   title: 'No Products',
