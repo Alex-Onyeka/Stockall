@@ -23,6 +23,7 @@ class SalesProvider extends ChangeNotifier {
     required double cashAlt,
     required double bank,
     int? customerId,
+    String? customerName,
   }) async {
     final createdAt = DateTime.now().toUtc(); // ✅ FIXED
 
@@ -35,6 +36,7 @@ class SalesProvider extends ChangeNotifier {
       'customer_id': customerId,
       'payment_method': paymentMethod,
       'cash_alt': cashAlt,
+      'customer_name': customerName,
       'bank': bank,
     };
 
@@ -61,6 +63,7 @@ class SalesProvider extends ChangeNotifier {
             shopId: product.shopId,
             staffId: staffId,
             customerId: customerId,
+            customerName: customerName,
             staffName: staffName,
             recepitId: receiptId,
             quantity: cartItem.quantity,

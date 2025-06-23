@@ -760,6 +760,12 @@ class _MakeSalesMobileTwoState
                                                     false,
                                               ).selectedCustomerId,
                                             ),
+                                            customerName:
+                                                returnCustomers(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).selectedCustomerName,
                                           );
 
                                           await suggP

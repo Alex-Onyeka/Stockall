@@ -75,7 +75,7 @@ class _CustomerReportMobileState
                 context,
               ).produtRecordSalesMain,
             )
-            .where((record) => record.customerName != null)
+            .where((record) => record.customerId != null)
             .toList();
 
     return Stack(

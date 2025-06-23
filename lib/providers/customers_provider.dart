@@ -223,14 +223,17 @@ class CustomersProvider extends ChangeNotifier {
   }
 
   String selectedCustomerId = '';
+  String? selectedCustomerName;
 
   void clearSelectedCustomer() {
     selectedCustomerId = '';
+    selectedCustomerName = null;
     notifyListeners();
   }
 
-  void selectCustomer(int id) {
+  void selectCustomer(int id, String name) {
     selectedCustomerId = id.toString();
+    selectedCustomerName = name;
     notifyListeners();
   }
 

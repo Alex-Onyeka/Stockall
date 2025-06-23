@@ -294,6 +294,8 @@ class _CustomerListMobileState
                                                   ).selectCustomer(
                                                     customer
                                                         .id!,
+                                                    customer
+                                                        .name,
                                                   );
                                                   Navigator.of(
                                                     context,
@@ -371,6 +373,7 @@ class _CustomerListMobileState
                                               listen: false,
                                             ).selectCustomer(
                                               customer.id!,
+                                              customer.name,
                                             );
                                             Navigator.of(
                                               context,

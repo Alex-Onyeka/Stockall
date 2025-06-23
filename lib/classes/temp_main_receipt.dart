@@ -6,6 +6,7 @@ class TempMainReceipt {
   final String staffId;
   final String staffName;
   final int? customerId;
+  final String? customerName;
   final String paymentMethod;
   final double cashAlt;
   final double bank;
@@ -20,6 +21,7 @@ class TempMainReceipt {
     required this.staffId,
     required this.staffName,
     this.customerId,
+    this.customerName,
     required this.paymentMethod,
     required this.bank,
     required this.cashAlt,
@@ -39,6 +41,7 @@ class TempMainReceipt {
       staffId: json['staff_id'],
       staffName: json['staff_name'],
       customerId: json['customer_id'],
+      customerName: json['customer_name'] as String?,
       paymentMethod: json['payment_method'],
       cashAlt: (json['cash_alt'] as num).toDouble(),
       bank: (json['bank'] as num).toDouble(),
@@ -55,6 +58,7 @@ class TempMainReceipt {
       'staff_id': staffId,
       'staff_name': staffName,
       'customer_id': customerId,
+      'customer_name': customerName,
       'payment_method': paymentMethod,
       'cash_alt': cashAlt,
       'bank': bank,
