@@ -3,7 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
+import 'package:stockall/pages/report/product_report/product_report_page.dart';
 import 'package:stockall/pages/report/sales_and_revenue/sales_and_revenue_report.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -74,13 +76,38 @@ class ReportMobile extends StatelessWidget {
                           title: 'Sales and Revenue',
                         ),
                         ReportListTile(
-                          isActive: false,
+                          isActive: true,
                           theme: theme,
-                          action: () {},
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ProductReportPage();
+                                },
+                              ),
+                            );
+                          },
                           subText:
                               'Veiw A Summary of your Stock and Inventory',
-                          title:
-                              'Product Report (Coming Soon)',
+                          title: 'Product Report',
+                        ),
+                        ReportListTile(
+                          isActive: true,
+                          theme: theme,
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return CustomerReportPage();
+                                },
+                              ),
+                            );
+                          },
+                          subText:
+                              'View a detailed your customers.',
+                          title: 'Customer Report',
                         ),
                         ReportListTile(
                           isActive: false,
@@ -99,15 +126,6 @@ class ReportMobile extends StatelessWidget {
                               'View a detailed breakdown of your expenses.',
                           title:
                               'Expenses Report (Coming Soon)',
-                        ),
-                        ReportListTile(
-                          isActive: false,
-                          theme: theme,
-                          action: () {},
-                          subText:
-                              'View a detailed your customers.',
-                          title:
-                              'Customer Report (Coming Soon)',
                         ),
                         SizedBox(height: 30),
                       ],

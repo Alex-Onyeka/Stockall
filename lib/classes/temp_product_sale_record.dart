@@ -6,6 +6,7 @@ class TempProductSaleRecord {
   final int shopId;
   final String staffId;
   final int? customerId;
+  final String? customerName;
   final String staffName;
   final int recepitId;
   final double? discount;
@@ -26,6 +27,7 @@ class TempProductSaleRecord {
     required this.shopId,
     required this.staffId,
     this.customerId,
+    this.customerName,
     required this.staffName,
     required this.recepitId,
     required this.quantity,
@@ -52,6 +54,7 @@ class TempProductSaleRecord {
       shopId: json['shop_id'] as int,
       staffId: json['staff_id'] as String,
       customerId: json['customer_id'] as int?,
+      customerName: json['customer_name'] as String?,
       staffName: json['staff_name'] as String,
       recepitId: json['recepit_id'] as int,
       discount: (json['discount'] as num?)?.toDouble(),
@@ -76,6 +79,7 @@ class TempProductSaleRecord {
       'shop_id': shopId,
       'staff_id': staffId,
       'customer_id': customerId,
+      'customer_name': customerName,
       'staff_name': staffName,
       'recepit_id': recepitId,
       'discount': discount,
