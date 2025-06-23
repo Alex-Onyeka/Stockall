@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -49,6 +50,7 @@ class _AddProductMobileState
   bool isLoading = false;
   bool showSuccess = false;
   bool expand = false;
+  bool isExp = false;
 
   String? barcode;
   //
@@ -58,6 +60,9 @@ class _AddProductMobileState
 
   bool isOpenUnit = false;
   bool isSizedTypeOpen = false;
+
+  TextEditingController expiryDateC =
+      TextEditingController();
   //
   //
   //
@@ -188,6 +193,7 @@ class _AddProductMobileState
                           : (dataProvider.startDate ??
                               DateTime.now()),
                   endDate: dataProvider.endDate,
+                  expiryDate: dataProvider.expiryDate,
                   category: dataProvider.selectedCategory,
                 ),
                 context,
@@ -288,6 +294,7 @@ class _AddProductMobileState
                   ),
                 ),
                 endDate: provider.endDate,
+                expiryDate: provider.expiryDate,
                 lowQtty:
                     widget.lowQttyController.text.isEmpty
                         ? 10
@@ -394,8 +401,9 @@ class _AddProductMobileState
           ).selectCategory(widget.product!.category!)
           : null;
       returnData(context, listen: false).setBothDates(
-        widget.product!.startDate,
-        widget.product!.endDate,
+        start: widget.product!.startDate,
+        end: widget.product!.endDate,
+        expDate: widget.product!.expiryDate,
       );
       setState(() {
         costDiscount =
@@ -446,6 +454,12 @@ class _AddProductMobileState
       costDiscount = discountedPrice;
       sellingDiscount = discountedSellingPrice;
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    expiryDateC.dispose();
   }
 
   //
@@ -771,6 +785,132 @@ class _AddProductMobileState
                                               .lowQttyController,
                                     ),
                                     SizedBox(height: 10),
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          isExp = true;
+                                          setDate = true;
+                                        });
+                                      },
+                                      child: Column(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .start,
+                                        spacing: 5,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                textAlign:
+                                                    TextAlign
+                                                        .start,
+                                                style:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .textStyleBold,
+                                                'Expiry Date (Optional)',
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                                  vertical:
+                                                      0,
+                                                  horizontal:
+                                                      10,
+                                                ),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color:
+                                                    returnData(context).expiryDate !=
+                                                            null
+                                                        ? theme.lightModeColor.prColor300
+                                                        : Colors.grey,
+                                                width:
+                                                    returnData(context).expiryDate !=
+                                                            null
+                                                        ? 1.5
+                                                        : 1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    5,
+                                                  ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width:
+                                                          10,
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            returnData(
+                                                                      context,
+                                                                    ).expiryDate !=
+                                                                    null
+                                                                ? theme.mobileTexts.b1.fontSize
+                                                                : theme.mobileTexts.b1.fontSize,
+                                                        fontWeight:
+                                                            returnData(
+                                                                      context,
+                                                                    ).expiryDate !=
+                                                                    null
+                                                                ? FontWeight.bold
+                                                                : null,
+                                                        color:
+                                                            returnData(
+                                                                      context,
+                                                                    ).expiryDate !=
+                                                                    null
+                                                                ? null
+                                                                : Colors.grey.shade500,
+                                                      ),
+                                                      returnData(
+                                                                context,
+                                                              ).expiryDate ==
+                                                              null
+                                                          ? 'Set Expiry Date'
+                                                          : formatDateWithDay(
+                                                            returnData(
+                                                                  context,
+                                                                ).expiryDate ??
+                                                                DateTime.now(),
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    returnData(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).clearExpDate();
+                                                  },
+                                                  icon: Icon(
+                                                    Icons
+                                                        .clear,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
                                     MainDropdown(
                                       valueSet:
                                           returnData(
@@ -1009,6 +1149,8 @@ class _AddProductMobileState
                                           InkWell(
                                             onTap: () {
                                               setState(() {
+                                                isExp =
+                                                    false;
                                                 setDate =
                                                     true;
                                               });
@@ -1068,6 +1210,8 @@ class _AddProductMobileState
                                           InkWell(
                                             onTap: () {
                                               setState(() {
+                                                isExp =
+                                                    false;
                                                 setDate =
                                                     true;
                                               });
@@ -1301,10 +1445,34 @@ class _AddProductMobileState
                                   selectedDay,
                                   focusedDay,
                                 ) {
-                                  returnData(
-                                    context,
-                                    listen: false,
-                                  ).setDate(selectedDay);
+                                  if (isExp) {
+                                    returnData(
+                                      context,
+                                      listen: false,
+                                    ).setExpDate(
+                                      selectedDay,
+                                    );
+                                    returnData(
+                                              context,
+                                              listen: false,
+                                            ).expiryDate !=
+                                            null
+                                        ? expiryDateC
+                                            .text = formatDateWithDay(
+                                          returnData(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).expiryDate ??
+                                              DateTime.now(),
+                                        )
+                                        : '';
+                                  } else {
+                                    returnData(
+                                      context,
+                                      listen: false,
+                                    ).setDate(selectedDay);
+                                  }
                                   setState(() {
                                     setDate = false;
                                   });

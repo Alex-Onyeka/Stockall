@@ -1168,6 +1168,23 @@ class _ProductDetailsMobileState
                         child: Column(
                           spacing: 10,
                           children: [
+                            Visibility(
+                              visible:
+                                  product.expiryDate !=
+                                  null,
+                              child: BottomInfoSection(
+                                theme: widget.theme,
+                                mainText:
+                                    product.expiryDate !=
+                                            null
+                                        ? formatDateWithDay(
+                                          product
+                                              .expiryDate!,
+                                        )
+                                        : 'Not Set',
+                                text: 'Expiry Date',
+                              ),
+                            ),
                             BottomInfoSection(
                               theme: widget.theme,
                               mainText:
@@ -1205,6 +1222,7 @@ class _ProductDetailsMobileState
                                 text: 'Discount End',
                               ),
                             ),
+
                             BottomInfoSection(
                               theme: widget.theme,
                               mainText:

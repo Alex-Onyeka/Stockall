@@ -33,6 +33,17 @@ class DataProvider extends ChangeNotifier {
     clearFields();
   }
 
+  DateTime? expiryDate;
+  void setExpDate(DateTime date) {
+    expiryDate = date;
+    notifyListeners();
+  }
+
+  void clearExpDate() {
+    expiryDate = null;
+    notifyListeners();
+  }
+
   bool isStartDate = true;
 
   DateTime? startDate;
@@ -58,9 +69,14 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setBothDates(DateTime? start, DateTime? end) {
+  void setBothDates({
+    DateTime? start,
+    DateTime? end,
+    DateTime? expDate,
+  }) {
     startDate = start;
     endDate = end;
+    expiryDate = expDate;
     notifyListeners();
   }
 

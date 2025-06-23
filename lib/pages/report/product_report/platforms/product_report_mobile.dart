@@ -56,7 +56,7 @@ class _ProductReportMobileState
         Scaffold(
           appBar: appBar(
             context: context,
-            title: 'Sales',
+            title: 'Products',
             widget: Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: PopupMenuButton(
@@ -312,7 +312,7 @@ class _ProductReportMobileState
                               ? MediaQuery.of(
                                     context,
                                   ).size.width +
-                                  800
+                                  850
                               : MediaQuery.of(
                                         context,
                                       ).size.width >
@@ -324,7 +324,7 @@ class _ProductReportMobileState
                               ? MediaQuery.of(
                                     context,
                                   ).size.width +
-                                  600
+                                  650
                               : MediaQuery.of(
                                 context,
                               ).size.width,
@@ -830,12 +830,6 @@ class _SummaryTableHeadingBarState
             child: Expanded(
               flex: 3,
               child: Container(
-                // decoration: BoxDecoration(
-                //   border: Border(
-                //     right: BorderSide(color: Colors.grey),
-                //     left: BorderSide(color: Colors.grey),
-                //   ),
-                // ),
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 10,
@@ -908,12 +902,6 @@ class _SummaryTableHeadingBarState
             child: Expanded(
               flex: 3,
               child: Container(
-                // decoration: BoxDecoration(
-                //   border: Border(
-                //     right: BorderSide(color: Colors.grey),
-                //     left: BorderSide(color: Colors.grey),
-                //   ),
-                // ),
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 10,
@@ -986,12 +974,6 @@ class _SummaryTableHeadingBarState
             child: Expanded(
               flex: 4,
               child: Container(
-                // decoration: BoxDecoration(
-                //   border: Border(
-                //     right: BorderSide(color: Colors.grey),
-                //     left: BorderSide(color: Colors.grey),
-                //   ),
-                // ),
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 10,
@@ -1066,12 +1048,6 @@ class _SummaryTableHeadingBarState
             child: Expanded(
               flex: 5,
               child: Container(
-                // decoration: BoxDecoration(
-                //   border: Border(
-                //     right: BorderSide(color: Colors.grey),
-                //     left: BorderSide(color: Colors.grey),
-                //   ),
-                // ),
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 10,
@@ -1132,6 +1108,45 @@ class _SummaryTableHeadingBarState
                           ),
                           widget.isHeading
                               ? 'Discount End'
+                              : '',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: widget.product.isNotEmpty,
+            child: Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Expiry Date'
                               : '',
                         ),
                       ),
@@ -1603,6 +1618,43 @@ class _TableRowRecordWidgetState
                         widget.product.discount != null
                             ? formatDateWithoutYear(
                               widget.product.endDate ??
+                                  DateTime.now(),
+                            )
+                            : 'Not Set',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.grey),
+                ),
+              ),
+              padding: EdgeInsets.all(5),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+
+                        widget.product.discount != null
+                            ? formatDateWithoutYear(
+                              widget.product.expiryDate ??
                                   DateTime.now(),
                             )
                             : 'Not Set',

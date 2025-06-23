@@ -46,8 +46,8 @@ class _EditDiscountPageState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.product.discount != null
           ? returnData(context, listen: false).setBothDates(
-            widget.product.startDate,
-            widget.product.endDate,
+            start: widget.product.startDate,
+            end: widget.product.endDate,
           )
           : null;
     });
