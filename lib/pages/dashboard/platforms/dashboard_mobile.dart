@@ -526,9 +526,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 currentUser: userGeneral(
                                                                   context,
                                                                 ),
-                                                                // returnLocalDatabase(
-                                                                //   context,
-                                                                // ).currentEmployee,
                                                                 theme:
                                                                     theme,
                                                                 value: returnReceiptProvider(
@@ -1467,49 +1464,58 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
                                     Column(
                                       children: [
-                                        DashboardTotalSalesBanner(
-                                          expenses:
-                                              expensesLocal,
-                                          userValue: returnReceiptProvider(
-                                            context,
-                                          ).getTotalRevenueForSelectedDay(
-                                            context,
-                                            returnReceiptProvider(
+                                        Visibility(
+                                          visible: authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .viewDailySale,
+                                            context:
+                                                context,
+                                          ),
+                                          child: DashboardTotalSalesBanner(
+                                            expenses:
+                                                expensesLocal,
+                                            userValue: returnReceiptProvider(
+                                              context,
+                                            ).getTotalRevenueForSelectedDay(
+                                              context,
+                                              returnReceiptProvider(
+                                                    context,
+                                                  ).receipts
+                                                  .where(
+                                                    (emp) =>
+                                                        emp.staffName ==
+                                                        userGeneral(
+                                                          context,
+                                                        ).name,
+                                                    // localUser?.name,
+                                                  )
+                                                  .toList(),
+                                              returnReceiptProvider(
+                                                context,
+                                              ).returnproductsRecordByDayOrWeek(
+                                                context,
+                                                returnReceiptProvider(
                                                   context,
-                                                ).receipts
-                                                .where(
-                                                  (emp) =>
-                                                      emp.staffName ==
-                                                      userGeneral(
-                                                        context,
-                                                      ).name,
-                                                  // localUser?.name,
-                                                )
-                                                .toList(),
-                                            returnReceiptProvider(
+                                                ).produtRecordSalesMain,
+                                              ),
+                                            ),
+                                            currentUser:
+                                                userGeneral(
+                                                  context,
+                                                ),
+                                            theme: theme,
+                                            value: returnReceiptProvider(
                                               context,
-                                            ).returnproductsRecordByDayOrWeek(
+                                            ).getTotalRevenueForSelectedDay(
                                               context,
+                                              returnReceiptProvider(
+                                                context,
+                                              ).receipts,
                                               returnReceiptProvider(
                                                 context,
                                               ).produtRecordSalesMain,
                                             ),
-                                          ),
-                                          currentUser:
-                                              userGeneral(
-                                                context,
-                                              ),
-                                          theme: theme,
-                                          value: returnReceiptProvider(
-                                            context,
-                                          ).getTotalRevenueForSelectedDay(
-                                            context,
-                                            returnReceiptProvider(
-                                              context,
-                                            ).receipts,
-                                            returnReceiptProvider(
-                                              context,
-                                            ).produtRecordSalesMain,
                                           ),
                                         ),
                                         // SizedBox(
@@ -1585,7 +1591,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 30),
+                                    SizedBox(height: 20),
                                     Column(
                                       children: [
                                         Row(
@@ -1608,7 +1614,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           ],
                                         ),
                                         SizedBox(
-                                          height: 20,
+                                          height: 15,
                                         ),
 
                                         SizedBox(

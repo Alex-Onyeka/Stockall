@@ -25,15 +25,13 @@ class MainInfoTab extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       onTap: action,
       child: Container(
-        // width: 300,
         padding: EdgeInsets.symmetric(
           horizontal: 10,
           vertical: 10,
         ),
         decoration: BoxDecoration(
-          // color: Colors.grey.shade100,
           border: Border.all(color: Colors.grey.shade500),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,6 +85,8 @@ class MainInfoTab extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 10.0),
               child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     style: TextStyle(
@@ -102,35 +102,40 @@ class MainInfoTab extends StatelessWidget {
                     ),
                     number,
                   ),
+                  Icon(
+                    color: Colors.grey.shade400,
+                    size: 18,
+                    Icons.arrow_forward_ios_rounded,
+                  ),
                 ],
               ),
             ),
-            Divider(
-              color: Colors.grey.shade400,
-              thickness: 1,
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  style: TextStyle(
-                    color:
-                        theme.lightModeColor.greyColor100,
-                    fontSize: theme.mobileTexts.b3.fontSize,
-                    fontWeight:
-                        theme.mobileTexts.b3.fontWeightBold,
-                  ),
-                  'See All',
-                ),
-                Icon(
-                  color: Colors.grey.shade400,
-                  size: 20,
-                  Icons.arrow_forward_ios_rounded,
-                ),
-              ],
-            ),
+            // Divider(
+            //   color: Colors.grey.shade400,
+            //   thickness: 1,
+            //   height: 10,
+            // ),
+            // Row(
+            //   mainAxisAlignment:
+            //       MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Text(
+            //       style: TextStyle(
+            //         color:
+            //             theme.lightModeColor.greyColor100,
+            //         fontSize: theme.mobileTexts.b3.fontSize,
+            //         fontWeight:
+            //             theme.mobileTexts.b3.fontWeightBold,
+            //       ),
+            //       'See All',
+            //     ),
+            //     Icon(
+            //       color: Colors.grey.shade400,
+            //       size: 20,
+            //       Icons.arrow_forward_ios_rounded,
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

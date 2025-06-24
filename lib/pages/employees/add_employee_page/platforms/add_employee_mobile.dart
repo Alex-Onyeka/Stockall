@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -44,51 +45,51 @@ class _AddEmployeeMobileState
   //
   //
   int? currentSelected;
-  List<Map<String, dynamic>> employees = [
-    // {
-    //   'position': 'Owner',
-    //   'auths': ['Overall Access'],
-    // },
-    {
-      'position': 'General Manager',
-      'auths': [
-        'Add Products',
-        'Update Products',
-        'Delete Products',
-        'Add Customers',
-        'Update Customers',
-        'Delete Customers',
-        'Make Sale',
-        'View Daily Sales',
-        'View Weekly Sales',
-        'Make Refund',
-        'Delete Sales',
-      ],
-    },
-    {
-      'position': 'Manager',
-      'auths': [
-        'Add Products',
-        'Update Products',
-        'Add Customers',
-        'Update Customers',
-        'Delete Customers',
-        'Make Sale',
-        'View Daily Sales',
-        'Make Refund',
-      ],
-    },
-    {
-      'position': 'Cashier',
-      'auths': [
-        'Add Customers',
-        'Make Sale',
-        'View Products',
-        'View Daily Sales',
-        'Make Refund,',
-      ],
-    },
-  ];
+  // List<Map<String, dynamic>> employees = [
+  //   // {
+  //   //   'position': 'Owner',
+  //   //   'auths': ['Overall Access'],
+  //   // },
+  //   {
+  //     'position': 'General Manager',
+  //     'auths': [
+  //       'Add Products',
+  //       'Update Products',
+  //       'Delete Products',
+  //       'Add Customers',
+  //       'Update Customers',
+  //       'Delete Customers',
+  //       'Make Sale',
+  //       'View Daily Sales',
+  //       'View Weekly Sales',
+  //       'Make Refund',
+  //       'Delete Sales',
+  //     ],
+  //   },
+  //   {
+  //     'position': 'Manager',
+  //     'auths': [
+  //       'Add Products',
+  //       'Update Products',
+  //       'Add Customers',
+  //       'Update Customers',
+  //       'Delete Customers',
+  //       'Make Sale',
+  //       'View Daily Sales',
+  //       'Make Refund',
+  //     ],
+  //   },
+  //   {
+  //     'position': 'Cashier',
+  //     'auths': [
+  //       'Add Customers',
+  //       'Make Sale',
+  //       'View Products',
+  //       'View Daily Sales',
+  //       'Make Refund,',
+  //     ],
+  //   },
+  // ];
   //
   //
   late Future<List<TempUserClass>> usersFuture;
@@ -613,8 +614,9 @@ class _AddEmployeeMobileState
                                               );
                                           if (uuid
                                               .toString()
-                                              .isEmpty)
+                                              .isEmpty) {
                                             throw Exception();
+                                          }
                                         } catch (_) {
                                           setState(
                                             () =>
