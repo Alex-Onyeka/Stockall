@@ -594,6 +594,7 @@ class DataProvider extends ChangeNotifier {
     clearEndDate();
     clearStartDate();
     notifyListeners();
+    clearExpDate();
   }
 
   bool isProductRefundable = false;

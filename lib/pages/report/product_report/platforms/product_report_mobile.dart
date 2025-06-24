@@ -1652,7 +1652,7 @@ class _TableRowRecordWidgetState
                           fontWeight: FontWeight.bold,
                         ),
 
-                        widget.product.discount != null
+                        widget.product.expiryDate != null
                             ? formatDateWithoutYear(
                               widget.product.expiryDate ??
                                   DateTime.now(),
