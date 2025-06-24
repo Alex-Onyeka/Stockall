@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductTileMain extends StatefulWidget {
@@ -247,7 +248,20 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color:
-                                          widget.product.quantity !=
+                                          getDayDifference(
+                                                        widget.product.expiryDate ??
+                                                            DateTime.now(),
+                                                      ) <
+                                                      1 &&
+                                                  widget.product.expiryDate !=
+                                                      null
+                                              ? const Color.fromARGB(
+                                                255,
+                                                255,
+                                                232,
+                                                231,
+                                              )
+                                              : widget.product.quantity !=
                                                       0 &&
                                                   widget.product.quantity >
                                                       widget
@@ -276,7 +290,20 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               ),
                                       border: Border.all(
                                         color:
-                                            widget.product.quantity !=
+                                            getDayDifference(
+                                                          widget.product.expiryDate ??
+                                                              DateTime.now(),
+                                                        ) <
+                                                        1 &&
+                                                    widget.product.expiryDate !=
+                                                        null
+                                                ? const Color.fromARGB(
+                                                  255,
+                                                  255,
+                                                  142,
+                                                  134,
+                                                )
+                                                : widget.product.quantity !=
                                                         0 &&
                                                     widget.product.quantity >
                                                         widget.product.lowQtty!
@@ -318,7 +345,20 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               FontWeight
                                                   .bold,
                                           color:
-                                              widget.product.quantity !=
+                                              getDayDifference(
+                                                            widget.product.expiryDate ??
+                                                                DateTime.now(),
+                                                          ) <
+                                                          1 &&
+                                                      widget.product.expiryDate !=
+                                                          null
+                                                  ? const Color.fromARGB(
+                                                    255,
+                                                    255,
+                                                    142,
+                                                    134,
+                                                  )
+                                                  : widget.product.quantity !=
                                                           0 &&
                                                       widget.product.quantity >
                                                           widget.product.lowQtty!
@@ -343,6 +383,20 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   ),
                                         ),
                                         widget
+                                                    .product
+                                                    .expiryDate !=
+                                                null
+                                            ? getDayDifference(
+                                                      widget.product.expiryDate ??
+                                                          DateTime.now(),
+                                                    ) >=
+                                                    1
+                                                ? widget.product.quantity ==
+                                                        0
+                                                    ? 'Out of Stock'
+                                                    : '${widget.product.quantity.toStringAsFixed(0)} in Stock'
+                                                : 'Item Expired'
+                                            : widget
                                                     .product
                                                     .quantity ==
                                                 0

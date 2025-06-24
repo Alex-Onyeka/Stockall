@@ -147,17 +147,7 @@ class TopNavBar extends StatelessWidget {
                     spacing: 6,
                     mainAxisAlignment:
                         MainAxisAlignment.end,
-                    children: [
-                      // Text(
-                      //   style: TextStyle(
-                      //     fontWeight: FontWeight.bold,
-                      //     fontSize:
-                      //         theme.mobileTexts.b4.fontSize,
-                      //     color: Colors.grey.shade500,
-                      //   ),
-                      //   'User:',
-                      // ),
-                    ],
+                    children: [],
                   ),
                 ],
               ),
@@ -172,10 +162,6 @@ class TopNavBar extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        // Provider.of<CompProvider>(
-                        //   context,
-                        //   listen: false,
-                        // ).switchNotif();
                         action!();
                       },
                       child: Container(
@@ -244,12 +230,6 @@ class TopNavBar extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        // final localUser =
-                        //     returnLocalDatabase(
-                        //       context,
-                        //       listen: false,
-                        //     );
-
                         showDialog(
                           context: context,
                           builder: (dialogContext) {
@@ -263,26 +243,8 @@ class TopNavBar extends StatelessWidget {
                                   dialogContext,
                                 ).pop();
 
-                                // if (context.mounted) {
-                                //   Navigator.pushAndRemoveUntil(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder:
-                                //           (context) =>
-                                //               EmpAuth(),
-                                //     ),
-                                //     (route) =>
-                                //         false, // removes all previous routes
-                                //   );
-                                //   returnNavProvider(
-                                //     context,
-                                //     listen: false,
-                                //   ).navigate(0);
-                                // }
                                 await AuthService()
                                     .signOut();
-                                // await localUser
-                                //     .deleteUser();
                                 if (context.mounted) {
                                   Navigator.pushReplacement(
                                     context,

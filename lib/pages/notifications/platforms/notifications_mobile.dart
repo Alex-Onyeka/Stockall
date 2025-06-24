@@ -6,6 +6,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -57,52 +58,67 @@ class NotificationsMobile extends StatelessWidget {
                       ),
                     );
                   } else {
-                    return ListView.builder(
-                      padding: EdgeInsets.only(top: 20),
-                      itemCount: notificationss.length,
-                      itemBuilder: (context, index) {
-                        TempNotification notif =
-                            notificationss[index];
-                        return Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                vertical: 5.0,
-                              ),
-                          child: NotificatonTileMain(
-                            notif: notif,
-                            theme: theme,
-                            action: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        'Are you sure you want to proceed with delete?',
-                                    title:
-                                        'Delete Notification?',
-                                    action: () async {
-                                      await Provider.of<
-                                        NotificationProvider
-                                      >(
-                                        context,
-                                        listen: false,
-                                      ).deleteNotificationFromSupabase(
-                                        notif,
-                                      );
-                                      if (context.mounted) {
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                    return RefreshIndicator(
+                      onRefresh: () {
+                        return returnNotificationProvider(
+                          context,
+                          listen: false,
+                        ).fetchRecentNotifications(
+                          shopId(context),
                         );
                       },
+                      backgroundColor: Colors.white,
+                      color:
+                          theme.lightModeColor.prColor300,
+                      displacement: 10,
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(top: 20),
+                        itemCount: notificationss.length,
+                        itemBuilder: (context, index) {
+                          TempNotification notif =
+                              notificationss[index];
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  vertical: 5.0,
+                                ),
+                            child: NotificatonTileMain(
+                              notif: notif,
+                              theme: theme,
+                              action: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'Are you sure you want to proceed with delete?',
+                                      title:
+                                          'Delete Notification?',
+                                      action: () async {
+                                        await Provider.of<
+                                          NotificationProvider
+                                        >(
+                                          context,
+                                          listen: false,
+                                        ).deleteNotificationFromSupabase(
+                                          notif,
+                                        );
+                                        if (context
+                                            .mounted) {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     );
                   }
                 },
@@ -164,16 +180,29 @@ class _NotificatonTileMainState
             context,
             listen: false,
           ).updateNotification(widget.notif.id!);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return ProductDetailsPage(
-                  productId: widget.notif.productId,
-                );
-              },
-            ),
-          );
+          if (widget.notif.productId != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ProductDetailsPage(
+                    productId: widget.notif.productId ?? 0,
+                  );
+                },
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ExpenseDetails(
+                    expenseId: widget.notif.expenseId ?? 0,
+                  );
+                },
+              ),
+            );
+          }
         },
         borderRadius: BorderRadius.circular(5),
         child: Container(
@@ -202,7 +231,19 @@ class _NotificatonTileMainState
                                     .lightModeColor
                                     .secColor200
                                 : widget.notif.notifId ==
+                                    'product_expire'
+                                ? widget
+                                    .theme
+                                    .lightModeColor
+                                    .secColor200
+                                : widget.notif.notifId ==
                                     'out_of_stock'
+                                ? widget
+                                    .theme
+                                    .lightModeColor
+                                    .errorColor200
+                                : widget.notif.notifId ==
+                                    'expired'
                                 ? widget
                                     .theme
                                     .lightModeColor
@@ -220,7 +261,13 @@ class _NotificatonTileMainState
                         widget.notif.notifId == 'low_stock'
                             ? Icons.warning_amber_rounded
                             : widget.notif.notifId ==
+                                'product_expire'
+                            ? Icons.warning_amber_rounded
+                            : widget.notif.notifId ==
                                 'out_of_stock'
+                            ? Icons.dangerous_outlined
+                            : widget.notif.notifId ==
+                                'expired'
                             ? Icons.dangerous_outlined
                             : widget.notif.notifId ==
                                 'product_created'
@@ -271,11 +318,6 @@ class _NotificatonTileMainState
                             children: [
                               Text(
                                 style: TextStyle(
-                                  // fontSize:
-                                  //     theme
-                                  //         .mobileTexts
-                                  //         .b2
-                                  //         .fontSize,
                                   fontWeight:
                                       FontWeight.bold,
                                 ),

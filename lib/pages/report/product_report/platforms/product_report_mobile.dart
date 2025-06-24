@@ -4,6 +4,7 @@ import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -1650,13 +1651,40 @@ class _TableRowRecordWidgetState
                                   .b3
                                   .fontSize,
                           fontWeight: FontWeight.bold,
+                          color:
+                              getDayDifference(
+                                            widget
+                                                    .product
+                                                    .expiryDate ??
+                                                DateTime.now(),
+                                          ) <
+                                          1 &&
+                                      widget
+                                              .product
+                                              .expiryDate !=
+                                          null
+                                  ? widget
+                                      .theme
+                                      .lightModeColor
+                                      .errorColor200
+                                  : null,
                         ),
 
                         widget.product.expiryDate != null
-                            ? formatDateWithoutYear(
-                              widget.product.expiryDate ??
-                                  DateTime.now(),
-                            )
+                            ? getDayDifference(
+                                      widget
+                                              .product
+                                              .expiryDate ??
+                                          DateTime.now(),
+                                    ) >=
+                                    1
+                                ? formatDateTime(
+                                  widget
+                                          .product
+                                          .expiryDate ??
+                                      DateTime.now(),
+                                )
+                                : 'Item Expired'
                             : 'Not Set',
                       ),
                     ),

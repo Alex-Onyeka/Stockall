@@ -35,3 +35,18 @@ bool isValidEmail(String email) {
   );
   return emailRegex.hasMatch(email);
 }
+
+int getDayDifference(DateTime inputDate) {
+  final today = DateTime.now();
+  final todayDateOnly = DateTime(
+    today.year,
+    today.month,
+    today.day,
+  );
+  final inputDateOnly = DateTime(
+    inputDate.year,
+    inputDate.month,
+    inputDate.day,
+  );
+  return inputDateOnly.difference(todayDateOnly).inDays;
+}

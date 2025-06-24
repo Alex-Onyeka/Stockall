@@ -9,6 +9,7 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_discount_page.dart';
@@ -1177,10 +1178,16 @@ class _ProductDetailsMobileState
                                 mainText:
                                     product.expiryDate !=
                                             null
-                                        ? formatDateWithDay(
-                                          product
-                                              .expiryDate!,
-                                        )
+                                        ? getDayDifference(
+                                                  product.expiryDate ??
+                                                      DateTime.now(),
+                                                ) >=
+                                                1
+                                            ? formatDateTime(
+                                              product.expiryDate ??
+                                                  DateTime.now(),
+                                            )
+                                            : 'Item Expired'
                                         : 'Not Set',
                                 text: 'Expiry Date',
                               ),

@@ -2,8 +2,9 @@ class TempNotification {
   final int? id;
   final String notifId;
   final int shopId;
-  final int productId;
+  final int? productId;
   final String? itemName;
+  final int? expenseId;
   final String title;
   final String text;
   final DateTime date;
@@ -16,7 +17,8 @@ class TempNotification {
     this.id,
     required this.shopId,
     required this.notifId,
-    required this.productId,
+    this.productId,
+    this.expenseId,
     required this.title,
     required this.text,
     required this.date,
@@ -35,6 +37,7 @@ class TempNotification {
       notifId: json['notif_id'],
       shopId: json['shop_id'],
       productId: json['product_id'],
+      expenseId: json['expense_id'],
       title: json['title'],
       text: json['text'],
       date: DateTime.parse(json['date']),
