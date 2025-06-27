@@ -21,76 +21,91 @@ class ProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 30,
-        vertical: 12,
+        horizontal: 20,
+        vertical: 10,
       ),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         spacing: 2,
         children: [
           Text(
             style: TextStyle(
+              fontSize: theme.mobileTexts.b3.fontSize,
               color: Colors.grey.shade600,
               fontWeight: FontWeight.bold,
             ),
             title,
           ),
           SizedBox(height: 3),
-          Stack(
-            children: [
-              Container(
-                height: 5,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
+          Expanded(
+            child: Stack(
+              alignment: Alignment(0, 0),
+              children: [
+                Align(
+                  alignment: Alignment(0, 0),
+                  child: Container(
+                    height: 5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                      color: Colors.grey.shade300,
+                    ),
                   ),
-                  color: Colors.grey.shade300,
                 ),
-              ),
-              SizedBox(
-                height: 30,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 5,
-                      width:
-                          MediaQuery.of(
-                            context,
-                          ).size.width *
-                          calcValue,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                        gradient: LinearGradient(
-                          colors:
-                              theme
-                                  .lightModeColor
-                                  .secGradientColors,
-                          begin: Alignment.centerRight,
-                          end: Alignment.centerLeft,
+                SizedBox(
+                  height: 20,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment(-1, 0),
+                        child: Container(
+                          height: 5,
+                          width:
+                              MediaQuery.of(
+                                context,
+                              ).size.width *
+                              calcValue,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            gradient: LinearGradient(
+                              colors:
+                                  theme
+                                      .lightModeColor
+                                      .secGradientColors,
+                              begin: Alignment.centerRight,
+                              end: Alignment.centerLeft,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment(position, 0),
-                      child: Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.grey,
+                      Align(
+                        alignment: Alignment(position, 0),
+                        child: Container(
+                          padding: EdgeInsets.only(left: 5),
+                          color: Colors.grey.shade100,
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                            percent,
+                          ),
                         ),
-                        percent,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

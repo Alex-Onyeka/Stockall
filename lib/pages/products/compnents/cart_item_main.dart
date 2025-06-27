@@ -77,78 +77,84 @@ class _CartItemMainState extends State<CartItemMain> {
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    widget
-                                        .cartItem
-                                        .item
-                                        .name,
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        widget
+                                            .cartItem
+                                            .item
+                                            .name,
+                                      ),
+                                      Text(
+                                        [
+                                          if (widget
+                                                  .cartItem
+                                                  .item
+                                                  .color !=
+                                              null)
+                                            widget
+                                                .cartItem
+                                                .item
+                                                .color,
+                                          if (widget
+                                                  .cartItem
+                                                  .item
+                                                  .sizeType !=
+                                              null)
+                                            widget
+                                                .cartItem
+                                                .item
+                                                .sizeType,
+                                          if (widget
+                                                  .cartItem
+                                                  .item
+                                                  .size !=
+                                              null)
+                                            widget
+                                                .cartItem
+                                                .item
+                                                .size,
+                                        ].join('  |  '),
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .w600,
+                                          color:
+                                              widget
+                                                  .theme
+                                                  .lightModeColor
+                                                  .secColor200,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    [
-                                      if (widget
-                                              .cartItem
-                                              .item
-                                              .color !=
-                                          null)
-                                        widget
-                                            .cartItem
-                                            .item
-                                            .color,
-                                      if (widget
-                                              .cartItem
-                                              .item
-                                              .sizeType !=
-                                          null)
-                                        widget
-                                            .cartItem
-                                            .item
-                                            .sizeType,
-                                      if (widget
-                                              .cartItem
-                                              .item
-                                              .size !=
-                                          null)
-                                        widget
-                                            .cartItem
-                                            .item
-                                            .size,
-                                    ].join('  |  '),
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.w600,
-                                      color:
-                                          widget
-                                              .theme
-                                              .lightModeColor
-                                              .secColor200,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
                           IconButton(
                             onPressed:

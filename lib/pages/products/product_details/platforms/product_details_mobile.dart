@@ -169,6 +169,7 @@ class _ProductDetailsMobileState
                             CrossAxisAlignment.center,
                         children: [
                           Text(
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize:
                                   widget

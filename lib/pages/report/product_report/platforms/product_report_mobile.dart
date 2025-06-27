@@ -329,7 +329,7 @@ class _ProductReportMobileState
                               : MediaQuery.of(
                                 context,
                               ).size.width,
-                      child: Column(
+                      child: ListView(
                         children: [
                           SummaryTableHeadingBar(
                             isHeading: true,

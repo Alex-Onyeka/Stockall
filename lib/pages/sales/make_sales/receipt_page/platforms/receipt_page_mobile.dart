@@ -248,6 +248,8 @@ class _ReceiptDetailsContainerState
                               spacing: 8,
                               children: [
                                 Text(
+                                  textAlign:
+                                      TextAlign.center,
                                   style: TextStyle(
                                     fontSize:
                                         widget

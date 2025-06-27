@@ -7,74 +7,10 @@ class AuthService extends ChangeNotifier {
   bool isLoading = false;
   bool isSuccessLoading = false;
 
-  // void switchLoader() {
-  //   isLoading = !isLoading;
-  //   notifyListeners();
-  // }
-
-  // void switchSuccessLoader() {
-  //   isSuccessLoading = !isSuccessLoading;
-  //   notifyListeners();
-  // }
-
   final SupabaseClient _client = Supabase.instance.client;
 
   Stream<AuthState> get authStateChanges =>
       _client.auth.onAuthStateChange;
-
-  // Future<AuthResponse> signUpAndCreateUser({
-  //   required BuildContext context,
-  //   required String email,
-  //   required String password,
-  //   required TempUserClass user,
-  // }) async {
-  //   final signUpRes = await _client.auth.signUp(
-  //     email: email,
-  //     password: password,
-  //   );
-
-  //   final userId = signUpRes.user?.id;
-
-  //   if (userId == null) {
-  //     throw Exception('Failed to sign up user.');
-  //   }
-
-  //   // Build user row
-  //   final userRow = TempUserClass(
-  //     userId: userId,
-  //     createdAt: DateTime.now(),
-  //     name: user.name,
-  //     email: email,
-  //     phone: user.phone,
-  //     role: user.role,
-  //     authUserId: userId,
-  //     password: password,
-  //   );
-
-  //   try {
-  //     // Check if user exists remotely (optional)
-  //     await _client
-  //         .from('users')
-  //         .select()
-  //         .eq('user_id', userId)
-  //         .maybeSingle();
-
-  //     // Insert into Supabase
-  //     await _client.from('users').insert(userRow.toJson());
-
-  //     // ✅ Insert into local SQLite
-  //     if (context.mounted) {
-  //       await returnLocalDatabase(
-  //         context,
-  //         listen: false,
-  //       ).insertUser(userRow);
-  //     }
-
-  //     return signUpRes;
-  //   } catch (e) {
-  //     throw Exception('User creation error: $e');
-  //   }
-  // }
 
   Future<AuthResponse> signUpAndCreateUser({
     required BuildContext context,
@@ -140,8 +76,6 @@ class AuthService extends ChangeNotifier {
     String password,
     BuildContext context,
   ) async {
-    // switchLoader(); // Start loader
-
     try {
       // 1. Sign in via Supabase Auth
       final authResponse = await _client.auth
@@ -172,17 +106,12 @@ class AuthService extends ChangeNotifier {
             password, // Optional: if you're keeping it
       });
 
-      // 4. Store the user in local DB
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
         returnNavProvider(
           context,
           listen: false,
         ).offLoading();
-        // await returnLocalDatabase(
-        //   context,
-        //   listen: false,
-        // ).insertUser(tempUser);
       }
 
       print(
@@ -192,9 +121,7 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       print("❌ Sign-in failed: $e");
       rethrow;
-    } finally {
-      // switchLoader(); // Stop loader
-    }
+    } finally {}
   }
 
   Future<String> changePasswordAndUpdateLocal({

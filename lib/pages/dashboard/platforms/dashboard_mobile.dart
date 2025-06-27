@@ -411,221 +411,201 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         .lightModeColor
                                         .prColor300,
                                 displacement: 10,
-                                child: SingleChildScrollView(
-                                  child: SizedBox(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal:
-                                                15.0,
-                                          ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Builder(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              if (snapshot
-                                                      .connectionState ==
-                                                  ConnectionState
-                                                      .waiting) {
-                                                return Shimmer.fromColors(
-                                                  baseColor:
-                                                      Colors
-                                                          .grey,
-                                                  highlightColor:
-                                                      Colors
-                                                          .white,
-                                                  child: DashboardTotalSalesBanner(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 15.0,
+                                      ),
+                                  child: ListView(
+                                    children: [
+                                      SizedBox(height: 20),
+                                      Builder(
+                                        builder: (context) {
+                                          if (snapshot
+                                                  .connectionState ==
+                                              ConnectionState
+                                                  .waiting) {
+                                            return Shimmer.fromColors(
+                                              baseColor:
+                                                  Colors
+                                                      .grey,
+                                              highlightColor:
+                                                  Colors
+                                                      .white,
+                                              child:
+                                                  DashboardTotalSalesBanner(
                                                     theme:
                                                         theme,
                                                     value:
                                                         0,
                                                   ),
-                                                );
-                                              } else if (snapshot
-                                                  .hasError) {
-                                                return DashboardTotalSalesBanner(
-                                                  theme:
-                                                      theme,
-                                                  value: 0,
-                                                );
-                                              } else {
-                                                // return Container();
-                                                return FutureBuilder<
+                                            );
+                                          } else if (snapshot
+                                              .hasError) {
+                                            return DashboardTotalSalesBanner(
+                                              theme: theme,
+                                              value: 0,
+                                            );
+                                          } else {
+                                            // return Container();
+                                            return FutureBuilder<
+                                              List<
+                                                TempProductSaleRecord
+                                              >
+                                            >(
+                                              future:
+                                                  getProdutRecordsFuture,
+                                              builder: (
+                                                context,
+                                                snapshot,
+                                              ) {
+                                                if (snapshot
+                                                        .connectionState ==
+                                                    ConnectionState
+                                                        .waiting) {
+                                                  return DashboardTotalSalesBanner(
+                                                    theme:
+                                                        theme,
+                                                    value:
+                                                        0,
+                                                  );
+                                                } else if (snapshot
+                                                    .hasError) {
+                                                  return DashboardTotalSalesBanner(
+                                                    theme:
+                                                        theme,
+                                                    value:
+                                                        0,
+                                                  );
+                                                } else {
                                                   List<
                                                     TempProductSaleRecord
                                                   >
-                                                >(
-                                                  future:
-                                                      getProdutRecordsFuture,
-                                                  builder: (
-                                                    context,
-                                                    snapshot,
-                                                  ) {
-                                                    if (snapshot.connectionState ==
-                                                        ConnectionState.waiting) {
-                                                      return DashboardTotalSalesBanner(
-                                                        theme:
-                                                            theme,
-                                                        value:
-                                                            0,
-                                                      );
-                                                    } else if (snapshot
-                                                        .hasError) {
-                                                      return DashboardTotalSalesBanner(
-                                                        theme:
-                                                            theme,
-                                                        value:
-                                                            0,
-                                                      );
-                                                    } else {
-                                                      List<
-                                                        TempProductSaleRecord
-                                                      >
-                                                      records =
-                                                          snapshot.data!;
-                                                      return Column(
-                                                        children: [
-                                                          FutureBuilder(
-                                                            future:
-                                                                expensesFuture,
-                                                            builder: (
+                                                  records =
+                                                      snapshot
+                                                          .data!;
+                                                  return Column(
+                                                    children: [
+                                                      FutureBuilder(
+                                                        future:
+                                                            expensesFuture,
+                                                        builder: (
+                                                          context,
+                                                          snapshot,
+                                                        ) {
+                                                          return DashboardTotalSalesBanner(
+                                                            expenses:
+                                                                snapshot.connectionState ==
+                                                                        ConnectionState.waiting
+                                                                    ? []
+                                                                    : snapshot.hasError
+                                                                    ? []
+                                                                    : snapshot.data,
+                                                            userValue: returnReceiptProvider(
                                                               context,
-                                                              snapshot,
-                                                            ) {
-                                                              return DashboardTotalSalesBanner(
-                                                                expenses:
-                                                                    snapshot.connectionState ==
-                                                                            ConnectionState.waiting
-                                                                        ? []
-                                                                        : snapshot.hasError
-                                                                        ? []
-                                                                        : snapshot.data,
-                                                                userValue: returnReceiptProvider(
-                                                                  context,
-                                                                ).getTotalRevenueForSelectedDay(
-                                                                  context,
-                                                                  mainReceiptss
-                                                                      .where(
-                                                                        (
-                                                                          emp,
-                                                                        ) =>
-                                                                            emp.staffName ==
-                                                                            userGeneral(
-                                                                              context,
-                                                                            ).name,
-                                                                        // localUser?.name,
-                                                                      )
-                                                                      .toList(),
-                                                                  records,
-                                                                ),
-                                                                currentUser: userGeneral(
-                                                                  context,
-                                                                ),
-                                                                theme:
-                                                                    theme,
-                                                                value: returnReceiptProvider(
-                                                                  context,
-                                                                ).getTotalRevenueForSelectedDay(
-                                                                  context,
-                                                                  mainReceiptss,
-                                                                  records,
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                          // SizedBox(
-                                                          //   height:
-                                                          //       10,
-                                                          // ),
-
-                                                          // Container(
-                                                          //   decoration:
-                                                          //       BoxDecoration(),
-                                                          //   child: Row(
-                                                          //     children: [
-                                                          //       Column(
-                                                          //         crossAxisAlignment:
-                                                          //             CrossAxisAlignment.start,
-                                                          //         children: [
-                                                          //           Text(
-                                                          //             'Todays Sales by You',
-                                                          //           ),
-                                                          //           Text(
-                                                          //             '${localUser != null ? returnReceiptProvider(context).getTotalRevenueForSelectedDay(context, mainReceipts.where((emp) => emp.staffName == localUser.name).toList(), records) : 0}',
-                                                          //           ),
-                                                          //         ],
-                                                          //       ),
-                                                          //     ],
-                                                          //   ),
-                                                          // ),
-                                                        ],
-                                                      );
-                                                    }
-                                                  },
-                                                );
-                                              }
-                                            },
-                                          ),
-
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Row(
-                                            spacing: 10,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            children: [
-                                              Expanded(
-                                                child: FutureBuilder(
-                                                  future:
-                                                      productsFuture,
-                                                  builder: (
-                                                    context,
-                                                    snapshot,
-                                                  ) {
-                                                    if (snapshot.connectionState ==
-                                                        ConnectionState.waiting) {
-                                                      return Shimmer.fromColors(
-                                                        baseColor:
-                                                            Colors.grey.shade300,
-                                                        highlightColor:
-                                                            Colors.grey.shade200,
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(
-                                                              10,
+                                                            ).getTotalRevenueForSelectedDay(
+                                                              context,
+                                                              mainReceiptss
+                                                                  .where(
+                                                                    (
+                                                                      emp,
+                                                                    ) =>
+                                                                        emp.staffName ==
+                                                                        userGeneral(
+                                                                          context,
+                                                                        ).name,
+                                                                    // localUser?.name,
+                                                                  )
+                                                                  .toList(),
+                                                              records,
                                                             ),
-                                                            color:
-                                                                Colors.grey.shade400,
-                                                            border: Border.all(
-                                                              color:
-                                                                  Colors.grey.shade700,
+                                                            currentUser: userGeneral(
+                                                              context,
                                                             ),
-                                                          ),
-
-                                                          child: MainInfoTab(
                                                             theme:
                                                                 theme,
-                                                            icon:
-                                                                pulseIconSvg,
-                                                            number:
-                                                                '0',
-                                                            title:
-                                                                'All Products',
-                                                            action:
-                                                                () {},
-                                                          ),
+                                                            value: returnReceiptProvider(
+                                                              context,
+                                                            ).getTotalRevenueForSelectedDay(
+                                                              context,
+                                                              mainReceiptss,
+                                                              records,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                      // SizedBox(
+                                                      //   height:
+                                                      //       10,
+                                                      // ),
+
+                                                      // Container(
+                                                      //   decoration:
+                                                      //       BoxDecoration(),
+                                                      //   child: Row(
+                                                      //     children: [
+                                                      //       Column(
+                                                      //         crossAxisAlignment:
+                                                      //             CrossAxisAlignment.start,
+                                                      //         children: [
+                                                      //           Text(
+                                                      //             'Todays Sales by You',
+                                                      //           ),
+                                                      //           Text(
+                                                      //             '${localUser != null ? returnReceiptProvider(context).getTotalRevenueForSelectedDay(context, mainReceipts.where((emp) => emp.staffName == localUser.name).toList(), records) : 0}',
+                                                      //           ),
+                                                      //         ],
+                                                      //       ),
+                                                      //     ],
+                                                      //   ),
+                                                      // ),
+                                                    ],
+                                                  );
+                                                }
+                                              },
+                                            );
+                                          }
+                                        },
+                                      ),
+
+                                      SizedBox(height: 20),
+                                      Row(
+                                        spacing: 10,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          Expanded(
+                                            child: FutureBuilder(
+                                              future:
+                                                  productsFuture,
+                                              builder: (
+                                                context,
+                                                snapshot,
+                                              ) {
+                                                if (snapshot
+                                                        .connectionState ==
+                                                    ConnectionState
+                                                        .waiting) {
+                                                  return Shimmer.fromColors(
+                                                    baseColor:
+                                                        Colors.grey.shade300,
+                                                    highlightColor:
+                                                        Colors.grey.shade200,
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          10,
                                                         ),
-                                                      );
-                                                    } else if (snapshot
-                                                        .hasError) {
-                                                      return MainInfoTab(
+                                                        color:
+                                                            Colors.grey.shade400,
+                                                        border: Border.all(
+                                                          color:
+                                                              Colors.grey.shade700,
+                                                        ),
+                                                      ),
+
+                                                      child: MainInfoTab(
                                                         theme:
                                                             theme,
                                                         icon:
@@ -636,491 +616,507 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             'All Products',
                                                         action:
                                                             () {},
-                                                      );
-                                                    } else {
-                                                      return MainInfoTab(
-                                                        theme:
-                                                            theme,
-                                                        icon:
-                                                            pulseIconSvg,
-                                                        number:
-                                                            '${snapshot.data!.length}',
-                                                        title:
-                                                            'All Products',
-                                                        action: () {
-                                                          returnNavProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).navigate(
-                                                            1,
-                                                          );
-                                                        },
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: MainInfoTab(
-                                                  theme:
-                                                      theme,
-                                                  icon:
-                                                      productIconSvg,
-                                                  number:
-                                                      '${mainReceiptss.length}',
-                                                  title:
-                                                      'Todays Sales',
-                                                  action: () {
-                                                    returnNavProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).navigate(
-                                                      2,
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 30,
-                                          ),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b1.fontSize,
-                                                      fontWeight:
-                                                          theme.mobileTexts.b1.fontWeightBold,
+                                                      ),
                                                     ),
-                                                    'Quick Actions',
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-
-                                              SizedBox(
-                                                width:
-                                                    double
-                                                        .infinity,
-                                                child: LayoutBuilder(
-                                                  builder: (
-                                                    context,
-                                                    constraints,
-                                                  ) {
-                                                    if (constraints.maxWidth >
-                                                        320) {
-                                                      return Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.center,
-                                                        spacing:
-                                                            15,
-                                                        children: [
-                                                          Row(
-                                                            spacing:
-                                                                15,
-                                                            children: [
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    productIconSvg,
-                                                                title:
-                                                                    'Products',
-                                                                action: () {
-                                                                  Provider.of<
-                                                                    NavProvider
-                                                                  >(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).navigate(
-                                                                    1,
-                                                                  );
-                                                                },
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    salesIconSvg,
-                                                                title:
-                                                                    'Sales',
-                                                                action: () {
-                                                                  returnNavProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).navigate(
-                                                                    2,
-                                                                  );
-                                                                },
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    reportIconSvg,
-                                                                title:
-                                                                    'Report',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return ReportPage();
-                                                                      },
-                                                                    ),
-                                                                  ).then(
-                                                                    (
-                                                                      context,
-                                                                    ) {
-                                                                      setState(
-                                                                        () {
-                                                                          // clearDate();
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.start,
-                                                            // spacing:
-                                                            //     15,
-                                                            children: [
-                                                              Visibility(
-                                                                visible:
-                                                                    userGeneral(
-                                                                      context,
-                                                                    ).role ==
-                                                                    'Owner',
-                                                                // returnLocalDatabase(
-                                                                //   context,
-                                                                //   listen:
-                                                                //       false,
-                                                                // ).currentEmployee?.role ==
-                                                                // 'Owner',
-                                                                child: ButtonTab(
-                                                                  theme:
-                                                                      theme,
-                                                                  icon:
-                                                                      employeesIconSvg,
-                                                                  title:
-                                                                      'Employees',
-                                                                  action: () {
-                                                                    Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder: (
-                                                                          context,
-                                                                        ) {
-                                                                          return EmployeeListPage(
-                                                                            empId:
-                                                                                userGeneral(
-                                                                                  context,
-                                                                                ).userId!,
-                                                                          );
-                                                                        },
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              Visibility(
-                                                                visible:
-                                                                    userGeneral(
-                                                                      context,
-                                                                    ).role ==
-                                                                    'Owner',
-                                                                // returnLocalDatabase(
-                                                                //   context,
-                                                                //   listen:
-                                                                //       false,
-                                                                // ).currentEmployee?.role ==
-                                                                // 'Owner',
-                                                                child: SizedBox(
-                                                                  width:
-                                                                      15,
-                                                                ),
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    expensesIconSvg,
-                                                                title:
-                                                                    'Expenses',
-                                                                action: () async {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return ExpensesPage(
-                                                                          isMain:
-                                                                              true,
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                  ).then(
-                                                                    (
-                                                                      context,
-                                                                    ) {
-                                                                      setState(
-                                                                        () {
-                                                                          expensesFuture =
-                                                                              getExpenses();
-                                                                          // clearDate();
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                              SizedBox(
-                                                                width:
-                                                                    15,
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    custBookIconSvg,
-                                                                title:
-                                                                    'Customers',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return CustomerList();
-                                                                      },
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                  );
+                                                } else if (snapshot
+                                                    .hasError) {
+                                                  return MainInfoTab(
+                                                    theme:
+                                                        theme,
+                                                    icon:
+                                                        pulseIconSvg,
+                                                    number:
+                                                        '0',
+                                                    title:
+                                                        'All Products',
+                                                    action:
+                                                        () {},
+                                                  );
+                                                } else {
+                                                  return MainInfoTab(
+                                                    theme:
+                                                        theme,
+                                                    icon:
+                                                        pulseIconSvg,
+                                                    number:
+                                                        '${snapshot.data!.length}',
+                                                    title:
+                                                        'All Products',
+                                                    action: () {
+                                                      returnNavProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).navigate(
+                                                        1,
                                                       );
-                                                    } else {
-                                                      return Column(
-                                                        spacing:
-                                                            15,
-                                                        children: [
-                                                          Row(
-                                                            spacing:
-                                                                15,
-                                                            children: [
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    productIconSvg,
-                                                                title:
-                                                                    'Products',
-                                                                action: () {
-                                                                  Provider.of<
-                                                                    NavProvider
-                                                                  >(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).navigate(
-                                                                    1,
-                                                                  );
-                                                                },
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    salesIconSvg,
-                                                                title:
-                                                                    'Sales',
-                                                                action: () {
-                                                                  returnNavProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).navigate(
-                                                                    2,
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    custBookIconSvg,
-                                                                title:
-                                                                    'Customers',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return CustomerList();
-                                                                      },
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                              SizedBox(
-                                                                width:
-                                                                    15,
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    expensesIconSvg,
-                                                                title:
-                                                                    'Expenses',
-                                                                action: () async {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return ExpensesPage(
-                                                                          isMain:
-                                                                              true,
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                  ).then(
-                                                                    (
-                                                                      _,
-                                                                    ) {
-                                                                      setState(
-                                                                        () {
-                                                                          mainReceiptFuture =
-                                                                              getMainReceipts();
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Visibility(
-                                                                visible:
-                                                                    userGeneral(
-                                                                      context,
-                                                                    ).role ==
-                                                                    'Owner',
-                                                                // returnLocalDatabase(
-                                                                //   context,
-                                                                //   listen:
-                                                                //       false,
-                                                                // ).currentEmployee!.role ==
-                                                                // 'Owner',
-                                                                child: ButtonTab(
-                                                                  theme:
-                                                                      theme,
-                                                                  icon:
-                                                                      employeesIconSvg,
-                                                                  title:
-                                                                      'Employees',
-                                                                  action: () {
-                                                                    Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder: (
-                                                                          context,
-                                                                        ) {
-                                                                          return EmployeeListPage(
-                                                                            empId:
-                                                                                userGeneral(
-                                                                                  context,
-                                                                                ).role,
-                                                                          );
-                                                                        },
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              Visibility(
-                                                                visible:
-                                                                    userGeneral(
-                                                                      context,
-                                                                    ).role ==
-                                                                    'Owner',
-                                                                // returnLocalDatabase(
-                                                                //   context,
-                                                                //   listen:
-                                                                //       false,
-                                                                // ).currentEmployee!.role ==
-                                                                // 'Owner',
-                                                                child: SizedBox(
-                                                                  width:
-                                                                      15,
-                                                                ),
-                                                              ),
-                                                              ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    reportIconSvg,
-                                                                title:
-                                                                    'Report',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return ReportPage();
-                                                                      },
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                              ),
-                                            ],
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                            ),
                                           ),
-                                          SizedBox(
-                                            height: 30,
+                                          Expanded(
+                                            child: MainInfoTab(
+                                              theme: theme,
+                                              icon:
+                                                  productIconSvg,
+                                              number:
+                                                  '${mainReceiptss.length}',
+                                              title:
+                                                  'Todays Sales',
+                                              action: () {
+                                                returnNavProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).navigate(
+                                                  2,
+                                                );
+                                              },
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
+                                      SizedBox(height: 30),
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b1
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b1
+                                                          .fontWeightBold,
+                                                ),
+                                                'Quick Actions',
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+
+                                          SizedBox(
+                                            width:
+                                                double
+                                                    .infinity,
+                                            child: LayoutBuilder(
+                                              builder: (
+                                                context,
+                                                constraints,
+                                              ) {
+                                                if (constraints
+                                                        .maxWidth >
+                                                    320) {
+                                                  return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    spacing:
+                                                        15,
+                                                    children: [
+                                                      Row(
+                                                        spacing:
+                                                            15,
+                                                        children: [
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                productIconSvg,
+                                                            title:
+                                                                'Products',
+                                                            action: () {
+                                                              Provider.of<
+                                                                NavProvider
+                                                              >(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                1,
+                                                              );
+                                                            },
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                salesIconSvg,
+                                                            title:
+                                                                'Sales',
+                                                            action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                2,
+                                                              );
+                                                            },
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                reportIconSvg,
+                                                            title:
+                                                                'Report',
+                                                            action: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return ReportPage();
+                                                                  },
+                                                                ),
+                                                              ).then(
+                                                                (
+                                                                  context,
+                                                                ) {
+                                                                  setState(
+                                                                    () {
+                                                                      // clearDate();
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.start,
+                                                        // spacing:
+                                                        //     15,
+                                                        children: [
+                                                          Visibility(
+                                                            visible:
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee?.role ==
+                                                            // 'Owner',
+                                                            child: ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              icon:
+                                                                  employeesIconSvg,
+                                                              title:
+                                                                  'Employees',
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return EmployeeListPage(
+                                                                        empId:
+                                                                            userGeneral(
+                                                                              context,
+                                                                            ).userId!,
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible:
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee?.role ==
+                                                            // 'Owner',
+                                                            child: SizedBox(
+                                                              width:
+                                                                  15,
+                                                            ),
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                expensesIconSvg,
+                                                            title:
+                                                                'Expenses',
+                                                            action: () async {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return ExpensesPage(
+                                                                      isMain:
+                                                                          true,
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ).then(
+                                                                (
+                                                                  context,
+                                                                ) {
+                                                                  setState(
+                                                                    () {
+                                                                      expensesFuture =
+                                                                          getExpenses();
+                                                                      // clearDate();
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                          SizedBox(
+                                                            width:
+                                                                15,
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                custBookIconSvg,
+                                                            title:
+                                                                'Customers',
+                                                            action: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return CustomerList();
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  );
+                                                } else {
+                                                  return Column(
+                                                    spacing:
+                                                        15,
+                                                    children: [
+                                                      Row(
+                                                        spacing:
+                                                            15,
+                                                        children: [
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                productIconSvg,
+                                                            title:
+                                                                'Products',
+                                                            action: () {
+                                                              Provider.of<
+                                                                NavProvider
+                                                              >(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                1,
+                                                              );
+                                                            },
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                salesIconSvg,
+                                                            title:
+                                                                'Sales',
+                                                            action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                2,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                custBookIconSvg,
+                                                            title:
+                                                                'Customers',
+                                                            action: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return CustomerList();
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                          SizedBox(
+                                                            width:
+                                                                15,
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                expensesIconSvg,
+                                                            title:
+                                                                'Expenses',
+                                                            action: () async {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return ExpensesPage(
+                                                                      isMain:
+                                                                          true,
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ).then(
+                                                                (
+                                                                  _,
+                                                                ) {
+                                                                  setState(
+                                                                    () {
+                                                                      mainReceiptFuture =
+                                                                          getMainReceipts();
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Visibility(
+                                                            visible:
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee!.role ==
+                                                            // 'Owner',
+                                                            child: ButtonTab(
+                                                              theme:
+                                                                  theme,
+                                                              icon:
+                                                                  employeesIconSvg,
+                                                              title:
+                                                                  'Employees',
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return EmployeeListPage(
+                                                                        empId:
+                                                                            userGeneral(
+                                                                              context,
+                                                                            ).role,
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible:
+                                                                userGeneral(
+                                                                  context,
+                                                                ).role ==
+                                                                'Owner',
+                                                            // returnLocalDatabase(
+                                                            //   context,
+                                                            //   listen:
+                                                            //       false,
+                                                            // ).currentEmployee!.role ==
+                                                            // 'Owner',
+                                                            child: SizedBox(
+                                                              width:
+                                                                  15,
+                                                            ),
+                                                          ),
+                                                          ButtonTab(
+                                                            theme:
+                                                                theme,
+                                                            icon:
+                                                                reportIconSvg,
+                                                            title:
+                                                                'Report',
+                                                            action: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return ReportPage();
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 30),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -1451,570 +1447,550 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   .lightModeColor
                                   .prColor300,
                           displacement: 10,
-                          child: SingleChildScrollView(
-                            child: SizedBox(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 15.0,
-                                    ),
-                                child: Column(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 15.0,
+                                ),
+                            child: ListView(
+                              children: [
+                                SizedBox(height: 20),
+
+                                Column(
                                   children: [
-                                    SizedBox(height: 20),
-
-                                    Column(
-                                      children: [
-                                        Visibility(
-                                          visible: authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .viewDailySale,
-                                            context:
+                                    Visibility(
+                                      visible: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewDailySale,
+                                        context: context,
+                                      ),
+                                      child: DashboardTotalSalesBanner(
+                                        expenses:
+                                            expensesLocal,
+                                        userValue: returnReceiptProvider(
+                                          context,
+                                        ).getTotalRevenueForSelectedDay(
+                                          context,
+                                          returnReceiptProvider(
                                                 context,
+                                              ).receipts
+                                              .where(
+                                                (emp) =>
+                                                    emp.staffName ==
+                                                    userGeneral(
+                                                      context,
+                                                    ).name,
+                                                // localUser?.name,
+                                              )
+                                              .toList(),
+                                          returnReceiptProvider(
+                                            context,
+                                          ).returnproductsRecordByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                              context,
+                                            ).produtRecordSalesMain,
                                           ),
-                                          child: DashboardTotalSalesBanner(
-                                            expenses:
-                                                expensesLocal,
-                                            userValue: returnReceiptProvider(
+                                        ),
+                                        currentUser:
+                                            userGeneral(
                                               context,
-                                            ).getTotalRevenueForSelectedDay(
-                                              context,
-                                              returnReceiptProvider(
-                                                    context,
-                                                  ).receipts
-                                                  .where(
-                                                    (emp) =>
-                                                        emp.staffName ==
-                                                        userGeneral(
-                                                          context,
-                                                        ).name,
-                                                    // localUser?.name,
-                                                  )
-                                                  .toList(),
-                                              returnReceiptProvider(
-                                                context,
-                                              ).returnproductsRecordByDayOrWeek(
-                                                context,
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).produtRecordSalesMain,
-                                              ),
                                             ),
-                                            currentUser:
-                                                userGeneral(
-                                                  context,
-                                                ),
-                                            theme: theme,
-                                            value: returnReceiptProvider(
-                                              context,
-                                            ).getTotalRevenueForSelectedDay(
-                                              context,
-                                              returnReceiptProvider(
-                                                context,
-                                              ).receipts,
-                                              returnReceiptProvider(
-                                                context,
-                                              ).produtRecordSalesMain,
-                                            ),
-                                          ),
+                                        theme: theme,
+                                        value: returnReceiptProvider(
+                                          context,
+                                        ).getTotalRevenueForSelectedDay(
+                                          context,
+                                          returnReceiptProvider(
+                                            context,
+                                          ).receipts,
+                                          returnReceiptProvider(
+                                            context,
+                                          ).produtRecordSalesMain,
                                         ),
-                                        // SizedBox(
-                                        //   height:
-                                        //       10,
-                                        // ),
-
-                                        // Container(
-                                        //   decoration:
-                                        //       BoxDecoration(),
-                                        //   child: Row(
-                                        //     children: [
-                                        //       Column(
-                                        //         crossAxisAlignment:
-                                        //             CrossAxisAlignment.start,
-                                        //         children: [
-                                        //           Text(
-                                        //             'Todays Sales by You',
-                                        //           ),
-                                        //           Text(
-                                        //             '${localUser != null ? returnReceiptProvider(context).getTotalRevenueForSelectedDay(context, mainReceipts.where((emp) => emp.staffName == localUser.name).toList(), records) : 0}',
-                                        //           ),
-                                        //         ],
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        // ),
-                                      ],
+                                      ),
                                     ),
+                                    // SizedBox(
+                                    //   height:
+                                    //       10,
+                                    // ),
 
-                                    SizedBox(height: 20),
-                                    Row(
-                                      spacing: 10,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
-                                      children: [
-                                        Expanded(
-                                          child: MainInfoTab(
-                                            theme: theme,
-                                            icon:
-                                                pulseIconSvg,
-                                            number:
-                                                '${productsLocal.length}',
-                                            title:
-                                                'All Products',
-                                            action: () {
-                                              returnNavProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).navigate(1);
-                                            },
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: MainInfoTab(
-                                            theme: theme,
-                                            icon:
-                                                productIconSvg,
-                                            number:
-                                                '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptsLocal).length}',
-                                            title:
-                                                'Todays Sales',
-                                            action: () {
-                                              returnNavProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).navigate(2);
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20),
-                                    Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontWeightBold,
-                                              ),
-                                              'Quick Actions',
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-
-                                        SizedBox(
-                                          width:
-                                              double
-                                                  .infinity,
-                                          child: LayoutBuilder(
-                                            builder: (
-                                              context,
-                                              constraints,
-                                            ) {
-                                              if (constraints
-                                                      .maxWidth >
-                                                  320) {
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .center,
-                                                  spacing:
-                                                      15,
-                                                  children: [
-                                                    Row(
-                                                      spacing:
-                                                          15,
-                                                      children: [
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              productIconSvg,
-                                                          title:
-                                                              'Products',
-                                                          action: () {
-                                                            Provider.of<
-                                                              NavProvider
-                                                            >(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).navigate(
-                                                              1,
-                                                            );
-                                                          },
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              salesIconSvg,
-                                                          title:
-                                                              'Sales',
-                                                          action: () {
-                                                            returnNavProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).navigate(
-                                                              2,
-                                                            );
-                                                          },
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              reportIconSvg,
-                                                          title:
-                                                              'Report',
-                                                          action: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return ReportPage();
-                                                                },
-                                                              ),
-                                                            ).then(
-                                                              (
-                                                                context,
-                                                              ) {
-                                                                setState(
-                                                                  () {
-                                                                    clearDate();
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.start,
-                                                      // spacing:
-                                                      //     15,
-                                                      children: [
-                                                        Visibility(
-                                                          visible:
-                                                              userGeneral(
-                                                                context,
-                                                              ).role ==
-                                                              'Owner',
-                                                          child: ButtonTab(
-                                                            theme:
-                                                                theme,
-                                                            icon:
-                                                                employeesIconSvg,
-                                                            title:
-                                                                'Employees',
-                                                            action: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    return EmployeeListPage(
-                                                                      empId:
-                                                                          userGeneral(
-                                                                            context,
-                                                                          ).userId!,
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible:
-                                                              userGeneral(
-                                                                context,
-                                                              ).role ==
-                                                              'Owner',
-                                                          child: SizedBox(
-                                                            width:
-                                                                15,
-                                                          ),
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              expensesIconSvg,
-                                                          title:
-                                                              'Expenses',
-                                                          action: () async {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return ExpensesPage(
-                                                                    isMain:
-                                                                        true,
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ).then(
-                                                              (
-                                                                context,
-                                                              ) {
-                                                                setState(
-                                                                  () {
-                                                                    clearDate();
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                        SizedBox(
-                                                          width:
-                                                              15,
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              custBookIconSvg,
-                                                          title:
-                                                              'Customers',
-                                                          action: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return CustomerList();
-                                                                },
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                );
-                                              } else {
-                                                return Column(
-                                                  spacing:
-                                                      15,
-                                                  children: [
-                                                    Row(
-                                                      spacing:
-                                                          15,
-                                                      children: [
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              productIconSvg,
-                                                          title:
-                                                              'Products',
-                                                          action: () {
-                                                            Provider.of<
-                                                              NavProvider
-                                                            >(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).navigate(
-                                                              1,
-                                                            );
-                                                          },
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              salesIconSvg,
-                                                          title:
-                                                              'Sales',
-                                                          action: () {
-                                                            returnNavProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).navigate(
-                                                              2,
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              custBookIconSvg,
-                                                          title:
-                                                              'Customers',
-                                                          action: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return CustomerList();
-                                                                },
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                        SizedBox(
-                                                          width:
-                                                              15,
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              expensesIconSvg,
-                                                          title:
-                                                              'Expenses',
-                                                          action: () async {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return ExpensesPage(
-                                                                    isMain:
-                                                                        true,
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ).then(
-                                                              (
-                                                                context,
-                                                              ) {
-                                                                setState(
-                                                                  () {
-                                                                    clearDate();
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Visibility(
-                                                          visible:
-                                                              userGeneral(
-                                                                context,
-                                                              ).role ==
-                                                              'Owner',
-                                                          child: ButtonTab(
-                                                            theme:
-                                                                theme,
-                                                            icon:
-                                                                employeesIconSvg,
-                                                            title:
-                                                                'Employees',
-                                                            action: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    return EmployeeListPage(
-                                                                      empId:
-                                                                          userGeneral(
-                                                                            context,
-                                                                          ).role,
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible:
-                                                              userGeneral(
-                                                                context,
-                                                              ).role ==
-                                                              'Owner',
-                                                          child: SizedBox(
-                                                            width:
-                                                                15,
-                                                          ),
-                                                        ),
-                                                        ButtonTab(
-                                                          theme:
-                                                              theme,
-                                                          icon:
-                                                              reportIconSvg,
-                                                          title:
-                                                              'Report',
-                                                          action: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return ReportPage();
-                                                                },
-                                                              ),
-                                                            ).then(
-                                                              (
-                                                                context,
-                                                              ) {
-                                                                setState(
-                                                                  () {
-                                                                    clearDate();
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 30),
+                                    // Container(
+                                    //   decoration:
+                                    //       BoxDecoration(),
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Column(
+                                    //         crossAxisAlignment:
+                                    //             CrossAxisAlignment.start,
+                                    //         children: [
+                                    //           Text(
+                                    //             'Todays Sales by You',
+                                    //           ),
+                                    //           Text(
+                                    //             '${localUser != null ? returnReceiptProvider(context).getTotalRevenueForSelectedDay(context, mainReceipts.where((emp) => emp.staffName == localUser.name).toList(), records) : 0}',
+                                    //           ),
+                                    //         ],
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
-                              ),
+
+                                SizedBox(height: 20),
+                                Row(
+                                  spacing: 10,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  children: [
+                                    Expanded(
+                                      child: MainInfoTab(
+                                        theme: theme,
+                                        icon: pulseIconSvg,
+                                        number:
+                                            '${productsLocal.length}',
+                                        title:
+                                            'All Products',
+                                        action: () {
+                                          returnNavProvider(
+                                            context,
+                                            listen: false,
+                                          ).navigate(1);
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: MainInfoTab(
+                                        theme: theme,
+                                        icon:
+                                            productIconSvg,
+                                        number:
+                                            '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptsLocal).length}',
+                                        title:
+                                            'Todays Sales',
+                                        action: () {
+                                          returnNavProvider(
+                                            context,
+                                            listen: false,
+                                          ).navigate(2);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontWeightBold,
+                                          ),
+                                          'Quick Actions',
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 15),
+
+                                    SizedBox(
+                                      width:
+                                          double.infinity,
+                                      child: LayoutBuilder(
+                                        builder: (
+                                          context,
+                                          constraints,
+                                        ) {
+                                          if (constraints
+                                                  .maxWidth >
+                                              320) {
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .center,
+                                              spacing: 15,
+                                              children: [
+                                                Row(
+                                                  spacing:
+                                                      15,
+                                                  children: [
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          productIconSvg,
+                                                      title:
+                                                          'Products',
+                                                      action: () {
+                                                        Provider.of<
+                                                          NavProvider
+                                                        >(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).navigate(
+                                                          1,
+                                                        );
+                                                      },
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          salesIconSvg,
+                                                      title:
+                                                          'Sales',
+                                                      action: () {
+                                                        returnNavProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).navigate(
+                                                          2,
+                                                        );
+                                                      },
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          reportIconSvg,
+                                                      title:
+                                                          'Report',
+                                                      action: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ReportPage();
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          context,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              clearDate();
+                                                            },
+                                                          );
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .start,
+                                                  // spacing:
+                                                  //     15,
+                                                  children: [
+                                                    Visibility(
+                                                      visible:
+                                                          userGeneral(
+                                                            context,
+                                                          ).role ==
+                                                          'Owner',
+                                                      child: ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            employeesIconSvg,
+                                                        title:
+                                                            'Employees',
+                                                        action: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return EmployeeListPage(
+                                                                  empId:
+                                                                      userGeneral(
+                                                                        context,
+                                                                      ).userId!,
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                    Visibility(
+                                                      visible:
+                                                          userGeneral(
+                                                            context,
+                                                          ).role ==
+                                                          'Owner',
+                                                      child: SizedBox(
+                                                        width:
+                                                            15,
+                                                      ),
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          expensesIconSvg,
+                                                      title:
+                                                          'Expenses',
+                                                      action: () async {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ExpensesPage(
+                                                                isMain:
+                                                                    true,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          context,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              clearDate();
+                                                            },
+                                                          );
+                                                        });
+                                                      },
+                                                    ),
+                                                    SizedBox(
+                                                      width:
+                                                          15,
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          custBookIconSvg,
+                                                      title:
+                                                          'Customers',
+                                                      action: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return CustomerList();
+                                                            },
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          } else {
+                                            return Column(
+                                              spacing: 15,
+                                              children: [
+                                                Row(
+                                                  spacing:
+                                                      15,
+                                                  children: [
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          productIconSvg,
+                                                      title:
+                                                          'Products',
+                                                      action: () {
+                                                        Provider.of<
+                                                          NavProvider
+                                                        >(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).navigate(
+                                                          1,
+                                                        );
+                                                      },
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          salesIconSvg,
+                                                      title:
+                                                          'Sales',
+                                                      action: () {
+                                                        returnNavProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).navigate(
+                                                          2,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          custBookIconSvg,
+                                                      title:
+                                                          'Customers',
+                                                      action: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return CustomerList();
+                                                            },
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                    SizedBox(
+                                                      width:
+                                                          15,
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          expensesIconSvg,
+                                                      title:
+                                                          'Expenses',
+                                                      action: () async {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ExpensesPage(
+                                                                isMain:
+                                                                    true,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          context,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              clearDate();
+                                                            },
+                                                          );
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Visibility(
+                                                      visible:
+                                                          userGeneral(
+                                                            context,
+                                                          ).role ==
+                                                          'Owner',
+                                                      child: ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            employeesIconSvg,
+                                                        title:
+                                                            'Employees',
+                                                        action: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return EmployeeListPage(
+                                                                  empId:
+                                                                      userGeneral(
+                                                                        context,
+                                                                      ).role,
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                    Visibility(
+                                                      visible:
+                                                          userGeneral(
+                                                            context,
+                                                          ).role ==
+                                                          'Owner',
+                                                      child: SizedBox(
+                                                        width:
+                                                            15,
+                                                      ),
+                                                    ),
+                                                    ButtonTab(
+                                                      theme:
+                                                          theme,
+                                                      icon:
+                                                          reportIconSvg,
+                                                      title:
+                                                          'Report',
+                                                      action: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ReportPage();
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          context,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              clearDate();
+                                                            },
+                                                          );
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 30),
+                              ],
                             ),
                           ),
                         ),

@@ -33,39 +33,6 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
 
   bool success = false;
 
-  // void loading() {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   Future.delayed(Duration(seconds: 3), () {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     showSuccess();
-  //   });
-  // }
-
-  // void showSuccess() {
-  //   setState(() {
-  //     success = true;
-  //   });
-  //   Future.delayed(Duration(seconds: 3), () {
-  //     if (!context.mounted) return;
-  //     Navigator.pushReplacement(
-  //       // ignore: use_build_context_synchronously
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) {
-  //           return Home();
-  //         },
-  //       ),
-  //     );
-  //     // setState(() {
-  //     //   success = false;
-  //     // });
-  //   });
-  // }
-
   TextEditingController controller =
       TextEditingController();
 
@@ -150,6 +117,8 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
       TextEditingController();
   TextEditingController stateController =
       TextEditingController();
+  TextEditingController referralController =
+      TextEditingController();
 
   void checkInputs() {
     var shopProvider = returnShopProvider(
@@ -205,6 +174,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                             : addressController.text,
                     city: selectedCityName,
                     phoneNumber: shopProvider.phone,
+                    refCode: referralController.text.trim(),
                   ),
                 );
                 await Future.delayed(Duration(seconds: 1));
@@ -394,6 +364,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
     stateController.dispose();
     cityController.dispose();
     addressController.dispose();
+    referralController.dispose();
   }
 
   @override
@@ -470,9 +441,9 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                 children: [
                   TopBanner(
                     isMain: true,
-                    bottomSpace: 50,
+                    bottomSpace: 40,
                     iconData: Icons.home_work_outlined,
-                    topSpace: 40,
+                    topSpace: 30,
                     theme: theme,
                     subTitle:
                         widget.shop != null
@@ -480,14 +451,14 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                             : 'Create a Shop to get Started.',
                     title: 'Update Shop Address',
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 30.0,
                     ),
                     child: ProgressBar(
                       position: 0.06,
-                      calcValue: 0.35,
+                      calcValue: 0.3,
                       theme: theme,
                       percent: '50%',
                       title: 'Your Progress',
@@ -1963,7 +1934,19 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                               lines: 1,
                             ),
 
-                            SizedBox(height: 10),
+                            Visibility(
+                              visible: widget.shop == null,
+                              child: GeneralTextField(
+                                title:
+                                    'Referral Code (Optional)',
+                                theme: theme,
+                                hint: 'Enter Referral Code',
+                                controller:
+                                    referralController,
+                                lines: 1,
+                              ),
+                            ),
+
                             MainButtonP(
                               themeProvider: theme,
                               action: () {

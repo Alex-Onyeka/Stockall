@@ -84,69 +84,77 @@ class _ProductTileCartSearchState
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      widget.product.name,
+                            Flexible(
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          widget
+                                              .product
+                                              .name,
+                                        ),
+                                        Text(
+                                          [
+                                            if (widget
+                                                    .product
+                                                    .color !=
+                                                null)
+                                              widget
+                                                  .product
+                                                  .color,
+                                            if (widget
+                                                    .product
+                                                    .sizeType !=
+                                                null)
+                                              widget
+                                                  .product
+                                                  .sizeType,
+                                            if (widget
+                                                    .product
+                                                    .size !=
+                                                null)
+                                              widget
+                                                  .product
+                                                  .size,
+                                          ].join('  |  '),
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .w600,
+                                            color:
+                                                widget
+                                                    .theme
+                                                    .lightModeColor
+                                                    .secColor200,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      [
-                                        if (widget
-                                                .product
-                                                .color !=
-                                            null)
-                                          widget
-                                              .product
-                                              .color,
-                                        if (widget
-                                                .product
-                                                .sizeType !=
-                                            null)
-                                          widget
-                                              .product
-                                              .sizeType,
-                                        if (widget
-                                                .product
-                                                .size !=
-                                            null)
-                                          widget
-                                              .product
-                                              .size,
-                                      ].join('  |  '),
-                                      style: TextStyle(
-                                        fontSize:
-                                            widget
-                                                .theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.w600,
-                                        color:
-                                            widget
-                                                .theme
-                                                .lightModeColor
-                                                .secColor200,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                             IconButton(
                               onPressed: widget.action,
@@ -159,63 +167,65 @@ class _ProductTileCartSearchState
                               MainAxisAlignment
                                   .spaceBetween,
                           children: [
-                            Row(
-                              spacing: 5,
-                              children: [
-                                Visibility(
-                                  visible: true,
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color:
-                                          widget
-                                              .theme
-                                              .lightModeColor
-                                              .prColor300,
+                            Flexible(
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Visibility(
+                                    visible: true,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            widget
+                                                .theme
+                                                .lightModeColor
+                                                .prColor300,
+                                      ),
+                                      '${widget.product.sellingPrice != null ? nairaSymbol : ''} ${widget.product.discount == null ? (widget.product.sellingPrice != null ? formatLargeNumberDouble(widget.product.sellingPrice ?? 0) : 'Price Not Set') : formatLargeNumberDouble((widget.product.sellingPrice ?? 0.0 * (1 - (widget.product.discount! / 100))))}',
                                     ),
-                                    '${widget.product.sellingPrice != null ? nairaSymbol : ''} ${widget.product.discount == null ? (widget.product.sellingPrice != null ? formatLargeNumberDouble(widget.product.sellingPrice ?? 0) : 'Price Not Set') : formatLargeNumberDouble((widget.product.sellingPrice ?? 0.0 * (1 - (widget.product.discount! / 100))))}',
                                   ),
-                                ),
-                                Visibility(
-                                  visible:
-                                      widget
-                                          .product
-                                          .discount !=
-                                      null,
-                                  child: Text('/'),
-                                ),
-                                Visibility(
-                                  visible:
-                                      widget
-                                          .product
-                                          .discount !=
-                                      null,
-                                  child: Text(
-                                    style: TextStyle(
-                                      decoration:
-                                          TextDecoration
-                                              .lineThrough,
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color: Colors.grey,
+                                  Visibility(
+                                    visible:
+                                        widget
+                                            .product
+                                            .discount !=
+                                        null,
+                                    child: Text('/'),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        widget
+                                            .product
+                                            .discount !=
+                                        null,
+                                    child: Text(
+                                      style: TextStyle(
+                                        decoration:
+                                            TextDecoration
+                                                .lineThrough,
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      'N${formatLargeNumberDouble(widget.product.sellingPrice ?? 0)}',
                                     ),
-                                    'N${formatLargeNumberDouble(widget.product.sellingPrice ?? 0)}',
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             Padding(
                               padding:

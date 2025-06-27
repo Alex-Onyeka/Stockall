@@ -165,9 +165,9 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                     child: Column(
                       children: [
                         TopBanner(
-                          bottomSpace: 50,
+                          bottomSpace: 40,
                           isMain: true,
-                          topSpace: 40,
+                          topSpace: 30,
                           theme: theme,
                           subTitle:
                               widget.shop != null
@@ -188,7 +188,7 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                               ),
                           child: ProgressBar(
                             position: -1,
-                            calcValue: 0.03,
+                            calcValue: 0.08,
                             theme: theme,
                             percent: '0%',
                             title: 'Your Progress',
