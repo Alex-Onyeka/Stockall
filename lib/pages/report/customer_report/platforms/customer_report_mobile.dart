@@ -352,72 +352,67 @@ class _CustomerReportMobileState
                                             .lightModeColor
                                             .prColor300,
                                     displacement: 10,
-                                    child: SingleChildScrollView(
-                                      primary: true,
-                                      child: Column(
-                                        children: [
-                                          ListView.builder(
-                                            shrinkWrap:
-                                                true,
-                                            itemCount:
-                                                salesRecords
-                                                    .length,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
+                                    child: ListView(
+                                      children: [
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount:
+                                              salesRecords
+                                                  .length,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
 
-                                            itemBuilder: (
-                                              context,
-                                              index,
+                                          itemBuilder: (
+                                            context,
+                                            index,
+                                          ) {
+                                            salesRecords.sort((
+                                              a,
+                                              b,
                                             ) {
-                                              salesRecords.sort((
-                                                a,
-                                                b,
-                                              ) {
-                                                switch (sortIndex) {
-                                                  case 1:
-                                                    return a
-                                                        .customerName!
-                                                        .compareTo(
-                                                          b.customerName!,
-                                                        );
-                                                  default:
-                                                    return b
-                                                        .createdAt
-                                                        .compareTo(
-                                                          a.createdAt,
-                                                        );
-                                                }
-                                              });
-                                              var record =
-                                                  salesRecords[index];
-                                              var recordIndex =
-                                                  salesRecords
-                                                      .indexOf(
-                                                        record,
-                                                      ) +
-                                                  1;
-                                              return TableRowRecordWidget(
-                                                theme:
-                                                    theme,
-                                                recordIndex:
-                                                    recordIndex,
-                                                record:
-                                                    record,
-                                              );
-                                            },
-                                          ),
-                                          // SummaryTableHeadingBar(
-                                          //   isHeading:
-                                          //       false,
-                                          //   theme: theme,
-                                          //   salesRecords:
-                                          //       salesRecords,
-                                          // ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                        ],
-                                      ),
+                                              switch (sortIndex) {
+                                                case 1:
+                                                  return a
+                                                      .customerName!
+                                                      .compareTo(
+                                                        b.customerName!,
+                                                      );
+                                                default:
+                                                  return b
+                                                      .createdAt
+                                                      .compareTo(
+                                                        a.createdAt,
+                                                      );
+                                              }
+                                            });
+                                            var record =
+                                                salesRecords[index];
+                                            var recordIndex =
+                                                salesRecords
+                                                    .indexOf(
+                                                      record,
+                                                    ) +
+                                                1;
+                                            return TableRowRecordWidget(
+                                              theme: theme,
+                                              recordIndex:
+                                                  recordIndex,
+                                              record:
+                                                  record,
+                                            );
+                                          },
+                                        ),
+                                        // SummaryTableHeadingBar(
+                                        //   isHeading:
+                                        //       false,
+                                        //   theme: theme,
+                                        //   salesRecords:
+                                        //       salesRecords,
+                                        // ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                      ],
                                     ),
                                   );
                                 }
