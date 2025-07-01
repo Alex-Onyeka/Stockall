@@ -64,17 +64,20 @@ List<Map<String, dynamic>> employees = [
       'Update Customers',
       'Delete Customers',
       'Make Sale',
-      'View Daily Sales',
-      'View Weekly Sales',
       'Make Refund',
       'Delete Sales',
       'Add Employee',
+      'Employee Page',
       'Update Employee',
       'Delete Employee',
       'Add Expenses',
       'Update Expenses',
       'Delete Expenses',
-      'Manager Shop',
+      'Manage Shop',
+      'Notifications Page',
+      'Delete Notification',
+      'Contact Stockall',
+      'View Date',
     ],
   },
   {
@@ -87,33 +90,32 @@ List<Map<String, dynamic>> employees = [
       'Update Customers',
       'Delete Customers',
       'Make Sale',
-      'View Daily Sales',
-      'View Weekly Sales',
       'Make Refund',
       'Delete Sales',
       'Add Employee',
       'Update Employee',
+      'Employee Page',
       'Delete Employee',
       'Add Expenses',
       'Update Expenses',
       'Delete Expenses',
+      'Notifications Page',
+      'Contact Stockall',
+      'View Date',
     ],
   },
   {
     'position': 'Manager',
     'auths': [
-      'Add Products',
-      'Update Products',
       'Add Customers',
       'Update Customers',
       'Delete Customers',
       'Make Sale',
-      'View Daily Sales',
-      'View Weekly Sales',
       'Make Refund',
       'Delete Sales',
       'Add Expenses',
       'Update Expenses',
+      'Notifications Page',
       'Delete Expenses',
     ],
   },
@@ -154,15 +156,18 @@ class Authorizations {
   String makeSale = 'Make Sale';
   String deleteSale = 'Delete Sales';
   String makeRefund = 'Make Refund';
-  String viewDailySale = 'View Daily Sales';
-  String viewWeeklySales = 'View Weekly Sales';
   String addEmployee = 'Add Employee';
   String updateEmployee = 'Update Employees';
+  String employeePage = 'Employee Page';
   String deleteEmployee = 'Delete Employees';
   String addExpense = 'Add Expenses';
   String updateExpenses = 'Update Expenses';
   String deleteExpenses = 'Delete Expenses';
   String manageShop = 'Manage Shop';
+  String deleteNotification = 'Delete Notification';
+  String notificationsPage = 'Notifications Page';
+  String contactStockall = 'Contact Stockall';
+  String viewDate = 'View Date';
 }
 
 bool authorization({
@@ -170,7 +175,9 @@ bool authorization({
   required BuildContext context,
 }) {
   Map<String, dynamic> emp = employees.firstWhere(
-    (emp) => emp['position'] == userGeneral(context).role,
+    (emp) =>
+        emp['position'] ==
+        userGeneral(context, listen: false).role,
   );
   if (emp['auths'].contains(authorized)) {
     return true;

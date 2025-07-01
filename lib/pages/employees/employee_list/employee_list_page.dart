@@ -5,13 +5,8 @@ import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart'
 import 'package:stockall/services/auth_service.dart';
 
 class EmployeeListPage extends StatefulWidget {
-  // final String role;
   final String empId;
-  const EmployeeListPage({
-    super.key,
-    required this.empId,
-    // required this.role,
-  });
+  const EmployeeListPage({super.key, required this.empId});
 
   @override
   State<EmployeeListPage> createState() =>
@@ -50,9 +45,7 @@ class _EmployeeListPageState
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
-          return EmployeeListMobile(
-            // role: widget.role,
-          );
+          return EmployeeListMobile();
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {
           return Scaffold();

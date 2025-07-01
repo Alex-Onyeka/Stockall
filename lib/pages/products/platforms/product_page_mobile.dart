@@ -10,6 +10,7 @@ import 'package:stockall/components/major/items_summary.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
@@ -361,7 +362,11 @@ class _ProductPageMobileState
             children: [
               SizedBox(
                 height:
-                    userGeneral(context).role == 'Owner'
+                    authorization(
+                          authorized:
+                              Authorizations().addProduct,
+                          context: context,
+                        )
                         ? 280
                         : 260,
                 child: Stack(
@@ -448,13 +453,11 @@ class _ProductPageMobileState
                   child: Builder(
                     builder: (context) {
                       if (products.isEmpty) {
-                        if (
-                        // returnLocalDatabase(
-                        //     context,
-                        //     listen: false,
-                        //   ).currentEmployee!.role !=
-                        userGeneral(context).role !=
-                            'Owner') {
+                        if (!authorization(
+                          authorized:
+                              Authorizations().addProduct,
+                          context: context,
+                        )) {
                           return Center(
                             child: SingleChildScrollView(
                               child: RefreshIndicator(
@@ -509,11 +512,7 @@ class _ProductPageMobileState
                                       ),
                                     ).then((_) {
                                       if (context.mounted) {
-                                        setState(() {
-                                          // getProductList(
-                                          //   context,
-                                          // );
-                                        });
+                                        setState(() {});
                                       }
                                     });
                                   },
@@ -801,11 +800,9 @@ class _ProductPageMobileState
                                               ).then((_) {
                                                 if (context
                                                     .mounted) {
-                                                  setState(() {
-                                                    // getProductList(
-                                                    //   context,
-                                                    // );
-                                                  });
+                                                  setState(
+                                                    () {},
+                                                  );
                                                 }
                                               });
                                               clearState();
@@ -843,11 +840,9 @@ class _ProductPageMobileState
                                               ).then((_) {
                                                 if (context
                                                     .mounted) {
-                                                  setState(() {
-                                                    // getProductList(
-                                                    //   context,
-                                                    // );
-                                                  });
+                                                  setState(
+                                                    () {},
+                                                  );
                                                 }
                                               });
                                             },

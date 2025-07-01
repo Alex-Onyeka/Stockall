@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
@@ -86,34 +87,41 @@ class NotificationsMobile extends StatelessWidget {
                               notif: notif,
                               theme: theme,
                               action: () {
-                                showDialog(
+                                if (authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .deleteNotification,
                                   context: context,
-                                  builder: (context) {
-                                    return ConfirmationAlert(
-                                      theme: theme,
-                                      message:
-                                          'Are you sure you want to proceed with delete?',
-                                      title:
-                                          'Delete Notification?',
-                                      action: () async {
-                                        await Provider.of<
-                                          NotificationProvider
-                                        >(
-                                          context,
-                                          listen: false,
-                                        ).deleteNotificationFromSupabase(
-                                          notif,
-                                        );
-                                        if (context
-                                            .mounted) {
-                                          Navigator.of(
+                                )) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'Are you sure you want to proceed with delete?',
+                                        title:
+                                            'Delete Notification?',
+                                        action: () async {
+                                          await Provider.of<
+                                            NotificationProvider
+                                          >(
                                             context,
-                                          ).pop();
-                                        }
-                                      },
-                                    );
-                                  },
-                                );
+                                            listen: false,
+                                          ).deleteNotificationFromSupabase(
+                                            notif,
+                                          );
+                                          if (context
+                                              .mounted) {
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                          }
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
                               },
                             ),
                           );
@@ -416,11 +424,19 @@ class _NotificatonTileMainState
                             Row(
                               spacing: 3,
                               children: [
-                                Icon(
-                                  size: 20,
-                                  color: Colors.grey,
-                                  Icons
-                                      .delete_outline_rounded,
+                                Visibility(
+                                  visible: authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .deleteNotification,
+                                    context: context,
+                                  ),
+                                  child: Icon(
+                                    size: 20,
+                                    color: Colors.grey,
+                                    Icons
+                                        .delete_outline_rounded,
+                                  ),
                                 ),
                                 Text(
                                   style: TextStyle(

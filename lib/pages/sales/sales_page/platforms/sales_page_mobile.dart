@@ -10,6 +10,7 @@ import 'package:stockall/components/major/items_summary.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
@@ -194,11 +195,12 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                               ).clearReceiptDate();
                             },
                             child: ItemsSummary(
-                              isFilter:
-                                  userGeneral(
-                                    context,
-                                  ).role ==
-                                  'Owner',
+                              isFilter: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewDate,
+                                context: context,
+                              ),
                               isMoney1: true,
                               mainTitle: 'Sales Summary',
                               subTitle:

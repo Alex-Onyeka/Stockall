@@ -6,6 +6,7 @@ import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/items_summary.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -96,11 +97,11 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                   color: Colors.transparent,
                   child: SizedBox(
                     height:
-                        userGeneral(
-                                  context,
-                                  listen: false,
-                                ).role ==
-                                'Owner'
+                        authorization(
+                              authorized:
+                                  Authorizations().viewDate,
+                              context: context,
+                            )
                             ? 250
                             : 235,
                     child: Stack(
@@ -136,11 +137,12 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                   ).clearExpenseDate();
                                 },
                                 child: ItemsSummary(
-                                  isFilter:
-                                      userGeneral(
-                                        context,
-                                      ).role ==
-                                      'Owner',
+                                  isFilter: authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .viewDate,
+                                    context: context,
+                                  ),
                                   isMoney1: true,
                                   mainTitle:
                                       'Expenses Summary',
@@ -239,10 +241,7 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                         },
                                       ),
                                     ).then((_) {
-                                      setState(() {
-                                        // expensesFuture =
-                                        //     getExpenses();
-                                      });
+                                      setState(() {});
                                     });
                                   },
                                   child: Row(

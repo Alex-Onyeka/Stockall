@@ -4,6 +4,7 @@ import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -202,19 +203,21 @@ class _TotalExpensesMobileState
                                 ],
                               ),
                               Visibility(
-                                visible:
-                                    userGeneral(
-                                      context,
-                                    ).role !=
-                                    'Owner',
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .viewDate,
+                                  context: context,
+                                ),
                                 child: SizedBox(height: 30),
                               ),
                               Visibility(
-                                visible:
-                                    userGeneral(
-                                      context,
-                                    ).role ==
-                                    'Owner',
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .viewDate,
+                                  context: context,
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.end,

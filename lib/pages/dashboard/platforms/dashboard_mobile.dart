@@ -26,16 +26,11 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
-import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardMobile extends StatefulWidget {
   final int? shopId;
-  const DashboardMobile({
-    super.key,
-    required this.shopId,
-    // required this.stillLoading,
-  });
+  const DashboardMobile({super.key, required this.shopId});
 
   @override
   State<DashboardMobile> createState() =>
@@ -190,6 +185,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getMainReceipts();
     getProductSalesRecord();
     getExpenses();
+    returnUserProvider(
+      context,
+      listen: false,
+    ).fetchCurrentUser(context);
     getProducts();
     clearDate();
   }
@@ -326,7 +325,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                     ConnectionState
                                         .waiting) {
                                   return TopNavBar(
-                                    role: '',
                                     openSideBar: () {
                                       _scaffoldKey
                                           .currentState
@@ -342,7 +340,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 } else if (snapshot
                                     .hasError) {
                                   return TopNavBar(
-                                    role: '',
                                     action: () {},
                                     openSideBar: () {
                                       _scaffoldKey
@@ -362,10 +359,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                       snapshot.data!;
 
                                   return TopNavBar(
-                                    role:
-                                        userGeneral(
-                                          context,
-                                        ).role,
                                     action: () {
                                       Navigator.push(
                                         context,
@@ -735,9 +728,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             title:
                                                                 'Products',
                                                             action: () {
-                                                              Provider.of<
-                                                                NavProvider
-                                                              >(
+                                                              returnNavProvider(
                                                                 context,
                                                                 listen:
                                                                     false,
@@ -785,9 +776,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                   context,
                                                                 ) {
                                                                   setState(
-                                                                    () {
-                                                                      // clearDate();
-                                                                    },
+                                                                    () {},
                                                                   );
                                                                 },
                                                               );
@@ -798,21 +787,14 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment.start,
-                                                        // spacing:
-                                                        //     15,
                                                         children: [
                                                           Visibility(
-                                                            visible:
-                                                                userGeneral(
+                                                            visible: authorization(
+                                                              authorized:
+                                                                  Authorizations().employeePage,
+                                                              context:
                                                                   context,
-                                                                ).role ==
-                                                                'Owner',
-                                                            // returnLocalDatabase(
-                                                            //   context,
-                                                            //   listen:
-                                                            //       false,
-                                                            // ).currentEmployee?.role ==
-                                                            // 'Owner',
+                                                            ),
                                                             child: ButtonTab(
                                                               theme:
                                                                   theme,
@@ -840,17 +822,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             ),
                                                           ),
                                                           Visibility(
-                                                            visible:
-                                                                userGeneral(
+                                                            visible: authorization(
+                                                              authorized:
+                                                                  Authorizations().employeePage,
+                                                              context:
                                                                   context,
-                                                                ).role ==
-                                                                'Owner',
-                                                            // returnLocalDatabase(
-                                                            //   context,
-                                                            //   listen:
-                                                            //       false,
-                                                            // ).currentEmployee?.role ==
-                                                            // 'Owner',
+                                                            ),
                                                             child: SizedBox(
                                                               width:
                                                                   15,
@@ -884,7 +861,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                     () {
                                                                       expensesFuture =
                                                                           getExpenses();
-                                                                      // clearDate();
                                                                     },
                                                                   );
                                                                 },
@@ -936,9 +912,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             title:
                                                                 'Products',
                                                             action: () {
-                                                              Provider.of<
-                                                                NavProvider
-                                                              >(
+                                                              returnNavProvider(
                                                                 context,
                                                                 listen:
                                                                     false,
@@ -1018,8 +992,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 ) {
                                                                   setState(
                                                                     () {
-                                                                      mainReceiptFuture =
-                                                                          getMainReceipts();
+                                                                      expensesFuture =
+                                                                          getExpenses();
                                                                     },
                                                                   );
                                                                 },
@@ -1031,17 +1005,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       Row(
                                                         children: [
                                                           Visibility(
-                                                            visible:
-                                                                userGeneral(
+                                                            visible: authorization(
+                                                              authorized:
+                                                                  Authorizations().employeePage,
+                                                              context:
                                                                   context,
-                                                                ).role ==
-                                                                'Owner',
-                                                            // returnLocalDatabase(
-                                                            //   context,
-                                                            //   listen:
-                                                            //       false,
-                                                            // ).currentEmployee!.role ==
-                                                            // 'Owner',
+                                                            ),
                                                             child: ButtonTab(
                                                               theme:
                                                                   theme,
@@ -1069,17 +1038,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                             ),
                                                           ),
                                                           Visibility(
-                                                            visible:
-                                                                userGeneral(
+                                                            visible: authorization(
+                                                              authorized:
+                                                                  Authorizations().employeePage,
+                                                              context:
                                                                   context,
-                                                                ).role ==
-                                                                'Owner',
-                                                            // returnLocalDatabase(
-                                                            //   context,
-                                                            //   listen:
-                                                            //       false,
-                                                            // ).currentEmployee!.role ==
-                                                            // 'Owner',
+                                                            ),
                                                             child: SizedBox(
                                                               width:
                                                                   15,
@@ -1124,9 +1088,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                           ],
                         ),
                         Visibility(
-                          visible:
-                              userGeneral(context).role ==
-                              'Owner',
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .contactStockall,
+                            context: context,
+                          ),
                           child: Align(
                             alignment: Alignment(
                               1,
@@ -1406,7 +1373,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                         future: notificationsFuture,
                         builder: (context, snapshot) {
                           return TopNavBar(
-                            role: userGeneral(context).role,
                             action: () {
                               Navigator.push(
                                 context,
@@ -1458,57 +1424,49 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
                                 Column(
                                   children: [
-                                    Visibility(
-                                      visible: authorization(
-                                        authorized:
-                                            Authorizations()
-                                                .viewDailySale,
-                                        context: context,
-                                      ),
-                                      child: DashboardTotalSalesBanner(
-                                        expenses:
-                                            expensesLocal,
-                                        userValue: returnReceiptProvider(
-                                          context,
-                                        ).getTotalRevenueForSelectedDay(
-                                          context,
-                                          returnReceiptProvider(
-                                                context,
-                                              ).receipts
-                                              .where(
-                                                (emp) =>
-                                                    emp.staffName ==
-                                                    userGeneral(
-                                                      context,
-                                                    ).name,
-                                                // localUser?.name,
-                                              )
-                                              .toList(),
-                                          returnReceiptProvider(
-                                            context,
-                                          ).returnproductsRecordByDayOrWeek(
-                                            context,
-                                            returnReceiptProvider(
+                                    DashboardTotalSalesBanner(
+                                      expenses:
+                                          expensesLocal,
+                                      userValue: returnReceiptProvider(
+                                        context,
+                                      ).getTotalRevenueForSelectedDay(
+                                        context,
+                                        returnReceiptProvider(
                                               context,
-                                            ).produtRecordSalesMain,
-                                          ),
-                                        ),
-                                        currentUser:
-                                            userGeneral(
-                                              context,
-                                            ),
-                                        theme: theme,
-                                        value: returnReceiptProvider(
+                                            ).receipts
+                                            .where(
+                                              (emp) =>
+                                                  emp.staffName ==
+                                                  userGeneral(
+                                                    context,
+                                                  ).name,
+                                              // localUser?.name,
+                                            )
+                                            .toList(),
+                                        returnReceiptProvider(
                                           context,
-                                        ).getTotalRevenueForSelectedDay(
+                                        ).returnproductsRecordByDayOrWeek(
                                           context,
-                                          returnReceiptProvider(
-                                            context,
-                                          ).receipts,
                                           returnReceiptProvider(
                                             context,
                                           ).produtRecordSalesMain,
                                         ),
+                                      ),
+                                      currentUser:
+                                          userGeneral(
+                                            context,
+                                          ),
+                                      theme: theme,
+                                      value: returnReceiptProvider(
+                                        context,
+                                      ).getTotalRevenueForSelectedDay(
+                                        context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).produtRecordSalesMain,
                                       ),
                                     ),
                                     // SizedBox(
@@ -1634,9 +1592,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       title:
                                                           'Products',
                                                       action: () {
-                                                        Provider.of<
-                                                          NavProvider
-                                                        >(
+                                                        returnNavProvider(
                                                           context,
                                                           listen:
                                                               false,
@@ -1700,11 +1656,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                   //     15,
                                                   children: [
                                                     Visibility(
-                                                      visible:
-                                                          userGeneral(
+                                                      visible: authorization(
+                                                        authorized:
+                                                            Authorizations().employeePage,
+                                                        context:
                                                             context,
-                                                          ).role ==
-                                                          'Owner',
+                                                      ),
                                                       child: ButtonTab(
                                                         theme:
                                                             theme,
@@ -1732,11 +1689,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       ),
                                                     ),
                                                     Visibility(
-                                                      visible:
-                                                          userGeneral(
+                                                      visible: authorization(
+                                                        authorized:
+                                                            Authorizations().employeePage,
+                                                        context:
                                                             context,
-                                                          ).role ==
-                                                          'Owner',
+                                                      ),
                                                       child: SizedBox(
                                                         width:
                                                             15,
@@ -1817,9 +1775,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       title:
                                                           'Products',
                                                       action: () {
-                                                        Provider.of<
-                                                          NavProvider
-                                                        >(
+                                                        returnNavProvider(
                                                           context,
                                                           listen:
                                                               false,
@@ -1909,11 +1865,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 Row(
                                                   children: [
                                                     Visibility(
-                                                      visible:
-                                                          userGeneral(
+                                                      visible: authorization(
+                                                        authorized:
+                                                            Authorizations().employeePage,
+                                                        context:
                                                             context,
-                                                          ).role ==
-                                                          'Owner',
+                                                      ),
                                                       child: ButtonTab(
                                                         theme:
                                                             theme,
@@ -1941,11 +1898,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       ),
                                                     ),
                                                     Visibility(
-                                                      visible:
-                                                          userGeneral(
+                                                      visible: authorization(
+                                                        authorized:
+                                                            Authorizations().employeePage,
+                                                        context:
                                                             context,
-                                                          ).role ==
-                                                          'Owner',
+                                                      ),
                                                       child: SizedBox(
                                                         width:
                                                             15,
@@ -1998,9 +1956,11 @@ class _DashboardMobileState extends State<DashboardMobile> {
                     ],
                   ),
                   Visibility(
-                    visible:
-                        userGeneral(context).role ==
-                        'Owner',
+                    visible: authorization(
+                      authorized:
+                          Authorizations().contactStockall,
+                      context: context,
+                    ),
                     child: Align(
                       alignment: Alignment(
                         1,

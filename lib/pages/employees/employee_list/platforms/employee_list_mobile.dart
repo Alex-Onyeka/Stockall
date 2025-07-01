@@ -4,20 +4,14 @@ import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockall/pages/employees/components/employee_tile_main.dart';
 import 'package:stockall/pages/employees/employee_page/employee_page.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class EmployeeListMobile extends StatefulWidget {
-  // final String role;
-  // final String empId;
-  const EmployeeListMobile({
-    super.key,
-    // required this.role,
-    // required this.empId,
-  });
+  const EmployeeListMobile({super.key});
 
   @override
   State<EmployeeListMobile> createState() =>
@@ -49,20 +43,16 @@ class _EmployeeListMobileState
     return tempEmp;
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-
-  //   employeesFuture = getEmployees();
-  // }
-
   @override
   Widget build(BuildContext context) {
     var user = userGeneral(context);
     var theme = returnTheme(context);
     return Scaffold(
       floatingActionButton: Visibility(
-        visible: user.role == 'Owner',
+        visible: authorization(
+          authorized: Authorizations().addEmployee,
+          context: context,
+        ),
         child: FloatingActionButtonMain(
           theme: theme,
           action: () {
@@ -146,20 +136,12 @@ class _EmployeeListMobileState
             );
           } else {
             List<TempUserClass> employees =
-                user.role == 'Owner'
-                    ? snapshot.data!
-                        .where(
-                          (emp) =>
-                              emp.authUserId != emp.userId!,
-                        )
-                        .toList()
-                    : snapshot.data!
-                        .where(
-                          (emp) =>
-                              emp.userId ==
-                              AuthService().currentUser!.id
-                        )
-                        .toList();
+                snapshot.data!
+                    .where(
+                      (emp) =>
+                          emp.authUserId != emp.userId!,
+                    )
+                    .toList();
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 20.0),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/products_summary_tab.dart';
@@ -202,10 +203,12 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                       Visibility(
                         visible:
                             widget.isProduct != null &&
-                                    userGeneral(
-                                          context,
-                                        ).role ==
-                                        'Owner'
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .addProduct,
+                                      context: context,
+                                    )
                                 ? true
                                 : false,
                         child: MaterialButton(

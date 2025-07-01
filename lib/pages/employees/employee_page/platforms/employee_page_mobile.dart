@@ -12,7 +12,6 @@ import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dar
 import 'package:stockall/pages/products/compnents/receipt_tile_main.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class EmployeePageMobile extends StatefulWidget {
   final String employeeId;
@@ -164,14 +163,6 @@ class _EmployeePageMobileState
                                                 true;
                                           });
 
-                                          // await returnUserProvider(
-                                          //   context,
-                                          //   listen: false,
-                                          // ).deleteUser(
-                                          //   widget
-                                          //       .employeeId,
-                                          // );
-                                          print('Started1');
                                           await shopProvider.removeEmployeeFromShop(
                                             employeeIdToRemove:
                                                 widget
@@ -183,7 +174,6 @@ class _EmployeePageMobileState
                                                       false,
                                                 ).userShop!.shopId!,
                                           );
-                                          print('Started2');
                                           await userProvider
                                               .updateEmployeeRole(
                                                 authUserId:
@@ -194,7 +184,6 @@ class _EmployeePageMobileState
                                                     widget
                                                         .employeeId,
                                               );
-                                          print('Started3');
                                           setState(() {
                                             isLoading =
                                                 false;
@@ -421,47 +410,6 @@ class _DetailsPageContainerState
                   ),
                 ],
               ),
-              // SizedBox(height: 10),
-              // Divider(color: Colors.grey.shade200),
-              // Row(
-              //   spacing: 3,
-              //   children: [
-              //     Text(
-              //       style: TextStyle(
-              //         fontSize:
-              //             widget
-              //                 .theme
-              //                 .mobileTexts
-              //                 .b3
-              //                 .fontSize,
-              //         fontWeight: FontWeight.bold,
-              //         color: Colors.grey.shade500,
-              //       ),
-              //       'Todays Sales:',
-              //     ),
-              //     Text(
-              //       style: TextStyle(
-              //         fontSize:
-              //             widget
-              //                 .theme
-              //                 .mobileTexts
-              //                 .b2
-              //                 .fontSize,
-              //         fontWeight: FontWeight.bold,
-              //         color: Colors.grey.shade900,
-              //       ),
-              //       // returnReceiptProvider(
-              //       //                                           context,
-              //       //                                         ).getTotalRevenueForSelectedDay(
-              //       //                                           context,
-              //       //                                           mainReceipts,
-              //       //                                           records,
-              //       //                                         ),
-              //       '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnLocalDatabase(context).userTotalSale)}',
-              //     ),
-              //   ],
-              // ),
-              // Divider(color: Colors.grey.shade200),
             ],
           ),
           SizedBox(height: 10),
@@ -582,10 +530,7 @@ class _DetailsPageContainerState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Visibility(
-                visible:
-                    userGeneral(context).role == 'Owner' &&
-                    widget.employee.userId !=
-                        AuthService().currentUser!.id,
+                visible: true,
                 child: CustomerActionButton(
                   icon: Icons.delete_outline_rounded,
                   color:

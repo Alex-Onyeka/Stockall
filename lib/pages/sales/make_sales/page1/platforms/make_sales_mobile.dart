@@ -16,6 +16,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
@@ -1309,7 +1310,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                 returnSalesProvider(
                   context,
                 ).cartItems.isEmpty) {
-              if (userGeneral(context).role == 'Cashier') {
+              if (!authorization(
+                authorized: Authorizations().addProduct,
+                context: context,
+              )) {
                 return EmptyWidgetDisplayOnly(
                   title: 'No Products',
                   subText:
@@ -1379,10 +1383,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               },
                             ),
                           ).then((_) {
-                            setState(() {
-                              // _productsFuture =
-                              //     getProductList(context);
-                            });
+                            setState(() {});
                           });
                         },
                         altAction: () {

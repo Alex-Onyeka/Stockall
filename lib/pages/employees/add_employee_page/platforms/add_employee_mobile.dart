@@ -12,21 +12,11 @@ import 'package:stockall/services/auth_service.dart';
 import 'package:uuid/uuid.dart';
 
 class AddEmployeeMobile extends StatefulWidget {
-  // final TextEditingController nameController;
-  // final TextEditingController emailController;
-  // final TextEditingController passwordController;
-  // final TextEditingController newPasswordController;
-  // final TextEditingController phoneController;
   final TextEditingController idC;
   final TempUserClass? employee;
 
   const AddEmployeeMobile({
     super.key,
-    // required this.nameController,
-    // required this.emailController,
-    // required this.passwordController,
-    // required this.newPasswordController,
-    // required this.phoneController,
     required this.idC,
     this.employee,
   });
@@ -45,53 +35,7 @@ class _AddEmployeeMobileState
   //
   //
   int? currentSelected;
-  // List<Map<String, dynamic>> employees = [
-  //   // {
-  //   //   'position': 'Owner',
-  //   //   'auths': ['Overall Access'],
-  //   // },
-  //   {
-  //     'position': 'General Manager',
-  //     'auths': [
-  //       'Add Products',
-  //       'Update Products',
-  //       'Delete Products',
-  //       'Add Customers',
-  //       'Update Customers',
-  //       'Delete Customers',
-  //       'Make Sale',
-  //       'View Daily Sales',
-  //       'View Weekly Sales',
-  //       'Make Refund',
-  //       'Delete Sales',
-  //     ],
-  //   },
-  //   {
-  //     'position': 'Manager',
-  //     'auths': [
-  //       'Add Products',
-  //       'Update Products',
-  //       'Add Customers',
-  //       'Update Customers',
-  //       'Delete Customers',
-  //       'Make Sale',
-  //       'View Daily Sales',
-  //       'Make Refund',
-  //     ],
-  //   },
-  //   {
-  //     'position': 'Cashier',
-  //     'auths': [
-  //       'Add Customers',
-  //       'Make Sale',
-  //       'View Products',
-  //       'View Daily Sales',
-  //       'Make Refund,',
-  //     ],
-  //   },
-  // ];
-  //
-  //
+
   late Future<List<TempUserClass>> usersFuture;
   Future<List<TempUserClass>> getUsers() {
     var tempUsers =
@@ -101,8 +45,6 @@ class _AddEmployeeMobileState
         ).fetchUsers();
     return tempUsers;
   }
-
-  // TextEditingController idC = TextEditingController();
 
   @override
   void initState() {
@@ -115,28 +57,6 @@ class _AddEmployeeMobileState
         ),
       );
     }
-    // if (widget.employee != null) {
-    //   widget.idC.text = widget.employee!.name;
-    // }
-    // if (widget.employee != null) {
-    //   widget.emailController.text = widget.employee!.email;
-    //   widget.phoneController.text =
-    //       widget.employee!.phone ?? '';
-    //   widget.nameController.text = widget.employee!.name;
-    //   if (returnLocalDatabase(
-    //         context,
-    //         listen: false,
-    //       ).currentEmployee!.role ==
-    //       'Owner') {
-    //     widget.passwordController.text =
-    //         widget.employee!.password;
-    //   }
-    //   currentSelected = employees.indexOf(
-    //     employees.firstWhere(
-    //       (emp) => emp['position'] == widget.employee!.role,
-    //     ),
-    //   );
-    // }
   }
 
   //
@@ -181,192 +101,6 @@ class _AddEmployeeMobileState
                                         SizedBox(
                                           height: 20,
                                         ),
-                                        // GeneralTextField(
-                                        //   isEnabled:
-                                        //       widget.employee ==
-                                        //           null ||
-                                        //       (widget.employee !=
-                                        //               null &&
-                                        //           returnLocalDatabase(
-                                        //                 context,
-                                        //                 listen:
-                                        //                     false,
-                                        //               ).currentEmployee!.role ==
-                                        //               'Owner'),
-                                        //   title:
-                                        //       'Enter Staff Id',
-                                        //   hint:
-                                        //       'Enter Staff\'s Id',
-                                        //   controller:
-                                        //       widget
-                                        //           .nameController,
-                                        //   lines: 1,
-                                        //   theme: theme,
-                                        // ),
-                                        // SizedBox(
-                                        //   height: 15,
-                                        // ),
-                                        // SizedBox(
-                                        //   height: 12,
-                                        // ),
-                                        // EmailTextField(
-                                        //   isEnabled:
-                                        //       widget.employee ==
-                                        //           null ||
-                                        //       (widget.employee !=
-                                        //               null &&
-                                        //           returnLocalDatabase(
-                                        //                 context,
-                                        //                 listen:
-                                        //                     false,
-                                        //               ).currentEmployee!.role ==
-                                        //               'Owner'),
-                                        //   title: 'Email',
-                                        //   hint:
-                                        //       'Enter employees\' Email',
-                                        //   isEmail: true,
-                                        //   controller:
-                                        //       widget
-                                        //           .emailController,
-                                        //   theme: theme,
-                                        // ),
-
-                                        // Visibility(
-                                        //   visible:
-                                        //       widget
-                                        //           .employee ==
-                                        //       null,
-                                        //   child: Column(
-                                        //     children: [
-                                        //       SizedBox(
-                                        //         height: 12,
-                                        //       ),
-                                        //       Column(
-                                        //         crossAxisAlignment:
-                                        //             CrossAxisAlignment
-                                        //                 .start,
-                                        //         children: [
-                                        //           EmailTextField(
-                                        //             isEnabled:
-                                        //                 false,
-                                        //             controller:
-                                        //                 widget.emailController,
-                                        //             theme:
-                                        //                 theme,
-                                        //             isEmail:
-                                        //                 false,
-                                        //             hint:
-                                        //                 'Enter Password',
-                                        //             title:
-                                        //                 'Password',
-                                        //           ),
-                                        //           Text(
-                                        //             style: TextStyle(
-                                        //               fontSize:
-                                        //                   theme.mobileTexts.b3.fontSize,
-                                        //               fontWeight:
-                                        //                   FontWeight.bold,
-                                        //               color:
-                                        //                   theme.lightModeColor.secColor100,
-                                        //             ),
-                                        //             'The email is the default password',
-                                        //           ),
-                                        //         ],
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        // ),
-                                        // SizedBox(
-                                        //   height: 12,
-                                        // ),
-                                        // PhoneNumberTextField(
-                                        //   isEnabled:
-                                        //       widget.employee ==
-                                        //           null ||
-                                        //       (widget.employee !=
-                                        //               null &&
-                                        //           returnLocalDatabase(
-                                        //                 context,
-                                        //                 listen:
-                                        //                     false,
-                                        //               ).currentEmployee!.role ==
-                                        //               'Owner'),
-                                        //   controller:
-                                        //       widget
-                                        //           .phoneController,
-                                        //   theme: theme,
-                                        //   title:
-                                        //       'Phone Number',
-                                        //   hint:
-                                        //       'Add Phone Number',
-                                        // ),
-                                        // Visibility(
-                                        //   visible:
-                                        //       widget
-                                        //           .employee !=
-                                        //       null,
-                                        //   child: Column(
-                                        //     children: [
-                                        //       SizedBox(
-                                        //         height: 30,
-                                        //       ),
-                                        //       Text(
-                                        //         style: TextStyle(
-                                        //           fontSize:
-                                        //               theme
-                                        //                   .mobileTexts
-                                        //                   .h4
-                                        //                   .fontSize,
-                                        //           fontWeight:
-                                        //               FontWeight
-                                        //                   .bold,
-                                        //         ),
-                                        //         'Change Password',
-                                        //       ),
-                                        //       SizedBox(
-                                        //         height: 12,
-                                        //       ),
-                                        //       EmailTextField(
-                                        //         isEnabled:
-                                        //             returnLocalDatabase(
-                                        //                       context,
-                                        //                       listen:
-                                        //                           false,
-                                        //                     ).currentEmployee!.role ==
-                                        //                     'Owner'
-                                        //                 ? false
-                                        //                 : true,
-                                        //         controller:
-                                        //             widget
-                                        //                 .passwordController,
-                                        //         theme:
-                                        //             theme,
-                                        //         isEmail:
-                                        //             false,
-                                        //         hint:
-                                        //             'Old Password',
-                                        //         title:
-                                        //             'Old Password',
-                                        //       ),
-                                        //       SizedBox(
-                                        //         height: 12,
-                                        //       ),
-                                        //       EmailTextField(
-                                        //         controller:
-                                        //             widget
-                                        //                 .newPasswordController,
-                                        //         theme:
-                                        //             theme,
-                                        //         isEmail:
-                                        //             false,
-                                        //         hint:
-                                        //             'Enter New Password',
-                                        //         title:
-                                        //             'New Password',
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        // ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
@@ -403,16 +137,6 @@ class _AddEmployeeMobileState
                                                 widget
                                                     .employee ==
                                                 null,
-                                            // widget.employee ==
-                                            //     null ||
-                                            // (widget.employee !=
-                                            //         null &&
-                                            //     returnLocalDatabase(
-                                            //           context,
-                                            //           listen:
-                                            //               false,
-                                            //         ).currentEmployee!.role ==
-                                            //         'Owner'),
                                             title:
                                                 'Enter Staff Id',
                                             hint:
@@ -427,17 +151,13 @@ class _AddEmployeeMobileState
                                           height: 25,
                                         ),
                                         Visibility(
-                                          visible:
-                                              userGeneral(
+                                          visible: authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .addEmployee,
+                                            context:
                                                 context,
-                                              ).role ==
-                                              'Owner',
-                                          // returnLocalDatabase(
-                                          //       context,
-                                          //     )
-                                          //     .currentEmployee!
-                                          //     .role ==
-                                          // 'Owner',
+                                          ),
                                           child: Row(
                                             spacing: 5,
                                             children: [
@@ -485,29 +205,38 @@ class _AddEmployeeMobileState
                                   ),
                                   SizedBox(height: 0),
                                   Visibility(
-                                    visible:
-                                        userGeneral(
-                                          context,
-                                        ).role ==
-                                        'Owner',
-                                    // returnLocalDatabase(
-                                    //       context,
-                                    //     )
-                                    //     .currentEmployee!
-                                    //     .role ==
-                                    // 'Owner',
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .addEmployee,
+                                      context: context,
+                                    ),
+
                                     child: ListView.builder(
                                       shrinkWrap: true,
                                       physics:
                                           NeverScrollableScrollPhysics(),
                                       itemCount:
-                                          employees.length,
+                                          employees
+                                              .where(
+                                                (emp) =>
+                                                    emp['position'] !=
+                                                    'Owner',
+                                              )
+                                              .toList()
+                                              .length,
                                       itemBuilder: (
                                         context,
                                         index,
                                       ) {
                                         var employee =
-                                            employees[index];
+                                            employees
+                                                .where(
+                                                  (emp) =>
+                                                      emp['position'] !=
+                                                      'Owner',
+                                                )
+                                                .toList()[index];
                                         return EmployeeListTile(
                                           currentSelected:
                                               currentSelected ??
@@ -751,169 +480,6 @@ class _AddEmployeeMobileState
                                   },
                                 );
                               }
-                              // if (snapshot.connectionState ==
-                              //         ConnectionState
-                              //             .waiting ||
-                              //     snapshot.hasError) {
-                              //   return;
-                              // } else {
-                              //   var users = snapshot.data!;
-                              //   List<String> userEmails() {
-                              //     List<String> tempEmails =
-                              //         [];
-                              //     for (var item in users) {
-                              //       tempEmails.add(
-                              //         item.email
-                              //             .toLowerCase(),
-                              //       );
-                              //     }
-                              //     return tempEmails;
-                              //   }
-
-                              //   if (widget
-                              //           .nameController
-                              //           .text
-                              //           .isEmpty ||
-                              //       widget
-                              //           .emailController
-                              //           .text
-                              //           .isEmpty ||
-                              //       widget
-                              //           .phoneController
-                              //           .text
-                              //           .isEmpty ||
-                              //       currentSelected ==
-                              //           null) {
-                              //     showDialog(
-                              //       context: context,
-                              //       builder: (context) {
-                              //         return InfoAlert(
-                              //           theme: theme,
-                              //           message:
-                              //               'Name, email, phone number and Staff Role must be set.',
-                              //           title:
-                              //               'Fields not set',
-                              //         );
-                              //       },
-                              //     );
-                              //   } else if (userEmails()
-                              //       .contains(
-                              //         widget
-                              //             .emailController
-                              //             .text
-                              //             .toLowerCase(),
-                              //       )) {
-                              //     showDialog(
-                              //       context: context,
-                              //       builder: (context) {
-                              //         return InfoAlert(
-                              //           theme: theme,
-                              //           message:
-                              //               'Email already in use. Please Select a different email, or Log into the account.',
-                              //           title:
-                              //               'Email Already Registered',
-                              //         );
-                              //       },
-                              //     );
-                              //   } else if (!isValidEmail(
-                              //     widget
-                              //         .emailController
-                              //         .text,
-                              //   )) {
-                              //     showDialog(
-                              //       context: context,
-                              //       builder: (context) {
-                              //         return InfoAlert(
-                              //           theme: theme,
-                              //           message:
-                              //               'Please enter a valid Email Address',
-                              //           title:
-                              //               'Email Invalid',
-                              //         );
-                              //       },
-                              //     );
-                              //   } else {
-                              //     final safeContext =
-                              //         context;
-                              //     showDialog(
-                              //       context: safeContext,
-                              //       builder: (context) {
-                              //         return ConfirmationAlert(
-                              //           theme: theme,
-                              //           message:
-                              //               'You are about to create an employee with the role of a ${employees[currentSelected!]['position']}, do you want to proceed?',
-                              //           title: 'Procced?',
-                              //           action: () async {
-                              //             if (safeContext
-                              //                 .mounted) {
-                              //               Navigator.of(
-                              //                 safeContext,
-                              //               ).pop();
-                              //             }
-                              //             setState(() {
-                              //               isLoading =
-                              //                   true;
-                              //             });
-                              //             await returnUserProvider(
-                              //               context,
-                              //               listen: false,
-                              //             ).addEmployee(
-                              //               TempUserClass(
-                              //                 name:
-                              //                     widget
-                              //                         .nameController
-                              //                         .text
-                              //                         .trim(),
-                              //                 email:
-                              //                     widget
-                              //                         .emailController
-                              //                         .text
-                              //                         .trim()
-                              //                         .toLowerCase(),
-                              //                 role:
-                              //                     employees[currentSelected!]['position'],
-                              //                 authUserId:
-                              //                     AuthService()
-                              //                         .currentUser!
-                              //                         .id,
-                              //                 password:
-                              //                     widget
-                              //                         .emailController
-                              //                         .text
-                              //                         .trim()
-                              //                         .toLowerCase(),
-                              //                 phone:
-                              //                     widget
-                              //                         .phoneController
-                              //                         .text,
-                              //               ),
-                              //             );
-
-                              //             setState(() {
-                              //               isLoading =
-                              //                   false;
-                              //               showSuccess =
-                              //                   true;
-                              //             });
-
-                              //             await Future.delayed(
-                              //               Duration(
-                              //                 seconds: 2,
-                              //               ),
-                              //             );
-
-                              //             if (safeContext
-                              //                 .mounted) {
-                              //               Navigator.of(
-                              //                 safeContext,
-                              //               ).pop();
-                              //             }
-                              //           },
-                              //         );
-                              //       },
-                              //     );
-                              //   }
-                              // }
                             } else {
                               final safeContext = context;
                               showDialog(
@@ -974,213 +540,11 @@ class _AddEmployeeMobileState
                                   );
                                 },
                               );
-                              // if (widget
-                              //     .newPasswordController
-                              //     .text
-                              //     .isEmpty) {
-                              //   showDialog(
-                              //     context: safeContext,
-                              //     builder: (context) {
-                              //       return ConfirmationAlert(
-                              //         theme: theme,
-                              //         message:
-                              //             'You are about to update details, do you want to proceed?',
-                              //         title: 'Procced?',
-                              //         action: () async {
-                              //           if (safeContext
-                              //               .mounted) {
-                              //             Navigator.of(
-                              //               safeContext,
-                              //             ).pop();
-                              //           }
-                              //           setState(() {
-                              //             isLoading = true;
-                              //           });
-                              //           await returnUserProvider(
-                              //             context,
-                              //             listen: false,
-                              //           ).updateUser(
-                              //             TempUserClass(
-                              //               userId:
-                              //                   widget
-                              //                       .employee!
-                              //                       .userId,
-                              //               name:
-                              //                   widget
-                              //                       .nameController
-                              //                       .text
-                              //                       .trim(),
-                              //               email:
-                              //                   widget
-                              //                       .emailController
-                              //                       .text
-                              //                       .trim()
-                              //                       .toLowerCase(),
-                              //               role:
-                              //                   employees[currentSelected!]['position'],
-
-                              //               password:
-                              //                   widget
-                              //                           .newPasswordController
-                              //                           .text
-                              //                           .isNotEmpty
-                              //                       ? widget
-                              //                           .newPasswordController
-                              //                           .text
-                              //                       : widget
-                              //                           .passwordController
-                              //                           .text,
-                              //               phone:
-                              //                   widget
-                              //                       .phoneController
-                              //                       .text,
-                              //             ),
-                              //             context,
-                              //           );
-
-                              //           setState(() {
-                              //             isLoading = false;
-                              //             showSuccess =
-                              //                 true;
-                              //           });
-
-                              //           await Future.delayed(
-                              //             Duration(
-                              //               seconds: 2,
-                              //             ),
-                              //           );
-
-                              //           if (safeContext
-                              //               .mounted) {
-                              //             Navigator.of(
-                              //               safeContext,
-                              //             ).pop();
-                              //           }
-                              //         },
-                              //       );
-                              //     },
-                              //   );
-                              // } else {
-                              //   if (widget
-                              //           .passwordController
-                              //           .text !=
-                              //       widget
-                              //           .employee!
-                              //           .password) {
-                              //     showDialog(
-                              //       context: context,
-                              //       builder: (context) {
-                              //         return InfoAlert(
-                              //           theme: theme,
-                              //           message:
-                              //               'Old Password Incorrect, please check and try again later.',
-                              //           title:
-                              //               'Incorrect Old Password',
-                              //         );
-                              //       },
-                              //     );
-                              //   } else {
-                              //     showDialog(
-                              //       context: safeContext,
-                              //       builder: (context) {
-                              //         return ConfirmationAlert(
-                              //           theme: theme,
-                              //           message:
-                              //               'You are about to update details, do you want to proceed?',
-                              //           title: 'Procced?',
-                              //           action: () async {
-                              //             if (safeContext
-                              //                 .mounted) {
-                              //               Navigator.of(
-                              //                 safeContext,
-                              //               ).pop();
-                              //             }
-                              //             setState(() {
-                              //               isLoading =
-                              //                   true;
-                              //             });
-                              //             await returnUserProvider(
-                              //               context,
-                              //               listen: false,
-                              //             ).updateUser(
-                              //               TempUserClass(
-                              //                 userId:
-                              //                     widget
-                              //                         .employee!
-                              //                         .userId,
-                              //                 name:
-                              //                     widget
-                              //                         .nameController
-                              //                         .text
-                              //                         .trim(),
-                              //                 email:
-                              //                     widget
-                              //                         .emailController
-                              //                         .text
-                              //                         .trim(),
-                              //                 role:
-                              //                     employees[currentSelected!]['position'],
-
-                              //                 password:
-                              //                     widget
-                              //                             .newPasswordController
-                              //                             .text
-                              //                             .isNotEmpty
-                              //                         ? widget
-                              //                             .newPasswordController
-                              //                             .text
-                              //                         : widget
-                              //                             .passwordController
-                              //                             .text,
-                              //                 phone:
-                              //                     widget
-                              //                         .phoneController
-                              //                         .text,
-                              //               ),
-                              //               context,
-                              //             );
-
-                              //             setState(() {
-                              //               isLoading =
-                              //                   false;
-                              //               showSuccess =
-                              //                   true;
-                              //             });
-
-                              //             await Future.delayed(
-                              //               Duration(
-                              //                 seconds: 2,
-                              //               ),
-                              //             );
-
-                              //             if (safeContext
-                              //                 .mounted) {
-                              //               Navigator.of(
-                              //                 safeContext,
-                              //               ).pop();
-                              //             }
-                              //           },
-                              //         );
-                              //       },
-                              //     );
-                              //   }
-                              // }
                             }
                           },
                           text:
-                              widget.employee != null &&
-                                      userGeneral(
-                                            context,
-                                          ).role ==
-                                          'Owner'
+                              widget.employee != null
                                   ? 'Update Details'
-                                  : widget.employee !=
-                                          null &&
-                                      userGeneral(
-                                            context,
-                                          ).role !=
-                                          'Owner'
-                                  ? 'Save New Password'
                                   : 'Add Employee',
                         );
                       },

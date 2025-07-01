@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -16,7 +17,6 @@ class TopNavBar extends StatelessWidget {
   final Function()? action;
   final ThemeProvider theme;
 
-  final String role;
   final Function()? openSideBar;
 
   const TopNavBar({
@@ -27,7 +27,6 @@ class TopNavBar extends StatelessWidget {
     required this.theme,
     required this.openSideBar,
     this.action,
-    required this.role,
   });
 
   @override
@@ -156,7 +155,11 @@ class TopNavBar extends StatelessWidget {
           Stack(
             children: [
               Visibility(
-                visible: role == 'Owner',
+                visible: authorization(
+                  authorized:
+                      Authorizations().notificationsPage,
+                  context: context,
+                ),
                 child: Stack(
                   alignment: Alignment(1.2, -1.8),
                   children: [
@@ -224,7 +227,13 @@ class TopNavBar extends StatelessWidget {
                 ),
               ),
               Visibility(
-                visible: role != 'Owner',
+                visible:
+                    !authorization(
+                      authorized:
+                          Authorizations()
+                              .notificationsPage,
+                      context: context,
+                    ),
                 child: Stack(
                   alignment: Alignment(1.2, -1.8),
                   children: [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/components/nav_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -18,11 +19,6 @@ class MainBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user =
-        returnUserProvider(
-          context,
-          listen: false,
-        ).currentUserMain;
     return Stack(
       alignment: Alignment(-0.03, -2),
       children: [
@@ -151,12 +147,10 @@ class MainBottomNav extends StatelessWidget {
                   listen: false,
                 ).currentPage ==
                 1) {
-              if (
-              // returnLocalDatabase(
-              //     context,
-              //     listen: false,
-              //   ).currentEmployee!.role !=
-              user?.role != 'Owner') {
+              if (!authorization(
+                authorized: Authorizations().addProduct,
+                context: context,
+              )) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -196,11 +190,11 @@ class MainBottomNav extends StatelessWidget {
                           listen: false,
                         ).currentPage ==
                         1 &&
-                    userGeneral(
-                          context,
-                          listen: false,
-                        ).role ==
-                        'Owner',
+                    authorization(
+                      authorized:
+                          Authorizations().addProduct,
+                      context: context,
+                    ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -208,29 +202,7 @@ class MainBottomNav extends StatelessWidget {
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          // BoxShadow(
-                          //   color:
-                          //       returnNavProvider(
-                          //                 context,
-                          //               ).currentPage ==
-                          //               1
-                          //           ? const Color.fromARGB(
-                          //             0,
-                          //             0,
-                          //             0,
-                          //             0,
-                          //           )
-                          //           : const Color.fromARGB(
-                          //             55,
-                          //             0,
-                          //             0,
-                          //             0,
-                          //           ),
-                          //   blurRadius: 5,
-                          //   offset: Offset(0, 2),
-                          // ),
-                        ],
+                        boxShadow: [],
                         border: Border.all(
                           color:
                               returnTheme(
@@ -272,11 +244,11 @@ class MainBottomNav extends StatelessWidget {
                           listen: false,
                         ).currentPage !=
                         1 ||
-                    userGeneral(
-                          context,
-                          listen: false,
-                        ).role !=
-                        'Owner',
+                    !authorization(
+                      authorized:
+                          Authorizations().addProduct,
+                      context: context,
+                    ),
                 child: Column(
                   spacing: 3,
                   mainAxisSize: MainAxisSize.min,

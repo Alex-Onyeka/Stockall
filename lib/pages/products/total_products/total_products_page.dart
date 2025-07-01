@@ -7,6 +7,7 @@ import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -111,11 +112,10 @@ class _TotalProductsPageState
           title: 'All Products',
         ),
         floatingActionButton: Visibility(
-          visible: userGeneral(context).role == 'Owner',
-          // returnLocalDatabase(
-          //   context,
-          // ).currentEmployee!.role ==
-          // 'Owner',
+          visible: authorization(
+            authorized: Authorizations().addProduct,
+            context: context,
+          ),
           child: FloatingActionButtonMain(
             action: () {
               Navigator.push(
@@ -138,36 +138,7 @@ class _TotalProductsPageState
         ),
         floatingActionButtonLocation:
             FloatingActionButtonLocation.endFloat,
-        body:
-        // FutureBuilder(
-        //   future: _productsFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState ==
-        //         ConnectionState.waiting) {
-        //       return returnCompProvider(
-        //         context,
-        //         listen: false,
-        //       ).showLoader('Loading');
-        //     } else if (snapshot.hasError) {
-        //       return Center(
-        //         child: EmptyWidgetDisplay(
-        //           title: 'An Error Occoured',
-        //           subText:
-        //               'We Couldn\'t Load Your Data. Check Your internet',
-        //           buttonText: 'Reload',
-        //           icon: Icons.clear,
-        //           theme: theme,
-        //           height: 30,
-        //           action: () {
-        //             Navigator.popAndPushNamed(context, '/');
-        //           },
-        //         ),
-        //       );
-        //     } else {
-        //     }
-        //   },
-        // ),
-        Stack(
+        body: Stack(
           children: [
             Column(
               children: [

@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -149,9 +150,11 @@ class _GeneralReportMobileState
                             'For Today',
                       ),
                       Visibility(
-                        visible:
-                            userGeneral(context).role ==
-                            'Owner',
+                        visible: authorization(
+                          authorized:
+                              Authorizations().viewDate,
+                          context: context,
+                        ),
                         child: Row(
                           mainAxisAlignment:
                               MainAxisAlignment.end,

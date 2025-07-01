@@ -5,6 +5,7 @@ import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -121,15 +122,19 @@ class _TotalSalesMobileState
                           ],
                         ),
                         Visibility(
-                          visible:
-                              userGeneral(context).role !=
-                              'Owner',
+                          visible: authorization(
+                            authorized:
+                                Authorizations().viewDate,
+                            context: context,
+                          ),
                           child: SizedBox(height: 30),
                         ),
                         Visibility(
-                          visible:
-                              userGeneral(context).role ==
-                              'Owner',
+                          visible: authorization(
+                            authorized:
+                                Authorizations().viewDate,
+                            context: context,
+                          ),
                           child: Row(
                             mainAxisAlignment:
                                 MainAxisAlignment.end,

@@ -67,9 +67,16 @@ TempUserClass userGeneral(
   bool listen = true,
 }) {
   return returnUserProvider(
-    context,
-    listen: listen,
-  ).currentUserMain!;
+        context,
+        listen: listen,
+      ).currentUserMain ??
+      TempUserClass(
+        password: 'password',
+        name: 'name',
+        email: 'email',
+        role: 'Owner',
+        authUserId: 'dfsgdhjfh',
+      );
 }
 
 // String userIdMain() {

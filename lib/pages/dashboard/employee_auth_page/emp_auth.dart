@@ -74,7 +74,6 @@ class _EmpAuthState extends State<EmpAuth> {
                 subText: 'shop@gmail.com',
                 theme: theme,
                 openSideBar: () {},
-                role: 'Cashier',
               ),
               Expanded(
                 child: Padding(
@@ -592,9 +591,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                                   isLoading =
                                                       true;
                                                 });
-                                                print(
-                                                  'Starting',
-                                                );
+
                                                 TempUserClass?
                                                 user = await fetchUserFromDatabase(
                                                   AuthService()
@@ -604,44 +601,32 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       .currentUser!
                                                       .id,
                                                 );
-                                                print(
-                                                  'Finished',
-                                                );
+
                                                 setState(() {
                                                   isLoading =
                                                       false;
                                                 });
-                                                print(
-                                                  'Finished 2',
-                                                );
+
                                                 if (user !=
                                                         null &&
                                                     context
                                                         .mounted) {
-                                                  print(
-                                                    'Finished 3',
-                                                  );
                                                   if (user.password !=
                                                       passwordController
                                                           .text
                                                           .trim()) {
-                                                    print(
-                                                      'Finished 4',
-                                                    );
                                                     if (context
                                                         .mounted) {
-                                                      print(
-                                                        'Finished 5',
-                                                      );
+                                                      setState(() {
+                                                        isLoading =
+                                                            false;
+                                                      });
                                                       showDialog(
                                                         context:
                                                             context,
                                                         builder: (
                                                           context,
                                                         ) {
-                                                          print(
-                                                            'Finished 6',
-                                                          );
                                                           return InfoAlert(
                                                             theme:
                                                                 theme,
@@ -666,9 +651,6 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     );
                                                     if (context
                                                         .mounted) {
-                                                      print(
-                                                        'Finished 7',
-                                                      );
                                                       widget
                                                           .action!();
                                                     }
@@ -680,6 +662,10 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     });
                                                   }
                                                 } else {
+                                                  setState(() {
+                                                    isLoading =
+                                                        false;
+                                                  });
                                                   showDialog(
                                                     // ignore: use_build_context_synchronously
                                                     context:

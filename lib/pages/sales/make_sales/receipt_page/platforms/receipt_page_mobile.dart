@@ -7,6 +7,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -1034,8 +1035,10 @@ class _ReceiptDetailsContainerState
                   },
                 ),
                 Visibility(
-                  visible:
-                      userGeneral(context).role == 'Owner',
+                  visible: authorization(
+                    authorized: Authorizations().deleteSale,
+                    context: context,
+                  ),
                   child: BottomActionButton(
                     text: 'Delete',
                     color:

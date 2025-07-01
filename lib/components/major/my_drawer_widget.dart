@@ -20,13 +20,11 @@ class MyDrawerWidget extends StatefulWidget {
   final ThemeProvider theme;
   final Function()? action;
   final List<TempNotification> notifications;
-  // final String role;
   const MyDrawerWidget({
     super.key,
     required this.theme,
     required this.notifications,
     required this.action,
-    // required this.role,
   });
 
   @override
@@ -70,7 +68,6 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var user = returnUserProvider(context).currentUserMain;
     return Drawer(
       backgroundColor: Colors.white,
       child: Padding(
@@ -139,8 +136,6 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                         child: Column(
                           children: [
                             Visibility(
-                              // visible:
-                              //     widget.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () {
@@ -158,8 +153,12 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  user?.role == 'Owner',
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageShop,
+                                context: context,
+                              ),
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () {
@@ -211,8 +210,12 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               svg: custBookIconSvg,
                             ),
                             Visibility(
-                              visible:
-                                  user?.role == 'Owner',
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .employeePage,
+                                context: context,
+                              ),
                               child: NavListTileAlt(
                                 height: 16,
                                 action: () {
@@ -225,30 +228,6 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                               AuthService()
                                                   .currentUser!
                                                   .id,
-                                          // returnLocalDatabase(
-                                          //           context,
-                                          //           listen:
-                                          //               false,
-                                          //         ).currentEmployee !=
-                                          //         null
-                                          //     ? returnLocalDatabase(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     ).currentEmployee!.userId!
-                                          //     : '',
-                                          // returnLocalDatabase(
-                                          //           context,
-                                          //           listen:
-                                          //               false,
-                                          //         ).currentEmployee !=
-                                          //         null
-                                          //     ? returnLocalDatabase(
-                                          //       context,
-                                          //       listen:
-                                          //           false,
-                                          //     ).currentEmployee!.role
-                                          //     : '',
                                         );
                                       },
                                     ),
@@ -316,8 +295,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                 );
                               },
                               child: Visibility(
-                                visible:
-                                    user?.role == 'Owner',
+                                visible: true,
                                 child: SizedBox(
                                   height: 50,
                                   child: Padding(
@@ -476,8 +454,12 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  user?.role == 'Owner',
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .contactStockall,
+                                context: context,
+                              ),
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () async {
@@ -488,8 +470,12 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  user?.role == 'Owner',
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .contactStockall,
+                                context: context,
+                              ),
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () async {
@@ -501,7 +487,6 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             ),
                             Visibility(
                               visible: false,
-                              // widget.role == 'Owner',
                               child: NavListTileAlt(
                                 height: 20,
                                 action: () {},
@@ -539,86 +524,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
 
               Column(
                 children: [
-                  // FutureBuilder(
-                  //   future: employeesFuture,
-                  //   builder: (context, snapshot) {
-                  //     if (snapshot.connectionState ==
-                  //         ConnectionState.waiting) {
-                  //       return Shimmer.fromColors(
-                  //         baseColor: Colors.grey.shade300,
-                  //         highlightColor: Colors.white,
-                  //         child: Container(height: 20),
-                  //       );
-                  //     } else if (snapshot.hasError) {
-                  //       return Container(height: 20);
-                  //     } else {
-                  //       var employees = snapshot.data!;
-                  //       return Visibility(
-                  //         visible: employees.isNotEmpty,
-                  //         child: Padding(
-                  //           padding:
-                  //               widget.role == 'Owner'
-                  //                   ? const EdgeInsets.only(
-                  //                     bottom: 2,
-                  //                   )
-                  //                   : const EdgeInsets.only(
-                  //                     bottom: 20,
-                  //                   ),
-                  //           child: NavListTileAlt(
-                  //             height: 20,
-                  //             action: () {
-                  //               showDialog(
-                  //                 context: context,
-                  //                 builder: (context) {
-                  //                   return ConfirmationAlert(
-                  //                     theme: widget.theme,
-                  //                     message:
-                  //                         'You are about to Logout',
-                  //                     title:
-                  //                         'Are you Sure?',
-                  //                     action: () async {
-                  //                       await returnLocalDatabase(
-                  //                         context,
-                  //                         listen: false,
-                  //                       ).deleteUser();
-
-                  //                       if (context
-                  //                           .mounted) {
-                  //                         Navigator.pushAndRemoveUntil(
-                  //                           context,
-                  //                           MaterialPageRoute(
-                  //                             builder:
-                  //                                 (
-                  //                                   context,
-                  //                                 ) =>
-                  //                                     EmpAuth(),
-                  //                           ),
-                  //                           (route) =>
-                  //                               false, // removes all previous routes
-                  //                         );
-                  //                         returnNavProvider(
-                  //                           context,
-                  //                           listen: false,
-                  //                         ).navigate(0);
-                  //                       }
-                  //                     },
-                  //                   );
-                  //                 },
-                  //               );
-                  //             },
-                  //             title: 'Employee Logout',
-                  //             // svg: reportIconSvg,
-                  //             icon:
-                  //                 Icons
-                  //                     .person_remove_alt_1_outlined,
-                  //           ),
-                  //         ),
-                  //       );
-                  //     }
-                  //   },
-                  // ),
                   Visibility(
-                    // visible: widget.role == 'Owner',
                     child: Padding(
                       padding:
                           MediaQuery.of(

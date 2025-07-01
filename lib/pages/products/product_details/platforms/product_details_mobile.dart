@@ -93,7 +93,6 @@ class _ProductDetailsMobileState
           context,
           listen: false,
         ).userShop!.shopId!;
-    final localUser = userGeneral(context);
     List<TempProductClass>? productList =
         returnData(context).productList
             .where(
@@ -114,7 +113,10 @@ class _ProductDetailsMobileState
           context: context,
           title: 'Product Details',
           widget: Visibility(
-            visible: localUser.role == 'Owner',
+            visible: authorization(
+              authorized: Authorizations().updateProduct,
+              context: context,
+            ),
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -258,13 +260,21 @@ class _ProductDetailsMobileState
                             ],
                           ),
                           Visibility(
-                            visible:
-                                localUser.role == 'Owner',
+                            visible: authorization(
+                              authorized:
+                                  Authorizations()
+                                      .updateProduct,
+                              context: context,
+                            ),
                             child: SizedBox(height: 15),
                           ),
                           Visibility(
-                            visible:
-                                localUser.role == 'Owner',
+                            visible: authorization(
+                              authorized:
+                                  Authorizations()
+                                      .updateProduct,
+                              context: context,
+                            ),
                             child: EditButton(
                               theme: widget.theme,
                               action: () {
@@ -607,37 +617,26 @@ class _ProductDetailsMobileState
                                     ],
                                   ),
                                   Visibility(
-                                    visible:
-                                        localUser.role ==
-                                        'Owner',
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .updateProduct,
+                                      context: context,
+                                    ),
                                     child: SizedBox(
                                       height: 15,
                                     ),
                                   ),
                                   Visibility(
-                                    visible:
-                                        localUser.role ==
-                                        'Owner',
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .updateProduct,
+                                      context: context,
+                                    ),
                                     child: EditButton(
                                       theme: widget.theme,
                                       action: () {
-                                        // print(
-                                        //   'Button Pressed',
-                                        // );
-                                        // setState(() {
-                                        //   quantityController
-                                        //       .text = product
-                                        //       .quantity
-                                        //       .toString()
-                                        //       .substring(
-                                        //         0,
-                                        //         product.quantity.toString().length -
-                                        //             2,
-                                        //       );
-                                        // });
-                                        // print(
-                                        //   'Button Pressed Final',
-                                        // );
                                         showGeneralDialog(
                                           context: context,
                                           pageBuilder: (
@@ -1088,17 +1087,23 @@ class _ProductDetailsMobileState
                                     ],
                                   ),
                                   Visibility(
-                                    visible:
-                                        localUser.role ==
-                                        'Owner',
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .updateProduct,
+                                      context: context,
+                                    ),
                                     child: SizedBox(
                                       height: 15,
                                     ),
                                   ),
                                   Visibility(
-                                    visible:
-                                        localUser.role ==
-                                        'Owner',
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .updateProduct,
+                                      context: context,
+                                    ),
                                     child: EditButton(
                                       theme: widget.theme,
                                       action: () {
@@ -1120,10 +1125,7 @@ class _ProductDetailsMobileState
                                             },
                                           ),
                                         ).then((_) {
-                                          setState(() {
-                                            // productFuture =
-                                            //     getProduct();
-                                          });
+                                          setState(() {});
                                         });
                                       },
                                       text: 'Edit Discount',
@@ -1262,19 +1264,6 @@ class _ProductDetailsMobileState
                                       .toString(),
                               text: 'Low Quantity Limit',
                             ),
-                            // BottomInfoSection(
-                            //   theme: widget.theme,
-                            //   mainText:
-                            //       product
-                            //                   .size!
-                            //                   .isEmpty ||
-                            //               product.size ==
-                            //                   null
-                            //           ? 'Not Set'
-                            //           : product
-                            //               .size!,
-                            //   text: 'Size',
-                            // ),
                             BottomInfoSection(
                               theme: widget.theme,
                               mainText:
@@ -1299,14 +1288,17 @@ class _ProductDetailsMobileState
                 ),
               ),
               SizedBox(height: 10),
-              Visibility(
-                visible: localUser.role == 'Owner',
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  spacing: 15,
-                  children: [
-                    Expanded(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 15,
+                children: [
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().deleteProduct,
+                      context: context,
+                    ),
+                    child: Expanded(
                       child: EditButton(
                         text: 'Delete Product',
                         action: () {
@@ -1369,7 +1361,14 @@ class _ProductDetailsMobileState
                         color: Colors.redAccent,
                       ),
                     ),
-                    Expanded(
+                  ),
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().updateProduct,
+                      context: context,
+                    ),
+                    child: Expanded(
                       child: EditButton(
                         text: 'Edit Product',
                         action: () {
@@ -1383,16 +1382,14 @@ class _ProductDetailsMobileState
                               },
                             ),
                           ).then((context) {
-                            setState(() {
-                              // productFuture = getProduct();
-                            });
+                            setState(() {});
                           });
                         },
                         theme: returnTheme(context),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               SizedBox(height: 20),
             ],

@@ -5,6 +5,7 @@ import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -194,9 +195,11 @@ class _CustomerReportMobileState
                       ],
                     ),
                     Visibility(
-                      visible:
-                          userGeneral(context).role ==
-                          'Owner',
+                      visible: authorization(
+                        authorized:
+                            Authorizations().viewDate,
+                        context: context,
+                      ),
                       child: Row(
                         mainAxisAlignment:
                             MainAxisAlignment.end,
