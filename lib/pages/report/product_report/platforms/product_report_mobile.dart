@@ -83,24 +83,6 @@ class _ProductReportMobileState
                         'Sort By Name',
                       ),
                     ),
-                    // PopupMenuItem(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       sortIndex = 2;
-                    //     });
-                    //   },
-                    //   child: Text(
-                    //     style: TextStyle(
-                    //       fontSize:
-                    //           theme.mobileTexts.b2.fontSize,
-                    //       fontWeight:
-                    //           sortIndex == 2
-                    //               ? FontWeight.bold
-                    //               : null,
-                    //     ),
-                    //     'Sort By Price',
-                    //   ),
-                    // ),
                     PopupMenuItem(
                       onTap: () {
                         setState(() {
@@ -156,7 +138,6 @@ class _ProductReportMobileState
                                     .mobileTexts
                                     .b4
                                     .fontSize,
-                            // fontWeight: FontWeight.bold,
                           ),
                           'Sorted by:',
                         ),
@@ -329,15 +310,30 @@ class _ProductReportMobileState
                               : MediaQuery.of(
                                 context,
                               ).size.width,
-                      child: ListView(
-                        children: [
-                          SummaryTableHeadingBar(
-                            isHeading: true,
-                            theme: theme,
-                            product: products,
-                          ),
-                          Expanded(
-                            child: Builder(
+                      child: RefreshIndicator(
+                        onRefresh: () {
+                          return returnReceiptProvider(
+                            context,
+                            listen: false,
+                          ).loadProductSalesRecord(
+                            returnShopProvider(
+                              context,
+                              listen: false,
+                            ).userShop!.shopId!,
+                          );
+                        },
+                        backgroundColor: Colors.white,
+                        color:
+                            theme.lightModeColor.prColor300,
+                        displacement: 10,
+                        child: ListView(
+                          children: [
+                            SummaryTableHeadingBar(
+                              isHeading: true,
+                              theme: theme,
+                              product: products,
+                            ),
+                            Builder(
                               builder: (context) {
                                 if (products.isEmpty) {
                                   return EmptyWidgetDisplayOnly(
@@ -444,8 +440,8 @@ class _ProductReportMobileState
                                 }
                               },
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1352,12 +1348,6 @@ class _TableRowRecordWidgetState
           Expanded(
             flex: 3,
             child: Container(
-              // decoration: BoxDecoration(
-              //   border: Border(
-              //     right: BorderSide(color: Colors.grey),
-              //     left: BorderSide(color: Colors.grey),
-              //   ),
-              // ),
               padding: EdgeInsets.all(5),
               child: Center(
                 child: Row(
