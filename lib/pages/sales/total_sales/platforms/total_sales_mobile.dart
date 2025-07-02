@@ -12,10 +12,12 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 class TotalSalesMobile extends StatefulWidget {
   final String? id;
   final int? customerId;
+  final bool? isInvoice;
   const TotalSalesMobile({
     super.key,
     this.id,
     this.customerId,
+    this.isInvoice,
   });
 
   @override
@@ -44,6 +46,17 @@ class _TotalSalesMobileState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
+      if (widget.isInvoice != null) {
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).switchReturnInvoice(true);
+      } else {
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).switchReturnInvoice(false);
+      }
     });
   }
 
@@ -68,6 +81,80 @@ class _TotalSalesMobileState
         appBar: appBar(
           context: context,
           title: 'All Sales',
+          widget: Padding(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: PopupMenuButton(
+              offset: Offset(-20, 30),
+              color: Colors.white,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    onTap: () {
+                      returnReceiptProvider(
+                        context,
+                        listen: false,
+                      ).switchReturnInvoice(false);
+                    },
+                    child: Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight:
+                            !returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).returnInvoice
+                                ? FontWeight.bold
+                                : null,
+                      ),
+                      'Receipts',
+                    ),
+                  ),
+                  PopupMenuItem(
+                    onTap: () {
+                      returnReceiptProvider(
+                        context,
+                        listen: false,
+                      ).switchReturnInvoice(true);
+                    },
+                    child: Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight:
+                            returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).returnInvoice
+                                ? FontWeight.bold
+                                : null,
+                      ),
+                      'Invoices',
+                    ),
+                  ),
+                ];
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    !returnReceiptProvider(
+                          context,
+                        ).returnInvoice
+                        ? 'Receipts'
+                        : 'Invoices',
+                  ),
+                  Icon(Icons.more_vert_rounded),
+                ],
+              ),
+            ),
+          ),
         ),
         body: Stack(
           children: [
@@ -93,17 +180,13 @@ class _TotalSalesMobileState
                                       ? returnReceiptProvider(
                                         context,
                                         listen: false,
-                                      ).getTotalRevenueForSelectedDay(
+                                      ).getTotalRevenueForSelectedDayAll(
                                         context,
                                         returnReceiptProvider(
                                               context,
-                                            ).receipts
-                                            .where(
-                                              (empId) =>
-                                                  empId
-                                                      .staffId ==
-                                                  widget
-                                                      .id!,
+                                            )
+                                            .returnReceipts(
+                                              context,
                                             )
                                             .toList(),
                                         returnReceiptProvider(
@@ -125,17 +208,13 @@ class _TotalSalesMobileState
                                       ? returnReceiptProvider(
                                         context,
                                         listen: false,
-                                      ).getTotalRevenueForSelectedDay(
+                                      ).getTotalRevenueForSelectedDayAll(
                                         context,
                                         returnReceiptProvider(
                                               context,
-                                            ).receipts
-                                            .where(
-                                              (empId) =>
-                                                  empId
-                                                      .customerId ==
-                                                  widget
-                                                      .customerId!,
+                                            )
+                                            .returnReceipts(
+                                              context,
                                             )
                                             .toList(),
                                         returnReceiptProvider(
@@ -155,11 +234,15 @@ class _TotalSalesMobileState
                                       : returnReceiptProvider(
                                         context,
                                         listen: false,
-                                      ).getTotalRevenueForSelectedDay(
+                                      ).getTotalRevenueForSelectedDayAll(
                                         context,
                                         returnReceiptProvider(
-                                          context,
-                                        ).receipts,
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              context,
+                                            )
+                                            .toList(),
                                         returnReceiptProvider(
                                           context,
                                           listen: false,
@@ -172,19 +255,8 @@ class _TotalSalesMobileState
                                       ? returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
+                                          .returnReceipts(
                                             context,
-                                            returnReceiptProvider(
-                                                  context,
-                                                ).receipts
-                                                .where(
-                                                  (empId) =>
-                                                      empId
-                                                          .staffId ==
-                                                      widget
-                                                          .id!,
-                                                )
-                                                .toList(),
                                           )
                                           .toList()
                                           .length
@@ -194,19 +266,8 @@ class _TotalSalesMobileState
                                       ? returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
+                                          .returnReceipts(
                                             context,
-                                            returnReceiptProvider(
-                                                  context,
-                                                ).receipts
-                                                .where(
-                                                  (empId) =>
-                                                      empId
-                                                          .customerId ==
-                                                      widget
-                                                          .customerId!,
-                                                )
-                                                .toList(),
                                           )
                                           .toList()
                                           .length
@@ -214,11 +275,8 @@ class _TotalSalesMobileState
                                       : returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
+                                          .returnReceipts(
                                             context,
-                                            returnReceiptProvider(
-                                              context,
-                                            ).receipts,
                                           )
                                           .toList()
                                           .length
@@ -236,15 +294,23 @@ class _TotalSalesMobileState
                                     Authorizations()
                                         .viewDate,
                                 context: context,
-                              ),
-                          child: SizedBox(height: 30),
+                              ) ||
+                              returnReceiptProvider(
+                                context,
+                              ).returnInvoice,
+                          child: SizedBox(height: 20),
                         ),
                         Visibility(
-                          visible: authorization(
-                            authorized:
-                                Authorizations().viewDate,
-                            context: context,
-                          ),
+                          visible:
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewDate,
+                                context: context,
+                              ) &&
+                              !returnReceiptProvider(
+                                context,
+                              ).returnInvoice,
                           child: Row(
                             mainAxisAlignment:
                                 MainAxisAlignment
@@ -335,17 +401,12 @@ class _TotalSalesMobileState
                       builder: (context) {
                         if (widget.id != null
                             ? returnReceiptProvider(context)
-                                .returnOwnReceiptsByDayOrWeek(
-                                  context,
-                                  returnReceiptProvider(
-                                        context,
-                                      ).receipts
-                                      .where(
-                                        (rec) =>
-                                            rec.staffId ==
-                                            widget.id,
-                                      )
-                                      .toList(),
+                                .returnReceipts(context)
+                                .toList()
+                                .where(
+                                  (rec) =>
+                                      rec.staffId ==
+                                      widget.id,
                                 )
                                 .toList()
                                 .isEmpty
@@ -367,12 +428,7 @@ class _TotalSalesMobileState
                                 .toList()
                                 .isEmpty
                             : returnReceiptProvider(context)
-                                .returnOwnReceiptsByDayOrWeek(
-                                  context,
-                                  returnReceiptProvider(
-                                    context,
-                                  ).receipts,
-                                )
+                                .returnReceipts(context)
                                 .toList()
                                 .isEmpty) {
                           return EmptyWidgetDisplayOnly(
@@ -402,18 +458,13 @@ class _TotalSalesMobileState
                                       ? returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
+                                          .returnReceipts(
                                             context,
-                                            returnReceiptProvider(
-                                                  context,
-                                                ).receipts
-                                                .where(
-                                                  (rec) =>
-                                                      rec.staffId ==
-                                                      widget
-                                                          .id,
-                                                )
-                                                .toList(),
+                                          )
+                                          .where(
+                                            (rec) =>
+                                                rec.staffId ==
+                                                widget.id,
                                           )
                                           .toList()
                                           .length
@@ -422,29 +473,22 @@ class _TotalSalesMobileState
                                       ? returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
+                                          .returnReceipts(
                                             context,
-                                            returnReceiptProvider(
-                                                  context,
-                                                ).receipts
-                                                .where(
-                                                  (rec) =>
-                                                      rec.customerId ==
-                                                      widget
-                                                          .customerId,
-                                                )
-                                                .toList(),
+                                          )
+                                          .where(
+                                            (rec) =>
+                                                rec.customerId ==
+                                                widget
+                                                    .customerId,
                                           )
                                           .toList()
                                           .length
                                       : returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
+                                          .returnReceipts(
                                             context,
-                                            returnReceiptProvider(
-                                              context,
-                                            ).receipts,
                                           )
                                           .toList()
                                           .length,
@@ -457,17 +501,13 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnOwnReceiptsByDayOrWeek(
+                                            .returnReceipts(
                                               context,
-                                              returnReceiptProvider(
-                                                    context,
-                                                  ).receipts
-                                                  .where(
-                                                    (rec) =>
-                                                        rec.staffId ==
-                                                        widget.id,
-                                                  )
-                                                  .toList(),
+                                            )
+                                            .where(
+                                              (rec) =>
+                                                  rec.staffId ==
+                                                  widget.id,
                                             )
                                             .toList()[index]
                                         : widget.customerId !=
@@ -475,27 +515,21 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnOwnReceiptsByDayOrWeek(
+                                            .returnReceipts(
                                               context,
-                                              returnReceiptProvider(
-                                                    context,
-                                                  ).receipts
-                                                  .where(
-                                                    (rec) =>
-                                                        rec.customerId ==
-                                                        widget.customerId,
-                                                  )
-                                                  .toList(),
+                                            )
+                                            .where(
+                                              (rec) =>
+                                                  rec.customerId ==
+                                                  widget
+                                                      .customerId,
                                             )
                                             .toList()[index]
                                         : returnReceiptProvider(
                                               context,
                                             )
-                                            .returnOwnReceiptsByDayOrWeek(
+                                            .returnReceipts(
                                               context,
-                                              returnReceiptProvider(
-                                                context,
-                                              ).receipts,
                                             )
                                             .toList()[index];
                                 return MainReceiptTile(
@@ -505,8 +539,8 @@ class _TotalSalesMobileState
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return ReceiptPage(
-                                            mainReceipt:
-                                                receipt,
+                                            receiptId:
+                                                receipt.id!,
                                             isMain: false,
                                           );
                                         },

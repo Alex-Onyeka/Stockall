@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
 
 class ReceiptPage extends StatelessWidget {
-  final TempMainReceipt mainReceipt;
+  final int receiptId;
   final bool isMain;
   const ReceiptPage({
     super.key,
-    required this.mainReceipt,
+    required this.receiptId,
     required this.isMain,
   });
 
@@ -18,7 +17,7 @@ class ReceiptPage extends StatelessWidget {
         if (constraints.maxWidth < 550) {
           return ReceiptPageMobile(
             isMain: isMain,
-            mainReceipt: mainReceipt,
+            receiptId: receiptId,
           );
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {

@@ -140,7 +140,8 @@ class _ReceiptTileMainState extends State<ReceiptTileMain> {
                         builder: (context) {
                           return ReceiptPage(
                             isMain: false,
-                            mainReceipt: widget.mainReceipt,
+                            receiptId:
+                                widget.mainReceipt.id!,
                           );
                         },
                       ),
@@ -227,9 +228,10 @@ class _ReceiptTileMainState extends State<ReceiptTileMain> {
                                           ) {
                                             return ReceiptPage(
                                               isMain: false,
-                                              mainReceipt:
+                                              receiptId:
                                                   widget
-                                                      .mainReceipt,
+                                                      .mainReceipt
+                                                      .id!,
                                             );
                                           },
                                         ),

@@ -31,14 +31,16 @@ class MainBottomNav extends StatelessWidget {
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
-              NavButton(
-                currentPage:
-                    Provider.of<NavProvider>(
-                      context,
-                    ).currentPage,
-                index: 0,
-                icon: Icons.home_filled,
-                title: 'Home',
+              Expanded(
+                child: NavButton(
+                  currentPage:
+                      Provider.of<NavProvider>(
+                        context,
+                      ).currentPage,
+                  index: 0,
+                  icon: Icons.home_filled,
+                  title: 'Home',
+                ),
               ),
               Expanded(
                 child: NavButton(
@@ -51,7 +53,7 @@ class MainBottomNav extends StatelessWidget {
                   title: 'Products',
                 ),
               ),
-              SizedBox(width: 60),
+              SizedBox(width: 90),
               Expanded(
                 child: NavButton(
                   currentPage:
@@ -63,50 +65,30 @@ class MainBottomNav extends StatelessWidget {
                   title: 'Sales',
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  if (context.mounted) {
-                    Provider.of<NavProvider>(
-                      context,
-                      listen: false,
-                    ).setSettings();
-                    returnReceiptProvider(
-                      context,
-                      listen: false,
-                    ).clearReceiptDate();
-                    globalKey.currentState?.openDrawer();
-                  } else {
-                    print('Context not mounted');
-                  }
-                },
-                child: SizedBox(
-                  height: 42,
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        color:
-                            returnNavProvider(
-                                  context,
-                                ).settingNow
-                                ? const Color.fromARGB(
-                                  255,
-                                  4,
-                                  49,
-                                  199,
-                                )
-                                : Colors.grey,
-                        size:
-                            returnNavProvider(
-                                  context,
-                                ).settingNow
-                                ? 22
-                                : 18,
-                        Icons.settings,
-                      ),
-                      Text(
-                        style: TextStyle(
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    if (context.mounted) {
+                      Provider.of<NavProvider>(
+                        context,
+                        listen: false,
+                      ).setSettings();
+                      returnReceiptProvider(
+                        context,
+                        listen: false,
+                      ).clearReceiptDate();
+                      globalKey.currentState?.openDrawer();
+                    } else {
+                      print('Context not mounted');
+                    }
+                  },
+                  child: SizedBox(
+                    height: 42,
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
                           color:
                               returnNavProvider(
                                     context,
@@ -118,22 +100,44 @@ class MainBottomNav extends StatelessWidget {
                                     199,
                                   )
                                   : Colors.grey,
-                          fontSize:
+                          size:
                               returnNavProvider(
                                     context,
                                   ).settingNow
-                                  ? 13
-                                  : 12,
-                          fontWeight:
-                              returnNavProvider(
-                                    context,
-                                  ).settingNow
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                                  ? 22
+                                  : 18,
+                          Icons.settings,
                         ),
-                        'Settings',
-                      ),
-                    ],
+                        Text(
+                          style: TextStyle(
+                            color:
+                                returnNavProvider(
+                                      context,
+                                    ).settingNow
+                                    ? const Color.fromARGB(
+                                      255,
+                                      4,
+                                      49,
+                                      199,
+                                    )
+                                    : Colors.grey,
+                            fontSize:
+                                returnNavProvider(
+                                      context,
+                                    ).settingNow
+                                    ? 13
+                                    : 12,
+                            fontWeight:
+                                returnNavProvider(
+                                      context,
+                                    ).settingNow
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                          ),
+                          'Settings',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

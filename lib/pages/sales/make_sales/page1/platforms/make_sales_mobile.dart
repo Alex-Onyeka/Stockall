@@ -45,8 +45,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
   double currentValue = 0;
   double qqty = 0;
-  //     double.tryParse(numberController.text) ??
-  //     cartItem.quantity.toDouble();
   void editCartItem({
     required double productQuantity,
     required BuildContext context,
@@ -1188,9 +1186,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
     });
   }
 
-  // TextEditingController numberController =
-  //     TextEditingController();
-
   bool showBottomPanel = false;
 
   List<TempProductClass> productsResult = [];
@@ -1198,30 +1193,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   bool isFocus = false;
   bool listEmpty = true;
 
-  // late Future<List<TempProductClass>> _productsFuture;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // returnData(
-  //   //   context,
-  //   //   listen: false,
-  //   // ).toggleFloatingAction(context);
-  //   _productsFuture = getProductList(context);
-  // }
-
-  // Future<List<TempProductClass>> getProductList(
-  //   BuildContext context,
-  // ) async {
-  //   return await returnData(
-  //     context,
-  //     listen: false,
-  //   ).getProducts(shopId(context));
-  // }
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // _productsFuture = getProductList(context);
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (returnSalesProvider(
+        context,
+        listen: false,
+      ).cartItems.isEmpty) {
+        returnSalesProvider(
+          context,
+          listen: false,
+        ).offInvoice();
+      }
+    });
   }
 
   @override
@@ -1237,71 +1222,158 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
         appBar: appBar(
           isMain: widget.isMain,
           context: context,
-          title: 'Cart Items',
-          widget: Visibility(
-            visible:
-                returnSalesProvider(
-                  context,
-                ).cartItems.isNotEmpty,
-            child: InkWell(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return ConfirmationAlert(
-                      theme: theme,
-                      message:
-                          'You are about to clear the items in your cart, are you sure you want to proceed?',
-                      title: 'Are you sure?',
-                      action: () {
-                        returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).clearCart();
-                        returnSuggestionProvider(
-                          context,
-                          listen: false,
-                        ).clearSuggestions();
-                        Navigator.of(context).pop();
+          title:
+              returnSalesProvider(context).isInvoice
+                  ? 'Credit Sale'
+                  : 'Cart Items',
+          widget: Stack(
+            children: [
+              Visibility(
+                visible:
+                    returnSalesProvider(
+                      context,
+                    ).cartItems.isNotEmpty,
+                child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to clear the items in your cart, are you sure you want to proceed?',
+                          title: 'Are you sure?',
+                          action: () {
+                            returnSalesProvider(
+                              context,
+                              listen: false,
+                            ).clearCart();
+                            returnSuggestionProvider(
+                              context,
+                              listen: false,
+                            ).clearSuggestions();
+                            Navigator.of(context).pop();
+                          },
+                        );
                       },
                     );
                   },
-                );
-              },
-              child: Container(
-                height: 35,
-                margin: EdgeInsets.only(right: 10),
-                padding: EdgeInsets.only(
-                  // vertical: 10,
-                  left: 10,
-                  right: 5,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey.shade100,
-                  ),
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        'Clear Cart',
+                  child: Container(
+                    height: 35,
+                    margin: EdgeInsets.only(right: 10),
+                    padding: EdgeInsets.only(
+                      // vertical: 10,
+                      left: 10,
+                      right: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade100,
                       ),
-                      Icon(
-                        size: 18,
-                        color: Colors.grey.shade600,
-                        Icons.clear,
+                    ),
+                    child: Center(
+                      child: Row(
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Clear Cart',
+                          ),
+                          Icon(
+                            size: 18,
+                            color: Colors.grey.shade600,
+                            Icons.clear,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              Visibility(
+                visible:
+                    returnSalesProvider(
+                      context,
+                    ).cartItems.isEmpty,
+                child: InkWell(
+                  onTap: () {
+                    returnSalesProvider(
+                      context,
+                      listen: false,
+                    ).switchInvoiceSale();
+                  },
+                  child: SizedBox(
+                    height: 35,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 15.0,
+                        top: 3,
+                        bottom: 3,
+                        left: 5,
+                      ),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Sale Credit',
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  returnSalesProvider(
+                                        context,
+                                      ).isInvoice
+                                      ? theme
+                                          .lightModeColor
+                                          .prColor250
+                                      : null,
+                              border: Border.all(
+                                color:
+                                    returnSalesProvider(
+                                          context,
+                                        ).isInvoice
+                                        ? theme
+                                            .lightModeColor
+                                            .prColor250
+                                        : Colors.grey,
+                              ),
+                            ),
+                            child: Icon(
+                              size: 14,
+                              color:
+                                  returnSalesProvider(
+                                        context,
+                                      ).isInvoice
+                                      ? Colors.white
+                                      : Colors
+                                          .grey
+                                          .shade400,
+                              Icons.check,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         body: Builder(

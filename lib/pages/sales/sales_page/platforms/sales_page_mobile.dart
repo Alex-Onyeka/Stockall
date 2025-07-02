@@ -42,14 +42,9 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
     setState(() {});
   }
 
-  // late Future<List<TempMainReceipt>> mainReceiptFuture;
-
   @override
   void initState() {
     super.initState();
-
-    // mainReceiptFuture = getMainReceipts();
-    // getProdutRecordsFuture = getProductSalesRecord();
     notificationsFuture = fetchNotifications();
   }
 
@@ -453,8 +448,8 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                     context,
                                                   ) {
                                                     return ReceiptPage(
-                                                      mainReceipt:
-                                                          mainReceipt,
+                                                      receiptId:
+                                                          mainReceipt.id!,
                                                       isMain:
                                                           false,
                                                     );

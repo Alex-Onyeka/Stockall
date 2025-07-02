@@ -4,10 +4,12 @@ import 'package:stockall/pages/sales/total_sales/platforms/total_sales_mobile.da
 class TotalSalesPage extends StatelessWidget {
   final String? id;
   final int? customerId;
+  final bool? isInvoice;
   const TotalSalesPage({
     super.key,
     this.id,
     this.customerId,
+    this.isInvoice,
   });
 
   @override
@@ -18,6 +20,7 @@ class TotalSalesPage extends StatelessWidget {
           return TotalSalesMobile(
             id: id,
             customerId: customerId,
+            isInvoice: isInvoice,
           );
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {

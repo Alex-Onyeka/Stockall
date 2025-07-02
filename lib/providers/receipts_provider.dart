@@ -244,6 +244,35 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // UPDATE a receipt
+  Future<void> payCredit(int id) async {
+    try {
+      final updateData = {'is_invoice': false};
+
+      final response =
+          await supabase
+              .from('receipts')
+              .update(updateData)
+              .eq('id', id)
+              .select();
+
+      if (response.isEmpty) {
+        print('❌ No matching receipt to update.');
+        return;
+      }
+
+      final rec = receipts.firstWhere(
+        (recc) => recc.id! == id,
+      );
+      rec.isInvoice = false;
+      notifyListeners();
+
+      print('✅ Receipt updated successfully.');
+    } catch (e) {
+      print('❌ Error updating receipt: $e');
+    }
+  }
+
   //
   //
   //
@@ -490,57 +519,79 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //
-  //
-  //
-  //
-  //
-  //
-  List<TempMainReceipt> mainReceipts = [
-    TempMainReceipt(
-      id: 1,
-      barcode: 'B12345',
-      createdAt: DateTime(2025, 5, 5),
-      shopId: 1,
-      staffId: 's001',
-      staffName: 'Alice Johnson',
-      customerId: 1,
-      bank: 0,
-      cashAlt: 20000,
-      paymentMethod: 'Cash',
-    ),
-    TempMainReceipt(
-      id: 1,
-      barcode: 'B12346',
-      createdAt: DateTime(2025, 5, 7),
-      shopId: 1,
-      staffId: 's002',
-      staffName: 'Bob Smith',
-      customerId: 1,
-      bank: 40000,
-      cashAlt: 0,
-      paymentMethod: 'Bank',
-    ),
-    TempMainReceipt(
-      id: 1,
-      barcode: 'B12347',
-      createdAt: DateTime(2025, 5, 6),
-      shopId: 1,
-      staffId: 's001',
-      staffName: 'Alice Johnson',
-      customerId: 1,
-      bank: 2500,
-      cashAlt: 3000,
-      paymentMethod: 'Split',
-    ),
-  ];
+  bool returnInvoice = false;
 
-  void deleteMainReceipt(int id) {
-    mainReceipts.removeWhere((receipt) => receipt.id == id);
+  void switchReturnInvoice(bool value) {
+    returnInvoice = value;
     notifyListeners();
   }
 
+  List<TempMainReceipt> returnReceipts(
+    BuildContext context,
+  ) {
+    if (!returnInvoice) {
+      return returnOwnReceiptsByDayOrWeekInvoice(
+            context,
+            receipts,
+          )
+          .where((receipt) => receipt.isInvoice == false)
+          .toList();
+    } else {
+      return receipts
+          .where((receipt) => receipt.isInvoice == true)
+          .toList();
+    }
+  }
+
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeek(
+    BuildContext context,
+    List<TempMainReceipt> receipts,
+  ) {
+    if (weekStartDate != null) {
+      final weekStartLocal = weekStartDate!;
+      final weekEndLocal = weekStartLocal.add(
+        const Duration(days: 7),
+      );
+
+      return receipts.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // convert UTC to local
+        return !created.isBefore(weekStartLocal) &&
+            created.isBefore(weekEndLocal);
+      }).toList();
+    }
+
+    // Force local date without UTC logic
+    final localNow = DateTime.now();
+    final localTarget = singleDay?.toLocal() ?? localNow;
+
+    final startOfDay = DateTime(
+      localTarget.year,
+      localTarget.month,
+      localTarget.day,
+    );
+    final endOfDay = startOfDay.add(
+      const Duration(days: 1),
+    );
+
+    return receipts
+        .where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // ALWAYS convert to local
+          final inRange =
+              !created.isBefore(startOfDay) &&
+              created.isBefore(endOfDay);
+
+          return inRange;
+        })
+        .toList()
+        .where((receipt) => receipt.isInvoice == false)
+        .toList();
+  }
+
+  List<TempMainReceipt> returnOwnReceiptsByDayOrWeekAll(
     BuildContext context,
     List<TempMainReceipt> receipts,
   ) {
@@ -584,10 +635,9 @@ class ReceiptsProvider extends ChangeNotifier {
     }).toList();
   }
 
-  List<TempProductSaleRecord>
-  returnproductsRecordByDayOrWeek(
+  List<TempMainReceipt> returnOwnReceiptsByDayOrWeekInvoice(
     BuildContext context,
-    List<TempProductSaleRecord> records,
+    List<TempMainReceipt> receipts,
   ) {
     if (weekStartDate != null) {
       final weekStartLocal = weekStartDate!;
@@ -595,7 +645,71 @@ class ReceiptsProvider extends ChangeNotifier {
         const Duration(days: 7),
       );
 
-      return records.where((record) {
+      return receipts.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // convert UTC to local
+        return !created.isBefore(weekStartLocal) &&
+            created.isBefore(weekEndLocal);
+      }).toList();
+    }
+
+    // Force local date without UTC logic
+    final localNow = DateTime.now();
+    final localTarget = singleDay?.toLocal() ?? localNow;
+
+    final startOfDay = DateTime(
+      localTarget.year,
+      localTarget.month,
+      localTarget.day,
+    );
+    final endOfDay = startOfDay.add(
+      const Duration(days: 1),
+    );
+
+    return receipts.where((receipt) {
+      final created =
+          receipt.createdAt
+              .toLocal(); // ALWAYS convert to local
+      final inRange =
+          !created.isBefore(startOfDay) &&
+          created.isBefore(endOfDay);
+
+      return inRange;
+    }).toList();
+  }
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  //
+  //
+
+  List<TempProductSaleRecord>
+  returnproductsRecordByDayOrWeek(
+    BuildContext context,
+    List<TempProductSaleRecord> records,
+  ) {
+    List<TempProductSaleRecord> recordss = [];
+    for (var rec in records) {
+      var receipt = receipts.firstWhere(
+        (recx) => recx.id! == rec.recepitId,
+      );
+      if (!receipt.isInvoice) {
+        recordss.add(rec);
+      }
+    }
+    if (weekStartDate != null) {
+      final weekStartLocal = weekStartDate!;
+      final weekEndLocal = weekStartLocal.add(
+        const Duration(days: 7),
+      );
+
+      return recordss.where((record) {
         final created = record.createdAt.toLocal();
         return !created.isBefore(weekStartLocal) &&
             created.isBefore(weekEndLocal);
@@ -614,12 +728,16 @@ class ReceiptsProvider extends ChangeNotifier {
       const Duration(days: 1),
     );
 
-    return records.where((record) {
+    return recordss.where((record) {
       final created = record.createdAt.toLocal();
       return !created.isBefore(startOfDay) &&
           created.isBefore(endOfDay);
     }).toList();
   }
+
+  //
+  //
+  //
 
   double getTotalRevenueForSelectedDay(
     BuildContext context,
@@ -647,6 +765,33 @@ class ReceiptsProvider extends ChangeNotifier {
     return tempTotalRevenue;
   }
 
+  double getTotalRevenueForSelectedDayAll(
+    BuildContext context,
+    List<TempMainReceipt> receiptss,
+    List<TempProductSaleRecord> productSalesRecords,
+  ) {
+    double tempTotalRevenue = 0;
+
+    for (var receipt in returnReceipts(context)) {
+      var productRecords =
+          productSalesRecords
+              .where(
+                (record) => record.recepitId == receipt.id,
+              )
+              .toList();
+
+      for (var record in productRecords) {
+        tempTotalRevenue += record.revenue;
+      }
+    }
+
+    return tempTotalRevenue;
+  }
+  //
+  //
+  //
+  //
+
   double getTotalCostPriceForSelectedDay(
     BuildContext context,
     List<TempMainReceipt> receiptss,
@@ -673,48 +818,30 @@ class ReceiptsProvider extends ChangeNotifier {
     return tempTotalCostPrice;
   }
 
-  List<TempMainReceipt> returnOwnReceipts(
+  double getTotalCostPriceForSelectedDayAll(
     BuildContext context,
+    List<TempMainReceipt> receiptss,
+    List<TempProductSaleRecord> productSalesRecords,
   ) {
-    return mainReceipts
-        .where(
-          (receipt) =>
-              receipt.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).returnShop(userId()).shopId,
-        )
-        .toList();
-  }
+    double tempTotalCostPrice = 0;
 
-  List<TempMainReceipt> getSortedReceiptsByDate(
-    BuildContext context,
-  ) {
-    final sortedList =
-        returnOwnReceipts(context).toList()
-          ..sort((a, b) => b.id!.compareTo(a.id!));
-    return sortedList;
-  }
+    for (var receipt in returnOwnReceiptsByDayOrWeekAll(
+      context,
+      receiptss,
+    )) {
+      var productRecords =
+          productSalesRecords
+              .where(
+                (record) => record.recepitId == receipt.id,
+              )
+              .toList();
 
-  int createMainReceipt(TempMainReceipt mainReceipt) {
-    final newId = mainReceipts.length + 1;
-    mainReceipts.add(
-      TempMainReceipt(
-        id: newId,
-        createdAt: DateTime.now(),
-        barcode: mainReceipt.barcode,
-        customerId: mainReceipt.customerId,
-        shopId: mainReceipt.shopId,
-        staffId: mainReceipt.staffId,
-        staffName: mainReceipt.staffName,
-        bank: mainReceipt.bank,
-        cashAlt: mainReceipt.cashAlt,
-        paymentMethod: mainReceipt.paymentMethod,
-      ),
-    );
-    notifyListeners();
-    return newId;
+      for (var record in productRecords) {
+        tempTotalCostPrice += record.costPrice ?? 0;
+      }
+    }
+
+    return tempTotalCostPrice;
   }
 
   double getSubTotalRevenueForReceipt(
@@ -722,12 +849,6 @@ class ReceiptsProvider extends ChangeNotifier {
     List<TempProductSaleRecord> records,
   ) {
     double tempRev = 0;
-    // var temp =
-    //     await loadProductSalesRecord(returnShopProvider(context, listen: false).userShop!.shopId!);
-    //     var beans=   temp.where(
-    //           (bean) => bean.recepitId == mainReceipt.id,
-    //         )
-    //         .toList();
 
     for (var bean in records) {
       tempRev += bean.originalCost!;

@@ -12,6 +12,7 @@ import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/referrals/referrals.dart';
 import 'package:stockall/pages/report/report_page.dart';
+import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -35,35 +36,9 @@ class MyDrawerWidget extends StatefulWidget {
 class _MyDrawerWidgetState extends State<MyDrawerWidget> {
   late Future<List<TempUserClass>> employeesFuture;
 
-  // Future<List<TempUserClass>> getEmployees() async {
-  //   var tempEmployees =
-  //       await returnUserProvider(
-  //         context,
-  //         listen: false,
-  //       ).fetchUsers();
-
-  //   var mainBeans =
-  //       tempEmployees
-  //           .where(
-  //             (emp) =>
-  //                 emp.userId !=
-  //                 AuthService().currentUser!.id,
-  //           )
-  //           .toList();
-
-  //   // returnLocalDatabase(
-  //   //   // ignore: use_build_context_synchronously
-  //   //   context,
-  //   //   listen: false,
-  //   // ).currentEmployees.addAll(mainBeans);
-
-  //   return mainBeans;
-  // }
-
   @override
   void initState() {
     super.initState();
-    // employeesFuture = getEmployees();
   }
 
   @override
@@ -255,6 +230,26 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               },
                               title: 'Expenses',
                               svg: expensesIconSvg,
+                            ),
+                            NavListTileAlt(
+                              height: 16,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return TotalSalesPage(
+                                        isInvoice: true,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  setState(() {});
+                                });
+                              },
+                              title: 'Invoices',
+                              icon:
+                                  Icons.all_inclusive_sharp,
                             ),
                             NavListTileAlt(
                               height: 16,

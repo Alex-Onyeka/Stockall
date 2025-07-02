@@ -4,12 +4,22 @@ import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
   List<TempCartItem> cartItems = [];
+  bool isInvoice = false;
+
+  void switchInvoiceSale() {
+    isInvoice = !isInvoice;
+    notifyListeners();
+  }
+
+  void offInvoice() {
+    isInvoice = false;
+    notifyListeners();
+  }
 
   final SupabaseClient supabase = Supabase.instance.client;
 
@@ -25,7 +35,7 @@ class SalesProvider extends ChangeNotifier {
     int? customerId,
     String? customerName,
   }) async {
-    final createdAt = DateTime.now().toUtc(); // ✅ FIXED
+    final createdAt = DateTime.now().toUtc();
 
     // Step 1: Create the receipt
     final receiptData = {
@@ -38,6 +48,7 @@ class SalesProvider extends ChangeNotifier {
       'cash_alt': cashAlt,
       'customer_name': customerName,
       'bank': bank,
+      'is_invoice': isInvoice,
     };
 
     final receiptRes =
@@ -294,175 +305,175 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  List<int> productIdsToRefund = [];
-  void addproductIdToRefund(int index) {
-    productIdsToRefund.add(index);
-    notifyListeners();
-  }
+  // List<int> productIdsToRefund = [];
+  // void addproductIdToRefund(int index) {
+  //   productIdsToRefund.add(index);
+  //   notifyListeners();
+  // }
 
-  void removeProductIdFromRefund(int index) {
-    productIdsToRefund.remove(index);
-    notifyListeners();
-  }
+  // void removeProductIdFromRefund(int index) {
+  //   productIdsToRefund.remove(index);
+  //   notifyListeners();
+  // }
 
-  void refundProducts(
-    List<int> productRecordIds,
-    TempMainReceipt mainReceipt,
-    BuildContext context,
-  ) {
-    final dataProvider = returnData(context, listen: false);
-    final receiptProvider = returnReceiptProvider(
-      context,
-      listen: false,
-    );
+  // void refundProducts(
+  //   List<int> productRecordIds,
+  //   TempMainReceipt mainReceipt,
+  //   BuildContext context,
+  // ) {
+  //   final dataProvider = returnData(context, listen: false);
+  //   final receiptProvider = returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   );
 
-    final productSalesRecords =
-        receiptProvider.productSaleRecords;
+  //   final productSalesRecords =
+  //       receiptProvider.productSaleRecords;
 
-    // Make a copy of the list to avoid modifying it while iterating
-    final idsToRefund = List<int>.from(productRecordIds);
+  //   // Make a copy of the list to avoid modifying it while iterating
+  //   final idsToRefund = List<int>.from(productRecordIds);
 
-    for (var id in idsToRefund) {
-      final saleRecord = productSalesRecords.firstWhere(
-        (record) => record.productRecordId == id,
-        orElse:
-            () =>
-                throw Exception(
-                  "Sale record not found: $id",
-                ),
-      );
+  //   for (var id in idsToRefund) {
+  //     final saleRecord = productSalesRecords.firstWhere(
+  //       (record) => record.productRecordId == id,
+  //       orElse:
+  //           () =>
+  //               throw Exception(
+  //                 "Sale record not found: $id",
+  //               ),
+  //     );
 
-      final product = dataProvider.products.firstWhere(
-        (p) => p.id == saleRecord.productId,
-        orElse:
-            () =>
-                throw Exception(
-                  "Product not found: ${saleRecord.productId}",
-                ),
-      );
+  //     final product = dataProvider.products.firstWhere(
+  //       (p) => p.id == saleRecord.productId,
+  //       orElse:
+  //           () =>
+  //               throw Exception(
+  //                 "Product not found: ${saleRecord.productId}",
+  //               ),
+  //     );
 
-      // Restore quantity
-      product.quantity += saleRecord.quantity;
+  //     // Restore quantity
+  //     product.quantity += saleRecord.quantity;
 
-      // Remove the product sale record
-      productSalesRecords.removeWhere(
-        (record) => record.productRecordId == id,
-      );
+  //     // Remove the product sale record
+  //     productSalesRecords.removeWhere(
+  //       (record) => record.productRecordId == id,
+  //     );
 
-      // ✅ Remove the refunded ID from the refund list
-      removeProductIdFromRefund(id);
-    }
+  //     // ✅ Remove the refunded ID from the refund list
+  //     removeProductIdFromRefund(id);
+  //   }
 
-    // 🧹 Optional: If all records for this receipt are gone, delete the receipt
-    final remainingProductsForThisReceipt =
-        productSalesRecords
-            .where(
-              (record) =>
-                  record.recepitId == mainReceipt.id,
-            )
-            .toList();
+  //   // 🧹 Optional: If all records for this receipt are gone, delete the receipt
+  //   final remainingProductsForThisReceipt =
+  //       productSalesRecords
+  //           .where(
+  //             (record) =>
+  //                 record.recepitId == mainReceipt.id,
+  //           )
+  //           .toList();
 
-    if (remainingProductsForThisReceipt.isEmpty) {
-      receiptProvider.deleteMainReceipt(mainReceipt.id!);
-      Navigator.of(context).pop();
-    }
+  //   if (remainingProductsForThisReceipt.isEmpty) {
+  //     receiptProvider.deleteMainReceipt(mainReceipt.id!);
+  //     Navigator.of(context).pop();
+  //   }
 
-    dataProvider.notifyListeners();
-    receiptProvider.notifyListeners();
-  }
+  //   dataProvider.notifyListeners();
+  //   receiptProvider.notifyListeners();
+  // }
 
-  void createProductSalesRecord(
-    BuildContext context,
-    TempMainReceipt mainReceipt,
-    List<TempProductSaleRecord> productRecords,
-    int? customerId,
-  ) async {
-    await returnReceiptProvider(
-      context,
-      listen: false,
-    ).createReceipt(mainReceipt, context);
-    if (!context.mounted) return;
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).createProductSaleRecord(productRecords, context);
-    notifyListeners();
-  }
+  // void createProductSalesRecord(
+  //   BuildContext context,
+  //   TempMainReceipt mainReceipt,
+  //   List<TempProductSaleRecord> productRecords,
+  //   int? customerId,
+  // ) async {
+  //   await returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).createReceipt(mainReceipt, context);
+  //   if (!context.mounted) return;
+  //   returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).createProductSaleRecord(productRecords, context);
+  //   notifyListeners();
+  // }
 
-  void createSales(
-    BuildContext context,
-    TempMainReceipt mainReceipt,
-    TempProductSaleRecord productRecord,
-    int? customerId,
-  ) async {
-    await returnReceiptProvider(
-      context,
-      listen: false,
-    ).createReceipt(mainReceipt, context);
-    if (!context.mounted) return;
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).createProductSalesRecord(
-      context,
-      mainReceipt.id!,
-      customerId,
-    );
-    notifyListeners();
-  }
+  // void createSales(
+  //   BuildContext context,
+  //   TempMainReceipt mainReceipt,
+  //   TempProductSaleRecord productRecord,
+  //   int? customerId,
+  // ) async {
+  //   await returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).createReceipt(mainReceipt, context);
+  //   if (!context.mounted) return;
+  //   returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).createProductSalesRecord(
+  //     context,
+  //     mainReceipt.id!,
+  //     customerId,
+  //   );
+  //   notifyListeners();
+  // }
 
-  void updateProductQuantities(BuildContext context) {
-    final productList = returnData(
-      context,
-      listen: false,
-    ).returnOwnProducts(context);
+  // void updateProductQuantities(BuildContext context) {
+  //   final productList = returnData(
+  //     context,
+  //     listen: false,
+  //   ).returnOwnProducts(context);
 
-    for (var item in cartItems) {
-      final actualProduct = productList.firstWhere(
-        (product) => product.id == item.item.id,
-      );
+  //   for (var item in cartItems) {
+  //     final actualProduct = productList.firstWhere(
+  //       (product) => product.id == item.item.id,
+  //     );
 
-      actualProduct.quantity -= item.quantity;
-    }
+  //     actualProduct.quantity -= item.quantity;
+  //   }
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
-  void checkOut({
-    required BuildContext context,
-    required TempMainReceipt mainReceipt,
-    required TempProductSaleRecord productRecord,
-    required int? customerId,
-  }) {
-    createSales(
-      context,
-      mainReceipt,
-      productRecord,
-      customerId,
-    );
-    updateProductQuantities(context);
-    resetPaymentMethod();
-    clearCart();
-    returnCustomers(
-      context,
-      listen: false,
-    ).clearSelectedCustomer();
-    returnNavProvider(context, listen: false).navigate(0);
-    returnCompProvider(
-      context,
-      listen: false,
-    ).successAction(() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return ReceiptPage(
-              isMain: true,
-              mainReceipt: mainReceipt,
-            );
-          },
-        ),
-      );
-    });
-  }
+  // void checkOut({
+  //   required BuildContext context,
+  //   required TempMainReceipt mainReceipt,
+  //   required TempProductSaleRecord productRecord,
+  //   required int? customerId,
+  // }) {
+  //   createSales(
+  //     context,
+  //     mainReceipt,
+  //     productRecord,
+  //     customerId,
+  //   );
+  //   updateProductQuantities(context);
+  //   resetPaymentMethod();
+  //   clearCart();
+  //   returnCustomers(
+  //     context,
+  //     listen: false,
+  //   ).clearSelectedCustomer();
+  //   returnNavProvider(context, listen: false).navigate(0);
+  //   returnCompProvider(
+  //     context,
+  //     listen: false,
+  //   ).successAction(() {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) {
+  //           return ReceiptPage(
+  //             isMain: true,
+  //             mainReceipt: mainReceipt,
+  //           );
+  //         },
+  //       ),
+  //     );
+  //   });
+  // }
 }

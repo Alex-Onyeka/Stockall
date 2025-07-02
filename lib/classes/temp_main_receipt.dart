@@ -12,6 +12,7 @@ class TempMainReceipt {
   final double bank;
   String? departmentName;
   int? departmentId;
+  bool isInvoice;
 
   TempMainReceipt({
     this.id,
@@ -27,6 +28,7 @@ class TempMainReceipt {
     required this.cashAlt,
     this.departmentName,
     this.departmentId,
+    required this.isInvoice,
   });
 
   factory TempMainReceipt.fromJson(
@@ -47,6 +49,7 @@ class TempMainReceipt {
       bank: (json['bank'] as num).toDouble(),
       departmentId: json['department_id'],
       departmentName: json['department_name'],
+      isInvoice: json['is_invoice'],
     );
   }
 
@@ -64,6 +67,7 @@ class TempMainReceipt {
       'bank': bank,
       'department_id': departmentId,
       'department_name': departmentName,
+      'is_invoice': isInvoice,
     };
   }
 }
