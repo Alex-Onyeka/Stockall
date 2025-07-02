@@ -34,6 +34,12 @@ class _CustomerListMobileState
         listen: false,
       ).showFloatingActionButton();
     });
+    if (returnCustomers(
+      context,
+      listen: false,
+    ).customersMain.isEmpty) {
+      getCustomerList(context);
+    }
   }
 
   String searchResult = '';

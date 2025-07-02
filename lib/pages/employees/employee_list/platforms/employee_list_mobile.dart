@@ -27,9 +27,13 @@ class _EmployeeListMobileState
       context,
       listen: false,
     ).toggleFloatingAction(context);
+    if (returnUserProvider(
+      context,
+      listen: false,
+    ).usersMain.isEmpty) {
+      getEmployees();
+    }
   }
-
-  // late Future<List<TempUserClass>> employeesFuture;
 
   Future<List<TempUserClass>> getEmployees() async {
     var tempEmp =
