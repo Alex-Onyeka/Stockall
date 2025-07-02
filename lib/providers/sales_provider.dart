@@ -21,6 +21,11 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void onInvoice() {
+    isInvoice = true;
+    notifyListeners();
+  }
+
   final SupabaseClient supabase = Supabase.instance.client;
 
   Future<TempMainReceipt> checkoutMain({

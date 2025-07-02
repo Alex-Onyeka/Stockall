@@ -247,7 +247,10 @@ class ReceiptsProvider extends ChangeNotifier {
   // UPDATE a receipt
   Future<void> payCredit(int id) async {
     try {
-      final updateData = {'is_invoice': false};
+      final updateData = {
+        'is_invoice': false,
+        'created_at': DateTime.now().toIso8601String(),
+      };
 
       final response =
           await supabase

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/buttons/floating_action_butto.dart';
 // import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
@@ -7,6 +8,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
 class TotalSalesMobile extends StatefulWidget {
@@ -51,6 +53,10 @@ class _TotalSalesMobileState
           context,
           listen: false,
         ).switchReturnInvoice(true);
+        returnData(
+          context,
+          listen: false,
+        ).toggleFloatingAction(context);
       } else {
         returnReceiptProvider(
           context,
@@ -116,6 +122,10 @@ class _TotalSalesMobileState
                         context,
                         listen: false,
                       ).switchReturnInvoice(true);
+                      returnData(
+                        context,
+                        listen: false,
+                      ).toggleFloatingAction(context);
                     },
                     child: Text(
                       style: TextStyle(
@@ -156,6 +166,31 @@ class _TotalSalesMobileState
             ),
           ),
         ),
+        floatingActionButton: Visibility(
+          visible:
+              returnReceiptProvider(context).returnInvoice,
+          child: FloatingActionButtonMain(
+            action: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return MakeSalesPage(isInvoice: true);
+                  },
+                ),
+              ).then((_) {
+                setState(() {
+                  // getProductList(context);
+                });
+              });
+            },
+            color: theme.lightModeColor.secColor100,
+            text: 'Create Invoice',
+            theme: theme,
+          ),
+        ),
+        // floatingActionButtonLocation:
+        //     FloatingActionButtonLocation.endFloat,
         body: Stack(
           children: [
             Padding(
@@ -434,7 +469,9 @@ class _TotalSalesMobileState
                           return EmptyWidgetDisplayOnly(
                             title: 'Empty List',
                             subText:
-                                'You don\'t have any Sales under this category',
+                                widget.isInvoice != null
+                                    ? 'You Currently do not have any pending Invoices recorded'
+                                    : 'You don\'t have any Sales under this category',
                             icon: Icons.clear,
                             theme: theme,
                             height: 35,

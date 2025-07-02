@@ -6,7 +6,12 @@ import 'package:stockall/services/auth_service.dart';
 
 class MakeSalesPage extends StatefulWidget {
   final bool? isMain;
-  const MakeSalesPage({super.key, this.isMain});
+  final bool? isInvoice;
+  const MakeSalesPage({
+    super.key,
+    this.isMain,
+    this.isInvoice,
+  });
 
   @override
   State<MakeSalesPage> createState() =>
@@ -57,6 +62,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
           return MakeSalesMobile(
+            isInvoice: widget.isInvoice,
             isMain: widget.isMain,
             searchController: searchController,
           );

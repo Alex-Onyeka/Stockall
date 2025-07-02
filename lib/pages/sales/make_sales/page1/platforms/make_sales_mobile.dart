@@ -25,10 +25,12 @@ import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
 class MakeSalesMobile extends StatefulWidget {
   final TextEditingController searchController;
   final bool? isMain;
+  final bool? isInvoice;
   const MakeSalesMobile({
     super.key,
     required this.searchController,
     this.isMain,
+    this.isInvoice,
   });
 
   @override
@@ -1197,10 +1199,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (returnSalesProvider(
-        context,
-        listen: false,
-      ).cartItems.isEmpty) {
+      if (widget.isInvoice != null &&
+          returnSalesProvider(
+            context,
+            listen: false,
+          ).cartItems.isEmpty) {
+        returnSalesProvider(
+          context,
+          listen: false,
+        ).onInvoice();
+      } else if (widget.isInvoice == null &&
+          returnSalesProvider(
+            context,
+            listen: false,
+          ).cartItems.isEmpty) {
         returnSalesProvider(
           context,
           listen: false,

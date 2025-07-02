@@ -89,7 +89,7 @@ class EmptyWidgetDisplayOnly extends StatelessWidget {
                 visible: altAction != null,
                 child: Column(
                   children: [
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     InkWell(
                       onTap: () {
                         altAction!();

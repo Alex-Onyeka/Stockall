@@ -10,7 +10,6 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
-import 'package:stockall/pages/referrals/referrals.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
@@ -66,8 +65,8 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                     context,
                                   ).size.height <
                                   680
-                              ? 35
-                              : 50,
+                              ? 20
+                              : 30,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
@@ -491,23 +490,23 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                     Icons.menu_book_rounded,
                               ),
                             ),
-                            NavListTileAlt(
-                              height: 20,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return Referrals();
-                                    },
-                                  ),
-                                );
-                              },
-                              title: 'Referrals',
-                              icon:
-                                  Icons
-                                      .card_giftcard_rounded,
-                            ),
+                            // NavListTileAlt(
+                            //   height: 20,
+                            //   action: () {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //         builder: (context) {
+                            //           return Referrals();
+                            //         },
+                            //       ),
+                            //     );
+                            //   },
+                            //   title: 'Referrals',
+                            //   icon:
+                            //       Icons
+                            //           .card_giftcard_rounded,
+                            // ),
                             SizedBox(height: 30),
                           ],
                         ),
