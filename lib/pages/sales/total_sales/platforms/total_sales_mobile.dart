@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 // import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
-import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
 class TotalSalesMobile extends StatefulWidget {
-  const TotalSalesMobile({super.key});
+  final String? id;
+  final int? customerId;
+  const TotalSalesMobile({
+    super.key,
+    this.id,
+    this.customerId,
+  });
 
   @override
   State<TotalSalesMobile> createState() =>
@@ -34,13 +39,9 @@ class _TotalSalesMobileState
     setState(() {});
   }
 
-  // late Future<List<TempMainReceipt>> mainReceiptFuture;
-
   @override
   void initState() {
     super.initState();
-    // mainReceiptFuture = getMainReceipts();
-    // getProdutRecordsFuture = getProductSalesRecord();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
     });
@@ -87,34 +88,141 @@ class _TotalSalesMobileState
                               color: Colors.amber,
                               isMoney: true,
                               title: 'Total Revenue',
-                              value: returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).getTotalRevenueForSelectedDay(
-                                context,
-                                returnReceiptProvider(
-                                  context,
-                                ).receipts,
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).produtRecordSalesMain,
-                              ),
-                            ),
-                            ValueSummaryTabSmall(
                               value:
-                                  returnReceiptProvider(
+                                  widget.id != null
+                                      ? returnReceiptProvider(
                                         context,
+                                        listen: false,
+                                      ).getTotalRevenueForSelectedDay(
+                                        context,
+                                        returnReceiptProvider(
+                                              context,
+                                            ).receipts
+                                            .where(
+                                              (empId) =>
+                                                  empId
+                                                      .staffId ==
+                                                  widget
+                                                      .id!,
+                                            )
+                                            .toList(),
+                                        returnReceiptProvider(
+                                              context,
+                                              listen: false,
+                                            )
+                                            .produtRecordSalesMain
+                                            .where(
+                                              (empId) =>
+                                                  empId
+                                                      .staffId ==
+                                                  widget
+                                                      .id!,
+                                            )
+                                            .toList(),
                                       )
-                                      .returnOwnReceiptsByDayOrWeek(
+                                      : widget.customerId !=
+                                          null
+                                      ? returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getTotalRevenueForSelectedDay(
+                                        context,
+                                        returnReceiptProvider(
+                                              context,
+                                            ).receipts
+                                            .where(
+                                              (empId) =>
+                                                  empId
+                                                      .customerId ==
+                                                  widget
+                                                      .customerId!,
+                                            )
+                                            .toList(),
+                                        returnReceiptProvider(
+                                              context,
+                                              listen: false,
+                                            )
+                                            .produtRecordSalesMain
+                                            .where(
+                                              (empId) =>
+                                                  empId
+                                                      .customerId ==
+                                                  widget
+                                                      .customerId!,
+                                            )
+                                            .toList(),
+                                      )
+                                      : returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getTotalRevenueForSelectedDay(
                                         context,
                                         returnReceiptProvider(
                                           context,
                                         ).receipts,
-                                      )
-                                      .toList()
-                                      .length
-                                      .toDouble(),
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).produtRecordSalesMain,
+                                      ),
+                            ),
+                            ValueSummaryTabSmall(
+                              value:
+                                  widget.id != null
+                                      ? returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                                  context,
+                                                ).receipts
+                                                .where(
+                                                  (empId) =>
+                                                      empId
+                                                          .staffId ==
+                                                      widget
+                                                          .id!,
+                                                )
+                                                .toList(),
+                                          )
+                                          .toList()
+                                          .length
+                                          .toDouble()
+                                      : widget.customerId !=
+                                          null
+                                      ? returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                                  context,
+                                                ).receipts
+                                                .where(
+                                                  (empId) =>
+                                                      empId
+                                                          .customerId ==
+                                                      widget
+                                                          .customerId!,
+                                                )
+                                                .toList(),
+                                          )
+                                          .toList()
+                                          .length
+                                          .toDouble()
+                                      : returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                              context,
+                                            ).receipts,
+                                          )
+                                          .toList()
+                                          .length
+                                          .toDouble(),
                               title: 'Sales Number',
                               color: Colors.green,
                               isMoney: false,
@@ -122,11 +230,13 @@ class _TotalSalesMobileState
                           ],
                         ),
                         Visibility(
-                          visible: authorization(
-                            authorized:
-                                Authorizations().viewDate,
-                            context: context,
-                          ),
+                          visible:
+                              !authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewDate,
+                                context: context,
+                              ),
                           child: SizedBox(height: 30),
                         ),
                         Visibility(
@@ -137,8 +247,17 @@ class _TotalSalesMobileState
                           ),
                           child: Row(
                             mainAxisAlignment:
-                                MainAxisAlignment.end,
+                                MainAxisAlignment
+                                    .spaceBetween,
                             children: [
+                              Text(
+                                returnReceiptProvider(
+                                          context,
+                                        ).dateSet ==
+                                        null
+                                    ? 'For Today'
+                                    : '${returnReceiptProvider(context).dateSet}',
+                              ),
                               MaterialButton(
                                 onPressed: () {
                                   if (returnReceiptProvider(
@@ -214,33 +333,55 @@ class _TotalSalesMobileState
                   Expanded(
                     child: Builder(
                       builder: (context) {
-                        if (returnReceiptProvider(context)
-                            .returnOwnReceiptsByDayOrWeek(
-                              context,
-                              returnReceiptProvider(
-                                context,
-                              ).receipts,
-                            )
-                            .toList()
-                            .isEmpty) {
-                          return EmptyWidgetDisplay(
+                        if (widget.id != null
+                            ? returnReceiptProvider(context)
+                                .returnOwnReceiptsByDayOrWeek(
+                                  context,
+                                  returnReceiptProvider(
+                                        context,
+                                      ).receipts
+                                      .where(
+                                        (rec) =>
+                                            rec.staffId ==
+                                            widget.id,
+                                      )
+                                      .toList(),
+                                )
+                                .toList()
+                                .isEmpty
+                            : widget.customerId != null
+                            ? returnReceiptProvider(context)
+                                .returnOwnReceiptsByDayOrWeek(
+                                  context,
+                                  returnReceiptProvider(
+                                        context,
+                                      ).receipts
+                                      .where(
+                                        (rec) =>
+                                            rec.customerId ==
+                                            widget
+                                                .customerId,
+                                      )
+                                      .toList(),
+                                )
+                                .toList()
+                                .isEmpty
+                            : returnReceiptProvider(context)
+                                .returnOwnReceiptsByDayOrWeek(
+                                  context,
+                                  returnReceiptProvider(
+                                    context,
+                                  ).receipts,
+                                )
+                                .toList()
+                                .isEmpty) {
+                          return EmptyWidgetDisplayOnly(
                             title: 'Empty List',
                             subText:
                                 'You don\'t have any Sales under this category',
-                            buttonText: 'Create Sale',
                             icon: Icons.clear,
                             theme: theme,
                             height: 35,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return MakeSalesPage();
-                                  },
-                                ),
-                              );
-                            },
                             altAction: () {
                               getMainReceipts();
                             },
@@ -257,32 +398,106 @@ class _TotalSalesMobileState
                             displacement: 10,
                             child: ListView.builder(
                               itemCount:
-                                  returnReceiptProvider(
-                                        context,
-                                      )
-                                      .returnOwnReceiptsByDayOrWeek(
-                                        context,
-                                        returnReceiptProvider(
-                                          context,
-                                        ).receipts,
-                                      )
-                                      .toList()
-                                      .length,
+                                  widget.id != null
+                                      ? returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                                  context,
+                                                ).receipts
+                                                .where(
+                                                  (rec) =>
+                                                      rec.staffId ==
+                                                      widget
+                                                          .id,
+                                                )
+                                                .toList(),
+                                          )
+                                          .toList()
+                                          .length
+                                      : widget.customerId !=
+                                          null
+                                      ? returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                                  context,
+                                                ).receipts
+                                                .where(
+                                                  (rec) =>
+                                                      rec.customerId ==
+                                                      widget
+                                                          .customerId,
+                                                )
+                                                .toList(),
+                                          )
+                                          .toList()
+                                          .length
+                                      : returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            returnReceiptProvider(
+                                              context,
+                                            ).receipts,
+                                          )
+                                          .toList()
+                                          .length,
                               itemBuilder: (
                                 context,
                                 index,
                               ) {
                                 var receipt =
-                                    returnReceiptProvider(
-                                          context,
-                                        )
-                                        .returnOwnReceiptsByDayOrWeek(
-                                          context,
-                                          returnReceiptProvider(
-                                            context,
-                                          ).receipts,
-                                        )
-                                        .toList()[index];
+                                    widget.id != null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek(
+                                              context,
+                                              returnReceiptProvider(
+                                                    context,
+                                                  ).receipts
+                                                  .where(
+                                                    (rec) =>
+                                                        rec.staffId ==
+                                                        widget.id,
+                                                  )
+                                                  .toList(),
+                                            )
+                                            .toList()[index]
+                                        : widget.customerId !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek(
+                                              context,
+                                              returnReceiptProvider(
+                                                    context,
+                                                  ).receipts
+                                                  .where(
+                                                    (rec) =>
+                                                        rec.customerId ==
+                                                        widget.customerId,
+                                                  )
+                                                  .toList(),
+                                            )
+                                            .toList()[index]
+                                        : returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek(
+                                              context,
+                                              returnReceiptProvider(
+                                                context,
+                                              ).receipts,
+                                            )
+                                            .toList()[index];
                                 return MainReceiptTile(
                                   action: () {
                                     Navigator.push(

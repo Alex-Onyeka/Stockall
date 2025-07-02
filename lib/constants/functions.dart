@@ -53,6 +53,11 @@ int getDayDifference(DateTime inputDate) {
   return inputDateOnly.difference(todayDateOnly).inDays;
 }
 
+List empSetup =
+    employees
+        .where((emp) => emp['position'] != 'Owner')
+        .toList();
+
 List<Map<String, dynamic>> employees = [
   {
     'position': 'Owner',

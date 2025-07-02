@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -28,10 +27,9 @@ class _EmployeeListMobileState
       context,
       listen: false,
     ).toggleFloatingAction(context);
-    employeesFuture = getEmployees();
   }
 
-  late Future<List<TempUserClass>> employeesFuture;
+  // late Future<List<TempUserClass>> employeesFuture;
 
   Future<List<TempUserClass>> getEmployees() async {
     var tempEmp =
@@ -65,9 +63,7 @@ class _EmployeeListMobileState
               ),
             ).then((_) {
               if (mounted) {
-                setState(() {
-                  employeesFuture = getEmployees();
-                });
+                setState(() {});
               }
             });
           },
@@ -102,13 +98,6 @@ class _EmployeeListMobileState
                 fontSize: theme.mobileTexts.h4.fontSize,
                 fontWeight: FontWeight.bold,
               ),
-              // returnLocalDatabase(
-              //           context,
-              //           listen: false,
-              //         ).currentEmployee!.userId! !=
-              //         AuthService().currentUser!.id
-              //     ? 'My Account'
-              //     :
               user.userId! == user.authUserId
                   ? 'Your Employees'
                   : 'My Account',
@@ -116,71 +105,60 @@ class _EmployeeListMobileState
           ],
         ),
       ),
-      body: FutureBuilder<List<TempUserClass>>(
-        future: employeesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
-            return returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader('Loading');
-          } else if (snapshot.hasError) {
-            return EmptyWidgetDisplayOnly(
-              title: 'An Error Occured',
-              subText:
-                  'An error occoured while loading your data, please check your internet and try again.',
-              theme: theme,
-              height: 30,
-              icon: Icons.clear,
-            );
-          } else {
-            List<TempUserClass> employees =
-                snapshot.data!
-                    .where(
-                      (emp) =>
-                          emp.authUserId != emp.userId!,
-                    )
-                    .toList();
+      body: Builder(
+        builder: (context) {
+          List<TempUserClass> employees =
+              returnUserProvider(context).usersMain
+                  .where(
+                    (emp) => emp.authUserId != emp.userId!,
+                  )
+                  .toList();
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Builder(
-                builder: (context) {
-                  if (employees.isEmpty) {
-                    return EmptyWidgetDisplay(
-                      title: 'Empty Employee List',
-                      subText:
-                          'Your Have not Created Any Employee Yet.',
-                      buttonText: 'Create Employee',
-                      svg: productIconSvg,
-                      theme: theme,
-                      height: 30,
-                      action: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return AddEmployeePage();
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Builder(
+              builder: (context) {
+                if (employees.isEmpty) {
+                  return EmptyWidgetDisplay(
+                    title: 'Empty Employee List',
+                    subText:
+                        'Your Have not Created Any Employee Yet.',
+                    buttonText: 'Create Employee',
+                    svg: productIconSvg,
+                    theme: theme,
+                    height: 30,
+                    action: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return AddEmployeePage();
+                          },
+                        ),
+                      ).then((_) {
+                        setState(() {});
+                      });
+                    },
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        Expanded(
+                          child: RefreshIndicator(
+                            onRefresh: () {
+                              return getEmployees();
                             },
-                          ),
-                        ).then((_) {
-                          setState(() {
-                            employeesFuture =
-                                getEmployees();
-                          });
-                        });
-                      },
-                    );
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0,
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10),
-                          Expanded(
+                            backgroundColor: Colors.white,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .prColor300,
+                            displacement: 10,
                             child: ListView.builder(
                               itemCount: employees.length,
                               itemBuilder: (
@@ -204,10 +182,7 @@ class _EmployeeListMobileState
                                         },
                                       ),
                                     ).then((_) {
-                                      setState(() {
-                                        employeesFuture =
-                                            getEmployees();
-                                      });
+                                      setState(() {});
                                     });
                                   },
                                   employee: employee,
@@ -216,14 +191,14 @@ class _EmployeeListMobileState
                               },
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
-            );
-          }
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          );
         },
       ),
     );

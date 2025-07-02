@@ -441,7 +441,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                       .lightModeColor
                                       .secColor200,
                             ),
-                            'Not Sett',
+                            'Customer: Not Set',
                           );
                         } else {
                           TempCustomersClass? customer =

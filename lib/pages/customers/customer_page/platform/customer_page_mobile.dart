@@ -2,25 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_customers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/add_customer/add_customer.dart';
-import 'package:stockall/pages/products/compnents/receipt_tile_main.dart';
+import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class CustomerPageMobile extends StatelessWidget {
-  final TempCustomersClass customer;
-  const CustomerPageMobile({
-    super.key,
-    required this.customer,
-  });
+  final int id;
+  const CustomerPageMobile({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    var customer = returnCustomers(
+      context,
+    ).customersMain.firstWhere((cust) => cust.id! == id);
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -185,7 +184,7 @@ class DetailsPageContainer extends StatelessWidget {
                     Expanded(
                       child: TabBarTabButton(
                         index: 0,
-                        text: 'Basic Information',
+                        text: 'Basic Info',
                         theme: theme,
                       ),
                     ),
@@ -194,127 +193,26 @@ class DetailsPageContainer extends StatelessWidget {
                         index: 1,
                         text: 'Purchases',
                         theme: theme,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return TotalSalesPage(
+                                  customerId: customer.id!,
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: 20),
-                Visibility(
-                  visible:
-                      returnCompProvider(
-                        context,
-                      ).activeTab ==
-                      0,
-                  child: CustomerDetailsContainer(
-                    customer: customer,
-                    theme: theme,
-                  ),
-                ),
-                Visibility(
-                  visible:
-                      returnCompProvider(
-                        context,
-                      ).activeTab ==
-                      1,
-                  child: SizedBox(
-                    height:
-                        MediaQuery.of(context).size.height -
-                        420,
-                    // width:
-                    //     MediaQuery.of(context).size.width -
-                    //     20,
-                    child: Builder(
-                      builder: (context) {
-                        var receipts = returnReceiptProvider(
-                              context,
-                              listen: false,
-                            )
-                            .loadReceipts(
-                              returnShopProvider(
-                                context,
-                                listen: false,
-                              ).userShop!.shopId!,
-                              context,
-                            )
-                            .then((receipts) {
-                              final receipt = receipts.where(
-                                (receipt) =>
-                                    receipt.customerId !=
-                                        null &&
-                                    receipt.customerId ==
-                                        customer.id,
-                              );
-                              return receipt;
-                            });
-                        return FutureBuilder(
-                          future: receipts,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return returnCompProvider(
-                                context,
-                                listen: false,
-                              ).showLoader('Loading');
-                            } else if (snapshot.hasError) {
-                              return SizedBox(
-                                width: 300,
-                                child: EmptyWidgetDisplayOnly(
-                                  title: 'An Error Occured',
-                                  subText:
-                                      'An error occured. Please check your internet and try again.',
-                                  theme: theme,
-                                  height: 30,
-                                ),
-                              );
-                            } else {
-                              if (snapshot.data!.isEmpty) {
-                                return SizedBox(
-                                  width: 300,
-                                  child: EmptyWidgetDisplayOnly(
-                                    title: 'Empty List',
-                                    subText:
-                                        'This customer has not made any purchases from you yet.',
-                                    theme: theme,
-                                    height: 30,
-                                    icon: Icons.clear,
-                                  ),
-                                );
-                              } else {
-                                var tempReceipts =
-                                    snapshot.data!;
-
-                                return ListView.builder(
-                                  itemCount:
-                                      tempReceipts.length,
-                                  itemBuilder: (
-                                    context,
-                                    index,
-                                  ) {
-                                    var singleReceipt =
-                                        tempReceipts
-                                            .toList()[index];
-
-                                    return ReceiptTileMain(
-                                      theme: theme,
-                                      mainReceipt:
-                                          singleReceipt,
-                                    );
-                                  },
-                                );
-                              }
-                            }
-                            // return Center(
-                            //   child: Container(
-                            //     height: 100,
-                            //     width: 100,
-                            //     color: Colors.grey,
-                            //   ),
-                            // );
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                CustomerDetailsContainer(
+                  customer: customer,
+                  theme: theme,
                 ),
               ],
             ),
@@ -665,11 +563,13 @@ class TabBarUserInfoSection extends StatelessWidget {
 class TabBarTabButton extends StatelessWidget {
   final String text;
   final int index;
+  final Function()? action;
   const TabBarTabButton({
     super.key,
     required this.theme,
     required this.index,
     required this.text,
+    this.action,
   });
 
   final ThemeProvider theme;
@@ -697,10 +597,7 @@ class TabBarTabButton extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () {
-            returnCompProvider(
-              context,
-              listen: false,
-            ).swtichTab(index);
+            action!();
           },
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 10),

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
-import 'package:stockall/pages/products/compnents/receipt_tile_main.dart';
+import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -27,16 +25,6 @@ class EmployeePageMobile extends StatefulWidget {
 
 class _EmployeePageMobileState
     extends State<EmployeePageMobile> {
-  late Future<TempUserClass> employeeFuture;
-  Future<TempUserClass> getEmployee() async {
-    var tempEmp = await returnUserProvider(
-      context,
-      listen: false,
-    ).fetchUserById(widget.employeeId);
-
-    return tempEmp;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -45,7 +33,6 @@ class _EmployeePageMobileState
       context,
       listen: false,
     ).toggleFloatingAction(context);
-    employeeFuture = getEmployee();
   }
 
   bool isLoading = false;
@@ -54,8 +41,6 @@ class _EmployeePageMobileState
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    employeeFuture = getEmployee();
   }
 
   @override
@@ -87,132 +72,115 @@ class _EmployeePageMobileState
                           iconData: Icons.person,
                         ),
                       ),
-                      FutureBuilder<TempUserClass>(
-                        future: employeeFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return returnCompProvider(
-                              context,
-                              listen: false,
-                            ).showLoader('Loading');
-                          } else if (snapshot.hasError) {
-                            return EmptyWidgetDisplayOnly(
-                              title: 'An Error Occured',
-                              subText:
-                                  'Error occurred while Loading data.Please check you internet connection and try again.',
-                              theme: theme,
-                              height: 30,
-                              icon: Icons.clear,
-                            );
-                          } else {
-                            TempUserClass employee =
-                                snapshot.data!;
-                            return Positioned(
-                              top: 90,
-                              child: DetailsPageContainer(
-                                editAction: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AddEmployeePage(
-                                          employee:
-                                              employee,
-                                        );
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {
-                                      employeeFuture =
-                                          getEmployee();
-                                    });
-                                  });
-                                },
-                                deleteAction: () {
-                                  final safeContext =
-                                      context;
-                                  final userProvider =
-                                      returnUserProvider(
-                                        context,
-                                        listen: false,
-                                      );
-                                  final shopProvider =
-                                      returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      );
-                                  showDialog(
-                                    context: safeContext,
+                      Builder(
+                        builder: (context) {
+                          TempUserClass employee =
+                              returnUserProvider(
+                                context,
+                              ).usersMain.firstWhere(
+                                (user) =>
+                                    user.userId ==
+                                    widget.employeeId,
+                              );
+                          return Positioned(
+                            top: 90,
+                            child: DetailsPageContainer(
+                              editAction: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
                                     builder: (context) {
-                                      return ConfirmationAlert(
-                                        theme: theme,
-                                        message:
-                                            'You are about to delete your staff, are you sure to proceed?',
-                                        title:
-                                            'Are you sure?',
-                                        action: () async {
-                                          if (safeContext
-                                              .mounted) {
-                                            Navigator.of(
-                                              safeContext,
-                                            ).pop();
-                                          }
-                                          setState(() {
-                                            isLoading =
-                                                true;
-                                          });
-
-                                          await shopProvider.removeEmployeeFromShop(
-                                            employeeIdToRemove:
-                                                widget
-                                                    .employeeId,
-                                            shopId:
-                                                returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.shopId!,
-                                          );
-                                          await userProvider
-                                              .updateEmployeeRole(
-                                                authUserId:
-                                                    widget
-                                                        .employeeId,
-                                                newRole: '',
-                                                userId:
-                                                    widget
-                                                        .employeeId,
-                                              );
-                                          setState(() {
-                                            isLoading =
-                                                false;
-                                            showSuccess =
-                                                true;
-                                          });
-
-                                          await Future.delayed(
-                                            Duration(
-                                              seconds: 2,
-                                            ),
-                                          );
-
-                                          if (safeContext
-                                              .mounted) {
-                                            Navigator.of(
-                                              safeContext,
-                                            ).pop();
-                                          }
-                                        },
+                                      return AddEmployeePage(
+                                        employee: employee,
                                       );
                                     },
-                                  );
-                                },
-                                theme: theme,
-                                employee: employee,
-                              ),
-                            );
-                          }
+                                  ),
+                                ).then((_) {
+                                  setState(() {});
+                                });
+                              },
+                              deleteAction: () {
+                                final safeContext = context;
+                                final userProvider =
+                                    returnUserProvider(
+                                      context,
+                                      listen: false,
+                                    );
+                                final shopProvider =
+                                    returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    );
+                                showDialog(
+                                  context: safeContext,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to delete your staff, are you sure to proceed?',
+                                      title:
+                                          'Are you sure?',
+                                      action: () async {
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+
+                                        await shopProvider.removeEmployeeFromShop(
+                                          employeeIdToRemove:
+                                              widget
+                                                  .employeeId,
+                                          shopId:
+                                              returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .userShop!
+                                                  .shopId!,
+                                        );
+                                        await userProvider
+                                            .updateEmployeeRole(
+                                              authUserId:
+                                                  widget
+                                                      .employeeId,
+                                              newRole: '',
+                                              userId:
+                                                  widget
+                                                      .employeeId,
+                                            );
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess =
+                                              true;
+                                        });
+
+                                        await Future.delayed(
+                                          Duration(
+                                            seconds: 2,
+                                          ),
+                                        );
+
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              theme: theme,
+                              employee: employee,
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -261,26 +229,6 @@ class DetailsPageContainer extends StatefulWidget {
 
 class _DetailsPageContainerState
     extends State<DetailsPageContainer> {
-  late Future<List<TempMainReceipt>?> receiptsFuture;
-
-  Future<List<TempMainReceipt>?> getReceipts() async {
-    List<TempMainReceipt> temp =
-        await returnReceiptProvider(
-          context,
-        ).loadReceiptsByUserId(
-          context: context,
-          shopId:
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop!.shopId!,
-          userId: widget.employee.userId!,
-        );
-    return temp;
-  }
-
-  bool _isInitialized = false;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -288,10 +236,6 @@ class _DetailsPageContainerState
       context,
       listen: false,
     );
-    if (!_isInitialized) {
-      receiptsFuture = getReceipts();
-      _isInitialized = true;
-    }
   }
 
   late CompProvider compProvider;
@@ -299,9 +243,7 @@ class _DetailsPageContainerState
   @override
   void dispose() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      compProvider.swtichTab(
-        0,
-      ); // Safe to notify listeners now
+      compProvider.swtichTab(0);
     });
     super.dispose();
   }
@@ -439,86 +381,31 @@ class _DetailsPageContainerState
                       Expanded(
                         child: TabBarTabButton(
                           index: 1,
-                          text: 'Sales',
+                          text: 'View Sales',
                           theme: widget.theme,
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return TotalSalesPage(
+                                    id:
+                                        widget
+                                            .employee
+                                            .userId!,
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 20),
-                  Visibility(
-                    visible:
-                        returnCompProvider(
-                          context,
-                        ).activeTab ==
-                        0,
-                    child: EmployeeDetailsContainer(
-                      employee: widget.employee,
-                      theme: widget.theme,
-                    ),
-                  ),
-                  Visibility(
-                    visible:
-                        returnCompProvider(
-                          context,
-                        ).activeTab ==
-                        1,
-                    child: FutureBuilder(
-                      future: receiptsFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return returnCompProvider(
-                            context,
-                            listen: false,
-                          ).showLoader('Loading');
-                        } else if (snapshot.hasError) {
-                          return EmptyWidgetDisplayOnly(
-                            title: 'Empty List',
-                            subText:
-                                'No sales Record under this category.',
-                            theme: returnTheme(context),
-                            height: 30,
-                            icon: Icons.clear,
-                          );
-                        } else if (snapshot.data!.isEmpty) {
-                          return EmptyWidgetDisplayOnly(
-                            title: 'Empty List',
-                            subText:
-                                'No sales recorded yet',
-                            theme: returnTheme(context),
-                            height: 30,
-                            icon: Icons.clear,
-                          );
-                        } else {
-                          var receipts = snapshot.data!;
-                          // returnLocalDatabase(
-                          //   context,
-                          //   listen: false,
-                          // ).setUserTotalSale(
-                          //   receipts.length.toDouble(),
-                          // );
-                          return Expanded(
-                            child: ListView.builder(
-                              itemCount:
-                                  snapshot.data!.length,
-                              itemBuilder: (
-                                context,
-                                index,
-                              ) {
-                                TempMainReceipt receipt =
-                                    receipts[index];
-
-                                return ReceiptTileMain(
-                                  theme: widget.theme,
-                                  mainReceipt: receipt,
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                  EmployeeDetailsContainer(
+                    employee: widget.employee,
+                    theme: widget.theme,
                   ),
                 ],
               ),
@@ -791,11 +678,13 @@ class TabBarUserInfoSection extends StatelessWidget {
 class TabBarTabButton extends StatelessWidget {
   final String text;
   final int index;
+  final Function()? action;
   const TabBarTabButton({
     super.key,
     required this.theme,
     required this.index,
     required this.text,
+    this.action,
   });
 
   final ThemeProvider theme;
@@ -823,10 +712,7 @@ class TabBarTabButton extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () {
-            returnCompProvider(
-              context,
-              listen: false,
-            ).swtichTab(index);
+            action!();
           },
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 10),

@@ -51,11 +51,14 @@ class _AddEmployeeMobileState
     super.initState();
     usersFuture = getUsers();
     if (widget.employee != null) {
-      currentSelected = employees.indexOf(
-        employees.firstWhere(
-          (emp) => emp['position'] == widget.employee!.role,
-        ),
-      );
+      setState(() {
+        currentSelected = empSetup.indexOf(
+          empSetup.firstWhere(
+            (emp) =>
+                emp['position'] == widget.employee!.role,
+          ),
+        );
+      });
     }
   }
 
@@ -217,7 +220,7 @@ class _AddEmployeeMobileState
                                       physics:
                                           NeverScrollableScrollPhysics(),
                                       itemCount:
-                                          employees
+                                          empSetup
                                               .where(
                                                 (emp) =>
                                                     emp['position'] !=
@@ -230,7 +233,7 @@ class _AddEmployeeMobileState
                                         index,
                                       ) {
                                         var employee =
-                                            employees
+                                            empSetup
                                                 .where(
                                                   (emp) =>
                                                       emp['position'] !=
@@ -383,7 +386,7 @@ class _AddEmployeeMobileState
                                                       .text
                                                       .trim(),
                                               newRole:
-                                                  employees[currentSelected!]['position'],
+                                                  empSetup[currentSelected!]['position'],
                                               authUserId:
                                                   AuthService()
                                                       .currentUser!
@@ -505,7 +508,7 @@ class _AddEmployeeMobileState
                                         listen: false,
                                       ).updateEmployeeRole(
                                         newRole:
-                                            employees[currentSelected!]['position'],
+                                            empSetup[currentSelected!]['position'],
                                         userId:
                                             widget.employee !=
                                                     null
@@ -518,6 +521,10 @@ class _AddEmployeeMobileState
                                                 .currentUser!
                                                 .id,
                                       );
+                                      // await returnUserProvider(
+                                      //   context,
+                                      //   listen: false,
+                                      // ).fetchUsers();
 
                                       setState(() {
                                         isLoading = false;
