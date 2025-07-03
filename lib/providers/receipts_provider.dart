@@ -698,14 +698,23 @@ class ReceiptsProvider extends ChangeNotifier {
     List<TempProductSaleRecord> records,
   ) {
     List<TempProductSaleRecord> recordss = [];
+
     for (var rec in records) {
-      var receipt = receipts.firstWhere(
-        (recx) => recx.id! == rec.recepitId,
-      );
-      if (!receipt.isInvoice) {
+      TempMainReceipt? receipt;
+
+      try {
+        receipt = receipts.firstWhere(
+          (recx) => recx.id == rec.recepitId,
+        );
+      } catch (e) {
+        receipt = null; // receipt not found
+      }
+
+      if (receipt != null && !receipt.isInvoice) {
         recordss.add(rec);
       }
     }
+
     if (weekStartDate != null) {
       final weekStartLocal = weekStartDate!;
       final weekEndLocal = weekStartLocal.add(

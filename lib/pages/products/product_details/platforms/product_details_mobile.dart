@@ -12,7 +12,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
-import 'package:stockall/pages/products/product_details/platforms/components/edit_discount_page.dart';
+// import 'package:stockall/pages/products/product_details/platforms/components/edit_discount_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductDetailsMobile extends StatefulWidget {
@@ -1047,93 +1047,93 @@ class _ProductDetailsMobileState
                               ),
                             ),
 
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Row(
-                                    spacing: 15,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    children: [
-                                      Expanded(
-                                        child: TabContainer(
-                                          isDiscount: true,
-                                          isMoney: false,
-                                          text:
-                                              'Current Discount',
-                                          price:
-                                              product
-                                                  .discount ??
-                                              0,
-                                          theme:
-                                              widget.theme,
-                                          backGround:
-                                              const Color.fromARGB(
-                                                15,
-                                                79,
-                                                79,
-                                                79,
-                                              ),
-                                          border:
-                                              const Color.fromARGB(
-                                                57,
-                                                74,
-                                                74,
-                                                74,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Visibility(
-                                    visible: authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .updateProduct,
-                                      context: context,
-                                    ),
-                                    child: SizedBox(
-                                      height: 15,
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .updateProduct,
-                                      context: context,
-                                    ),
-                                    child: EditButton(
-                                      theme: widget.theme,
-                                      action: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return EditDiscountPage(
-                                                product:
-                                                    product,
-                                                theme:
-                                                    widget
-                                                        .theme,
-                                                discountController:
-                                                    discountController,
-                                              );
-                                            },
-                                          ),
-                                        ).then((_) {
-                                          setState(() {});
-                                        });
-                                      },
-                                      text: 'Edit Discount',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // Expanded(
+                            //   child: Column(
+                            //     children: [
+                            //       Row(
+                            //         spacing: 15,
+                            //         mainAxisAlignment:
+                            //             MainAxisAlignment
+                            //                 .center,
+                            //         children: [
+                            //           Expanded(
+                            //             child: TabContainer(
+                            //               isDiscount: true,
+                            //               isMoney: false,
+                            //               text:
+                            //                   'Current Discount',
+                            //               price:
+                            //                   product
+                            //                       .discount ??
+                            //                   0,
+                            //               theme:
+                            //                   widget.theme,
+                            //               backGround:
+                            //                   const Color.fromARGB(
+                            //                     15,
+                            //                     79,
+                            //                     79,
+                            //                     79,
+                            //                   ),
+                            //               border:
+                            //                   const Color.fromARGB(
+                            //                     57,
+                            //                     74,
+                            //                     74,
+                            //                     74,
+                            //                   ),
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       ),
+                            //       Visibility(
+                            //         visible: authorization(
+                            //           authorized:
+                            //               Authorizations()
+                            //                   .updateProduct,
+                            //           context: context,
+                            //         ),
+                            //         child: SizedBox(
+                            //           height: 15,
+                            //         ),
+                            //       ),
+                            //       Visibility(
+                            //         visible: authorization(
+                            //           authorized:
+                            //               Authorizations()
+                            //                   .updateProduct,
+                            //           context: context,
+                            //         ),
+                            //         child: EditButton(
+                            //           theme: widget.theme,
+                            //           action: () {
+                            //             Navigator.push(
+                            //               context,
+                            //               MaterialPageRoute(
+                            //                 builder: (
+                            //                   context,
+                            //                 ) {
+                            //                   return EditDiscountPage(
+                            //                     product:
+                            //                         product,
+                            //                     theme:
+                            //                         widget
+                            //                             .theme,
+                            //                     discountController:
+                            //                         discountController,
+                            //                   );
+                            //                 },
+                            //               ),
+                            //             ).then((_) {
+                            //               setState(() {});
+                            //             });
+                            //           },
+                            //           text: 'Edit Discount',
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -1202,37 +1202,37 @@ class _ProductDetailsMobileState
                                   'Not Set',
                               text: 'Barcode',
                             ),
-                            Visibility(
-                              visible:
-                                  product.startDate != null,
-                              child: BottomInfoSection(
-                                theme: widget.theme,
-                                mainText:
-                                    product.startDate !=
-                                            null
-                                        ? formatDateTime(
-                                          product
-                                              .startDate!,
-                                        )
-                                        : 'Not Set',
-                                text: 'Discount Start',
-                              ),
-                            ),
-                            Visibility(
-                              visible:
-                                  product.endDate != null,
-                              child: BottomInfoSection(
-                                theme: widget.theme,
-                                mainText:
-                                    product.endDate != null
-                                        ? formatDateTime(
-                                          product.endDate!,
-                                        )
-                                        : 'Not Set',
-                                text: 'Discount End',
-                              ),
-                            ),
 
+                            // Visibility(
+                            //   visible:
+                            //       product.startDate != null,
+                            //   child: BottomInfoSection(
+                            //     theme: widget.theme,
+                            //     mainText:
+                            //         product.startDate !=
+                            //                 null
+                            //             ? formatDateTime(
+                            //               product
+                            //                   .startDate!,
+                            //             )
+                            //             : 'Not Set',
+                            //     text: 'Discount Start',
+                            //   ),
+                            // ),
+                            // Visibility(
+                            //   visible:
+                            //       product.endDate != null,
+                            //   child: BottomInfoSection(
+                            //     theme: widget.theme,
+                            //     mainText:
+                            //         product.endDate != null
+                            //             ? formatDateTime(
+                            //               product.endDate!,
+                            //             )
+                            //             : 'Not Set',
+                            //     text: 'Discount End',
+                            //   ),
+                            // ),
                             BottomInfoSection(
                               theme: widget.theme,
                               mainText:

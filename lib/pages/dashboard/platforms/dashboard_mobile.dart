@@ -185,6 +185,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     ).fetchCurrentUser(context);
     getProducts();
     clearDate();
+    fetchNotifications();
   }
 
   @override
@@ -325,80 +326,47 @@ class _DashboardMobileState extends State<DashboardMobile> {
                             child: ListView(
                               children: [
                                 SizedBox(height: 20),
-
-                                Column(
-                                  children: [
-                                    DashboardTotalSalesBanner(
-                                      expenses:
-                                          expensesLocal,
-                                      userValue: returnReceiptProvider(
-                                        context,
-                                      ).getTotalRevenueForSelectedDay(
-                                        context,
-                                        returnReceiptProvider(
-                                              context,
-                                            ).receipts
-                                            .where(
-                                              (emp) =>
-                                                  emp.staffName ==
-                                                  userGeneral(
-                                                    context,
-                                                  ).name,
-                                              // localUser?.name,
-                                            )
-                                            .toList(),
-                                        returnReceiptProvider(
+                                DashboardTotalSalesBanner(
+                                  expenses: expensesLocal,
+                                  userValue: returnReceiptProvider(
+                                    context,
+                                  ).getTotalRevenueForSelectedDay(
+                                    context,
+                                    returnReceiptProvider(
                                           context,
-                                        ).returnproductsRecordByDayOrWeek(
-                                          context,
-                                          returnReceiptProvider(
-                                            context,
-                                          ).produtRecordSalesMain,
-                                        ),
-                                      ),
-                                      currentUser:
-                                          userGeneral(
-                                            context,
-                                          ),
-                                      theme: theme,
-                                      value: returnReceiptProvider(
+                                        ).receipts
+                                        .where(
+                                          (emp) =>
+                                              emp.staffName ==
+                                              userGeneral(
+                                                context,
+                                              ).name,
+                                        )
+                                        .toList(),
+                                    returnReceiptProvider(
+                                      context,
+                                    ).returnproductsRecordByDayOrWeek(
+                                      context,
+                                      returnReceiptProvider(
                                         context,
-                                      ).getTotalRevenueForSelectedDay(
-                                        context,
-                                        returnReceiptProvider(
-                                          context,
-                                        ).receipts,
-                                        returnReceiptProvider(
-                                          context,
-                                        ).produtRecordSalesMain,
-                                      ),
+                                      ).produtRecordSalesMain,
                                     ),
-                                    // SizedBox(
-                                    //   height:
-                                    //       10,
-                                    // ),
-
-                                    // Container(
-                                    //   decoration:
-                                    //       BoxDecoration(),
-                                    //   child: Row(
-                                    //     children: [
-                                    //       Column(
-                                    //         crossAxisAlignment:
-                                    //             CrossAxisAlignment.start,
-                                    //         children: [
-                                    //           Text(
-                                    //             'Todays Sales by You',
-                                    //           ),
-                                    //           Text(
-                                    //             '${localUser != null ? returnReceiptProvider(context).getTotalRevenueForSelectedDay(context, mainReceipts.where((emp) => emp.staffName == localUser.name).toList(), records) : 0}',
-                                    //           ),
-                                    //         ],
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                  ],
+                                  ),
+                                  currentUser: userGeneral(
+                                    context,
+                                  ),
+                                  theme: theme,
+                                  value: returnReceiptProvider(
+                                    context,
+                                  ).getTotalRevenueForSelectedDay(
+                                    context,
+                                    returnReceiptProvider(
+                                      context,
+                                    ).receipts,
+                                    returnReceiptProvider(
+                                      context,
+                                    ).produtRecordSalesMain,
+                                  ),
                                 ),
 
                                 SizedBox(height: 20),

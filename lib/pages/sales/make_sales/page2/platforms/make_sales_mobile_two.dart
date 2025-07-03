@@ -282,6 +282,10 @@ class _MakeSalesMobileTwoState
                                   context,
                                   listen: false,
                                 ).switchInvoiceSale();
+                                returnSalesProvider(
+                                  context,
+                                  listen: false,
+                                ).changeMethod(0);
                               },
                               child: Container(
                                 width: 50,
@@ -354,25 +358,30 @@ class _MakeSalesMobileTwoState
                           color: Colors.grey.shade300,
                         ),
                         SizedBox(height: 10),
-                        Row(
+                        Column(
                           children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Select Payment Method',
+                            Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b1
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Select Payment Method',
+                                ),
+                              ],
                             ),
+                            SizedBox(height: 5),
+                            PaymentTypeButton(index: 0),
+                            PaymentTypeButton(index: 1),
+                            PaymentTypeButton(index: 2),
                           ],
                         ),
-                        SizedBox(height: 5),
-                        PaymentTypeButton(index: 0),
-                        PaymentTypeButton(index: 1),
-                        PaymentTypeButton(index: 2),
                         SizedBox(height: 20),
                         Visibility(
                           visible:

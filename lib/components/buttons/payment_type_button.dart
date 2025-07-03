@@ -16,11 +16,19 @@ class PaymentTypeButton extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: InkWell(
-          onTap:
-              () => returnSalesProvider(
+          onTap: () {
+            if (returnSalesProvider(
+              context,
+              listen: false,
+            ).isInvoice) {
+              return;
+            } else {
+              returnSalesProvider(
                 context,
                 listen: false,
-              ).changeMethod(index),
+              ).changeMethod(index);
+            }
+          },
           child: SizedBox(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -42,6 +50,12 @@ class PaymentTypeButton extends StatelessWidget {
                           fontSize:
                               theme.mobileTexts.b1.fontSize,
                           fontWeight: FontWeight.bold,
+                          color:
+                              !returnSalesProvider(
+                                    context,
+                                  ).isInvoice
+                                  ? null
+                                  : Colors.grey,
                         ),
                         returnSalesProvider(
                           context,
@@ -53,9 +67,13 @@ class PaymentTypeButton extends StatelessWidget {
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.normal,
                           color:
-                              theme
-                                  .lightModeColor
-                                  .secColor200,
+                              !returnSalesProvider(
+                                    context,
+                                  ).isInvoice
+                                  ? theme
+                                      .lightModeColor
+                                      .secColor200
+                                  : Colors.grey,
                         ),
                         returnSalesProvider(
                           context,
@@ -65,7 +83,13 @@ class PaymentTypeButton extends StatelessWidget {
                   ),
                   Checkbox(
                     activeColor:
-                        theme.lightModeColor.prColor250,
+                        returnSalesProvider(
+                              context,
+                            ).isInvoice
+                            ? Colors.grey
+                            : theme
+                                .lightModeColor
+                                .prColor250,
                     shape: CircleBorder(side: BorderSide()),
                     side: BorderSide(
                       width: 1,
