@@ -583,7 +583,16 @@ class _MakeSalesMobileTwoState
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
-                                    'N${formatLargeNumberDouble(returnSalesProvider(context).calcTotalMain(returnSalesProvider(context).cartItems))}',
+                                    formatMoneyMid(
+                                      returnSalesProvider(
+                                        context,
+                                      ).calcTotalMain(
+                                        returnSalesProvider(
+                                          context,
+                                        ).cartItems,
+                                      ),
+                                      context,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -613,7 +622,7 @@ class _MakeSalesMobileTwoState
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
-                                    '- N${formatLargeNumberDouble(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
+                                    '-${formatMoneyMid(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems), context)}',
                                   ),
                                 ],
                               ),
@@ -645,7 +654,16 @@ class _MakeSalesMobileTwoState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    'N${formatLargeNumberDouble(returnSalesProvider(context).calcFinalTotalMain(returnSalesProvider(context).cartItems))}',
+                                    formatMoneyMid(
+                                      returnSalesProvider(
+                                        context,
+                                      ).calcFinalTotalMain(
+                                        returnSalesProvider(
+                                          context,
+                                        ).cartItems,
+                                      ),
+                                      context,
+                                    ),
                                   ),
                                 ],
                               ),

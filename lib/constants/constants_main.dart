@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:stockall/main.dart';
+
 const String mainLogoIcon =
     'assets/images/logos/logo_icon.png';
 
@@ -103,6 +106,12 @@ const String plusIconSvg = 'assets/svgs/plus_icon.svg';
 const String whatsappIconSvg =
     'assets/svgs/whatsapp_logo_icon.svg';
 
-const String nairaSymbol = '₦';
+String currencySymbol(BuildContext context) {
+  return returnShopProvider(
+        context,
+        listen: false,
+      ).userShop?.currency ??
+      '';
+}
 
 const String appName = 'Stockall';

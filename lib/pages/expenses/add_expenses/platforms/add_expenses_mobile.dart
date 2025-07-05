@@ -295,7 +295,8 @@ class _AddExpensesMobileState
                       ),
                       SizedBox(height: 15),
                       NumberTextfield(
-                        title: 'Amount ($nairaSymbol)',
+                        title:
+                            'Amount (${currencySymbol(context)})',
                         hint: 'Enter Expense Amount',
                         controller: widget.amountController,
                         theme: theme,

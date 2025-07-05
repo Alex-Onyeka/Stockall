@@ -755,7 +755,7 @@ class ValueSummaryTabSmall extends StatelessWidget {
                         color: Colors.grey.shade700,
                       ),
                       isMoney
-                          ? formatMoney(value)
+                          ? formatMoneyMid(value, context)
                           : formatLargeNumberDoubleWidgetDecimal(
                             value,
                           ),

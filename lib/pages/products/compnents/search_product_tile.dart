@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 
 class SearchProductTile extends StatelessWidget {
@@ -32,7 +31,10 @@ class SearchProductTile extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
-            '$nairaSymbol${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
+            formatMoneyMid(
+              product.sellingPrice ?? 0,
+              context,
+            ),
           ),
         ],
       ),

@@ -101,11 +101,19 @@ class PaymentTypeButton extends StatelessWidget {
                           context,
                         ).currentPayment ==
                         index,
-                    onChanged:
-                        (value) => returnSalesProvider(
+                    onChanged: (value) {
+                      if (returnSalesProvider(
+                        context,
+                        listen: false,
+                      ).isInvoice) {
+                        return;
+                      } else {
+                        returnSalesProvider(
                           context,
                           listen: false,
-                        ).changeMethod(index),
+                        ).changeMethod(index);
+                      }
+                    },
                   ),
                 ],
               ),

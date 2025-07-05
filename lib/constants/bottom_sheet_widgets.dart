@@ -1557,6 +1557,7 @@ class _CustomBottomPanelState
                                         ).discountCheck(
                                           cartItem.item,
                                         )),
+                                    context,
                                   )
                                   : formatMoneyBig(
                                     double.tryParse(
@@ -1568,6 +1569,7 @@ class _CustomBottomPanelState
                                               ),
                                         ) ??
                                         0,
+                                    context,
                                   ),
                             ),
                           ],

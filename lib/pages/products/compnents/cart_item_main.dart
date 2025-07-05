@@ -188,7 +188,7 @@ class _CartItemMainState extends State<CartItemMain> {
                                           .lightModeColor
                                           .prColor300,
                                 ),
-                                '$nairaSymbol${widget.cartItem.customPrice != null ? formatLargeNumberDoubleWidgetDecimal(widget.cartItem.customPrice ?? 0) : (widget.cartItem.customPrice) ?? (widget.cartItem.item.discount == null ? formatLargeNumberDouble(widget.cartItem.totalCost()) : formatLargeNumberDouble((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100)))))}',
+                                '${widget.cartItem.customPrice != null ? formatMoneyMid(widget.cartItem.customPrice ?? 0, context) : (widget.cartItem.customPrice) ?? (widget.cartItem.item.discount == null ? formatMoneyMid(widget.cartItem.totalCost(), context) : formatMoneyMid((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100))), context))}',
                               ),
                               Visibility(
                                 visible:
@@ -229,7 +229,11 @@ class _CartItemMainState extends State<CartItemMain> {
                                         FontWeight.bold,
                                     color: Colors.grey,
                                   ),
-                                  'N${formatLargeNumberDouble(widget.cartItem.totalCost())}',
+                                  formatMoneyMid(
+                                    widget.cartItem
+                                        .totalCost(),
+                                    context,
+                                  ),
                                 ),
                               ),
                             ],

@@ -390,10 +390,12 @@ class ExpenseDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: TabBarUserInfoSection(
-                    mainText: formatLargeNumberDouble(
+                    mainText: formatMoneyMid(
                       expense.amount,
+                      context,
                     ),
-                    text: 'Amount ($nairaSymbol)',
+                    text:
+                        'Amount (${currencySymbol(context)})',
                   ),
                 ),
               ],

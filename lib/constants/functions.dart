@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/currency_class.dart';
 import 'package:stockall/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -190,3 +191,111 @@ bool authorization({
     return false;
   }
 }
+
+final List<CurrencyClass> currencies = [
+  CurrencyClass(
+    country: 'Nigeria',
+    currency: 'Naira',
+    symbol: '₦',
+  ),
+  CurrencyClass(
+    country: 'Cameroon',
+    currency: 'Central African CFA Franc',
+    symbol: 'CFA',
+  ),
+  CurrencyClass(
+    country: 'United States',
+    currency: 'US Dollar',
+    symbol: '\$',
+  ),
+  CurrencyClass(
+    country: 'United Kingdom',
+    currency: 'British Pound',
+    symbol: '£',
+  ),
+  CurrencyClass(
+    country: 'European Union',
+    currency: 'Euro',
+    symbol: '€',
+  ),
+  CurrencyClass(
+    country: 'Ghana',
+    currency: 'Ghanaian Cedi',
+    symbol: '₵',
+  ),
+  CurrencyClass(
+    country: 'Kenya',
+    currency: 'Kenyan Shilling',
+    symbol: 'KSh',
+  ),
+  CurrencyClass(
+    country: 'South Africa',
+    currency: 'South African Rand',
+    symbol: 'R',
+  ),
+  CurrencyClass(
+    country: 'Canada',
+    currency: 'Canadian Dollar',
+    symbol: 'C\$',
+  ),
+  CurrencyClass(
+    country: 'India',
+    currency: 'Indian Rupee',
+    symbol: '₹',
+  ),
+  CurrencyClass(
+    country: 'Australia',
+    currency: 'Australian Dollar',
+    symbol: 'A\$',
+  ),
+  CurrencyClass(
+    country: 'China',
+    currency: 'Yuan Renminbi',
+    symbol: '¥',
+  ),
+  CurrencyClass(
+    country: 'Japan',
+    currency: 'Japanese Yen',
+    symbol: '¥',
+  ),
+  CurrencyClass(
+    country: 'Brazil',
+    currency: 'Brazilian Real',
+    symbol: 'R\$',
+  ),
+  CurrencyClass(
+    country: 'Mexico',
+    currency: 'Mexican Peso',
+    symbol: '\$',
+  ),
+  CurrencyClass(
+    country: 'Egypt',
+    currency: 'Egyptian Pound',
+    symbol: 'E£',
+  ),
+  CurrencyClass(
+    country: 'Tanzania',
+    currency: 'Tanzanian Shilling',
+    symbol: 'TSh',
+  ),
+  CurrencyClass(
+    country: 'Uganda',
+    currency: 'Ugandan Shilling',
+    symbol: 'USh',
+  ),
+  CurrencyClass(
+    country: 'Rwanda',
+    currency: 'Rwandan Franc',
+    symbol: 'FRw',
+  ),
+  CurrencyClass(
+    country: 'Turkey',
+    currency: 'Turkish Lira',
+    symbol: '₺',
+  ),
+  CurrencyClass(
+    country: 'United Arab Emirates',
+    currency: 'Dirham',
+    symbol: 'د.إ',
+  ),
+];

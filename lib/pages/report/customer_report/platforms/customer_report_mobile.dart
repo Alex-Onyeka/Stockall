@@ -1075,6 +1075,7 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           widget.record.revenue,
+                          context,
                         ),
                       ),
                     ),

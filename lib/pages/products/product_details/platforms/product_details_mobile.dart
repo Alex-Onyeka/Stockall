@@ -1536,7 +1536,7 @@ class TabContainer extends StatelessWidget {
                   fontSize: theme.mobileTexts.b1.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
-                '${isMoney ? nairaSymbol : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
+                '${isMoney ? currencySymbol(context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
               ),
             ],
           ),

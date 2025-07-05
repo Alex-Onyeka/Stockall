@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MoneyTextfield extends StatefulWidget {
@@ -104,7 +105,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
                     fontWeight: FontWeight.bold,
                     color: Colors.grey,
                   ),
-                  '₦',
+                  currencySymbol(context),
                 ),
               ],
             ),

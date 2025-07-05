@@ -440,7 +440,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else if (receiptSnapshot.hasError) {
                                                                     return Text(
@@ -452,7 +452,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else if (receiptSnapshot.data ==
                                                                       null) {
@@ -465,7 +465,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var total = returnReceiptProvider(
@@ -489,7 +489,10 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '$nairaSymbol ${formatLargeNumberDoubleWidgetDecimal(total)}',
+                                                                      formatMoneyMid(
+                                                                        total,
+                                                                        context,
+                                                                      ),
                                                                     );
                                                                   }
                                                                 },
@@ -618,7 +621,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.redAccent,
                                                                       ),
-                                                                      '$nairaSymbol 0',
+                                                                      '${currencySymbol(context)} 0',
                                                                     );
                                                                   } else if (expensesSnapshot.hasError) {
                                                                     return Text(
@@ -630,7 +633,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.redAccent,
                                                                       ),
-                                                                      '$nairaSymbol 0',
+                                                                      '${currencySymbol(context)} 0',
                                                                     );
                                                                   } else {
                                                                     var expenses = returnExpensesProvider(
@@ -660,7 +663,10 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.redAccent,
                                                                       ),
-                                                                      '$nairaSymbol ${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
+                                                                      formatMoneyMid(
+                                                                        getTotal(),
+                                                                        context,
+                                                                      ),
                                                                     );
                                                                   }
                                                                 },
@@ -754,7 +760,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                 );
                                                               } else if (receiptSnapshot.hasError ||
                                                                   expensesSnapshot.hasError) {
@@ -767,7 +773,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                 );
                                                               } else {
                                                                 var receipts = returnReceiptProvider(
@@ -817,7 +823,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total)} - $nairaSymbol${formatLargeNumberDoubleWidgetDecimal(totalExpenses())}',
+                                                                  '${formatMoneyMid(total, context)} - ${formatMoneyMid(totalExpenses(), context)}',
                                                                 );
                                                               }
                                                             },
@@ -865,7 +871,7 @@ class _GeneralReportMobileState
                                                                         fontWeight:
                                                                             FontWeight.w700,
                                                                       ),
-                                                                      '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else if (receiptSnapshot.hasError ||
                                                                       expensesSnapshot.hasError) {
@@ -878,7 +884,7 @@ class _GeneralReportMobileState
                                                                         fontWeight:
                                                                             FontWeight.w700,
                                                                       ),
-                                                                      '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var receipts = returnReceiptProvider(
@@ -941,7 +947,11 @@ class _GeneralReportMobileState
                                                                                   48,
                                                                                 ),
                                                                       ),
-                                                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total - totalExpenses())}',
+                                                                      formatMoneyMid(
+                                                                        total -
+                                                                            totalExpenses(),
+                                                                        context,
+                                                                      ),
                                                                     );
                                                                   }
                                                                 },
@@ -1067,7 +1077,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                 );
                                                               } else if (productRecordSnapShot.hasError) {
                                                                 return Text(
@@ -1079,7 +1089,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                 );
                                                               } else {
                                                                 var receipts = returnReceiptProvider(
@@ -1102,7 +1112,7 @@ class _GeneralReportMobileState
                                                                       fontWeight:
                                                                           FontWeight.w700,
                                                                     ),
-                                                                    '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                    '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                   );
                                                                 } else if (productRecordSnapShot.hasError) {
                                                                   return Text(
@@ -1114,7 +1124,7 @@ class _GeneralReportMobileState
                                                                       fontWeight:
                                                                           FontWeight.w700,
                                                                     ),
-                                                                    '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                    '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                   );
                                                                 } else {
                                                                   var total = returnReceiptProvider(
@@ -1167,7 +1177,7 @@ class _GeneralReportMobileState
                                                                       fontWeight:
                                                                           FontWeight.w700,
                                                                     ),
-                                                                    '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total)} - $nairaSymbol${formatLargeNumberDoubleWidgetDecimal(totalCostPrice)}',
+                                                                    '${formatMoneyMid(total, context)} - ${formatMoneyMid(totalCostPrice, context)}',
                                                                   );
                                                                 }
                                                               }
@@ -1218,7 +1228,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else if (productRecordSnapShot.hasError) {
                                                                     return Text(
@@ -1234,7 +1244,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var receipts = returnReceiptProvider(
@@ -1260,7 +1270,7 @@ class _GeneralReportMobileState
                                                                             48,
                                                                           ),
                                                                         ),
-                                                                        '$nairaSymbol 0.0',
+                                                                        '${currencySymbol(context)} 0.0',
                                                                       );
                                                                     } else if (productRecordSnapShot.hasError) {
                                                                       return Text(
@@ -1276,7 +1286,7 @@ class _GeneralReportMobileState
                                                                             48,
                                                                           ),
                                                                         ),
-                                                                        '$nairaSymbol 0.0',
+                                                                        '${currencySymbol(context)} 0.0',
                                                                       );
                                                                     } else {
                                                                       var total = returnReceiptProvider(
@@ -1343,7 +1353,11 @@ class _GeneralReportMobileState
                                                                                     48,
                                                                                   ),
                                                                         ),
-                                                                        '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total - totalCostPrice)}',
+                                                                        formatMoneyMid(
+                                                                          total -
+                                                                              totalCostPrice,
+                                                                          context,
+                                                                        ),
                                                                       );
                                                                     }
                                                                   }
@@ -1436,7 +1450,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                 );
                                                               } else if (productRecordSnapShot.hasError ||
                                                                   expensesSnapshot.hasError ||
@@ -1450,7 +1464,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol 0.0 - $nairaSymbol 0.0',
+                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
                                                                 );
                                                               } else {
                                                                 var receipts = returnReceiptProvider(
@@ -1533,7 +1547,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(total - totalCostPrice)} - (-$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getExpensesTotal())})',
+                                                                  '${formatMoneyMid(total - totalCostPrice, context)} - (-${formatMoneyMid(getExpensesTotal(), context)})',
                                                                 );
                                                               }
                                                             },
@@ -1586,7 +1600,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else if (productRecordSnapShot.hasError ||
                                                                       expensesSnapshot.hasError ||
@@ -1604,7 +1618,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '$nairaSymbol 0.0',
+                                                                      '${currencySymbol(context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var receipts = returnReceiptProvider(
@@ -1702,7 +1716,12 @@ class _GeneralReportMobileState
                                                                                   48,
                                                                                 ),
                                                                       ),
-                                                                      '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal((total - totalCostPrice) - getExpensesTotal())}',
+                                                                      formatMoneyMid(
+                                                                        (total -
+                                                                                totalCostPrice) -
+                                                                            getExpensesTotal(),
+                                                                        context,
+                                                                      ),
                                                                     );
                                                                   }
                                                                 },

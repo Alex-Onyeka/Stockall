@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:stockall/constants/constants_main.dart';
 
 String formatLargeNumber(String numberString) {
   final number = int.tryParse(
@@ -68,15 +70,15 @@ String cutLongText(String text, int length) {
 //   }
 // }
 
-String formatMoney(num amount) {
+String formatMoney(num amount, BuildContext context) {
   if (amount < 1000000) {
     return NumberFormat.currency(
       locale: 'en_NG',
-      symbol: '₦',
+      symbol: currencySymbol(context),
       decimalDigits: 1,
     ).format(amount);
   } else {
-    String symbol = '₦';
+    String symbol = currencySymbol(context);
     String suffix = '';
     double value = amount.toDouble();
 
@@ -95,15 +97,15 @@ String formatMoney(num amount) {
   }
 }
 
-String formatMoneyMid(num amount) {
+String formatMoneyMid(num amount, BuildContext context) {
   if (amount < 100000000) {
     return NumberFormat.currency(
       locale: 'en_NG',
-      symbol: '₦',
+      symbol: currencySymbol(context),
       decimalDigits: 1,
     ).format(amount);
   } else {
-    String symbol = '₦';
+    String symbol = currencySymbol(context);
     String suffix = '';
     double value = amount.toDouble();
 
@@ -122,15 +124,15 @@ String formatMoneyMid(num amount) {
   }
 }
 
-String formatMoneyBig(num amount) {
+String formatMoneyBig(num amount, BuildContext context) {
   if (amount < 1000000000) {
     return NumberFormat.currency(
       locale: 'en_NG',
-      symbol: '₦',
+      symbol: currencySymbol(context),
       decimalDigits: 1,
     ).format(amount);
   } else {
-    String symbol = '₦';
+    String symbol = currencySymbol(context);
     String suffix = '';
     double value = amount.toDouble();
 

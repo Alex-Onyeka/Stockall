@@ -670,7 +670,10 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Selling-Price'
-                            : formatMoneyMid(getTotal()),
+                            : formatMoneyMid(
+                              getTotal(),
+                              context,
+                            ),
                       ),
                     ),
                   ],
@@ -711,6 +714,7 @@ class _SummaryTableHeadingBarState
                               ? 'Cost-Price'
                               : formatMoneyBig(
                                 getTotalCostPrice(),
+                                context,
                               ),
                         ),
                       ),
@@ -1201,6 +1205,7 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           widget.product.sellingPrice ?? 0,
+                          context,
                         ),
                       ),
                     ),
@@ -1235,6 +1240,7 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           widget.product.costPrice,
+                          context,
                         ),
                       ),
                     ),

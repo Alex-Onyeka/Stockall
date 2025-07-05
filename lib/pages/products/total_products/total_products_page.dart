@@ -630,7 +630,11 @@ class _TotalProductsPageState
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
-                                                      'N${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
+                                                      formatMoneyMid(
+                                                        product.sellingPrice ??
+                                                            0,
+                                                        context,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),

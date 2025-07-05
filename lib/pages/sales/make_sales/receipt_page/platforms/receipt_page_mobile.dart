@@ -441,10 +441,11 @@ class _ReceiptDetailsContainerState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  formatMoney(
+                                                  formatMoneyMid(
                                                     widget
                                                         .mainReceipt
                                                         .cashAlt,
+                                                    context,
                                                   ),
                                                 ),
                                               ],
@@ -479,7 +480,12 @@ class _ReceiptDetailsContainerState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  '$nairaSymbol${formatMoney(widget.mainReceipt.bank)}',
+                                                  formatMoneyMid(
+                                                    widget
+                                                        .mainReceipt
+                                                        .bank,
+                                                    context,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -677,7 +683,11 @@ class _ReceiptDetailsContainerState
                                                       FontWeight
                                                           .bold,
                                                 ),
-                                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.revenue)}',
+                                                formatMoneyMid(
+                                                  productRecord
+                                                      .revenue,
+                                                  context,
+                                                ),
                                               ),
                                               Visibility(
                                                 visible:
@@ -694,7 +704,11 @@ class _ReceiptDetailsContainerState
                                                     fontWeight:
                                                         FontWeight.normal,
                                                   ),
-                                                  '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(productRecord.originalCost!)}',
+                                                  formatMoneyMid(
+                                                    productRecord
+                                                        .originalCost!,
+                                                    context,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -747,7 +761,16 @@ class _ReceiptDetailsContainerState
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, records))}',
+                                formatMoneyMid(
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).getSubTotalRevenueForReceipt(
+                                    context,
+                                    records,
+                                  ),
+                                  context,
+                                ),
                               ),
                             ),
                           ],
@@ -786,7 +809,23 @@ class _ReceiptDetailsContainerState
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(records, context) - returnReceiptProvider(context, listen: false).getSubTotalRevenueForReceipt(context, records))}',
+                                formatMoneyMid(
+                                  returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getTotalMainRevenueReceipt(
+                                        records,
+                                        context,
+                                      ) -
+                                      returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getSubTotalRevenueForReceipt(
+                                        context,
+                                        records,
+                                      ),
+                                  context,
+                                ),
                               ),
                             ),
                           ],
@@ -826,7 +865,16 @@ class _ReceiptDetailsContainerState
                                       FontWeight.bold,
                                 ),
 
-                                '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(returnReceiptProvider(context, listen: false).getTotalMainRevenueReceipt(records, context))}',
+                                formatMoneyMid(
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).getTotalMainRevenueReceipt(
+                                    records,
+                                    context,
+                                  ),
+                                  context,
+                                ),
                               ),
                             ),
                           ],

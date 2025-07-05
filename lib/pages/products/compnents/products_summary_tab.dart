@@ -77,7 +77,7 @@ class _ProductSummaryTabState
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
                   ),
-                  nairaSymbol,
+                  currencySymbol(context),
                 ),
               ),
               SizedBox(width: 2),
@@ -91,7 +91,7 @@ class _ProductSummaryTabState
                   color: Colors.grey.shade700,
                 ),
                 widget.isMoney != null
-                    ? formatMoney(widget.value)
+                    ? formatMoneyMid(widget.value, context)
                     : formatLargeNumberDouble(widget.value),
               ),
             ],

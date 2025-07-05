@@ -132,7 +132,7 @@ class _DashboardTotalSalesBannerState
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
-                            nairaSymbol,
+                            currencySymbol(context),
                           ),
                         ),
                         SizedBox(width: 5),
@@ -154,6 +154,7 @@ class _DashboardTotalSalesBannerState
                               widget.value != null
                                   ? widget.value!
                                   : 0,
+                              context,
                             ),
                           ),
                         ),
@@ -192,13 +193,15 @@ class _DashboardTotalSalesBannerState
                       return ExpensesAndProfitValues(
                         widget: widget,
                         expenses: visible.returnMoney(
-                          formatLargeNumberDoubleWidgetDecimal(
+                          formatMoneyMid(
                             getTotal(),
+                            context,
                           ),
                         ),
                         profit: visible.returnMoney(
-                          formatLargeNumberDoubleWidgetDecimal(
+                          formatMoneyMid(
                             getProfit(),
+                            context,
                           ),
                         ),
                       );
@@ -260,7 +263,12 @@ class _DashboardTotalSalesBannerState
                                       .fontSize,
                             ),
 
-                            '$nairaSymbol ${visible.returnMoney(formatLargeNumberDoubleWidgetDecimal(widget.userValue ?? 0))}',
+                            visible.returnMoney(
+                              formatMoneyMid(
+                                widget.userValue ?? 0,
+                                context,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -299,13 +307,13 @@ class ExpensesAndProfitValues extends StatelessWidget {
   const ExpensesAndProfitValues({
     super.key,
     required this.widget,
-    this.profit,
-    this.expenses,
+    required this.profit,
+    required this.expenses,
   });
 
   final DashboardTotalSalesBanner widget;
-  final String? expenses;
-  final String? profit;
+  final String expenses;
+  final String profit;
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +347,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
                     widget.theme.mobileTexts.b3.fontSize,
               ),
 
-              '$nairaSymbol ${expenses ?? 0}',
+              expenses,
             ),
           ],
         ),
@@ -369,7 +377,7 @@ class ExpensesAndProfitValues extends StatelessWidget {
                     widget.theme.mobileTexts.b3.fontSize,
               ),
 
-              '$nairaSymbol ${profit ?? 0}',
+              profit,
             ),
           ],
         ),

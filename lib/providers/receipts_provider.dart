@@ -249,7 +249,8 @@ class ReceiptsProvider extends ChangeNotifier {
     try {
       final updateData = {
         'is_invoice': false,
-        'created_at': DateTime.now().toIso8601String(),
+        'created_at':
+            DateTime.now().toLocal().toIso8601String(),
       };
 
       final response =
@@ -455,20 +456,20 @@ class ReceiptsProvider extends ChangeNotifier {
     ),
   ];
 
-  List<TempProductSaleRecord> getOwnProductSalesRecord(
-    BuildContext context,
-  ) {
-    return returnProductSalesRecordsByDate(context)
-        .where(
-          (record) =>
-              record.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).returnShop(userId()).shopId,
-        )
-        .toList();
-  }
+  // List<TempProductSaleRecord> getOwnProductSalesRecord(
+  //   BuildContext context,
+  // ) {
+  //   return returnProductSalesRecordsByDate(context)
+  //       .where(
+  //         (record) =>
+  //             record.shopId ==
+  //             returnShopProvider(
+  //               context,
+  //               listen: false,
+  //             ).returnShop(userId()).shopId,
+  //       )
+  //       .toList();
+  // }
 
   List<TempProductSaleRecord>
   returnProductSalesRecordsByDate(BuildContext context) {
@@ -479,14 +480,14 @@ class ReceiptsProvider extends ChangeNotifier {
     return sortedList;
   }
 
-  List<TempProductSaleRecord> getProductRecordsByReceiptId(
-    int receiptId,
-    BuildContext context,
-  ) {
-    return getOwnProductSalesRecord(context)
-        .where((product) => product.recepitId == receiptId)
-        .toList();
-  }
+  // List<TempProductSaleRecord> getProductRecordsByReceiptId(
+  //   int receiptId,
+  //   BuildContext context,
+  // ) {
+  //   return getOwnProductSalesRecord(context)
+  //       .where((product) => product.recepitId == receiptId)
+  //       .toList();
+  // }
 
   void createProductSalesRecord(
     BuildContext context,

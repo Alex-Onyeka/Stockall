@@ -168,7 +168,10 @@ class _ExpensesTileState extends State<ExpensesTile> {
                                       .secColor200,
                               fontWeight: FontWeight.bold,
                             ),
-                            '$nairaSymbol ${formatLargeNumberDouble(widget.expense.amount)}',
+                            formatMoneyMid(
+                              widget.expense.amount,
+                              context,
+                            ),
                           ),
                         ],
                       ),

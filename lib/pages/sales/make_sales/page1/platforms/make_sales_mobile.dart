@@ -275,7 +275,28 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       .b1
                                       .fontWeightBold,
                             ),
-                            '$nairaSymbol${priceController.text.isEmpty ? formatLargeNumberDouble(qqty * (returnSalesProvider(context, listen: false).discountCheck(cartItem.item))) : formatLargeNumberDouble(double.tryParse(priceController.text.replaceAll(',', '')) ?? 0)}',
+                            priceController.text.isEmpty
+                                ? formatMoneyMid(
+                                  qqty *
+                                      (returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).discountCheck(
+                                        cartItem.item,
+                                      )),
+                                  context,
+                                )
+                                : formatMoneyMid(
+                                  double.tryParse(
+                                        priceController.text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      ) ??
+                                      0,
+                                  context,
+                                ),
                           ),
                         ],
                       ),
@@ -1073,7 +1094,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          '$nairaSymbol ${suggestion.costPrice}',
+                                                          '${currencySymbol(context)} ${suggestion.costPrice}',
                                                         ),
                                                         Icon(
                                                           size:
@@ -1940,6 +1961,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   context,
                                                 ).cartItems,
                                               ),
+                                              context,
                                             ),
                                           ),
                                         ],
@@ -1970,7 +1992,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       .fontSize,
                                               // fontWeight: FontWeight.bold,
                                             ),
-                                            '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems))}',
+                                            '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems), context)}',
                                           ),
                                         ],
                                       ),
@@ -2012,6 +2034,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   context,
                                                 ).cartItems,
                                               ),
+                                              context,
                                             ),
                                           ),
                                         ],

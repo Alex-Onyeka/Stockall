@@ -68,15 +68,6 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
           context,
           listen: false,
         ).produtRecordSalesMain;
-    // await returnReceiptProvider(
-    //   context,
-    //   listen: false,
-    // ).loadProductSalesRecord(
-    //   returnShopProvider(
-    //     context,
-    //     listen: false,
-    //   ).userShop!.shopId!,
-    // );
 
     return tempRecords
         .where(
@@ -111,93 +102,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
       return totalAmount;
     }
 
-    return
-    // FutureBuilder(
-    //   future: productFuture,
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState ==
-    //         ConnectionState.waiting) {
-    //       return Shimmer.fromColors(
-    //         baseColor: Colors.grey.shade300,
-    //         highlightColor: Colors.white,
-    //         child: Container(
-    //           margin: EdgeInsets.symmetric(
-    //             vertical: 5,
-    //             horizontal: 15,
-    //           ),
-    //           height: 150,
-    //           decoration: BoxDecoration(
-    //             borderRadius: BorderRadius.circular(5),
-    //             color: Colors.grey.shade400,
-    //           ),
-    //         ),
-    //       );
-    //     } else if (snapshot.hasError) {
-    //       return Container(
-    //         margin: EdgeInsets.symmetric(
-    //           vertical: 5,
-    //           horizontal: 15,
-    //         ),
-    //         height: 150,
-    //         decoration: BoxDecoration(
-    //           borderRadius: BorderRadius.circular(5),
-    //           color: Colors.grey.shade400,
-    //         ),
-    //         child: Center(
-    //           child: Text('Error Loading Receipt'),
-    //         ),
-    //       );
-    //     } else {
-    //       double getTotal() {
-    //         double totalAmount = 0;
-    //         for (var element
-    //             in snapshot.data!
-    //                 .where(
-    //                   (test) =>
-    //                       test.recepitId ==
-    //                       widget.mainReceipt.id,
-    //                 )
-    //                 .toList()) {
-    //           totalAmount += element.revenue;
-    //         }
-    //         return totalAmount;
-    //       }
-    //       // var productReceipts =
-    //       //     snapshot.data!
-    //       //         .where(
-    //       //           (test) =>
-    //       //               test.recepitId ==
-    //       //               widget.mainReceipt.id,
-    //       //         )
-    //       //         .toList();
-    //       // var firstProductId =
-    //       //     productReceipts
-    //       //         .firstWhere(
-    //       //           (test) =>
-    //       //               test.recepitId ==
-    //       //               widget.mainReceipt.id,
-    //       //         )
-    //       //         .productId;
-    //       // var firstProduct = returnData(
-    //       //       context,
-    //       //       listen: false,
-    //       //     )
-    //       //     .getProducts(
-    //       //       returnShopProvider(
-    //       //         context,
-    //       //         listen: false,
-    //       //       ).userShop!.shopId!,
-    //       //     )
-    //       //     .then((products) {
-    //       //       final product = products.firstWhere(
-    //       //         (product) => product.id == firstProductId,
-    //       //       );
-    //       //       return product;
-    //       //     });
-    //     }
-    //   },
-    // );
-    Padding(
+    return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
       child: Ink(
         decoration: BoxDecoration(
@@ -331,43 +236,6 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                           ],
                         ),
                       ),
-                      // Expanded(
-                      //   flex: 3,
-                      //   child: Column(
-                      //     spacing: 3,
-                      //     crossAxisAlignment:
-                      //         CrossAxisAlignment
-                      //             .start,
-                      //     children: [
-                      //       Text(
-                      //         style: TextStyle(
-                      //           fontSize:
-                      //               theme
-                      //                   .mobileTexts
-                      //                   .b3
-                      //                   .fontSize,
-                      //         ),
-                      //         'Receipt NO.',
-                      //       ),
-                      //       Text(
-                      //         textAlign:
-                      //             TextAlign.left,
-                      //         style: TextStyle(
-                      //           fontSize:
-                      //               theme
-                      //                   .mobileTexts
-                      //                   .b2
-                      //                   .fontSize,
-                      //           fontWeight:
-                      //               FontWeight.bold,
-                      //         ),
-                      //         cutLongText2(
-                      //           '#${returnShopProvider(context, listen: false).userShop!.name.substring(0, 2).toUpperCase()}${widget.mainReceipt.id.toString()}${widget.mainReceipt.staffName.substring(0, 2).toUpperCase()}',
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                       Expanded(
                         flex: 3,
                         child: Column(
@@ -394,7 +262,10 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
-                              '$nairaSymbol${formatLargeNumberDoubleWidgetDecimal(getTotal())}',
+                              formatMoneyMid(
+                                getTotal(),
+                                context,
+                              ),
                             ),
                           ],
                         ),

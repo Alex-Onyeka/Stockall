@@ -1048,7 +1048,10 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Selling-Price'
-                            : formatMoneyBig(getTotal()),
+                            : formatMoneyBig(
+                              getTotal(),
+                              context,
+                            ),
                       ),
                     ),
                   ],
@@ -1089,6 +1092,7 @@ class _SummaryTableHeadingBarState
                               ? 'Cost-Price'
                               : formatMoneyBig(
                                 getTotalCostPrice(),
+                                context,
                               ),
                         ),
                       ),
@@ -1127,6 +1131,7 @@ class _SummaryTableHeadingBarState
                               ? "Nill"
                               : formatMoneyBig(
                                 getTotalProfit(),
+                                context,
                               ),
                         ),
                       ),
@@ -1264,7 +1269,10 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        formatMoneyBig(record.total),
+                        formatMoneyBig(
+                          record.total,
+                          context,
+                        ),
                       ),
                     ),
                   ],
@@ -1292,7 +1300,10 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        formatMoneyBig(record.costTotal),
+                        formatMoneyBig(
+                          record.costTotal,
+                          context,
+                        ),
                       ),
                     ),
                   ],
@@ -1324,7 +1335,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                                     76,
                                   ),
                         ),
-                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(record.profit)}",
+                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(record.profit, context)}",
                       ),
                     ),
                   ],
@@ -1362,7 +1373,7 @@ class _TableRowRecordWidgetState
         widget.record.costPrice == 0) {
       return "Nill";
     } else {
-      return "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0))}";
+      return "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0), context)}";
     }
   }
 
@@ -1494,6 +1505,7 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           widget.record.revenue,
+                          context,
                         ),
                       ),
                     ),
@@ -1528,6 +1540,7 @@ class _TableRowRecordWidgetState
                         ),
                         formatMoneyBig(
                           widget.record.costPrice ?? 0,
+                          context,
                         ),
                       ),
                     ),
