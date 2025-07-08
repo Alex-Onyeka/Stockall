@@ -1253,7 +1253,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               FocusManager.instance.primaryFocus?.unfocus(),
 
       child: PopScope(
-        canPop: true,
+        canPop: false,
         // onPopInvokedWithResult: (didPop, result) {
         //   Navigator.pushReplacement(
         //     context,
