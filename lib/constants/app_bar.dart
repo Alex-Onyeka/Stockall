@@ -24,7 +24,6 @@ PreferredSizeWidget appBar({
               },
             ),
           );
-          // Navigator.of(context).pop();
         } else if (main == true) {
           return;
         } else if (!Navigator.of(context).canPop()) {

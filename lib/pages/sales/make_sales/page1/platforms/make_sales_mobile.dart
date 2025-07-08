@@ -1253,20 +1253,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               FocusManager.instance.primaryFocus?.unfocus(),
 
       child: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return Home();
-              },
-            ),
-          );
-        },
+        canPop: true,
+        // onPopInvokedWithResult: (didPop, result) {
+        //   Navigator.pushReplacement(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) {
+        //         return Home();
+        //       },
+        //     ),
+        //   );
+        // },
         child: Scaffold(
           appBar: appBar(
-            isMain: widget.isMain,
+            // isMain: widget.isMain,
             context: context,
             title:
                 returnSalesProvider(context).isInvoice
