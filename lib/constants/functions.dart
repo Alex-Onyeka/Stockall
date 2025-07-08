@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/currency_class.dart';
 import 'package:stockall/main.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -299,3 +302,26 @@ final List<CurrencyClass> currencies = [
     symbol: 'د.إ',
   ),
 ];
+
+// PDF GENERATOR
+
+Future<void> generateAndPreviewPdf() async {
+  await Printing.layoutPdf(
+    onLayout: (PdfPageFormat format) async {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build:
+              (pw.Context context) => pw.Center(
+                child: pw.Text(
+                  'Hey Alex! This is your printable PDF 🎉',
+                ),
+              ),
+        ),
+      );
+
+      return pdf.save();
+    },
+  );
+}
