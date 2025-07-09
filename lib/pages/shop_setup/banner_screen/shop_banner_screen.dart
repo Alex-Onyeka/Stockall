@@ -116,15 +116,6 @@ class _ShopBannerScreenState
                           'Or, don\'t you have a Store?',
                         ),
                         SizedBox(height: 10),
-                        // Container(
-                        //   padding: EdgeInsets.symmetric(vertical: 15),
-                        //   child: Center(
-                        //     child: Text(
-                        //       style: TextStyle(),
-                        //       'Sign Up as an Employee',
-                        //     ),
-                        //   ),
-                        // ),
                         MainButtonTransparent(
                           themeProvider: theme,
                           constraints: BoxConstraints(),
@@ -143,11 +134,6 @@ class _ShopBannerScreenState
                         SizedBox(height: 30),
                         InkWell(
                           onTap: () {
-                            // returnNavProvider(
-                            //   context,
-                            //   listen: false,
-                            // ).navigate(0);
-                            // Navigator.popAndPushNamed(context, '/');
                             performRestart();
                           },
                           child: Container(

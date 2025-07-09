@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -295,6 +296,37 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool isUpdated = false;
+
+  void toggleUpdated(bool value) {
+    isUpdated = value;
+    notifyListeners();
+  }
+
+  Future<void> updateApp({required int shopId}) async {
+    try {
+      final response =
+          await supabase
+              .from('shops')
+              .update({'update_number': updateNumber})
+              .eq('shop_id', shopId)
+              .maybeSingle();
+      final shop = await getUserShop(
+        AuthService().currentUser!.id,
+      );
+
+      if (response != null) {
+        setShop(shop!);
+        print(
+          "❌ Updated updateNumber ${response['update_number']}",
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      print("❌ Failed to update updateNumber: $e");
+    }
+  }
+
   TempShopClass? userShop;
 
   void setShop(TempShopClass? shop) {
@@ -309,49 +341,4 @@ class ShopProvider extends ChangeNotifier {
   String state = '';
   String city = '';
   String address = '';
-
-  // List<TempShopClass> shops = [
-  //   TempShopClass(
-  //     shopId: 1,
-  //     createdAt: DateTime.now(),
-  //     userId: 'user_001',
-  //     email: 'shop1@example.com',
-  //     name: 'Alpha Footwear',
-  //     state: 'Lagos',
-  //     city: 'Ikeja',
-  //     shopAddress: '23 Allen Avenue',
-  //     categories: ['Shoes', 'Sandals'],
-  //     colors: ['Black', 'White', 'Brown'],
-  //   ),
-  //   TempShopClass(
-  //     shopId: 2,
-  //     createdAt: DateTime.now(),
-  //     userId: 'user_002',
-  //     email: 'shop2@example.com',
-  //     name: 'Urban Styles',
-  //     state: 'Abuja',
-  //     city: 'Wuse',
-  //     shopAddress: 'Plot 10, Wuse Zone 4',
-  //     categories: ['Clothing', 'Accessories'],
-  //     colors: ['Red', 'Blue'],
-  //   ),
-  //   TempShopClass(
-  //     shopId: 3,
-  //     createdAt: DateTime.now(),
-  //     userId: 'user_003',
-  //     email: 'shop3@example.com',
-  //     name: 'Naija Gadgets',
-  //     state: 'Kano',
-  //     city: 'Nassarawa',
-  //     shopAddress: '45 Zaria Road',
-  //     categories: ['Electronics'],
-  //     colors: ['Black', 'Silver'],
-  //   ),
-  // ];
-
-  // TempShopClass returnShop(String userId) {
-  //   return shops.firstWhere(
-  //     (shop) => shop.userId == userId,
-  //   );
-  // }
 }

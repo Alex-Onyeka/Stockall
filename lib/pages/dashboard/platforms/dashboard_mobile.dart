@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
+// import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
@@ -12,6 +13,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/helpers/clean_up_url_stub.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
@@ -326,46 +328,58 @@ class _DashboardMobileState extends State<DashboardMobile> {
                             child: ListView(
                               children: [
                                 SizedBox(height: 20),
-                                DashboardTotalSalesBanner(
-                                  expenses: expensesLocal,
-                                  userValue: returnReceiptProvider(
-                                    context,
-                                  ).getTotalRevenueForSelectedDay(
-                                    context,
-                                    returnReceiptProvider(
+                                GestureDetector(
+                                  onTap: () {
+                                    print(
+                                      returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).isUpdated
+                                          .toString(),
+                                    );
+                                  },
+                                  child: DashboardTotalSalesBanner(
+                                    expenses: expensesLocal,
+                                    userValue: returnReceiptProvider(
+                                      context,
+                                    ).getTotalRevenueForSelectedDay(
+                                      context,
+                                      returnReceiptProvider(
+                                            context,
+                                          ).receipts
+                                          .where(
+                                            (emp) =>
+                                                emp.staffName ==
+                                                userGeneral(
+                                                  context,
+                                                ).name,
+                                          )
+                                          .toList(),
+                                      returnReceiptProvider(
+                                        context,
+                                      ).returnproductsRecordByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
                                           context,
-                                        ).receipts
-                                        .where(
-                                          (emp) =>
-                                              emp.staffName ==
-                                              userGeneral(
-                                                context,
-                                              ).name,
-                                        )
-                                        .toList(),
-                                    returnReceiptProvider(
+                                        ).produtRecordSalesMain,
+                                      ),
+                                    ),
+                                    currentUser:
+                                        userGeneral(
+                                          context,
+                                        ),
+                                    theme: theme,
+                                    value: returnReceiptProvider(
                                       context,
-                                    ).returnproductsRecordByDayOrWeek(
+                                    ).getTotalRevenueForSelectedDay(
                                       context,
+                                      returnReceiptProvider(
+                                        context,
+                                      ).receipts,
                                       returnReceiptProvider(
                                         context,
                                       ).produtRecordSalesMain,
                                     ),
-                                  ),
-                                  currentUser: userGeneral(
-                                    context,
-                                  ),
-                                  theme: theme,
-                                  value: returnReceiptProvider(
-                                    context,
-                                  ).getTotalRevenueForSelectedDay(
-                                    context,
-                                    returnReceiptProvider(
-                                      context,
-                                    ).receipts,
-                                    returnReceiptProvider(
-                                      context,
-                                    ).produtRecordSalesMain,
                                   ),
                                 ),
 
@@ -1005,6 +1019,171 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 ),
                               ],
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible:
+                        !returnShopProvider(
+                          context,
+                        ).isUpdated,
+                    child: Align(
+                      alignment: Alignment(0, -0.8),
+                      child: Material(
+                        elevation: 2,
+                        color: Colors.transparent,
+                        child: Container(
+                          width: 320,
+                          padding: EdgeInsets.fromLTRB(
+                            15,
+                            15,
+                            15,
+                            30,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(
+                                  84,
+                                  0,
+                                  0,
+                                  0,
+                                ),
+                                blurRadius: 20,
+                                spreadRadius: 10,
+                              ),
+                            ],
+                            borderRadius:
+                                BorderRadius.circular(5),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                spacing: 10,
+                                mainAxisSize:
+                                    MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Opacity(
+                                    opacity: 0,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        ).toggleUpdated(
+                                          true,
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.clear,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'APP UPDATE AVAILABLE',
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).toggleUpdated(true);
+                                    },
+                                    icon: Icon(Icons.clear),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                ),
+                                'New Update is Available. Please Click the button below to download the updated version.',
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor100,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                ),
+                                'Note: You might need to download more than twice before the update can relfect',
+                              ),
+                              SizedBox(height: 15),
+                              Material(
+                                color: Colors.transparent,
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .prColor300,
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      performRestart();
+                                    },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            vertical: 10,
+                                            horizontal: 15,
+                                          ),
+                                      child: Center(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                bottom: 3.0,
+                                              ),
+                                          child: Text(
+                                            style: TextStyle(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b2
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'UPDATE',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

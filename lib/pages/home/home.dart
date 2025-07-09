@@ -28,16 +28,10 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    print('Home Init: ${DateTime.now()}');
     super.initState();
     shopFuture = getUserShop();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('Home Init 2: ${DateTime.now()}');
       if (mounted) {
-        // returnCompProvider(
-        //   context,
-        //   listen: false,
-        // ).setVisible();
         _safeHandlePostFrameLogic();
       }
     });
@@ -46,7 +40,6 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _safeHandlePostFrameLogic() async {
-    print('Home SafeHandle 1: ${DateTime.now()}');
     if (!mounted) return;
     final userProvider = returnUserProvider(
       context,
@@ -55,7 +48,6 @@ class _HomeState extends State<Home> {
     final user = await userProvider.fetchCurrentUser(
       context,
     );
-    print('Home SafeHandle 2: ${DateTime.now()}');
     if (!mounted) return;
 
     if (user != null && user.pin == null) {
@@ -90,7 +82,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    print('Home Build 1: ${DateTime.now()}');
     final navProv = Provider.of<NavProvider>(context);
     final theme = returnTheme(context);
 
@@ -99,9 +90,6 @@ class _HomeState extends State<Home> {
         FutureBuilder<TempShopClass?>(
           future: shopFuture,
           builder: (context, shopSnapshot) {
-            print(
-              'Home FutureBuilder 1: ${DateTime.now()}',
-            );
             if (shopSnapshot.connectionState ==
                 ConnectionState.waiting) {
               return returnCompProvider(
@@ -133,9 +121,6 @@ class _HomeState extends State<Home> {
                 ),
               );
             } else if (shopSnapshot.data == null) {
-              print(
-                'Home FutureBuilder 2: ${DateTime.now()}',
-              );
               if (!_handledNoShop) {
                 _handledNoShop = true;
                 WidgetsBinding.instance
@@ -145,9 +130,6 @@ class _HomeState extends State<Home> {
               }
               return ShopBannerScreen();
             } else {
-              print(
-                'Home FutureBuilder 4: ${DateTime.now()}',
-              );
               switch (navProv.currentPage) {
                 case 0:
                   return Dashboard(

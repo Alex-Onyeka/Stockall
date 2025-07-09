@@ -107,11 +107,7 @@ class _CopyStaffIdState extends State<CopyStaffId> {
                           onPressed: () {
                             setState(() {
                               showId = !showId;
-                              // whatsapp = false;
-                              // sendEmail = false;
                             });
-                            // phoneC.clear();
-                            // emailC.clear();
                           },
                           icon: Column(
                             spacing: 5,
@@ -143,12 +139,6 @@ class _CopyStaffIdState extends State<CopyStaffId> {
                         ),
                         IconButton(
                           onPressed: () async {
-                            // setState(() {
-                            //   whatsapp = false;
-                            //   sendEmail = false;
-                            // });
-                            // phoneC.clear();
-                            // emailC.clear();
                             await Clipboard.setData(
                               ClipboardData(
                                 text:
@@ -355,17 +345,6 @@ class _CopyStaffIdState extends State<CopyStaffId> {
                             MainAxisAlignment.center,
                         spacing: 5,
                         children: [
-                          // SizedBox(height: 20),
-                          // Text('Enter Employers\' Phone Number'),
-                          // SizedBox(height: 5),
-                          // PhoneNumberTextField(
-                          //   hint:
-                          //       'Enter Employers\' Phone Number',
-                          //   controller: phoneC,
-                          //   theme: theme,
-                          //   title:
-                          //       'Enter Employers\' Phone Number',
-                          // ),
                           SizedBox(height: 10),
                           FutureBuilder(
                             future: userFuture,
@@ -373,34 +352,6 @@ class _CopyStaffIdState extends State<CopyStaffId> {
                               return MainButtonP(
                                 themeProvider: theme,
                                 action: () async {
-                                  // final phone =
-                                  //     phoneC.text.length ==
-                                  //             11
-                                  //         ? '234${phoneC.text.substring(1, phoneC.text.length)}'
-                                  //         : '234${phoneC.text}';
-                                  // final message =
-                                  //     Uri.encodeComponent(
-                                  //       "Hello!. My name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: ${AuthService().currentUser!.id}",
-                                  //     );
-
-                                  // final url = Uri.parse(
-                                  //   "https://wa.me/$phone?text=$message",
-                                  // );
-
-                                  // // if (phoneC.text.isEmpty) {
-                                  // //   showDialog(
-                                  // //     context: context,
-                                  // //     builder: (context) {
-                                  // //       return InfoAlert(
-                                  // //         theme: theme,
-                                  // //         message:
-                                  // //             'Phone Number Field cannot be empty.',
-                                  // //         title:
-                                  // //             'Empty Phone Number',
-                                  // //       );
-                                  // //     },
-                                  // //   );
-                                  // // } else {
                                   final messagee =
                                       Uri.encodeComponent(
                                         AuthService()
@@ -420,18 +371,7 @@ class _CopyStaffIdState extends State<CopyStaffId> {
                                           LaunchMode
                                               .externalApplication,
                                     );
-                                  }
-                                  // if (await canLaunchUrl(
-                                  //   url,
-                                  // )) {
-                                  //   await launchUrl(
-                                  //     url,
-                                  //     mode:
-                                  //         LaunchMode
-                                  //             .externalApplication,
-                                  //   );
-                                  // }
-                                  else {
+                                  } else {
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(
                                         context,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/major/unsupported_platform.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -14,28 +15,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Provider.of<NavProvider>(
-  //     context,
-  //     listen: false,
-  //   ).navigate(0);
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   offOverlays();
-  // }
-
-  // void offOverlays() {
-  //   returnCompProvider(
-  //     context,
-  //     listen: false,
-  //   ).turnOffLoader();
-  // }
-
   void clearDate() {
     returnReceiptProvider(
       context,
@@ -49,12 +28,42 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    print('DashBoard init 1: ${DateTime.now()}');
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _handlePostFrameLogic();
+      if (returnShopProvider(
+            context,
+            listen: false,
+          ).userShop !=
+          null) {
+        if (returnShopProvider(
+                  context,
+                  listen: false,
+                ).userShop!.updateNumber ==
+                null ||
+            returnShopProvider(
+                  context,
+                  listen: false,
+                ).userShop!.updateNumber !=
+                updateNumber) {
+          returnShopProvider(
+            context,
+            listen: false,
+          ).toggleUpdated(false);
+          returnShopProvider(
+            context,
+            listen: false,
+          ).updateApp(shopId: shopId(context));
+        } else {
+          returnShopProvider(
+            context,
+            listen: false,
+          ).toggleUpdated(true);
+        }
+      }
     });
+    setState(() {});
   }
 
   Future<void> _handlePostFrameLogic() async {

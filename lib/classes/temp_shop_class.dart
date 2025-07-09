@@ -15,6 +15,7 @@ class TempShopClass {
   List<String>? employees;
   String? refCode;
   String currency;
+  int? updateNumber;
 
   TempShopClass({
     this.shopId,
@@ -33,6 +34,7 @@ class TempShopClass {
     this.employees,
     this.refCode,
     required this.currency,
+    this.updateNumber,
   });
 
   factory TempShopClass.fromJson(
@@ -57,6 +59,7 @@ class TempShopClass {
           (json['employees'] as List?)?.cast<String>(),
       refCode: json['ref_code'] as String?,
       currency: json['currency'],
+      updateNumber: json['update_number'] as int?,
     );
   }
 
@@ -76,6 +79,7 @@ class TempShopClass {
       'employees': employees,
       'ref_code': refCode,
       'currency': currency,
+      'update_number': updateNumber,
     };
   }
 }
