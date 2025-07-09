@@ -10,7 +10,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
-import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+// import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -78,48 +78,51 @@ class _ReceiptPageMobileState
           ),
     );
     return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            SizedBox(
-              height:
-                  MediaQuery.of(context).size.height - 50,
-              child: Stack(
-                alignment: Alignment(0, 1),
-                children: [
-                  Align(
-                    alignment: Alignment(0, -1),
-                    child: TopBannerTwo(
-                      isMain: widget.isMain,
-                      title:
-                          mainReceipt.isInvoice == true
-                              ? 'Invoice'
-                              : 'Receipt',
-                      theme: theme,
-                      bottomSpace: 200,
-                      topSpace: 10,
-                    ),
-                  ),
-                  Positioned(
-                    top: 70,
-                    child: SizedBox(
-                      height:
-                          MediaQuery.of(
-                            context,
-                          ).size.height -
-                          50,
-                      child: ReceiptDetailsContainer(
+      child: PopScope(
+        canPop: false,
+        child: Scaffold(
+          body: Column(
+            children: [
+              SizedBox(
+                height:
+                    MediaQuery.of(context).size.height - 50,
+                child: Stack(
+                  alignment: Alignment(0, 1),
+                  children: [
+                    Align(
+                      alignment: Alignment(0, -1),
+                      child: TopBannerTwo(
                         isMain: widget.isMain,
-                        shop: shop!,
-                        mainReceipt: mainReceipt,
+                        title:
+                            mainReceipt.isInvoice == true
+                                ? 'Invoice'
+                                : 'Receipt',
                         theme: theme,
+                        bottomSpace: 200,
+                        topSpace: 10,
                       ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 70,
+                      child: SizedBox(
+                        height:
+                            MediaQuery.of(
+                              context,
+                            ).size.height -
+                            50,
+                        child: ReceiptDetailsContainer(
+                          isMain: widget.isMain,
+                          shop: shop!,
+                          mainReceipt: mainReceipt,
+                          theme: theme,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -896,201 +899,216 @@ class _ReceiptDetailsContainerState
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 10,
               children: [
-                BottomActionButton(
-                  text:
-                      widget.isMain
-                          ? 'Finish Sale'
-                          : 'Go Back',
-                  color: Colors.grey.shade600,
-                  iconSize: 20,
-                  theme: widget.theme,
-                  icon:
-                      widget.isMain
-                          ? Icons.check
-                          : Icons
-                              .arrow_back_ios_new_rounded,
-                  action: () {
-                    if (widget.isMain) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => MakeSalesPage(
-                                isMain: true,
-                              ),
-                        ),
-                      );
-                      returnNavProvider(
-                        context,
-                        listen: false,
-                      ).navigate(2);
-                    } else {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                ),
-                // Visibility(
-                //   visible: authorization(
-                //     authorized: Authorizations().deleteSale,
-                //     context: context,
-                //   ),
-                //   child: BottomActionButton(
-                //     text:
-                //         widget.mainReceipt.isInvoice
-                //             ? 'Pay Credit'
-                //             : 'Delete',
-                //     color:
-                //         widget.mainReceipt.isInvoice
-                //             ? widget
-                //                 .theme
-                //                 .lightModeColor
-                //                 .secColor200
-                //             : widget
-                //                 .theme
-                //                 .lightModeColor
-                //                 .errorColor200,
-                //     iconSize: 20,
-                //     theme: widget.theme,
-                //     icon:
-                //         widget.mainReceipt.isInvoice
-                //             ? Icons.check
-                //             : Icons.delete_outline_rounded,
-                //     action: () {
-                //       final receiptP =
-                //           returnReceiptProvider(
-                //             context,
-                //             listen: false,
-                //           );
-                //       final shopId =
-                //           returnShopProvider(
-                //             context,
-                //             listen: false,
-                //           ).userShop!.shopId!;
-                //       var safeContext = context;
-                //       if (!widget.mainReceipt.isInvoice) {
-                //         showDialog(
-                //           context: context,
-                //           builder: (context) {
-                //             return ConfirmationAlert(
-                //               theme: widget.theme,
-                //               message:
-                //                   'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
-                //               title: 'Delete Receipt?',
-                //               action: () async {
-                //                 Navigator.of(
-                //                   safeContext,
-                //                 ).pop();
-                //                 setState(() {
-                //                   isLoading = true;
-                //                 });
-
-                //                 await receiptP
-                //                     .deleteReceipt(
-                //                       widget
-                //                           .mainReceipt
-                //                           .id!,
-                //                       context,
-                //                     );
-
-                //                 if (safeContext.mounted) {
-                //                   await receiptP
-                //                       .loadReceipts(
-                //                         shopId,
-                //                         context,
-                //                       );
-                //                 }
-
-                //                 setState(() {
-                //                   isLoading = false;
-                //                   showSuccess = true;
-                //                 });
-
-                //                 await Future.delayed(
-                //                   Duration(
-                //                     milliseconds: 1500,
-                //                   ),
-                //                 );
-
-                //                 if (safeContext.mounted) {
-                //                   Navigator.pushReplacement(
-                //                     safeContext,
-                //                     MaterialPageRoute(
-                //                       builder:
-                //                           (safeContext) =>
-                //                               Home(),
-                //                     ),
-                //                   );
-                //                   returnNavProvider(
-                //                     safeContext,
-                //                     listen: false,
-                //                   ).navigate(2);
-                //                 }
-                //               },
-                //             );
-                //           },
-                //         );
-                //       } else {
-                //         showDialog(
-                //           context: context,
-                //           builder: (context) {
-                //             return ConfirmationAlert(
-                //               theme: widget.theme,
-                //               message:
-                //                   'Are you sure you want to proceed with action? This action cannot be reverted.',
-                //               title: 'Record as Paid?',
-                //               action: () async {
-                //                 Navigator.of(
-                //                   safeContext,
-                //                 ).pop();
-                //                 setState(() {
-                //                   isLoading = true;
-                //                 });
-
-                //                 await receiptP.payCredit(
-                //                   widget.mainReceipt.id!,
-                //                 );
-
-                //                 if (safeContext.mounted) {
-                //                   await receiptP
-                //                       .loadReceipts(
-                //                         shopId,
-                //                         context,
-                //                       );
-                //                 }
-
-                //                 setState(() {
-                //                   isLoading = false;
-                //                   showSuccess = true;
-                //                 });
-
-                //                 await Future.delayed(
-                //                   Duration(
-                //                     milliseconds: 1500,
-                //                   ),
-                //                 );
-
-                //                 setState(() {
-                //                   showSuccess = false;
-                //                 });
-                //               },
-                //             );
-                //           },
-                //         );
-                //       }
-                //     },
-                //   ),
+                // BottomActionButton(
+                //   text:
+                //       widget.isMain
+                //           ? 'Finish Sale'
+                //           : 'Go Back',
+                //   color: Colors.grey.shade600,
+                //   iconSize: 20,
+                //   theme: widget.theme,
+                //   icon:
+                //       widget.isMain
+                //           ? Icons.check
+                //           : Icons
+                //               .arrow_back_ios_new_rounded,
+                //   action: () {
+                //     if (widget.isMain) {
+                //       Navigator.pushReplacement(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder:
+                //               (context) => MakeSalesPage(
+                //                 isMain: true,
+                //               ),
+                //         ),
+                //       );
+                //       returnNavProvider(
+                //         context,
+                //         listen: false,
+                //       ).navigate(2);
+                //     } else {
+                //       Navigator.of(context).pop();
+                //     }
+                //   },
                 // ),
-                BottomActionButton(
-                  action: () {
-                    generateAndPreviewPdf(
-                      context: context,
-                      records: records,
-                      receipt: widget.mainReceipt,
-                      shopName:
+                Visibility(
+                  visible: authorization(
+                    authorized: Authorizations().deleteSale,
+                    context: context,
+                  ),
+                  child: BottomActionButton(
+                    text:
+                        widget.mainReceipt.isInvoice
+                            ? 'Pay Credit'
+                            : 'Delete',
+                    color:
+                        widget.mainReceipt.isInvoice
+                            ? widget
+                                .theme
+                                .lightModeColor
+                                .secColor200
+                            : widget
+                                .theme
+                                .lightModeColor
+                                .errorColor200,
+                    iconSize: 20,
+                    theme: widget.theme,
+                    icon:
+                        widget.mainReceipt.isInvoice
+                            ? Icons.check
+                            : Icons.delete_outline_rounded,
+                    action: () {
+                      final receiptP =
+                          returnReceiptProvider(
+                            context,
+                            listen: false,
+                          );
+                      final shopId =
                           returnShopProvider(
                             context,
                             listen: false,
-                          ).userShop!.name,
+                          ).userShop!.shopId!;
+                      var safeContext = context;
+                      if (!widget.mainReceipt.isInvoice) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ConfirmationAlert(
+                              theme: widget.theme,
+                              message:
+                                  'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
+                              title: 'Delete Receipt?',
+                              action: () async {
+                                Navigator.of(
+                                  safeContext,
+                                ).pop();
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                await receiptP
+                                    .deleteReceipt(
+                                      widget
+                                          .mainReceipt
+                                          .id!,
+                                      context,
+                                    );
+
+                                if (safeContext.mounted) {
+                                  await receiptP
+                                      .loadReceipts(
+                                        shopId,
+                                        context,
+                                      );
+                                }
+
+                                setState(() {
+                                  isLoading = false;
+                                  showSuccess = true;
+                                });
+
+                                await Future.delayed(
+                                  Duration(
+                                    milliseconds: 1500,
+                                  ),
+                                );
+
+                                if (safeContext.mounted) {
+                                  Navigator.pushReplacement(
+                                    safeContext,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (safeContext) =>
+                                              Home(),
+                                    ),
+                                  );
+                                  returnNavProvider(
+                                    safeContext,
+                                    listen: false,
+                                  ).navigate(2);
+                                }
+                              },
+                            );
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ConfirmationAlert(
+                              theme: widget.theme,
+                              message:
+                                  'Are you sure you want to proceed with action? This action cannot be reverted.',
+                              title: 'Record as Paid?',
+                              action: () async {
+                                Navigator.of(
+                                  safeContext,
+                                ).pop();
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                await receiptP.payCredit(
+                                  widget.mainReceipt.id!,
+                                );
+
+                                if (safeContext.mounted) {
+                                  await receiptP
+                                      .loadReceipts(
+                                        shopId,
+                                        context,
+                                      );
+                                }
+
+                                setState(() {
+                                  isLoading = false;
+                                  showSuccess = true;
+                                });
+
+                                await Future.delayed(
+                                  Duration(
+                                    milliseconds: 1500,
+                                  ),
+                                );
+
+                                setState(() {
+                                  showSuccess = false;
+                                });
+                              },
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+                BottomActionButton(
+                  action: () {
+                    var safeContext = context;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: widget.theme,
+                          message:
+                              'You are about to download This Receipt. Are you sure you want to Proceed?',
+                          title: 'Download Receipt',
+                          action: () {
+                            Navigator.of(context).pop();
+                            generateAndPreviewPdf(
+                              context: safeContext,
+                              records: records,
+                              receipt: widget.mainReceipt,
+                              shop:
+                                  returnShopProvider(
+                                    safeContext,
+                                    listen: false,
+                                  ).userShop!,
+                            );
+                          },
+                        );
+                      },
                     );
                   },
                   text: 'Download',
