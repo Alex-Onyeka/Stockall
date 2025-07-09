@@ -1,10 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/currency_class.dart';
+import 'package:stockall/classes/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -305,23 +312,109 @@ final List<CurrencyClass> currencies = [
 
 // PDF GENERATOR
 
-Future<void> generateAndPreviewPdf() async {
-  await Printing.layoutPdf(
-    onLayout: (PdfPageFormat format) async {
-      final pdf = pw.Document();
-
-      pdf.addPage(
-        pw.Page(
-          build:
-              (pw.Context context) => pw.Center(
-                child: pw.Text(
-                  'Hey Alex! This is your printable PDF 🎉',
-                ),
-              ),
-        ),
-      );
-
-      return pdf.save();
-    },
+Future<void> generateAndPreviewPdf({
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required String shopName,
+  required BuildContext context,
+}) async {
+  // 1. Build the PDF once (fastest way)
+  returnReceiptProvider(
+    context,
+    listen: false,
+  ).toggleIsLoading(true);
+  final Uint8List pdfBytes = await _buildPdf(
+    receipt,
+    records,
+    shopName,
+    currencySymbol(context),
   );
+
+  // 2. Open native print/share/save dialog (cross-platform)
+  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  if (context.mounted) {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).toggleIsLoading(false);
+  }
+}
+
+// import 'package:flutter/services.dart' show rootBundle;
+
+Future<Uint8List> _buildPdf(
+  TempMainReceipt receipt,
+  List<TempProductSaleRecord> records,
+  String shopName,
+  String currency,
+) async {
+  final pdf = pw.Document();
+
+  // Load Plus Jakarta Sans from assets
+  final fontRegular = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
+  );
+  final fontBold = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
+  );
+
+  pdf.addPage(
+    pw.Page(
+      pageFormat: PdfPageFormat.a5,
+      build:
+          (context) => pw.DefaultTextStyle(
+            style: pw.TextStyle(
+              font: fontRegular,
+              fontSize: 12,
+            ),
+            child: pw.Column(
+              crossAxisAlignment:
+                  pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  shopName,
+                  style: pw.TextStyle(
+                    font: fontBold,
+                    fontSize: 16,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Text('Staff: ${receipt.staffName}'),
+                pw.SizedBox(height: 5),
+                pw.Divider(),
+
+                pw.Text(
+                  'Items:',
+                  style: pw.TextStyle(font: fontBold),
+                ),
+                pw.SizedBox(height: 5),
+
+                ...records.map(
+                  (record) => pw.Padding(
+                    padding: const pw.EdgeInsets.symmetric(
+                      vertical: 2,
+                    ),
+                    child: pw.Text(
+                      '${record.productName} x${record.quantity} - $currency${record.revenue}',
+                    ),
+                  ),
+                ),
+
+                pw.SizedBox(height: 12),
+                pw.Divider(),
+                pw.Text(
+                  'Created on: ${formatDateTime(receipt.createdAt)}',
+                  style: pw.TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
+          ),
+    ),
+  );
+
+  return pdf.save();
 }

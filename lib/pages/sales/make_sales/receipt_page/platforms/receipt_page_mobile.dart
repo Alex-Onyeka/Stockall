@@ -33,6 +33,12 @@ class _ReceiptPageMobileState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    });
     if (widget.isMain) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         returnReceiptProvider(
@@ -923,160 +929,191 @@ class _ReceiptDetailsContainerState
                     }
                   },
                 ),
-                Visibility(
-                  visible: authorization(
-                    authorized: Authorizations().deleteSale,
-                    context: context,
-                  ),
-                  child: BottomActionButton(
-                    text:
-                        widget.mainReceipt.isInvoice
-                            ? 'Pay Credit'
-                            : 'Delete',
-                    color:
-                        widget.mainReceipt.isInvoice
-                            ? widget
-                                .theme
-                                .lightModeColor
-                                .secColor200
-                            : widget
-                                .theme
-                                .lightModeColor
-                                .errorColor200,
-                    iconSize: 20,
-                    theme: widget.theme,
-                    icon:
-                        widget.mainReceipt.isInvoice
-                            ? Icons.check
-                            : Icons.delete_outline_rounded,
-                    action: () {
-                      final receiptP =
-                          returnReceiptProvider(
-                            context,
-                            listen: false,
-                          );
-                      final shopId =
+                // Visibility(
+                //   visible: authorization(
+                //     authorized: Authorizations().deleteSale,
+                //     context: context,
+                //   ),
+                //   child: BottomActionButton(
+                //     text:
+                //         widget.mainReceipt.isInvoice
+                //             ? 'Pay Credit'
+                //             : 'Delete',
+                //     color:
+                //         widget.mainReceipt.isInvoice
+                //             ? widget
+                //                 .theme
+                //                 .lightModeColor
+                //                 .secColor200
+                //             : widget
+                //                 .theme
+                //                 .lightModeColor
+                //                 .errorColor200,
+                //     iconSize: 20,
+                //     theme: widget.theme,
+                //     icon:
+                //         widget.mainReceipt.isInvoice
+                //             ? Icons.check
+                //             : Icons.delete_outline_rounded,
+                //     action: () {
+                //       final receiptP =
+                //           returnReceiptProvider(
+                //             context,
+                //             listen: false,
+                //           );
+                //       final shopId =
+                //           returnShopProvider(
+                //             context,
+                //             listen: false,
+                //           ).userShop!.shopId!;
+                //       var safeContext = context;
+                //       if (!widget.mainReceipt.isInvoice) {
+                //         showDialog(
+                //           context: context,
+                //           builder: (context) {
+                //             return ConfirmationAlert(
+                //               theme: widget.theme,
+                //               message:
+                //                   'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
+                //               title: 'Delete Receipt?',
+                //               action: () async {
+                //                 Navigator.of(
+                //                   safeContext,
+                //                 ).pop();
+                //                 setState(() {
+                //                   isLoading = true;
+                //                 });
+
+                //                 await receiptP
+                //                     .deleteReceipt(
+                //                       widget
+                //                           .mainReceipt
+                //                           .id!,
+                //                       context,
+                //                     );
+
+                //                 if (safeContext.mounted) {
+                //                   await receiptP
+                //                       .loadReceipts(
+                //                         shopId,
+                //                         context,
+                //                       );
+                //                 }
+
+                //                 setState(() {
+                //                   isLoading = false;
+                //                   showSuccess = true;
+                //                 });
+
+                //                 await Future.delayed(
+                //                   Duration(
+                //                     milliseconds: 1500,
+                //                   ),
+                //                 );
+
+                //                 if (safeContext.mounted) {
+                //                   Navigator.pushReplacement(
+                //                     safeContext,
+                //                     MaterialPageRoute(
+                //                       builder:
+                //                           (safeContext) =>
+                //                               Home(),
+                //                     ),
+                //                   );
+                //                   returnNavProvider(
+                //                     safeContext,
+                //                     listen: false,
+                //                   ).navigate(2);
+                //                 }
+                //               },
+                //             );
+                //           },
+                //         );
+                //       } else {
+                //         showDialog(
+                //           context: context,
+                //           builder: (context) {
+                //             return ConfirmationAlert(
+                //               theme: widget.theme,
+                //               message:
+                //                   'Are you sure you want to proceed with action? This action cannot be reverted.',
+                //               title: 'Record as Paid?',
+                //               action: () async {
+                //                 Navigator.of(
+                //                   safeContext,
+                //                 ).pop();
+                //                 setState(() {
+                //                   isLoading = true;
+                //                 });
+
+                //                 await receiptP.payCredit(
+                //                   widget.mainReceipt.id!,
+                //                 );
+
+                //                 if (safeContext.mounted) {
+                //                   await receiptP
+                //                       .loadReceipts(
+                //                         shopId,
+                //                         context,
+                //                       );
+                //                 }
+
+                //                 setState(() {
+                //                   isLoading = false;
+                //                   showSuccess = true;
+                //                 });
+
+                //                 await Future.delayed(
+                //                   Duration(
+                //                     milliseconds: 1500,
+                //                   ),
+                //                 );
+
+                //                 setState(() {
+                //                   showSuccess = false;
+                //                 });
+                //               },
+                //             );
+                //           },
+                //         );
+                //       }
+                //     },
+                //   ),
+                // ),
+                BottomActionButton(
+                  action: () {
+                    generateAndPreviewPdf(
+                      context: context,
+                      records: records,
+                      receipt: widget.mainReceipt,
+                      shopName:
                           returnShopProvider(
                             context,
                             listen: false,
-                          ).userShop!.shopId!;
-                      var safeContext = context;
-                      if (!widget.mainReceipt.isInvoice) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: widget.theme,
-                              message:
-                                  'This action cannot be recovered. Are you sure you want to delete this sale receipt?',
-                              title: 'Delete Receipt?',
-                              action: () async {
-                                Navigator.of(
-                                  safeContext,
-                                ).pop();
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                await receiptP
-                                    .deleteReceipt(
-                                      widget
-                                          .mainReceipt
-                                          .id!,
-                                      context,
-                                    );
-
-                                if (safeContext.mounted) {
-                                  await receiptP
-                                      .loadReceipts(
-                                        shopId,
-                                        context,
-                                      );
-                                }
-
-                                setState(() {
-                                  isLoading = false;
-                                  showSuccess = true;
-                                });
-
-                                await Future.delayed(
-                                  Duration(
-                                    milliseconds: 1500,
-                                  ),
-                                );
-
-                                if (safeContext.mounted) {
-                                  Navigator.pushReplacement(
-                                    safeContext,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (safeContext) =>
-                                              Home(),
-                                    ),
-                                  );
-                                  returnNavProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).navigate(2);
-                                }
-                              },
-                            );
-                          },
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: widget.theme,
-                              message:
-                                  'Are you sure you want to proceed with action? This action cannot be reverted.',
-                              title: 'Record as Paid?',
-                              action: () async {
-                                Navigator.of(
-                                  safeContext,
-                                ).pop();
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                await receiptP.payCredit(
-                                  widget.mainReceipt.id!,
-                                );
-
-                                if (safeContext.mounted) {
-                                  await receiptP
-                                      .loadReceipts(
-                                        shopId,
-                                        context,
-                                      );
-                                }
-
-                                setState(() {
-                                  isLoading = false;
-                                  showSuccess = true;
-                                });
-
-                                await Future.delayed(
-                                  Duration(
-                                    milliseconds: 1500,
-                                  ),
-                                );
-
-                                setState(() {
-                                  showSuccess = false;
-                                });
-                              },
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
+                          ).userShop!.name,
+                    );
+                  },
+                  text: 'Download',
+                  color: Colors.grey,
+                  icon: Icons.print,
+                  iconSize: 20,
+                  theme: widget.theme,
                 ),
               ],
             ),
           ],
+        ),
+        Visibility(
+          visible: returnReceiptProvider(context).isLoading,
+          child: Container(
+            color: Colors.grey,
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width - 50,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader('Generating Receipt'),
+          ),
         ),
         Visibility(
           visible: isLoading,

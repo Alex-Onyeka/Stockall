@@ -6,6 +6,12 @@ import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReceiptsProvider extends ChangeNotifier {
+  bool isLoading = false;
+  void toggleIsLoading(bool value) {
+    isLoading = value;
+    print('Receipt is ${value.toString()}');
+    notifyListeners();
+  }
   //
   //
   //

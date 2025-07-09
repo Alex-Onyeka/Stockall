@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class TopBannerTwo extends StatelessWidget {
@@ -41,25 +43,39 @@ class TopBannerTwo extends StatelessWidget {
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                 children: [
-                  Visibility(
-                    visible: !isMain,
-                    child: InkWell(
-                      onTap: () {
+                  InkWell(
+                    onTap: () {
+                      if (isMain) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => MakeSalesPage(
+                                  isMain: true,
+                                ),
+                          ),
+                        );
+                        returnNavProvider(
+                          context,
+                          listen: false,
+                        ).navigate(2);
+                      } else {
                         Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          10,
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          color: Colors.white,
-                          Icons.arrow_back_ios_new_rounded,
-                        ),
+                      ),
+                      child: Icon(
+                        color: Colors.white,
+                        Icons.arrow_back_ios_new_rounded,
                       ),
                     ),
                   ),
