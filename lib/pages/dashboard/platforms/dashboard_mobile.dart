@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
-// import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
@@ -51,6 +50,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
   }
 
   bool isFloatOpen = false;
+  bool isUpdateLodaing = false;
 
   void openFloat() {
     setState(() {
@@ -1073,14 +1073,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   Opacity(
                                     opacity: 0,
                                     child: IconButton(
-                                      onPressed: () {
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).toggleUpdated(
-                                          true,
-                                        );
-                                      },
+                                      onPressed: () {},
                                       icon: Icon(
                                         Icons.clear,
                                       ),
@@ -1146,7 +1139,19 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                             .prColor300,
                                   ),
                                   child: InkWell(
-                                    onTap: () {
+                                    onTap: () async {
+                                      setState(() {
+                                        isUpdateLodaing =
+                                            true;
+                                      });
+                                      await returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).updateApp(
+                                        shopId: shopId(
+                                          context,
+                                        ),
+                                      );
                                       performRestart();
                                     },
                                     child: Container(
@@ -1161,22 +1166,23 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                               const EdgeInsets.only(
                                                 bottom: 3.0,
                                               ),
-                                          child: Text(
-                                            style: TextStyle(
-                                              color:
-                                                  Colors
-                                                      .white,
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'UPDATE',
-                                          ),
+                                          child:
+                                              isUpdateLodaing
+                                                  ? CircularProgressIndicator(
+                                                    color:
+                                                        Colors.white,
+                                                  )
+                                                  : Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.white,
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'UPDATE',
+                                                  ),
                                         ),
                                       ),
                                     ),

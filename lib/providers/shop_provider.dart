@@ -308,7 +308,7 @@ class ShopProvider extends ChangeNotifier {
       final response =
           await supabase
               .from('shops')
-              .update({'update_number': updateNumber})
+              .update({'update': userShop!.updateNumber})
               .eq('shop_id', shopId)
               .maybeSingle();
       final shop = await getUserShop(
@@ -317,13 +317,10 @@ class ShopProvider extends ChangeNotifier {
 
       if (response != null) {
         setShop(shop!);
-        print(
-          "❌ Updated updateNumber ${response['update_number']}",
-        );
         notifyListeners();
       }
     } catch (e) {
-      print("❌ Failed to update updateNumber: $e");
+      print("❌ Failed to update location: $e");
     }
   }
 

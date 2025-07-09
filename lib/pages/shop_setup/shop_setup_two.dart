@@ -176,6 +176,7 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                 });
                 await shopProvider.createShop(
                   TempShopClass(
+                    update: 0,
                     currency: selectedCurrency!,
                     employees: [
                       AuthService().currentUser!.id,
