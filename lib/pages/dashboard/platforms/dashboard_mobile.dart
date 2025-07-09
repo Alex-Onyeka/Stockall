@@ -12,7 +12,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/helpers/clean_up_url_stub.dart';
+import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';

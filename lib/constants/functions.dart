@@ -211,7 +211,7 @@ final List<CurrencyClass> currencies = [
   CurrencyClass(
     country: 'Cameroon',
     currency: 'Central African CFA Franc',
-    symbol: 'CFA',
+    symbol: 'FCFA',
   ),
   CurrencyClass(
     country: 'United States',
