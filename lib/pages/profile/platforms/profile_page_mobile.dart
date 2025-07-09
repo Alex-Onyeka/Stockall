@@ -172,6 +172,7 @@ class _ProfilePageMobileState
                       spacing: 2,
                       children: [
                         Text(
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize:
@@ -194,6 +195,7 @@ class _ProfilePageMobileState
                           user.phone ?? 'Phone Number',
                         ),
                         Text(
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize:

@@ -376,16 +376,23 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                     Column(
                       spacing: 2,
                       children: [
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 30.0,
+                              ),
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            shop.name,
                           ),
-                          shop.name,
                         ),
                         Text(
                           style: TextStyle(
@@ -400,6 +407,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               'Phone Number Not Set',
                         ),
                         Text(
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize:
