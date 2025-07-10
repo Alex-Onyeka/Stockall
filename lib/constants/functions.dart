@@ -769,10 +769,17 @@ Future<Uint8List> buildPdf(
 
 void downloadPdfWeb(Uint8List pdfBytes, String filename) {
   print('Start Downloading Pdf');
+
   final blob = html.Blob([pdfBytes]);
   final url = html.Url.createObjectUrlFromBlob(blob);
-  final anchor = html.AnchorElement(href: url)
-    ..setAttribute('download', filename);
+  final anchor =
+      html.AnchorElement(href: url)
+        ..setAttribute('download', filename)
+        ..style.display = 'none';
+
+  html.document.body!.append(anchor);
   anchor.click();
+  anchor.remove();
+
   html.Url.revokeObjectUrl(url);
 }

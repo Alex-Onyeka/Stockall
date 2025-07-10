@@ -1115,6 +1115,7 @@ class _ReceiptDetailsContainerState
                               ).userShop!,
                               context,
                             );
+                            print('Downloading Pdf');
                             downloadPdfWeb(
                               pdfBytes,
                               'receipt.pdf',
