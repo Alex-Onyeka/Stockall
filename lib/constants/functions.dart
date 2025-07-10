@@ -350,17 +350,17 @@ Future<Uint8List> buildPdf(
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
-  final fontRegular = pw.Font.ttf(
-    await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Regular.ttf',
-    ),
-  );
-  print('Fonts');
-  final fontBold = pw.Font.ttf(
-    await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Bold.ttf',
-    ),
-  );
+  // final fontRegular = pw.Font.ttf(
+  //   await rootBundle.load(
+  //     'assets/fonts/PlusJakartaSans-Regular.ttf',
+  //   ),
+  // );
+  // print('Fonts');
+  // final fontBold = pw.Font.ttf(
+  //   await rootBundle.load(
+  //     'assets/fonts/PlusJakartaSans-Bold.ttf',
+  //   ),
+  // );
   print('Adding Page');
   pdf.addPage(
     pw.Page(
@@ -368,7 +368,7 @@ Future<Uint8List> buildPdf(
       build:
           (pw.Context pdfContext) => pw.DefaultTextStyle(
             style: pw.TextStyle(
-              font: fontRegular,
+              // font: fontRegular,
               fontSize: 12,
             ),
             child: pw.Column(
@@ -385,7 +385,7 @@ Future<Uint8List> buildPdf(
                           textAlign: pw.TextAlign.center,
                           shop.name,
                           style: pw.TextStyle(
-                            font: fontBold,
+                            // font: fontBold,
                             fontSize: 16,
                           ),
                         ),
@@ -394,7 +394,7 @@ Future<Uint8List> buildPdf(
                           textAlign: pw.TextAlign.center,
                           shop.email,
                           style: pw.TextStyle(
-                            font: fontRegular,
+                            // font: fontRegular,
                             fontSize: 9,
                           ),
                         ),
@@ -404,7 +404,7 @@ Future<Uint8List> buildPdf(
                           shop.phoneNumber ??
                               'Phone Not Set',
                           style: pw.TextStyle(
-                            font: fontRegular,
+                            // font: fontRegular,
                             fontSize: 9,
                           ),
                         ),
@@ -429,7 +429,7 @@ Future<Uint8List> buildPdf(
                         children: [
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 9,
                             ),
                             'Staff Name:',
@@ -437,7 +437,7 @@ Future<Uint8List> buildPdf(
                           pw.SizedBox(height: 5),
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontBold,
+                              // font: fontBold,
                               fontSize: 10,
                             ),
                             receipt.staffName,
@@ -452,7 +452,7 @@ Future<Uint8List> buildPdf(
                         children: [
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 9,
                             ),
                             'Customer Name:',
@@ -460,7 +460,7 @@ Future<Uint8List> buildPdf(
                           pw.SizedBox(height: 5),
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontBold,
+                              // font: fontBold,
                               fontSize: 10,
                             ),
                             receipt.customerName ??
@@ -483,7 +483,7 @@ Future<Uint8List> buildPdf(
                         children: [
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 9,
                             ),
                             'Payment Method:',
@@ -491,7 +491,7 @@ Future<Uint8List> buildPdf(
                           pw.SizedBox(height: 5),
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontBold,
+                              // font: fontBold,
                               fontSize: 10,
                             ),
                             receipt.paymentMethod,
@@ -506,7 +506,7 @@ Future<Uint8List> buildPdf(
                         children: [
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 9,
                             ),
                             'Amount(s):',
@@ -518,14 +518,14 @@ Future<Uint8List> buildPdf(
                             children: [
                               pw.Text(
                                 style: pw.TextStyle(
-                                  font: fontRegular,
+                                  // font: fontRegular,
                                   fontSize: 8,
                                 ),
                                 'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
                               ),
                               pw.Text(
                                 style: pw.TextStyle(
-                                  font: fontRegular,
+                                  // font: fontRegular,
                                   fontSize: 8,
                                 ),
                                 'Bank: ${formatMoneyMid(receipt.bank, context)}',
@@ -549,7 +549,7 @@ Future<Uint8List> buildPdf(
                         children: [
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 9,
                             ),
                             'Date:',
@@ -557,7 +557,7 @@ Future<Uint8List> buildPdf(
                           pw.SizedBox(height: 5),
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontBold,
+                              // font: fontBold,
                               fontSize: 10,
                             ),
                             formatDateTime(
@@ -574,7 +574,7 @@ Future<Uint8List> buildPdf(
                         children: [
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 9,
                             ),
                             'Time:',
@@ -582,7 +582,7 @@ Future<Uint8List> buildPdf(
                           pw.SizedBox(height: 5),
                           pw.Text(
                             style: pw.TextStyle(
-                              font: fontBold,
+                              // font: fontBold,
                               fontSize: 10,
                             ),
                             formatTime(receipt.createdAt),
@@ -595,10 +595,7 @@ Future<Uint8List> buildPdf(
                 pw.SizedBox(height: 5),
                 pw.Divider(),
 
-                pw.Text(
-                  'Items:',
-                  style: pw.TextStyle(font: fontBold),
-                ),
+                pw.Text('Items:', style: pw.TextStyle()),
                 pw.SizedBox(height: 5),
 
                 ...records.map(
@@ -626,7 +623,7 @@ Future<Uint8List> buildPdf(
                           flex: 2,
                           child: pw.Text(
                             style: pw.TextStyle(
-                              font: fontRegular,
+                              // font: fontRegular,
                               fontSize: 10,
                             ),
                             ' ${formatMoneyMid(record.revenue, context)}',
@@ -648,7 +645,7 @@ Future<Uint8List> buildPdf(
                       flex: 2,
                       child: pw.Text(
                         style: pw.TextStyle(
-                          font: fontRegular,
+                          // font: fontRegular,
                           fontSize: 9,
                         ),
                         'Subtotal:',
@@ -658,7 +655,7 @@ Future<Uint8List> buildPdf(
                       flex: 1,
                       child: pw.Text(
                         style: pw.TextStyle(
-                          font: fontRegular,
+                          // font: fontRegular,
                           fontSize: 10,
                         ),
                         formatMoneyMid(
@@ -684,7 +681,7 @@ Future<Uint8List> buildPdf(
                       flex: 2,
                       child: pw.Text(
                         style: pw.TextStyle(
-                          font: fontRegular,
+                          // font: fontRegular,
                           fontSize: 9,
                         ),
                         'Discount:',
@@ -694,7 +691,7 @@ Future<Uint8List> buildPdf(
                       flex: 1,
                       child: pw.Text(
                         style: pw.TextStyle(
-                          font: fontRegular,
+                          // font: fontRegular,
                           fontSize: 10,
                         ),
                         formatMoneyMid(
@@ -727,7 +724,7 @@ Future<Uint8List> buildPdf(
                       flex: 2,
                       child: pw.Text(
                         style: pw.TextStyle(
-                          font: fontRegular,
+                          // font: fontRegular,
                           fontSize: 10,
                         ),
                         'Total:',
@@ -737,7 +734,7 @@ Future<Uint8List> buildPdf(
                       flex: 1,
                       child: pw.Text(
                         style: pw.TextStyle(
-                          font: fontBold,
+                          // font: fontBold,
                           fontSize: 10,
                         ),
                         formatMoneyMid(
