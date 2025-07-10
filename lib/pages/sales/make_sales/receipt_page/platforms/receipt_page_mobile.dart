@@ -1094,17 +1094,30 @@ class _ReceiptDetailsContainerState
                           message:
                               'You are about to download This Receipt. Are you sure you want to Proceed?',
                           title: 'Download Receipt',
-                          action: () {
+                          action: () async {
                             Navigator.of(context).pop();
-                            generateAndPreviewPdf(
-                              context: safeContext,
-                              records: records,
-                              receipt: widget.mainReceipt,
-                              shop:
-                                  returnShopProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).userShop!,
+                            // generateAndPreviewPdf(
+                            //   context: safeContext,
+                            //   records: records,
+                            //   receipt: widget.mainReceipt,
+                            //   shop:
+                            //       returnShopProvider(
+                            //         safeContext,
+                            //         listen: false,
+                            //       ).userShop!,
+                            // );
+                            final pdfBytes = await buildPdf(
+                              widget.mainReceipt,
+                              records,
+                              returnShopProvider(
+                                safeContext,
+                                listen: false,
+                              ).userShop!,
+                              context,
+                            );
+                            downloadPdfWeb(
+                              pdfBytes,
+                              'receipt.pdf',
                             );
                           },
                         );

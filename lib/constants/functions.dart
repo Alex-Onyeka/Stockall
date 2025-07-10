@@ -324,7 +324,7 @@ Future<void> generateAndPreviewPdf({
     listen: false,
   ).toggleIsLoading(true);
 
-  final Uint8List pdfBytes = await _buildPdf(
+  final Uint8List pdfBytes = await buildPdf(
     receipt,
     records,
     shop,
@@ -345,12 +345,13 @@ Future<void> generateAndPreviewPdf({
   }
 }
 
-Future<Uint8List> _buildPdf(
+Future<Uint8List> buildPdf(
   TempMainReceipt receipt,
   List<TempProductSaleRecord> records,
   TempShopClass shop,
   BuildContext context,
 ) async {
+  print('Start Building Pdf');
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
@@ -741,7 +742,7 @@ Future<Uint8List> _buildPdf(
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontBold,
-                          fontSize: 12,
+                          fontSize: 10,
                         ),
                         formatMoneyMid(
                           returnReceiptProvider(
@@ -766,12 +767,12 @@ Future<Uint8List> _buildPdf(
   return pdf.save();
 }
 
-// void downloadPdf(Uint8List pdfBytes, String filename) {
-//   final blob = html.Blob([pdfBytes]);
-//   final url = html.Url.createObjectUrlFromBlob(blob);
-//   final anchor =
-//       html.AnchorElement(href: url)
-//         ..setAttribute('download', filename)
-//         ..click();
-//   html.Url.revokeObjectUrl(url);
-// }
+void downloadPdfWeb(Uint8List pdfBytes, String filename) {
+  print('Start Downloading Pdf');
+  final blob = html.Blob([pdfBytes]);
+  final url = html.Url.createObjectUrlFromBlob(blob);
+  final anchor = html.AnchorElement(href: url)
+    ..setAttribute('download', filename);
+  anchor.click();
+  html.Url.revokeObjectUrl(url);
+}
