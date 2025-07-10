@@ -523,14 +523,14 @@ Future<Uint8List> buildPdf(
                                   font: fontRegular,
                                   fontSize: 8,
                                 ),
-                                'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
+                                'Cash: ${formatMoneyMid(2000, context)}',
                               ),
                               pw.Text(
                                 style: pw.TextStyle(
                                   font: fontRegular,
                                   fontSize: 8,
                                 ),
-                                'Bank: ${formatMoneyMid(receipt.bank, context)}',
+                                'Bank: ${formatMoneyMid(1000, context)}',
                               ),
                             ],
                           ),
@@ -631,7 +631,7 @@ Future<Uint8List> buildPdf(
                               font: fontRegular,
                               fontSize: 10,
                             ),
-                            ' ${formatMoneyMid(record.revenue, context)}',
+                            ' ${formatMoneyMid(3000, context)}',
                           ),
                         ),
                       ],
@@ -699,23 +699,7 @@ Future<Uint8List> buildPdf(
                           font: fontRegular,
                           fontSize: 10,
                         ),
-                        formatMoneyMid(
-                          returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).getTotalMainRevenueReceipt(
-                                records,
-                                context,
-                              ) -
-                              returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).getSubTotalRevenueForReceipt(
-                                context,
-                                records,
-                              ),
-                          context,
-                        ),
+                        formatMoneyMid(3000, context),
                       ),
                     ),
                   ],
@@ -742,16 +726,7 @@ Future<Uint8List> buildPdf(
                           font: fontBold,
                           fontSize: 10,
                         ),
-                        formatMoneyMid(
-                          returnReceiptProvider(
-                            context,
-                            listen: false,
-                          ).getTotalMainRevenueReceipt(
-                            records,
-                            context,
-                          ),
-                          context,
-                        ),
+                        formatMoneyMid(5000, context),
                       ),
                     ),
                   ],
