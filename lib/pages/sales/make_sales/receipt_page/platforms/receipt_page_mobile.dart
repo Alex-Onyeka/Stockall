@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_customers_class.dart';
@@ -1096,16 +1097,16 @@ class _ReceiptDetailsContainerState
                           title: 'Download Receipt',
                           action: () async {
                             Navigator.of(context).pop();
-                            // generateAndPreviewPdf(
-                            //   context: safeContext,
-                            //   records: records,
-                            //   receipt: widget.mainReceipt,
-                            //   shop:
-                            //       returnShopProvider(
-                            //         safeContext,
-                            //         listen: false,
-                            //       ).userShop!,
-                            // );
+                            generateAndPreviewPdf(
+                              context: safeContext,
+                              records: records,
+                              receipt: widget.mainReceipt,
+                              shop:
+                                  returnShopProvider(
+                                    safeContext,
+                                    listen: false,
+                                  ).userShop!,
+                            );
                             final pdfBytes = await buildPdf(
                               widget.mainReceipt,
                               records,
@@ -1118,7 +1119,7 @@ class _ReceiptDetailsContainerState
                             print('Downloading Pdf');
                             downloadPdfWeb(
                               pdfBytes,
-                              'receipt.pdf',
+                              'Stockall ${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'} : ${widget.mainReceipt.id}',
                             );
                           },
                         );
