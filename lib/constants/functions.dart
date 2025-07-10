@@ -350,17 +350,19 @@ Future<Uint8List> buildPdf(
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
-  final fontRegular = pw.Font.ttf(
-    await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Regular.ttf',
-    ),
+  final fontRegularBytes = await rootBundle.load(
+    'assets/fonts/PlusJakartaSans-Regular.ttf',
   );
-  print('Fonts');
-  final fontBold = pw.Font.ttf(
-    await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Bold.ttf',
-    ),
+  print('Loaded Regular Font');
+
+  final fontBoldBytes = await rootBundle.load(
+    'assets/fonts/PlusJakartaSans-Bold.ttf',
   );
+  print('Loaded Bold Font');
+
+  final fontRegular = pw.Font.ttf(fontRegularBytes);
+  final fontBold = pw.Font.ttf(fontBoldBytes);
+
   print('Adding Page');
   pdf.addPage(
     pw.Page(
