@@ -1101,17 +1101,16 @@ class _ReceiptDetailsContainerState
                               listen: false,
                             ).toggleIsLoading(true);
                             Navigator.of(context).pop();
+                            final pdfBytes = await buildPdf(
+                              widget.mainReceipt,
+                              records,
+                              returnShopProvider(
+                                safeContext,
+                                listen: false,
+                              ).userShop!,
+                              context,
+                            );
                             if (kIsWeb) {
-                              final pdfBytes =
-                                  await buildPdf(
-                                    widget.mainReceipt,
-                                    records,
-                                    returnShopProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).userShop!,
-                                    context,
-                                  );
                               print('Downloading Pdf');
                               downloadPdfWeb(
                                 pdfBytes,
@@ -1120,6 +1119,7 @@ class _ReceiptDetailsContainerState
                               print('Downloaded Pdf');
                               if (context.mounted) {
                                 generateAndPreviewPdf(
+                                  pdfBytes: pdfBytes,
                                   context: safeContext,
                                   records: records,
                                   receipt:
@@ -1134,6 +1134,7 @@ class _ReceiptDetailsContainerState
                             } else {
                               if (context.mounted) {
                                 generateAndPreviewPdf(
+                                  pdfBytes: pdfBytes,
                                   context: safeContext,
                                   records: records,
                                   receipt:

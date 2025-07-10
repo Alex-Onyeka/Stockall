@@ -318,13 +318,14 @@ Future<void> generateAndPreviewPdf({
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
+  required Uint8List pdfBytes,
 }) async {
-  final Uint8List pdfBytes = await buildPdf(
-    receipt,
-    records,
-    shop,
-    context,
-  );
+  // final Uint8List pdfBytes = await buildPdf(
+  //   receipt,
+  //   records,
+  //   shop,
+  //   context,
+  // );
 
   await Printing.layoutPdf(
     onLayout: (_) async => pdfBytes,
