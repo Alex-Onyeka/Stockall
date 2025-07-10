@@ -319,11 +319,6 @@ Future<void> generateAndPreviewPdf({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  returnReceiptProvider(
-    context,
-    listen: false,
-  ).toggleIsLoading(true);
-
   final Uint8List pdfBytes = await buildPdf(
     receipt,
     records,
@@ -360,12 +355,13 @@ Future<Uint8List> buildPdf(
       'assets/fonts/PlusJakartaSans-Regular.ttf',
     ),
   );
+  print('Fonts');
   final fontBold = pw.Font.ttf(
     await rootBundle.load(
       'assets/fonts/PlusJakartaSans-Bold.ttf',
     ),
   );
-
+  print('Adding Page');
   pdf.addPage(
     pw.Page(
       pageFormat: PdfPageFormat.a5,
@@ -763,7 +759,7 @@ Future<Uint8List> buildPdf(
           ),
     ),
   );
-
+  print('Finished Page');
   return pdf.save();
 }
 

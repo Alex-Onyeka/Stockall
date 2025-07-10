@@ -1115,7 +1115,7 @@ class _ReceiptDetailsContainerState
                               print('Downloading Pdf');
                               downloadPdfWeb(
                                 pdfBytes,
-                                'Stockall.pdf',
+                                'Stockall ${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'} : ${widget.mainReceipt.id}.pdf',
                               );
                             }
                             if (context.mounted) {
