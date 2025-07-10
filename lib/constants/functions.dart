@@ -799,12 +799,6 @@ void downloadPdfWeb({
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
-    if (context.mounted) {
-      returnReceiptProvider(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
-    }
   }
 }
 

@@ -1101,36 +1101,21 @@ class _ReceiptDetailsContainerState
                               listen: false,
                             ).toggleIsLoading(true);
                             Navigator.of(context).pop();
-                            // final pdfBytes = await buildPdf(
-                            //   widget.mainReceipt,
-                            //   records,
-                            //   returnShopProvider(
-                            //     safeContext,
-                            //     listen: false,
-                            //   ).userShop!,
-                            //   context,
-                            // );
-                            // if (kIsWeb) {
-                            // print('Downloading Pdf');
-                            // downloadPdfWeb(
-                            //   pdfBytes,
-                            //   'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
-                            // );
-                            // print('Downloaded Pdf');
-                            // if (context.mounted) {
-                            // await generateAndPreviewPdf(
-                            //   // pdfBytes: pdfBytes,
-                            //   context: safeContext,
-                            //   records: records,
-                            //   receipt: widget.mainReceipt,
-                            //   shop:
-                            //       returnShopProvider(
-                            //         safeContext,
-                            //         listen: false,
-                            //       ).userShop!,
-                            // );
-                            downloadPdfWeb(
-                              filename: 'Beans.pdf',
+                            if (kIsWeb) {
+                              downloadPdfWeb(
+                                filename:
+                                    'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
+                                context: safeContext,
+                                receipt: widget.mainReceipt,
+                                records: records,
+                                shop:
+                                    returnShopProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).userShop!,
+                              );
+                            }
+                            await generateAndPreviewPdf(
                               context: safeContext,
                               receipt: widget.mainReceipt,
                               records: records,
@@ -1140,107 +1125,6 @@ class _ReceiptDetailsContainerState
                                     listen: false,
                                   ).userShop!,
                             );
-                            //   }
-                            // } else {
-                            // if (context.mounted) {
-                            //   await generateAndPreviewPdf(
-                            //     pdfBytes: pdfBytes,
-                            //     context: safeContext,
-                            //     records: records,
-                            //     receipt:
-                            //         widget.mainReceipt,
-                            //     shop:
-                            //         returnShopProvider(
-                            //           safeContext,
-                            //           listen: false,
-                            //         ).userShop!,
-                            //   );
-                            // }
-                            // }
-                          },
-                        );
-                      },
-                    );
-                  },
-                  text: 'Download',
-                  color: Colors.grey,
-                  icon: Icons.print,
-                  iconSize: 20,
-                  theme: widget.theme,
-                ),
-                BottomActionButton(
-                  action: () {
-                    var safeContext = context;
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ConfirmationAlert(
-                          theme: widget.theme,
-                          message:
-                              'You are about to download This Receipt. Are you sure you want to Proceed?',
-                          title: 'Download Receipt',
-                          action: () async {
-                            returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).toggleIsLoading(true);
-                            Navigator.of(context).pop();
-                            // final pdfBytes = await buildPdf(
-                            //   widget.mainReceipt,
-                            //   records,
-                            //   returnShopProvider(
-                            //     safeContext,
-                            //     listen: false,
-                            //   ).userShop!,
-                            //   context,
-                            // );
-                            // if (kIsWeb) {
-                            // print('Downloading Pdf');
-                            // downloadPdfWeb(
-                            //   pdfBytes,
-                            //   'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
-                            // );
-                            // print('Downloaded Pdf');
-                            // if (context.mounted) {
-                            // await generateAndPreviewPdf(
-                            //   // pdfBytes: pdfBytes,
-                            //   context: safeContext,
-                            //   records: records,
-                            //   receipt: widget.mainReceipt,
-                            //   shop:
-                            //       returnShopProvider(
-                            //         safeContext,
-                            //         listen: false,
-                            //       ).userShop!,
-                            // );
-                            downloadPdfWeb(
-                              filename: 'Beans.pdf',
-                              context: safeContext,
-                              receipt: widget.mainReceipt,
-                              records: records,
-                              shop:
-                                  returnShopProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).userShop!,
-                            );
-                            //   }
-                            // } else {
-                            // if (context.mounted) {
-                            //   await generateAndPreviewPdf(
-                            //     pdfBytes: pdfBytes,
-                            //     context: safeContext,
-                            //     records: records,
-                            //     receipt:
-                            //         widget.mainReceipt,
-                            //     shop:
-                            //         returnShopProvider(
-                            //           safeContext,
-                            //           listen: false,
-                            //         ).userShop!,
-                            //   );
-                            // }
-                            // }
                           },
                         );
                       },
