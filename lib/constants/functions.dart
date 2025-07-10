@@ -760,7 +760,10 @@ Future<Uint8List> buildPdf(
     ),
   );
   print('Finished Page');
-  return pdf.save();
+  print('Before saving PDF...');
+  final data = await pdf.save();
+  print('PDF saved successfully');
+  return data;
 }
 
 void downloadPdfWeb(Uint8List pdfBytes, String filename) {
