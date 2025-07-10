@@ -1118,7 +1118,7 @@ class _ReceiptDetailsContainerState
                               );
                               print('Downloaded Pdf');
                               if (context.mounted) {
-                                generateAndPreviewPdf(
+                                await generateAndPreviewPdf(
                                   pdfBytes: pdfBytes,
                                   context: safeContext,
                                   records: records,
@@ -1133,7 +1133,7 @@ class _ReceiptDetailsContainerState
                               }
                             } else {
                               if (context.mounted) {
-                                generateAndPreviewPdf(
+                                await generateAndPreviewPdf(
                                   pdfBytes: pdfBytes,
                                   context: safeContext,
                                   records: records,

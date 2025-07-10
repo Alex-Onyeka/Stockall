@@ -320,6 +320,7 @@ Future<void> generateAndPreviewPdf({
   required BuildContext context,
   required Uint8List pdfBytes,
 }) async {
+  print('Printing');
   // final Uint8List pdfBytes = await buildPdf(
   //   receipt,
   //   records,
@@ -332,6 +333,7 @@ Future<void> generateAndPreviewPdf({
     name: 'receipt.pdf',
     format: PdfPageFormat.a5,
   );
+  print('Finished Printing');
 
   if (context.mounted) {
     returnReceiptProvider(
