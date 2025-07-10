@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -482,28 +481,12 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: 30.0,
                     ),
-                    child: GestureDetector(
-                      onTap: () {
-                        showCurrencyPicker(
-                          context: context,
-                          showFlag: true,
-                          showCurrencyName: true,
-                          showCurrencyCode: true,
-                          onSelect: (Currency currency) {
-                            print(
-                              'Selected currency: ${currency.name} (${currency.symbol})',
-                            );
-                            // Save currency.code, currency.symbol, currency.name as needed
-                          },
-                        );
-                      },
-                      child: ProgressBar(
-                        position: 0.06,
-                        calcValue: 0.3,
-                        theme: theme,
-                        percent: '50%',
-                        title: 'Your Progress',
-                      ),
+                    child: ProgressBar(
+                      position: 0.06,
+                      calcValue: 0.3,
+                      theme: theme,
+                      percent: '50%',
+                      title: 'Your Progress',
                     ),
                   ),
                   SizedBox(height: 20),

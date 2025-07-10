@@ -7,12 +7,12 @@ import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:universal_html/html.dart' as html;
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -318,23 +318,21 @@ Future<void> generateAndPreviewPdf({
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
-  required Uint8List pdfBytes,
 }) async {
-  print('Printing');
-  // final Uint8List pdfBytes = await buildPdf(
-  //   receipt,
-  //   records,
-  //   shop,
-  //   context,
-  // );
-
-  await Printing.layoutPdf(
-    onLayout: (_) async => pdfBytes,
-    name: 'receipt.pdf',
-    format: PdfPageFormat.a5,
+  // 1. Build the PDF once (fastest way)
+  returnReceiptProvider(
+    context,
+    listen: false,
+  ).toggleIsLoading(true);
+  final Uint8List pdfBytes = await _buildPdf(
+    receipt,
+    records,
+    shop,
+    context,
   );
-  print('Finished Printing');
 
+  // 2. Open native print/share/save dialog (cross-platform)
+  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
     returnReceiptProvider(
       context,
@@ -343,444 +341,442 @@ Future<void> generateAndPreviewPdf({
   }
 }
 
-Future<Uint8List> buildPdf(
+Future<Uint8List> _buildPdf(
   TempMainReceipt receipt,
   List<TempProductSaleRecord> records,
   TempShopClass shop,
   BuildContext context,
 ) async {
-  print('Start Building Pdf');
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
-  final fontRegularBytes = await rootBundle.load(
-    'assets/fonts/PlusJakartaSans-Regular.ttf',
+  final fontRegular = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
   );
-  print('Loaded Regular Font');
-
-  final fontBoldBytes = await rootBundle.load(
-    'assets/fonts/PlusJakartaSans-Bold.ttf',
+  final fontBold = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
   );
-  print('Loaded Bold Font');
 
-  final fontRegular = pw.Font.ttf(fontRegularBytes);
-  final fontBold = pw.Font.ttf(fontBoldBytes);
-
-  print('Adding Page');
   pdf.addPage(
     pw.Page(
       pageFormat: PdfPageFormat.a5,
-      build: (pw.Context pdfContext) {
-        return pw.Center(
-          child: pw.Text(
-            style: pw.TextStyle(font: fontBold),
-            'Beans and Rice',
+      build:
+          (pw.Context pdfContext) => pw.DefaultTextStyle(
+            style: pw.TextStyle(
+              font: fontRegular,
+              fontSize: 12,
+            ),
+            child: pw.Column(
+              crossAxisAlignment:
+                  pw.CrossAxisAlignment.start,
+              children: [
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
+                  children: [
+                    pw.Column(
+                      children: [
+                        pw.Text(
+                          textAlign: pw.TextAlign.center,
+                          shop.name,
+                          style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        pw.SizedBox(height: 5),
+                        pw.Text(
+                          textAlign: pw.TextAlign.center,
+                          shop.email,
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 9,
+                          ),
+                        ),
+                        pw.SizedBox(height: 5),
+                        pw.Text(
+                          textAlign: pw.TextAlign.center,
+                          shop.phoneNumber ??
+                              'Phone Not Set',
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 9,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 5),
+                pw.Divider(
+                  color: PdfColor.fromHex('#D3D3D3'),
+                  thickness: 0.5,
+                ),
+                pw.SizedBox(height: 5),
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
+                  children: [
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment:
+                            pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 9,
+                            ),
+                            'Staff Name:',
+                          ),
+                          pw.SizedBox(height: 5),
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontBold,
+                              fontSize: 10,
+                            ),
+                            receipt.staffName,
+                          ),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment:
+                            pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 9,
+                            ),
+                            'Customer Name:',
+                          ),
+                          pw.SizedBox(height: 5),
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontBold,
+                              fontSize: 10,
+                            ),
+                            receipt.customerName ??
+                                'Not Set',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 10),
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
+                  children: [
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment:
+                            pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 9,
+                            ),
+                            'Payment Method:',
+                          ),
+                          pw.SizedBox(height: 5),
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontBold,
+                              fontSize: 10,
+                            ),
+                            receipt.paymentMethod,
+                          ),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment:
+                            pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 9,
+                            ),
+                            'Amount(s):',
+                          ),
+                          pw.SizedBox(height: 5),
+                          pw.Column(
+                            crossAxisAlignment:
+                                pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                style: pw.TextStyle(
+                                  font: fontRegular,
+                                  fontSize: 8,
+                                ),
+                                'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
+                              ),
+                              pw.Text(
+                                style: pw.TextStyle(
+                                  font: fontRegular,
+                                  fontSize: 8,
+                                ),
+                                'Bank: ${formatMoneyMid(receipt.bank, context)}',
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 10),
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
+                  children: [
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment:
+                            pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 9,
+                            ),
+                            'Date:',
+                          ),
+                          pw.SizedBox(height: 5),
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontBold,
+                              fontSize: 10,
+                            ),
+                            formatDateTime(
+                              receipt.createdAt,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment:
+                            pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 9,
+                            ),
+                            'Time:',
+                          ),
+                          pw.SizedBox(height: 5),
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontBold,
+                              fontSize: 10,
+                            ),
+                            formatTime(receipt.createdAt),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 5),
+                pw.Divider(),
+
+                pw.Text(
+                  'Items:',
+                  style: pw.TextStyle(font: fontBold),
+                ),
+                pw.SizedBox(height: 5),
+
+                ...records.map(
+                  (record) => pw.Padding(
+                    padding: const pw.EdgeInsets.symmetric(
+                      vertical: 2,
+                    ),
+                    child: pw.Row(
+                      mainAxisAlignment:
+                          pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Expanded(
+                          flex: 4,
+                          child: pw.Text(
+                            '${record.productName} ',
+                          ),
+                        ),
+                        pw.Expanded(
+                          flex: 1,
+                          child: pw.Text(
+                            '(${record.quantity.toStringAsFixed(0)}) ',
+                          ),
+                        ),
+                        pw.Expanded(
+                          flex: 2,
+                          child: pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: 10,
+                            ),
+                            ' ${formatMoneyMid(record.revenue, context)}',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                pw.SizedBox(height: 12),
+                pw.Divider(),
+
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
+                  children: [
+                    pw.Expanded(
+                      flex: 2,
+                      child: pw.Text(
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
+                        'Subtotal:',
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text(
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 10,
+                        ),
+                        formatMoneyMid(
+                          returnReceiptProvider(
+                            context,
+                            listen: false,
+                          ).getSubTotalRevenueForReceipt(
+                            context,
+                            records,
+                          ),
+                          context,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 5),
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
+                  children: [
+                    pw.Expanded(
+                      flex: 2,
+                      child: pw.Text(
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
+                        'Discount:',
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text(
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 10,
+                        ),
+                        formatMoneyMid(
+                          returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).getTotalMainRevenueReceipt(
+                                records,
+                                context,
+                              ) -
+                              returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).getSubTotalRevenueForReceipt(
+                                context,
+                                records,
+                              ),
+                          context,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 5),
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.spaceEvenly,
+                  children: [
+                    pw.Expanded(
+                      flex: 2,
+                      child: pw.Text(
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 10,
+                        ),
+                        'Total:',
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 1,
+                      child: pw.Text(
+                        style: pw.TextStyle(
+                          font: fontBold,
+                          fontSize: 12,
+                        ),
+                        formatMoneyMid(
+                          returnReceiptProvider(
+                            context,
+                            listen: false,
+                          ).getTotalMainRevenueReceipt(
+                            records,
+                            context,
+                          ),
+                          context,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        );
-        // return pw.DefaultTextStyle(
-        //   style: pw.TextStyle(
-        //     font: fontRegular,
-        //     fontSize: 12,
-        //   ),
-        //   child: pw.Column(
-        //     crossAxisAlignment: pw.CrossAxisAlignment.start,
-        //     children: [
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.center,
-        //         children: [
-        //           pw.Column(
-        //             children: [
-        //               pw.Text(
-        //                 textAlign: pw.TextAlign.center,
-        //                 shop.name,
-        //                 style: pw.TextStyle(
-        //                   font: fontBold,
-        //                   fontSize: 16,
-        //                 ),
-        //               ),
-        //               pw.SizedBox(height: 5),
-        //               pw.Text(
-        //                 textAlign: pw.TextAlign.center,
-        //                 shop.email,
-        //                 style: pw.TextStyle(
-        //                   font: fontRegular,
-        //                   fontSize: 9,
-        //                 ),
-        //               ),
-        //               pw.SizedBox(height: 5),
-        //               pw.Text(
-        //                 textAlign: pw.TextAlign.center,
-        //                 shop.phoneNumber ?? 'Phone Not Set',
-        //                 style: pw.TextStyle(
-        //                   font: fontRegular,
-        //                   fontSize: 9,
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ],
-        //       ),
-        //       pw.SizedBox(height: 5),
-        //       pw.Divider(
-        //         color: PdfColor.fromHex('#D3D3D3'),
-        //         thickness: 0.5,
-        //       ),
-        //       pw.SizedBox(height: 5),
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.spaceEvenly,
-        //         children: [
-        //           pw.Expanded(
-        //             child: pw.Column(
-        //               crossAxisAlignment:
-        //                   pw.CrossAxisAlignment.start,
-        //               children: [
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 9,
-        //                   ),
-        //                   'Staff Name:',
-        //                 ),
-        //                 pw.SizedBox(height: 5),
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontBold,
-        //                     fontSize: 10,
-        //                   ),
-        //                   receipt.staffName,
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           pw.Expanded(
-        //             child: pw.Column(
-        //               crossAxisAlignment:
-        //                   pw.CrossAxisAlignment.start,
-        //               children: [
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 9,
-        //                   ),
-        //                   'Customer Name:',
-        //                 ),
-        //                 pw.SizedBox(height: 5),
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontBold,
-        //                     fontSize: 10,
-        //                   ),
-        //                   receipt.customerName ?? 'Not Set',
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       pw.SizedBox(height: 10),
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.spaceEvenly,
-        //         children: [
-        //           pw.Expanded(
-        //             child: pw.Column(
-        //               crossAxisAlignment:
-        //                   pw.CrossAxisAlignment.start,
-        //               children: [
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 9,
-        //                   ),
-        //                   'Payment Method:',
-        //                 ),
-        //                 pw.SizedBox(height: 5),
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontBold,
-        //                     fontSize: 10,
-        //                   ),
-        //                   receipt.paymentMethod,
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           pw.Expanded(
-        //             child: pw.Column(
-        //               crossAxisAlignment:
-        //                   pw.CrossAxisAlignment.start,
-        //               children: [
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 9,
-        //                   ),
-        //                   'Amount(s):',
-        //                 ),
-        //                 pw.SizedBox(height: 5),
-        //                 pw.Column(
-        //                   crossAxisAlignment:
-        //                       pw.CrossAxisAlignment.start,
-        //                   children: [
-        //                     pw.Text(
-        //                       style: pw.TextStyle(
-        //                         font: fontRegular,
-        //                         fontSize: 8,
-        //                       ),
-        //                       'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
-        //                     ),
-        //                     pw.Text(
-        //                       style: pw.TextStyle(
-        //                         font: fontRegular,
-        //                         fontSize: 8,
-        //                       ),
-        //                       'Bank: ${formatMoneyMid(receipt.bank, context)}',
-        //                     ),
-        //                   ],
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       pw.SizedBox(height: 10),
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.spaceEvenly,
-        //         children: [
-        //           pw.Expanded(
-        //             child: pw.Column(
-        //               crossAxisAlignment:
-        //                   pw.CrossAxisAlignment.start,
-        //               children: [
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 9,
-        //                   ),
-        //                   'Date:',
-        //                 ),
-        //                 pw.SizedBox(height: 5),
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontBold,
-        //                     fontSize: 10,
-        //                   ),
-        //                   formatDateTime(receipt.createdAt),
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           pw.Expanded(
-        //             child: pw.Column(
-        //               crossAxisAlignment:
-        //                   pw.CrossAxisAlignment.start,
-        //               children: [
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 9,
-        //                   ),
-        //                   'Time:',
-        //                 ),
-        //                 pw.SizedBox(height: 5),
-        //                 pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontBold,
-        //                     fontSize: 10,
-        //                   ),
-        //                   formatTime(receipt.createdAt),
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       pw.SizedBox(height: 5),
-        //       pw.Divider(),
-
-        //       pw.Text(
-        //         'Items:',
-        //         style: pw.TextStyle(font: fontBold),
-        //       ),
-        //       pw.SizedBox(height: 5),
-
-        //       ...records.map(
-        //         (record) => pw.Padding(
-        //           padding: const pw.EdgeInsets.symmetric(
-        //             vertical: 2,
-        //           ),
-        //           child: pw.Row(
-        //             mainAxisAlignment:
-        //                 pw.MainAxisAlignment.spaceBetween,
-        //             children: [
-        //               pw.Expanded(
-        //                 flex: 4,
-        //                 child: pw.Text(
-        //                   '${record.productName} ',
-        //                 ),
-        //               ),
-        //               pw.Expanded(
-        //                 flex: 1,
-        //                 child: pw.Text(
-        //                   '(${record.quantity.toStringAsFixed(0)}) ',
-        //                 ),
-        //               ),
-        //               pw.Expanded(
-        //                 flex: 2,
-        //                 child: pw.Text(
-        //                   style: pw.TextStyle(
-        //                     font: fontRegular,
-        //                     fontSize: 10,
-        //                   ),
-        //                   ' ${formatMoneyMid(record.revenue, context)}',
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-
-        //       pw.SizedBox(height: 12),
-        //       pw.Divider(),
-
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.spaceEvenly,
-        //         children: [
-        //           pw.Expanded(
-        //             flex: 2,
-        //             child: pw.Text(
-        //               style: pw.TextStyle(
-        //                 font: fontRegular,
-        //                 fontSize: 9,
-        //               ),
-        //               'Subtotal:',
-        //             ),
-        //           ),
-        //           pw.Expanded(
-        //             flex: 1,
-        //             child: pw.Text(
-        //               style: pw.TextStyle(
-        //                 font: fontRegular,
-        //                 fontSize: 10,
-        //               ),
-        //               formatMoneyMid(
-        //                 returnReceiptProvider(
-        //                   context,
-        //                   listen: false,
-        //                 ).getSubTotalRevenueForReceipt(
-        //                   context,
-        //                   records,
-        //                 ),
-        //                 context,
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       pw.SizedBox(height: 5),
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.spaceEvenly,
-        //         children: [
-        //           pw.Expanded(
-        //             flex: 2,
-        //             child: pw.Text(
-        //               style: pw.TextStyle(
-        //                 font: fontRegular,
-        //                 fontSize: 9,
-        //               ),
-        //               'Discount:',
-        //             ),
-        //           ),
-        //           pw.Expanded(
-        //             flex: 1,
-        //             child: pw.Text(
-        //               style: pw.TextStyle(
-        //                 font: fontRegular,
-        //                 fontSize: 10,
-        //               ),
-        //               formatMoneyMid(
-        //                 returnReceiptProvider(
-        //                       context,
-        //                       listen: false,
-        //                     ).getTotalMainRevenueReceipt(
-        //                       records,
-        //                       context,
-        //                     ) -
-        //                     returnReceiptProvider(
-        //                       context,
-        //                       listen: false,
-        //                     ).getSubTotalRevenueForReceipt(
-        //                       context,
-        //                       records,
-        //                     ),
-        //                 context,
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       pw.SizedBox(height: 5),
-        //       pw.Row(
-        //         mainAxisAlignment:
-        //             pw.MainAxisAlignment.spaceEvenly,
-        //         children: [
-        //           pw.Expanded(
-        //             flex: 2,
-        //             child: pw.Text(
-        //               style: pw.TextStyle(
-        //                 font: fontRegular,
-        //                 fontSize: 10,
-        //               ),
-        //               'Total:',
-        //             ),
-        //           ),
-        //           pw.Expanded(
-        //             flex: 1,
-        //             child: pw.Text(
-        //               style: pw.TextStyle(
-        //                 font: fontBold,
-        //                 fontSize: 10,
-        //               ),
-        //               formatMoneyMid(
-        //                 returnReceiptProvider(
-        //                   context,
-        //                   listen: false,
-        //                 ).getTotalMainRevenueReceipt(
-        //                   records,
-        //                   context,
-        //                 ),
-        //                 context,
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ],
-        //   ),
-        // );
-      },
     ),
   );
-  print('Finished Page');
-  try {
-    print('Before saving PDF...');
-    final data = pdf.save();
-    print('✅ After saving PDF');
-    return data;
-  } catch (e, stack) {
-    print('❌ Error saving PDF: $e');
-    print('🪜 Stack Trace:\n$stack');
-    rethrow;
-  }
+
+  return pdf.save();
 }
 
-void downloadPdfWeb(Uint8List pdfBytes, String filename) {
+void downloadPdfWeb({
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+  required String filename,
+}) async {
   try {
+    print('Begin Download');
+    final pdfBytes = await _buildPdf(
+      receipt,
+      records,
+      returnShopProvider(context, listen: false).userShop!,
+      context,
+    );
     final blob = html.Blob([pdfBytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
 
@@ -795,7 +791,50 @@ void downloadPdfWeb(Uint8List pdfBytes, String filename) {
     anchor.remove();
 
     html.Url.revokeObjectUrl(url);
+    if (context.mounted) {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
+    if (context.mounted) {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
   }
 }
+
+// Future<void> downloadPdf({
+//   required TempMainReceipt receipt,
+//   required List<TempProductSaleRecord> records,
+//   required TempShopClass shop,
+//   required BuildContext context,
+//   required String filename,
+// }) async {
+//   var shop =
+//       returnShopProvider(context, listen: false).userShop!;
+//   final status = await Permission.storage.request();
+
+//   if (status.isGranted) {
+//     print('Begin Download');
+//     final pdfBytes = await _buildPdf(
+//       receipt,
+//       records,
+//       shop,
+//       context,
+//     );
+//     final directory = await getExternalStorageDirectory();
+//     final path = '${directory!.path}/$filename';
+
+//     final file = File(path);
+//     await file.writeAsBytes(pdfBytes);
+
+//     print('✅ PDF saved to $path');
+//   } else {
+//     print('❌ Storage permission denied');
+//   }
+// }
