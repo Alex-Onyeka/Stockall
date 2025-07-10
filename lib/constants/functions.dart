@@ -364,6 +364,12 @@ Future<Uint8List> _buildPdf(
   pdf.addPage(
     pw.Page(
       pageFormat: PdfPageFormat.a5,
+      margin: const pw.EdgeInsets.only(
+        left: 30,
+        top: 30,
+        right: 30,
+        bottom: 30,
+      ),
       build:
           (pw.Context pdfContext) => pw.DefaultTextStyle(
             style: pw.TextStyle(
@@ -398,13 +404,16 @@ Future<Uint8List> _buildPdf(
                           ),
                         ),
                         pw.SizedBox(height: 5),
+
                         pw.Text(
                           textAlign: pw.TextAlign.center,
-                          shop.phoneNumber ??
-                              'Phone Not Set',
+                          shop.phoneNumber ?? '',
                           style: pw.TextStyle(
                             font: fontRegular,
-                            fontSize: 9,
+                            fontSize:
+                                shop.phoneNumber == null
+                                    ? 1
+                                    : 9,
                           ),
                         ),
                       ],
@@ -412,6 +421,26 @@ Future<Uint8List> _buildPdf(
                   ],
                 ),
                 pw.SizedBox(height: 5),
+                pw.Divider(
+                  color: PdfColor.fromHex('#D3D3D3'),
+                  thickness: 0.5,
+                ),
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
+                  children: [
+                    pw.Text(
+                      textAlign: pw.TextAlign.center,
+                      receipt.isInvoice
+                          ? 'Generated Invoice'
+                          : 'Receipt of Payment',
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
                 pw.Divider(
                   color: PdfColor.fromHex('#D3D3D3'),
                   thickness: 0.5,
@@ -470,71 +499,93 @@ Future<Uint8List> _buildPdf(
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 10),
-                pw.Row(
-                  mainAxisAlignment:
-                      pw.MainAxisAlignment.spaceEvenly,
-                  children: [
-                    pw.Expanded(
-                      child: pw.Column(
-                        crossAxisAlignment:
-                            pw.CrossAxisAlignment.start,
+                pw.Builder(
+                  builder: (pw.Context pdfContext) {
+                    if (receipt.isInvoice) {
+                      return pw.Container();
+                    } else {
+                      return pw.Column(
                         children: [
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: 9,
-                            ),
-                            'Payment Method:',
-                          ),
-                          pw.SizedBox(height: 5),
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontBold,
-                              fontSize: 10,
-                            ),
-                            receipt.paymentMethod,
-                          ),
-                        ],
-                      ),
-                    ),
-                    pw.Expanded(
-                      child: pw.Column(
-                        crossAxisAlignment:
-                            pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: 9,
-                            ),
-                            'Amount(s):',
-                          ),
-                          pw.SizedBox(height: 5),
-                          pw.Column(
-                            crossAxisAlignment:
-                                pw.CrossAxisAlignment.start,
+                          pw.SizedBox(height: 10),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
                             children: [
-                              pw.Text(
-                                style: pw.TextStyle(
-                                  font: fontRegular,
-                                  fontSize: 8,
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: 9,
+                                      ),
+                                      'Payment Method:',
+                                    ),
+                                    pw.SizedBox(height: 5),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontBold,
+                                        fontSize: 10,
+                                      ),
+                                      receipt.paymentMethod,
+                                    ),
+                                  ],
                                 ),
-                                'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
                               ),
-                              pw.Text(
-                                style: pw.TextStyle(
-                                  font: fontRegular,
-                                  fontSize: 8,
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: 9,
+                                      ),
+                                      'Amount(s):',
+                                    ),
+                                    pw.SizedBox(height: 5),
+                                    pw.Column(
+                                      crossAxisAlignment:
+                                          pw
+                                              .CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        pw.Text(
+                                          style: pw.TextStyle(
+                                            font:
+                                                fontRegular,
+                                            fontSize: 8,
+                                          ),
+                                          'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
+                                        ),
+                                        pw.Text(
+                                          style: pw.TextStyle(
+                                            font:
+                                                fontRegular,
+                                            fontSize: 8,
+                                          ),
+                                          'Bank: ${formatMoneyMid(receipt.bank, context)}',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                'Bank: ${formatMoneyMid(receipt.bank, context)}',
                               ),
                             ],
                           ),
                         ],
-                      ),
-                    ),
-                  ],
+                      );
+                    }
+                  },
                 ),
                 pw.SizedBox(height: 10),
                 pw.Row(
@@ -603,14 +654,14 @@ Future<Uint8List> _buildPdf(
                 ...records.map(
                   (record) => pw.Padding(
                     padding: const pw.EdgeInsets.symmetric(
-                      vertical: 2,
+                      vertical: 3,
                     ),
                     child: pw.Row(
                       mainAxisAlignment:
                           pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Expanded(
-                          flex: 4,
+                          flex: 5,
                           child: pw.Text(
                             '${record.productName} ',
                           ),
@@ -618,17 +669,20 @@ Future<Uint8List> _buildPdf(
                         pw.Expanded(
                           flex: 1,
                           child: pw.Text(
-                            '(${record.quantity.toStringAsFixed(0)}) ',
+                            '( ${record.quantity.toStringAsFixed(0)} ) ',
                           ),
                         ),
                         pw.Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: pw.Text(
                             style: pw.TextStyle(
                               font: fontRegular,
                               fontSize: 10,
                             ),
-                            ' ${formatMoneyMid(record.revenue, context)}',
+                            formatMoneyMid(
+                              record.revenue,
+                              context,
+                            ),
                           ),
                         ),
                       ],
