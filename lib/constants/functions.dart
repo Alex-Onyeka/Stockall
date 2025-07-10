@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/currency_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
@@ -350,18 +351,36 @@ Future<Uint8List> buildPdf(
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
-  final fontRegularBytes = await rootBundle.load(
-    'assets/fonts/PlusJakartaSans-Regular.ttf',
-  );
-  print('Loaded Regular Font');
+  // final fontRegularBytes = await rootBundle.load(
+  //   'assets/fonts/PlusJakartaSans-Regular.ttf',
+  // );
+  // print('Loaded Regular Font');
 
-  final fontBoldBytes = await rootBundle.load(
-    'assets/fonts/PlusJakartaSans-Bold.ttf',
-  );
-  print('Loaded Bold Font');
+  // final fontBoldBytes = await rootBundle.load(
+  //   'assets/fonts/PlusJakartaSans-Bold.ttf',
+  // );
+  // print('Loaded Bold Font');
 
-  final fontRegular = pw.Font.ttf(fontRegularBytes);
-  final fontBold = pw.Font.ttf(fontBoldBytes);
+  // final fontRegular = pw.Font.ttf(fontRegularBytes);
+  // final fontBold = pw.Font.ttf(fontBoldBytes);
+
+  final fontRegular =
+      kIsWeb
+          ? pw.Font.helvetica()
+          : pw.Font.ttf(
+            await rootBundle.load(
+              'assets/fonts/PlusJakartaSans-Regular.ttf',
+            ),
+          );
+
+  final fontBold =
+      kIsWeb
+          ? pw.Font.helveticaBold()
+          : pw.Font.ttf(
+            await rootBundle.load(
+              'assets/fonts/PlusJakartaSans-Bold.ttf',
+            ),
+          );
 
   print('Adding Page');
   pdf.addPage(
