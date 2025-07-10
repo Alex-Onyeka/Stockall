@@ -12,6 +12,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'dart:html' as html;
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -318,11 +319,11 @@ Future<void> generateAndPreviewPdf({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  // 1. Build the PDF once (fastest way)
   returnReceiptProvider(
     context,
     listen: false,
   ).toggleIsLoading(true);
+
   final Uint8List pdfBytes = await _buildPdf(
     receipt,
     records,
@@ -330,8 +331,12 @@ Future<void> generateAndPreviewPdf({
     context,
   );
 
-  // 2. Open native print/share/save dialog (cross-platform)
-  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  await Printing.layoutPdf(
+    onLayout: (_) async => pdfBytes,
+    name: 'receipt.pdf',
+    format: PdfPageFormat.a5,
+  );
+
   if (context.mounted) {
     returnReceiptProvider(
       context,
@@ -339,8 +344,6 @@ Future<void> generateAndPreviewPdf({
     ).toggleIsLoading(false);
   }
 }
-
-// import 'package:flutter/services.dart' show rootBundle;
 
 Future<Uint8List> _buildPdf(
   TempMainReceipt receipt,
@@ -386,7 +389,7 @@ Future<Uint8List> _buildPdf(
                           shop.name,
                           style: pw.TextStyle(
                             font: fontBold,
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                         ),
                         pw.SizedBox(height: 5),
@@ -395,7 +398,7 @@ Future<Uint8List> _buildPdf(
                           shop.email,
                           style: pw.TextStyle(
                             font: fontRegular,
-                            fontSize: 11,
+                            fontSize: 9,
                           ),
                         ),
                         pw.SizedBox(height: 5),
@@ -405,7 +408,7 @@ Future<Uint8List> _buildPdf(
                               'Phone Not Set',
                           style: pw.TextStyle(
                             font: fontRegular,
-                            fontSize: 11,
+                            fontSize: 9,
                           ),
                         ),
                       ],
@@ -762,3 +765,13 @@ Future<Uint8List> _buildPdf(
 
   return pdf.save();
 }
+
+// void downloadPdf(Uint8List pdfBytes, String filename) {
+//   final blob = html.Blob([pdfBytes]);
+//   final url = html.Url.createObjectUrlFromBlob(blob);
+//   final anchor =
+//       html.AnchorElement(href: url)
+//         ..setAttribute('download', filename)
+//         ..click();
+//   html.Url.revokeObjectUrl(url);
+// }
