@@ -48,6 +48,10 @@ class _DashboardState extends State<Dashboard> {
             context,
             listen: false,
           ).toggleUpdated(false);
+          returnShopProvider(
+            context,
+            listen: false,
+          ).updateApp(shopId: shopId(context));
         } else {
           returnShopProvider(
             context,

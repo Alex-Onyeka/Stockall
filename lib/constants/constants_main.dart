@@ -115,3 +115,5 @@ String currencySymbol(BuildContext context) {
 }
 
 const String appName = 'Stockall';
+
+const int currentUpdate = 2;
