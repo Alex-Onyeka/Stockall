@@ -31,28 +31,27 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _handlePostFrameLogic();
+      print(
+        '${returnShopProvider(context, listen: false).userShop}',
+      );
+      print('$currentUpdate');
       if (returnShopProvider(
             context,
             listen: false,
-          ).userShop !=
-          null) {
-        if (returnShopProvider(
-              context,
-              listen: false,
-            ).userShop!.updateNumber !=
-            currentUpdate) {
-          returnShopProvider(
-            context,
-            listen: false,
-          ).toggleUpdated(false);
-        } else {
-          returnShopProvider(
-            context,
-            listen: false,
-          ).toggleUpdated(true);
-        }
+          ).userShop!.updateNumber !=
+          currentUpdate) {
+        returnShopProvider(
+          context,
+          listen: false,
+        ).toggleUpdated(false);
+      } else {
+        returnShopProvider(
+          context,
+          listen: false,
+        ).toggleUpdated(true);
       }
+
+      _handlePostFrameLogic();
     });
     setState(() {});
   }

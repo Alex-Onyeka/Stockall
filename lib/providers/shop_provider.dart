@@ -299,6 +299,7 @@ class ShopProvider extends ChangeNotifier {
 
   void toggleUpdated(bool value) {
     isUpdated = value;
+    print('Updated $value');
     notifyListeners();
   }
 
