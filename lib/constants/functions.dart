@@ -523,14 +523,14 @@ Future<Uint8List> buildPdf(
                                   font: fontRegular,
                                   fontSize: 8,
                                 ),
-                                'Cash: ${receipt.cashAlt}',
+                                'Cash: 1212',
                               ),
                               pw.Text(
                                 style: pw.TextStyle(
                                   font: fontRegular,
                                   fontSize: 8,
                                 ),
-                                'Bank: ${receipt.bank}',
+                                'Bank: 1212',
                               ),
                             ],
                           ),
@@ -631,7 +631,7 @@ Future<Uint8List> buildPdf(
                               font: fontRegular,
                               fontSize: 10,
                             ),
-                            ' ${record.revenue}',
+                            ' 1212',
                           ),
                         ),
                       ],
@@ -664,15 +664,7 @@ Future<Uint8List> buildPdf(
                           fontSize: 10,
                         ),
 
-                        returnReceiptProvider(
-                              context,
-                              listen: false,
-                            )
-                            .getSubTotalRevenueForReceipt(
-                              context,
-                              records,
-                            )
-                            .toString(),
+                        '1212',
                       ),
                     ),
                   ],
@@ -700,21 +692,7 @@ Future<Uint8List> buildPdf(
                           fontSize: 10,
                         ),
 
-                        (returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).getTotalMainRevenueReceipt(
-                                  records,
-                                  context,
-                                ) -
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).getSubTotalRevenueForReceipt(
-                                  context,
-                                  records,
-                                ))
-                            .toString(),
+                        '2222',
                       ),
                     ),
                   ],
@@ -742,15 +720,7 @@ Future<Uint8List> buildPdf(
                           fontSize: 10,
                         ),
 
-                        returnReceiptProvider(
-                              context,
-                              listen: false,
-                            )
-                            .getTotalMainRevenueReceipt(
-                              records,
-                              context,
-                            )
-                            .toString(),
+                        '1111',
                       ),
                     ),
                   ],
