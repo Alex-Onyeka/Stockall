@@ -16,7 +16,6 @@ class TempShopClass {
   String? refCode;
   String currency;
   int? updateNumber;
-  int update;
 
   TempShopClass({
     this.shopId,
@@ -36,7 +35,6 @@ class TempShopClass {
     this.refCode,
     required this.currency,
     this.updateNumber,
-    required this.update,
   });
 
   factory TempShopClass.fromJson(
@@ -62,7 +60,6 @@ class TempShopClass {
       refCode: json['ref_code'] as String?,
       currency: json['currency'],
       updateNumber: json['update_number'] as int?,
-      update: json['update'] as int,
     );
   }
 
@@ -83,7 +80,6 @@ class TempShopClass {
       'ref_code': refCode,
       'currency': currency,
       'update_number': updateNumber,
-      'update': update,
     };
   }
 }

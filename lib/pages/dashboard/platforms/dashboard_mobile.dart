@@ -1144,14 +1144,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         isUpdateLodaing =
                                             true;
                                       });
-                                      await returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).updateApp(
-                                        shopId: shopId(
-                                          context,
-                                        ),
-                                      );
                                       performRestart();
                                     },
                                     child: Container(

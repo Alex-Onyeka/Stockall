@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -303,26 +302,26 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateApp({required int shopId}) async {
-    try {
-      final response =
-          await supabase
-              .from('shops')
-              .update({'update': currentUpdate})
-              .eq('shop_id', shopId)
-              .maybeSingle();
-      final shop = await getUserShop(
-        AuthService().currentUser!.id,
-      );
+  // Future<void> updateApp({required int shopId}) async {
+  //   try {
+  //     final response =
+  //         await supabase
+  //             .from('shops')
+  //             .update({'update': currentUpdate})
+  //             .eq('shop_id', shopId)
+  //             .maybeSingle();
+  //     final shop = await getUserShop(
+  //       AuthService().currentUser!.id,
+  //     );
 
-      if (response != null) {
-        setShop(shop!);
-        notifyListeners();
-      }
-    } catch (e) {
-      print("❌ Failed to update location: $e");
-    }
-  }
+  //     if (response != null) {
+  //       setShop(shop!);
+  //       notifyListeners();
+  //     }
+  //   } catch (e) {
+  //     print("❌ Failed to update location: $e");
+  //   }
+  // }
 
   TempShopClass? userShop;
 
