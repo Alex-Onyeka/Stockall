@@ -523,14 +523,14 @@ Future<Uint8List> buildPdf(
                                   font: fontRegular,
                                   fontSize: 8,
                                 ),
-                                'Cash: 1212',
+                                'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
                               ),
                               pw.Text(
                                 style: pw.TextStyle(
                                   font: fontRegular,
                                   fontSize: 8,
                                 ),
-                                'Bank: 1212',
+                                'Bank: ${formatMoneyMid(receipt.bank, context)}',
                               ),
                             ],
                           ),
@@ -562,9 +562,7 @@ Future<Uint8List> buildPdf(
                               font: fontBold,
                               fontSize: 10,
                             ),
-                            formatDateTime(
-                              receipt.createdAt,
-                            ),
+                            'Beans',
                           ),
                         ],
                       ),
@@ -587,7 +585,7 @@ Future<Uint8List> buildPdf(
                               font: fontBold,
                               fontSize: 10,
                             ),
-                            formatTime(receipt.createdAt),
+                            'Time Beans',
                           ),
                         ],
                       ),
@@ -631,7 +629,7 @@ Future<Uint8List> buildPdf(
                               font: fontRegular,
                               fontSize: 10,
                             ),
-                            ' 1212',
+                            ' ${formatMoneyMid(record.revenue, context)}',
                           ),
                         ),
                       ],
@@ -663,8 +661,16 @@ Future<Uint8List> buildPdf(
                           font: fontRegular,
                           fontSize: 10,
                         ),
-
-                        '1212',
+                        formatMoneyMid(
+                          returnReceiptProvider(
+                            context,
+                            listen: false,
+                          ).getSubTotalRevenueForReceipt(
+                            context,
+                            records,
+                          ),
+                          context,
+                        ),
                       ),
                     ),
                   ],
@@ -691,8 +697,23 @@ Future<Uint8List> buildPdf(
                           font: fontRegular,
                           fontSize: 10,
                         ),
-
-                        '2222',
+                        formatMoneyMid(
+                          returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).getTotalMainRevenueReceipt(
+                                records,
+                                context,
+                              ) -
+                              returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).getSubTotalRevenueForReceipt(
+                                context,
+                                records,
+                              ),
+                          context,
+                        ),
                       ),
                     ),
                   ],
@@ -719,8 +740,16 @@ Future<Uint8List> buildPdf(
                           font: fontBold,
                           fontSize: 10,
                         ),
-
-                        '1111',
+                        formatMoneyMid(
+                          returnReceiptProvider(
+                            context,
+                            listen: false,
+                          ).getTotalMainRevenueReceipt(
+                            records,
+                            context,
+                          ),
+                          context,
+                        ),
                       ),
                     ),
                   ],
