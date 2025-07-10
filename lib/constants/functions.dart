@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/currency_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
@@ -351,36 +350,18 @@ Future<Uint8List> buildPdf(
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
-  // final fontRegularBytes = await rootBundle.load(
-  //   'assets/fonts/PlusJakartaSans-Regular.ttf',
-  // );
-  // print('Loaded Regular Font');
+  final fontRegularBytes = await rootBundle.load(
+    'assets/fonts/PlusJakartaSans-Regular.ttf',
+  );
+  print('Loaded Regular Font');
 
-  // final fontBoldBytes = await rootBundle.load(
-  //   'assets/fonts/PlusJakartaSans-Bold.ttf',
-  // );
-  // print('Loaded Bold Font');
+  final fontBoldBytes = await rootBundle.load(
+    'assets/fonts/PlusJakartaSans-Bold.ttf',
+  );
+  print('Loaded Bold Font');
 
-  // final fontRegular = pw.Font.ttf(fontRegularBytes);
-  // final fontBold = pw.Font.ttf(fontBoldBytes);
-
-  final fontRegular =
-      kIsWeb
-          ? pw.Font.helvetica()
-          : pw.Font.ttf(
-            await rootBundle.load(
-              'assets/fonts/PlusJakartaSans-Regular.ttf',
-            ),
-          );
-
-  final fontBold =
-      kIsWeb
-          ? pw.Font.helveticaBold()
-          : pw.Font.ttf(
-            await rootBundle.load(
-              'assets/fonts/PlusJakartaSans-Bold.ttf',
-            ),
-          );
+  final fontRegular = pw.Font.ttf(fontRegularBytes);
+  final fontBold = pw.Font.ttf(fontBoldBytes);
 
   print('Adding Page');
   pdf.addPage(
@@ -781,10 +762,16 @@ Future<Uint8List> buildPdf(
     ),
   );
   print('Finished Page');
-  print('Before saving PDF...');
-  final data = await pdf.save();
-  print('PDF saved successfully');
-  return data;
+  try {
+    print('Before saving PDF...');
+    final data = await pdf.save();
+    print('✅ After saving PDF');
+    return data;
+  } catch (e, stack) {
+    print('❌ Error saving PDF: $e');
+    print('🪜 Stack Trace:\n$stack');
+    rethrow;
+  }
 }
 
 void downloadPdfWeb(Uint8List pdfBytes, String filename) {
