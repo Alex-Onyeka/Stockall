@@ -769,7 +769,7 @@ Future<Uint8List> buildPdf(
   print('Finished Page');
   try {
     print('Before saving PDF...');
-    final data = await pdf.save();
+    final data = pdf.save();
     print('✅ After saving PDF');
     return data;
   } catch (e, stack) {
