@@ -1096,31 +1096,40 @@ class _ReceiptDetailsContainerState
                               'You are about to download This Receipt. Are you sure you want to Proceed?',
                           title: 'Download Receipt',
                           action: () async {
-                            Navigator.of(context).pop();
-                            generateAndPreviewPdf(
-                              context: safeContext,
-                              records: records,
-                              receipt: widget.mainReceipt,
-                              shop:
-                                  returnShopProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).userShop!,
-                            );
-                            final pdfBytes = await buildPdf(
-                              widget.mainReceipt,
-                              records,
-                              returnShopProvider(
-                                safeContext,
-                                listen: false,
-                              ).userShop!,
+                            returnReceiptProvider(
                               context,
-                            );
-                            print('Downloading Pdf');
-                            downloadPdfWeb(
-                              pdfBytes,
-                              'Stockall ${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'} : ${widget.mainReceipt.id}',
-                            );
+                              listen: false,
+                            ).toggleIsLoading(true);
+                            Navigator.of(context).pop();
+                            if (kIsWeb) {
+                              final pdfBytes =
+                                  await buildPdf(
+                                    widget.mainReceipt,
+                                    records,
+                                    returnShopProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).userShop!,
+                                    context,
+                                  );
+                              print('Downloading Pdf');
+                              downloadPdfWeb(
+                                pdfBytes,
+                                'Stockall ${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'} : ${widget.mainReceipt.id}',
+                              );
+                            }
+                            if (context.mounted) {
+                              generateAndPreviewPdf(
+                                context: safeContext,
+                                records: records,
+                                receipt: widget.mainReceipt,
+                                shop:
+                                    returnShopProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).userShop!,
+                              );
+                            }
                           },
                         );
                       },
