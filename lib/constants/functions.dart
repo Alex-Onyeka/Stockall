@@ -765,14 +765,13 @@ Future<Uint8List> buildPdf(
 
 void downloadPdfWeb(Uint8List pdfBytes, String filename) {
   try {
-    print('Start Downloading Pdf');
-
     final blob = html.Blob([pdfBytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
 
     final anchor =
         html.AnchorElement(href: url)
-          ..setAttribute('download', filename)
+          ..download = filename
+          ..target = 'blank'
           ..style.display = 'none';
 
     html.document.body?.append(anchor);
@@ -780,7 +779,7 @@ void downloadPdfWeb(Uint8List pdfBytes, String filename) {
     anchor.remove();
 
     html.Url.revokeObjectUrl(url);
-  } catch (e) {
-    print('❌ Error during PDF download: $e');
+  } catch (e, stackTrace) {
+    print('❌ Error downloading PDF: $e\n$stackTrace');
   }
 }
