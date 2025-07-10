@@ -116,7 +116,7 @@ String currencySymbol(BuildContext context) {
 
 const String appName = 'Stockall';
 
-const int currentUpdate = 4;
+const int currentUpdate = 6;
 
 // Future<void> generateAndPreviewPdf({
 //   required TempMainReceipt receipt,

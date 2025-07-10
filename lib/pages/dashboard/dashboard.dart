@@ -32,7 +32,10 @@ class _DashboardState extends State<Dashboard> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print(
-        '${returnShopProvider(context, listen: false).userShop}',
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.name,
       );
       print('$currentUpdate');
       if (returnShopProvider(
