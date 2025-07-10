@@ -12,7 +12,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -768,18 +768,23 @@ Future<Uint8List> buildPdf(
 }
 
 void downloadPdfWeb(Uint8List pdfBytes, String filename) {
-  print('Start Downloading Pdf');
+  try {
+    print('Start Downloading Pdf');
 
-  final blob = html.Blob([pdfBytes]);
-  final url = html.Url.createObjectUrlFromBlob(blob);
-  final anchor =
-      html.AnchorElement(href: url)
-        ..setAttribute('download', filename)
-        ..style.display = 'none';
+    final blob = html.Blob([pdfBytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
 
-  html.document.body!.append(anchor);
-  anchor.click();
-  anchor.remove();
+    final anchor =
+        html.AnchorElement(href: url)
+          ..setAttribute('download', filename)
+          ..style.display = 'none';
 
-  html.Url.revokeObjectUrl(url);
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+
+    html.Url.revokeObjectUrl(url);
+  } catch (e) {
+    print('❌ Error during PDF download: $e');
+  }
 }
