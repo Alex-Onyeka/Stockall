@@ -107,6 +107,8 @@ flutter:
     - assets/images/main_images/
     - assets/images/small_images/
     - assets/audio/short/
+    - assets/fonts/PlusJakartaSans-Regular.ttf
+    - assets/fonts/PlusJakartaSans-Bold.ttf
   # - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 flutter_launcher_icons:
