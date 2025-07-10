@@ -1117,18 +1117,34 @@ class _ReceiptDetailsContainerState
                                 pdfBytes,
                                 'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
                               );
-                            }
-                            if (context.mounted) {
-                              generateAndPreviewPdf(
-                                context: safeContext,
-                                records: records,
-                                receipt: widget.mainReceipt,
-                                shop:
-                                    returnShopProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).userShop!,
-                              );
+                              print('Downloaded Pdf');
+                              if (context.mounted) {
+                                generateAndPreviewPdf(
+                                  context: safeContext,
+                                  records: records,
+                                  receipt:
+                                      widget.mainReceipt,
+                                  shop:
+                                      returnShopProvider(
+                                        safeContext,
+                                        listen: false,
+                                      ).userShop!,
+                                );
+                              }
+                            } else {
+                              if (context.mounted) {
+                                generateAndPreviewPdf(
+                                  context: safeContext,
+                                  records: records,
+                                  receipt:
+                                      widget.mainReceipt,
+                                  shop:
+                                      returnShopProvider(
+                                        safeContext,
+                                        listen: false,
+                                      ).userShop!,
+                                );
+                              }
                             }
                           },
                         );

@@ -368,7 +368,12 @@ Future<Uint8List> buildPdf(
     pw.Page(
       pageFormat: PdfPageFormat.a5,
       build: (pw.Context pdfContext) {
-        return pw.Center(child: pw.Text('Beans and Rice'));
+        return pw.Center(
+          child: pw.Text(
+            style: pw.TextStyle(font: fontBold),
+            'Beans and Rice',
+          ),
+        );
         // return pw.DefaultTextStyle(
         //   style: pw.TextStyle(
         //     font: fontRegular,
