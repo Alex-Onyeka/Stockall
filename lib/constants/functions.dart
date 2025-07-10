@@ -562,7 +562,9 @@ Future<Uint8List> buildPdf(
                               font: fontBold,
                               fontSize: 10,
                             ),
-                            'Beans',
+                            formatDateTime(
+                              receipt.createdAt,
+                            ),
                           ),
                         ],
                       ),
@@ -585,7 +587,7 @@ Future<Uint8List> buildPdf(
                               font: fontBold,
                               fontSize: 10,
                             ),
-                            'Time Beans',
+                            formatTime(receipt.createdAt),
                           ),
                         ],
                       ),
@@ -601,42 +603,41 @@ Future<Uint8List> buildPdf(
                 ),
                 pw.SizedBox(height: 5),
 
-                ...records.map(
-                  (record) => pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(
-                      vertical: 2,
-                    ),
-                    child: pw.Row(
-                      mainAxisAlignment:
-                          pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Expanded(
-                          flex: 4,
-                          child: pw.Text(
-                            '${record.productName} ',
-                          ),
-                        ),
-                        pw.Expanded(
-                          flex: 1,
-                          child: pw.Text(
-                            '(${record.quantity.toStringAsFixed(0)}) ',
-                          ),
-                        ),
-                        pw.Expanded(
-                          flex: 2,
-                          child: pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: 10,
-                            ),
-                            ' ${formatMoneyMid(record.revenue, context)}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
+                // ...records.map(
+                //   (record) => pw.Padding(
+                //     padding: const pw.EdgeInsets.symmetric(
+                //       vertical: 2,
+                //     ),
+                //     child: pw.Row(
+                //       mainAxisAlignment:
+                //           pw.MainAxisAlignment.spaceBetween,
+                //       children: [
+                //         pw.Expanded(
+                //           flex: 4,
+                //           child: pw.Text(
+                //             '${record.productName} ',
+                //           ),
+                //         ),
+                //         pw.Expanded(
+                //           flex: 1,
+                //           child: pw.Text(
+                //             '(${record.quantity.toStringAsFixed(0)}) ',
+                //           ),
+                //         ),
+                //         pw.Expanded(
+                //           flex: 2,
+                //           child: pw.Text(
+                //             style: pw.TextStyle(
+                //               font: fontRegular,
+                //               fontSize: 10,
+                //             ),
+                //             ' ${formatMoneyMid(record.revenue, context)}',
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 pw.SizedBox(height: 12),
                 pw.Divider(),
 
