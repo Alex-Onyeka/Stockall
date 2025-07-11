@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -10,7 +11,7 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
-import 'package:stockall/pages/referrals/referrals.dart';
+// import 'package:stockall/pages/referrals/referrals.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
@@ -494,20 +495,38 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                             NavListTileAlt(
                               height: 20,
                               action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return Referrals();
-                                    },
-                                  ),
+                                showGeneralDialog(
+                                  context: context,
+                                  pageBuilder: (
+                                    context,
+                                    animation,
+                                    secondaryAnimation,
+                                  ) {
+                                    return MyCalculator();
+                                  },
                                 );
                               },
-                              title: 'Referrals',
+                              title: 'Open Calculator',
                               icon:
-                                  Icons
-                                      .card_giftcard_rounded,
+                                  Icons.calculate_outlined,
                             ),
+                            // NavListTileAlt(
+                            //   height: 20,
+                            //   action: () {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //         builder: (context) {
+                            //           return Referrals();
+                            //         },
+                            //       ),
+                            //     );
+                            //   },
+                            //   title: 'Referrals',
+                            //   icon:
+                            //       Icons
+                            //           .card_giftcard_rounded,
+                            // ),
                             SizedBox(height: 30),
                           ],
                         ),
