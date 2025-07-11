@@ -16,6 +16,12 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool addToStock = true;
+  void toggleAddToStock(bool value) {
+    addToStock = value;
+    notifyListeners();
+  }
+
   void offInvoice() {
     isInvoice = false;
     notifyListeners();
@@ -88,6 +94,9 @@ class SalesProvider extends ChangeNotifier {
             originalCost: cartItem.totalCost(),
             discount: cartItem.discount,
             costPrice: cartItem.costPrice(),
+            addToStock: cartItem.addToStock,
+            departmentName: cartItem.item.departmentName,
+            departmentId: cartItem.item.departmentId,
           );
         }).toList();
 
@@ -98,24 +107,64 @@ class SalesProvider extends ChangeNotifier {
         .from('product_sales')
         .insert(dataToInsert);
 
-    // ✅ Step 3: Decrement product quantities using the Supabase RPC
+    // Step 3: Decrement quantity via RPC
     for (final cartItem in cartItems) {
-      await supabase.rpc(
-        'decrement_product_quantity',
-        params: {
-          'p_product_id': cartItem.item.id,
-          'p_quantity': cartItem.quantity,
-        },
-      );
+      if ((cartItem.item.quantity ?? 0) > 0) {
+        await supabase.rpc(
+          'decrement_product_quantity',
+          params: {
+            'p_product_id': cartItem.item.id,
+            'p_quantity': cartItem.quantity,
+          },
+        );
+      }
     }
 
-    // Step 4: Reset everything
+    // Step 4: Create new product for items with addToStock == true
+    for (final record in productSaleRecords) {
+      if (record.addToStock == true) {
+        final double costPrice =
+            (record.costPrice == null ||
+                    record.costPrice == 0)
+                ? 0
+                : record.costPrice!;
+
+        final double sellingPrice =
+            record.revenue / record.quantity;
+
+        await supabase.from('products').insert({
+          'name': record.productName,
+          'shop_id': record.shopId,
+          'unit': 'Others',
+          'is_refundable': false,
+          'cost_price': costPrice,
+          'selling_price': sellingPrice,
+          'low_qtty': 10,
+          'set_custom_price': true,
+          'is_managed': false,
+
+          // nullable values
+          'brand': null,
+          'category': null,
+          'barcode': null,
+          'color': null,
+          'size_type': null,
+          'size': null,
+          'discount': null,
+          'quantity': null,
+          'starting_date': null,
+          'ending_date': null,
+          'department_name': record.departmentName,
+          'department_id': record.departmentId,
+          'expiry_date': null,
+        });
+      }
+    }
+
+    // Step 5: Reset state
     resetPaymentMethod();
     clearCart();
 
-    // if (!context.mounted) {
-    //   return;
-    // }
     if (context.mounted) {
       returnCustomers(
         context,
@@ -243,30 +292,30 @@ class SalesProvider extends ChangeNotifier {
 
   DataProvider dataProvider = DataProvider();
 
-  List<TempProductClass> searchProductsName(String text) {
-    List<TempProductClass> tempProducts =
-        dataProvider.products
-            .where(
-              (product) => product.name
-                  .toLowerCase()
-                  .contains(text.toLowerCase()),
-            )
-            .toList();
+  // List<TempProductClass> searchProductsName(String text) {
+  //   List<TempProductClass> tempProducts =
+  //       dataProvider.products
+  //           .where(
+  //             (product) => product.name
+  //                 .toLowerCase()
+  //                 .contains(text.toLowerCase()),
+  //           )
+  //           .toList();
 
-    return tempProducts;
-  }
+  //   return tempProducts;
+  // }
 
-  List<TempProductClass> searchProductsBarcode(
-    String text,
-  ) {
-    return dataProvider.products
-        .where(
-          (product) =>
-              product.barcode != null &&
-              product.barcode!.contains(text),
-        )
-        .toList();
-  }
+  // List<TempProductClass> searchProductsBarcode(
+  //   String text,
+  // ) {
+  //   return dataProvider.products
+  //       .where(
+  //         (product) =>
+  //             product.barcode != null &&
+  //             product.barcode!.contains(text),
+  //       )
+  //       .toList();
+  // }
 
   void resetPaymentMethod() {
     currentPayment = 0;

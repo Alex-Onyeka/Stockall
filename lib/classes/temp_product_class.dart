@@ -16,12 +16,13 @@ class TempProductClass {
   double? discount;
   DateTime? startDate;
   DateTime? endDate;
-  double quantity;
+  double? quantity;
   bool setCustomPrice;
   String? departmentName;
   int? departmentId;
   double? lowQtty;
   DateTime? expiryDate;
+  bool isManaged;
 
   TempProductClass({
     this.id,
@@ -39,7 +40,7 @@ class TempProductClass {
     this.discount,
     this.startDate,
     this.endDate,
-    required this.quantity,
+    this.quantity,
     required this.shopId,
     this.createdAt,
     required this.setCustomPrice,
@@ -47,6 +48,7 @@ class TempProductClass {
     this.departmentId,
     this.lowQtty,
     this.expiryDate,
+    required this.isManaged,
   });
 
   factory TempProductClass.fromJson(
@@ -87,11 +89,15 @@ class TempProductClass {
           json['expiry_date'] != null
               ? DateTime.parse(json['expiry_date'])
               : null,
-      quantity: (json['quantity'] as num).toDouble(),
+      quantity:
+          json['quantity'] != null
+              ? (json['quantity'] as num).toDouble()
+              : null,
       createdAt: DateTime.parse(json['created_at']),
       setCustomPrice: json['set_custom_price'],
       departmentId: json['department_id'],
       departmentName: json['department_name'],
+      isManaged: json['is_managed'],
     );
   }
 
@@ -121,6 +127,7 @@ class TempProductClass {
       'department_id': departmentId,
       'department_name': departmentName,
       'low_qtty': lowQtty,
+      'is_managed': isManaged,
     };
   }
 }

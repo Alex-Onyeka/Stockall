@@ -267,9 +267,8 @@ class _ProductTileCartSearchState
                                   color:
                                       widget.product.quantity !=
                                                   0 &&
-                                              widget
-                                                      .product
-                                                      .quantity >
+                                              (widget.product.quantity ??
+                                                      0) >
                                                   widget
                                                       .product
                                                       .lowQtty!
@@ -280,9 +279,8 @@ class _ProductTileCartSearchState
                                                       .product
                                                       .quantity !=
                                                   0 &&
-                                              widget
-                                                      .product
-                                                      .quantity <=
+                                              (widget.product.quantity ??
+                                                      0) <=
                                                   widget
                                                       .product
                                                       .lowQtty!
@@ -302,9 +300,8 @@ class _ProductTileCartSearchState
                                     color:
                                         widget.product.quantity !=
                                                     0 &&
-                                                widget
-                                                        .product
-                                                        .quantity >
+                                                (widget.product.quantity ??
+                                                        0) >
                                                     widget
                                                         .product
                                                         .lowQtty!
@@ -313,9 +310,8 @@ class _ProductTileCartSearchState
                                                 .shade700
                                             : widget.product.quantity !=
                                                     0 &&
-                                                widget
-                                                        .product
-                                                        .quantity <=
+                                                (widget.product.quantity ??
+                                                        0) <=
                                                     widget
                                                         .product
                                                         .lowQtty!
@@ -351,7 +347,8 @@ class _ProductTileCartSearchState
                                       color:
                                           widget.product.quantity !=
                                                       0 &&
-                                                  widget.product.quantity >
+                                                  (widget.product.quantity ??
+                                                          0) >
                                                       widget
                                                           .product
                                                           .lowQtty!
@@ -360,7 +357,8 @@ class _ProductTileCartSearchState
                                                   .shade700
                                               : widget.product.quantity !=
                                                       0 &&
-                                                  widget.product.quantity <=
+                                                  (widget.product.quantity ??
+                                                          0) <=
                                                       widget
                                                           .product
                                                           .lowQtty!
@@ -382,7 +380,7 @@ class _ProductTileCartSearchState
                                                 .quantity ==
                                             0
                                         ? 'Out of Stock'
-                                        : '${widget.product.quantity.toStringAsFixed(0)} in Stock',
+                                        : '${(widget.product.quantity ?? 0).toStringAsFixed(0)} in Stock',
                                   ),
                                 ),
                               ),

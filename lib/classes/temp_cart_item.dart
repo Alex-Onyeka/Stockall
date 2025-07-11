@@ -6,6 +6,7 @@ class TempCartItem {
   double quantity;
   double? customPrice;
   bool setCustomPrice;
+  bool addToStock;
 
   TempCartItem({
     required this.item,
@@ -13,6 +14,7 @@ class TempCartItem {
     required this.discount,
     this.customPrice,
     this.setCustomPrice = true,
+    required this.addToStock,
   });
 
   double discountCost() {
@@ -42,12 +44,16 @@ class TempCartItem {
     }
   }
 
-  double costPrice() {
-    return item.costPrice * quantity;
+  double? costPrice() {
+    return item.costPrice == 0
+        ? null
+        : item.costPrice * quantity;
   }
 
   double profitOrLoss() {
-    return (item.sellingPrice ?? 0 - item.costPrice) *
-        quantity;
+    return item.costPrice == 0
+        ? 0
+        : (item.sellingPrice ?? 0 - item.costPrice) *
+            quantity;
   }
 }

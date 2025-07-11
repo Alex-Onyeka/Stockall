@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_cart_item.dart';
-import 'package:stockall/classes/temp_product_class.dart';
+// import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
-import 'package:stockall/components/text_fields/general_textfield.dart';
+// import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
@@ -17,11 +17,11 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/add_product_one/add_product.dart';
-import 'package:stockall/pages/products/compnents/edit_product_tile.dart';
+// import 'package:stockall/pages/products/add_product_one/add_product.dart';
+// import 'package:stockall/pages/products/compnents/edit_product_tile.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
-import 'package:stockall/pages/products/edit_product/edit_products_page.dart';
-import 'package:stockall/pages/products/product_details/product_details_page.dart';
+// import 'package:stockall/pages/products/edit_product/edit_products_page.dart';
+// import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/shop_setup/create_category/create_category.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -1118,175 +1118,175 @@ void sizeTypeBottomSheet(
 //
 // S I Z E  T Y P E   B O T T O M  S H E E T
 
-void editProductBottomSheet(
-  BuildContext context,
-  Function()? action,
-  TempProductClass product,
-) async {
-  await showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
-    ),
-    backgroundColor: Colors.white,
-    builder: (BuildContext context) {
-      return DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.47,
-        maxChildSize: 0.47,
-        minChildSize: 0.3,
-        builder: (context, scrollController) {
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(
-              30,
-              15,
-              30,
-              45,
-            ),
-            child: Column(
-              children: [
-                Center(
-                  child: Container(
-                    height: 4,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Action Menu',
-                          style: TextStyle(
-                            fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b1.fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Select the action you want to Perform',
-                          style: TextStyle(
-                            fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b2.fontSize,
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        FocusScope.of(context).unfocus();
-                      },
-                      icon: Icon(Icons.clear_rounded),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                      ),
-                    ),
-                    child: Column(
-                      spacing: 5,
-                      children: [
-                        ProductActionTile(
-                          svg: editIconSvg,
-                          text: 'View Product',
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ProductDetailsPage(
-                                    productId: product.id!,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        ProductActionTile(
-                          svg: editIconSvg,
-                          text: 'Edit Product',
-                          action: () {
-                            Navigator.of(context).pop();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return EditProductsPage(
-                                    product: product,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        ProductActionTile(
-                          svg: addIconSvg,
-                          text: 'Add New Product',
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AddProduct();
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        ProductActionTile(
-                          svg: deleteIconSvg,
-                          text: 'Delete Product',
-                          action: () {
-                            returnData(
-                              context,
-                              listen: false,
-                            ).deleteProduct(product);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
+// void editProductBottomSheet(
+//   BuildContext context,
+//   Function()? action,
+//   TempProductClass product,
+// ) async {
+//   await showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.vertical(
+//         top: Radius.circular(20),
+//       ),
+//     ),
+//     backgroundColor: Colors.white,
+//     builder: (BuildContext context) {
+//       return DraggableScrollableSheet(
+//         expand: false,
+//         initialChildSize: 0.47,
+//         maxChildSize: 0.47,
+//         minChildSize: 0.3,
+//         builder: (context, scrollController) {
+//           return Container(
+//             color: Colors.white,
+//             padding: const EdgeInsets.fromLTRB(
+//               30,
+//               15,
+//               30,
+//               45,
+//             ),
+//             child: Column(
+//               children: [
+//                 Center(
+//                   child: Container(
+//                     height: 4,
+//                     width: 70,
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(
+//                         5,
+//                       ),
+//                       color: Colors.grey.shade400,
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(height: 20),
+//                 Row(
+//                   mainAxisAlignment:
+//                       MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     Column(
+//                       crossAxisAlignment:
+//                           CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           'Action Menu',
+//                           style: TextStyle(
+//                             fontSize:
+//                                 returnTheme(
+//                                   context,
+//                                 ).mobileTexts.b1.fontSize,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         Text(
+//                           'Select the action you want to Perform',
+//                           style: TextStyle(
+//                             fontSize:
+//                                 returnTheme(
+//                                   context,
+//                                 ).mobileTexts.b2.fontSize,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                     IconButton(
+//                       onPressed: () {
+//                         Navigator.of(context).pop();
+//                         FocusScope.of(context).unfocus();
+//                       },
+//                       icon: Icon(Icons.clear_rounded),
+//                     ),
+//                   ],
+//                 ),
+//                 SizedBox(height: 10),
+//                 Expanded(
+//                   child: Container(
+//                     decoration: BoxDecoration(
+//                       color: Colors.white,
+//                       borderRadius: BorderRadius.circular(
+//                         10,
+//                       ),
+//                       border: Border.all(
+//                         color: Colors.grey.shade300,
+//                       ),
+//                     ),
+//                     child: Column(
+//                       spacing: 5,
+//                       children: [
+//                         ProductActionTile(
+//                           svg: editIconSvg,
+//                           text: 'View Product',
+//                           action: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) {
+//                                   return ProductDetailsPage(
+//                                     productId: product.id!,
+//                                   );
+//                                 },
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ProductActionTile(
+//                           svg: editIconSvg,
+//                           text: 'Edit Product',
+//                           action: () {
+//                             Navigator.of(context).pop();
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) {
+//                                   return EditProductsPage(
+//                                     product: product,
+//                                   );
+//                                 },
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ProductActionTile(
+//                           svg: addIconSvg,
+//                           text: 'Add New Product',
+//                           action: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) {
+//                                   return AddProduct();
+//                                 },
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ProductActionTile(
+//                           svg: deleteIconSvg,
+//                           text: 'Delete Product',
+//                           action: () {
+//                             returnData(
+//                               context,
+//                               listen: false,
+//                             ).deleteProduct(product);
+//                             Navigator.of(context).pop();
+//                           },
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       );
+//     },
+//   );
 
-  action!();
-}
+//   action!();
+// }
 
 //
 //
@@ -1386,33 +1386,37 @@ class _CustomBottomPanelState
                           onChanged: (value) {
                             double entered =
                                 double.tryParse(value) ?? 0;
-                            if ((entered +
-                                    cartItem.quantity) >
-                                cartItem.item.quantity) {
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (_) => InfoAlert(
-                                      title:
-                                          "Quantity Limit Reached",
-                                      message:
-                                          "Only ${cartItem.item.quantity} available in stock.",
-                                      theme: theme,
-                                    ),
-                              );
+                            if (cartItem.item.isManaged) {
+                              if ((entered +
+                                      cartItem.quantity) >
+                                  cartItem.item.quantity!) {
+                                showDialog(
+                                  context: context,
+                                  builder:
+                                      (_) => InfoAlert(
+                                        title:
+                                            "Quantity Limit Reached",
+                                        message:
+                                            "Only ${cartItem.item.quantity} available in stock.",
+                                        theme: theme,
+                                      ),
+                                );
 
-                              Future.delayed(
-                                Duration(milliseconds: 300),
-                                () {
-                                  setState(() {
-                                    qqty = 1;
-                                    quantityController
-                                        .text = '1';
-                                  });
-                                },
-                              );
+                                Future.delayed(
+                                  Duration(
+                                    milliseconds: 300,
+                                  ),
+                                  () {
+                                    setState(() {
+                                      qqty = 1;
+                                      quantityController
+                                          .text = '1';
+                                    });
+                                  },
+                                );
 
-                              return;
+                                return;
+                              }
                             }
 
                             if (value.isEmpty) {
@@ -1638,24 +1642,30 @@ class _CustomBottomPanelState
                                       5,
                                     ),
                                 onTap: () {
-                                  if (qqty +
-                                          cartItem
-                                              .quantity >=
-                                      cartItem
-                                          .item
-                                          .quantity) {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (_) => InfoAlert(
-                                            title:
-                                                "Quantity Limit Reached",
-                                            message:
-                                                "Only (${cartItem.item.quantity}) items available in stock.",
-                                            theme: theme,
-                                          ),
-                                    );
-                                    return;
+                                  if (cartItem
+                                      .item
+                                      .isManaged) {
+                                    if (qqty +
+                                            cartItem
+                                                .quantity >=
+                                        cartItem
+                                            .item
+                                            .quantity!) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (
+                                              _,
+                                            ) => InfoAlert(
+                                              title:
+                                                  "Quantity Limit Reached",
+                                              message:
+                                                  "Only (${cartItem.item.quantity}) items available in stock.",
+                                              theme: theme,
+                                            ),
+                                      );
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     qqty++;
@@ -2062,89 +2072,170 @@ class _CustomBottomPanelState
                                     products[index];
                                 return ProductTileCartSearch(
                                   action: () {
-                                    if (product.quantity ==
-                                        0) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          var theme =
-                                              Provider.of<
-                                                ThemeProvider
-                                              >(context);
-                                          return InfoAlert(
-                                            theme: theme,
-                                            message:
-                                                'Product Quantity is Zero, Therefore, this product cannot be sold',
-                                            title:
-                                                'Product Out of Stock',
-                                          );
-                                        },
-                                      );
-                                    } else if (returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).cartItems
-                                        .where(
-                                          (item) =>
-                                              item
-                                                  .item
-                                                  .id! ==
-                                              product.id,
-                                        )
-                                        .isNotEmpty) {
-                                      selectProduct(
-                                        theme: theme,
-                                        cartItem: TempCartItem(
-                                          discount:
-                                              product
-                                                  .discount,
-                                          item: product,
-                                          quantity:
-                                              returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .cartItems
-                                                  .firstWhere(
-                                                    (
-                                                      item,
-                                                    ) =>
-                                                        item.item.id! ==
-                                                        product.id!,
-                                                  )
-                                                  .quantity,
-                                        ),
-                                        closeAction:
-                                            widget.close,
-                                        priceController:
-                                            priceController,
-                                      );
-                                    } else {
-                                      selectProduct(
-                                        theme: theme,
-                                        cartItem: TempCartItem(
-                                          discount:
-                                              product
-                                                  .discount,
-                                          item: product,
-                                          quantity:
-                                              double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
+                                    if (!product
+                                        .isManaged) {
+                                      if (returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cartItems
+                                          .where(
+                                            (item) =>
+                                                item
+                                                    .item
+                                                    .id! ==
+                                                product.id,
+                                          )
+                                          .isNotEmpty) {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
                                                     )
-                                                    .trim(),
-                                              ) ??
-                                              0.0,
-                                        ),
-                                        closeAction:
-                                            widget.close,
-                                        priceController:
-                                            priceController,
-                                      );
+                                                    .cartItems
+                                                    .firstWhere(
+                                                      (
+                                                        item,
+                                                      ) =>
+                                                          item.item.id! ==
+                                                          product.id!,
+                                                    )
+                                                    .quantity,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      } else {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                double.tryParse(
+                                                  quantityController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      )
+                                                      .trim(),
+                                                ) ??
+                                                0.0,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      }
+                                    } else {
+                                      if (product
+                                              .quantity ==
+                                          0) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            var theme =
+                                                Provider.of<
+                                                  ThemeProvider
+                                                >(context);
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Product Quantity is Zero, Therefore, this product cannot be sold',
+                                              title:
+                                                  'Product out of Stock',
+                                            );
+                                          },
+                                        );
+                                      } else if (returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cartItems
+                                          .where(
+                                            (item) =>
+                                                item
+                                                    .item
+                                                    .id! ==
+                                                product.id,
+                                          )
+                                          .isNotEmpty) {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    )
+                                                    .cartItems
+                                                    .firstWhere(
+                                                      (
+                                                        item,
+                                                      ) =>
+                                                          item.item.id! ==
+                                                          product.id!,
+                                                    )
+                                                    .quantity,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      } else {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                double.tryParse(
+                                                  quantityController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      )
+                                                      .trim(),
+                                                ) ??
+                                                0.0,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      }
                                     }
                                   },
                                   theme: theme,
@@ -2214,89 +2305,170 @@ class _CustomBottomPanelState
                                         .toList()[index];
                                 return ProductTileCartSearch(
                                   action: () {
-                                    if (product.quantity ==
-                                        0) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          var theme =
-                                              Provider.of<
-                                                ThemeProvider
-                                              >(context);
-                                          return InfoAlert(
-                                            theme: theme,
-                                            message:
-                                                'Product Quantity is Zero, Therefore, this product cannot be sold',
-                                            title:
-                                                'Product out of Stock',
-                                          );
-                                        },
-                                      );
-                                    } else if (returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).cartItems
-                                        .where(
-                                          (item) =>
-                                              item
-                                                  .item
-                                                  .id! ==
-                                              product.id,
-                                        )
-                                        .isNotEmpty) {
-                                      selectProduct(
-                                        theme: theme,
-                                        cartItem: TempCartItem(
-                                          discount:
-                                              product
-                                                  .discount,
-                                          item: product,
-                                          quantity:
-                                              returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .cartItems
-                                                  .firstWhere(
-                                                    (
-                                                      item,
-                                                    ) =>
-                                                        item.item.id! ==
-                                                        product.id!,
-                                                  )
-                                                  .quantity,
-                                        ),
-                                        closeAction:
-                                            widget.close,
-                                        priceController:
-                                            priceController,
-                                      );
-                                    } else {
-                                      selectProduct(
-                                        theme: theme,
-                                        cartItem: TempCartItem(
-                                          discount:
-                                              product
-                                                  .discount,
-                                          item: product,
-                                          quantity:
-                                              double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
+                                    if (!product
+                                        .isManaged) {
+                                      if (returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cartItems
+                                          .where(
+                                            (item) =>
+                                                item
+                                                    .item
+                                                    .id! ==
+                                                product.id,
+                                          )
+                                          .isNotEmpty) {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
                                                     )
-                                                    .trim(),
-                                              ) ??
-                                              0.0,
-                                        ),
-                                        closeAction:
-                                            widget.close,
-                                        priceController:
-                                            priceController,
-                                      );
+                                                    .cartItems
+                                                    .firstWhere(
+                                                      (
+                                                        item,
+                                                      ) =>
+                                                          item.item.id! ==
+                                                          product.id!,
+                                                    )
+                                                    .quantity,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      } else {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                double.tryParse(
+                                                  quantityController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      )
+                                                      .trim(),
+                                                ) ??
+                                                0.0,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      }
+                                    } else {
+                                      if (product
+                                              .quantity ==
+                                          0) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            var theme =
+                                                Provider.of<
+                                                  ThemeProvider
+                                                >(context);
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Product Quantity is Zero, Therefore, this product cannot be sold',
+                                              title:
+                                                  'Product out of Stock',
+                                            );
+                                          },
+                                        );
+                                      } else if (returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cartItems
+                                          .where(
+                                            (item) =>
+                                                item
+                                                    .item
+                                                    .id! ==
+                                                product.id,
+                                          )
+                                          .isNotEmpty) {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    )
+                                                    .cartItems
+                                                    .firstWhere(
+                                                      (
+                                                        item,
+                                                      ) =>
+                                                          item.item.id! ==
+                                                          product.id!,
+                                                    )
+                                                    .quantity,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      } else {
+                                        selectProduct(
+                                          theme: theme,
+                                          cartItem: TempCartItem(
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                product
+                                                    .discount,
+                                            item: product,
+                                            quantity:
+                                                double.tryParse(
+                                                  quantityController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      )
+                                                      .trim(),
+                                                ) ??
+                                                0.0,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              priceController,
+                                        );
+                                      }
                                     }
                                   },
                                   theme: theme,
@@ -2743,197 +2915,197 @@ void editCartItemBottomSheet(
 //
 // C U S T O M E R   S E A R C H     B O T T O M  S H E E T
 
-class CustomerSearchBottomSheet extends StatefulWidget {
-  final TextEditingController searchController;
-  final VoidCallback close;
-  const CustomerSearchBottomSheet({
-    super.key,
-    required this.searchController,
-    required this.close,
-  });
+// class CustomerSearchBottomSheet extends StatefulWidget {
+//   final TextEditingController searchController;
+//   final VoidCallback close;
+//   const CustomerSearchBottomSheet({
+//     super.key,
+//     required this.searchController,
+//     required this.close,
+//   });
 
-  @override
-  State<CustomerSearchBottomSheet> createState() =>
-      _CustomerSearchBottomSheetState();
-}
+//   @override
+//   State<CustomerSearchBottomSheet> createState() =>
+//       _CustomerSearchBottomSheetState();
+// }
 
-class _CustomerSearchBottomSheetState
-    extends State<CustomerSearchBottomSheet> {
-  //
-  //
-  //
+// class _CustomerSearchBottomSheetState
+//     extends State<CustomerSearchBottomSheet> {
+//   //
+//   //
+//   //
 
-  List customerResults = [];
+//   List customerResults = [];
 
-  String? searchResult;
-  void clear() {
-    searchResult = null;
-    customerResults.clear();
-  }
+//   String? searchResult;
+//   void clear() {
+//     searchResult = null;
+//     customerResults.clear();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    var theme = returnTheme(context);
-    return Material(
-      color: Colors.transparent,
-      // elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Ink(
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            boxShadow: [
-              BoxShadow(
-                color: const Color.fromARGB(55, 0, 0, 0),
-                blurRadius: 5,
-              ),
-            ],
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
-          ),
-          child: Container(
-            height:
-                MediaQuery.of(context).size.height * 0.9,
+//   @override
+//   Widget build(BuildContext context) {
+//     var theme = returnTheme(context);
+//     return Material(
+//       color: Colors.transparent,
+//       // elevation: 1,
+//       child: Padding(
+//         padding: const EdgeInsets.only(top: 10.0),
+//         child: Ink(
+//           height: MediaQuery.of(context).size.height,
+//           decoration: BoxDecoration(
+//             color: Colors.grey.shade100,
+//             boxShadow: [
+//               BoxShadow(
+//                 color: const Color.fromARGB(55, 0, 0, 0),
+//                 blurRadius: 5,
+//               ),
+//             ],
+//             borderRadius: BorderRadius.vertical(
+//               top: Radius.circular(20),
+//             ),
+//           ),
+//           child: Container(
+//             height:
+//                 MediaQuery.of(context).size.height * 0.9,
 
-            padding: const EdgeInsets.fromLTRB(
-              15,
-              15,
-              15,
-              45,
-            ),
-            child: Column(
-              children: [
-                Center(
-                  child: Container(
-                    height: 4,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Add A Customer',
-                            style: TextStyle(
-                              fontSize:
-                                  returnTheme(
-                                    context,
-                                  ).mobileTexts.b1.fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Search For Your Customers to Add to Sale',
-                            style: TextStyle(
-                              fontSize:
-                                  returnTheme(
-                                    context,
-                                  ).mobileTexts.b2.fontSize,
-                            ),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          widget.close();
-                          clear();
-                        },
-                        icon: Icon(Icons.clear_rounded),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
-                  child: GeneralTextField(
-                    hint: "Enter Customers' Name",
-                    lines: 1,
-                    theme: theme,
-                    title: 'Add Customer (Optional)',
-                    controller: widget.searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == '') {
-                          searchResult = null;
-                        } else {
-                          searchResult =
-                              value.toLowerCase();
-                        }
-                      });
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: Builder(
-                    builder: (context) {
-                      var customers = customerResults;
-                      if (customers.isEmpty &&
-                          searchResult == null) {
-                        return Center(
-                          child: Text('Empty List'),
-                        );
-                      } else {
-                        return ListView.builder(
-                          padding: EdgeInsets.only(top: 10),
-                          itemCount:
-                              returnData(context)
-                                  .searchProductsName(
-                                    widget
-                                        .searchController
-                                        .text,
-                                    context,
-                                  )
-                                  .length,
-                          itemBuilder: (context, index) {
-                            final product =
-                                returnData(
-                                  context,
-                                ).searchProductsName(
-                                  widget
-                                      .searchController
-                                      .text,
-                                  context,
-                                )[index];
-                            return ProductTileCartSearch(
-                              action: () {},
-                              theme: theme,
-                              product: product,
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//             padding: const EdgeInsets.fromLTRB(
+//               15,
+//               15,
+//               15,
+//               45,
+//             ),
+//             child: Column(
+//               children: [
+//                 Center(
+//                   child: Container(
+//                     height: 4,
+//                     width: 70,
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(
+//                         15,
+//                       ),
+//                       color: Colors.grey.shade400,
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(height: 10),
+//                 Padding(
+//                   padding: const EdgeInsets.symmetric(
+//                     horizontal: 15.0,
+//                   ),
+//                   child: Row(
+//                     mainAxisAlignment:
+//                         MainAxisAlignment.spaceBetween,
+//                     children: [
+//                       Column(
+//                         crossAxisAlignment:
+//                             CrossAxisAlignment.start,
+//                         children: [
+//                           Text(
+//                             'Add A Customer',
+//                             style: TextStyle(
+//                               fontSize:
+//                                   returnTheme(
+//                                     context,
+//                                   ).mobileTexts.b1.fontSize,
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                           ),
+//                           Text(
+//                             'Search For Your Customers to Add to Sale',
+//                             style: TextStyle(
+//                               fontSize:
+//                                   returnTheme(
+//                                     context,
+//                                   ).mobileTexts.b2.fontSize,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       IconButton(
+//                         onPressed: () {
+//                           widget.close();
+//                           clear();
+//                         },
+//                         icon: Icon(Icons.clear_rounded),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//                 SizedBox(height: 10),
+//                 Padding(
+//                   padding: const EdgeInsets.symmetric(
+//                     horizontal: 20.0,
+//                   ),
+//                   child: GeneralTextField(
+//                     hint: "Enter Customers' Name",
+//                     lines: 1,
+//                     theme: theme,
+//                     title: 'Add Customer (Optional)',
+//                     controller: widget.searchController,
+//                     onChanged: (value) {
+//                       setState(() {
+//                         if (value == '') {
+//                           searchResult = null;
+//                         } else {
+//                           searchResult =
+//                               value.toLowerCase();
+//                         }
+//                       });
+//                     },
+//                   ),
+//                 ),
+//                 Expanded(
+//                   child: Builder(
+//                     builder: (context) {
+//                       var customers = customerResults;
+//                       if (customers.isEmpty &&
+//                           searchResult == null) {
+//                         return Center(
+//                           child: Text('Empty List'),
+//                         );
+//                       } else {
+//                         return ListView.builder(
+//                           padding: EdgeInsets.only(top: 10),
+//                           itemCount:
+//                               returnData(context)
+//                                   .searchProductsName(
+//                                     widget
+//                                         .searchController
+//                                         .text,
+//                                     context,
+//                                   )
+//                                   .length,
+//                           itemBuilder: (context, index) {
+//                             final product =
+//                                 returnData(
+//                                   context,
+//                                 ).searchProductsName(
+//                                   widget
+//                                       .searchController
+//                                       .text,
+//                                   context,
+//                                 )[index];
+//                             return ProductTileCartSearch(
+//                               action: () {},
+//                               theme: theme,
+//                               product: product,
+//                             );
+//                           },
+//                         );
+//                       }
+//                     },
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 //
 //

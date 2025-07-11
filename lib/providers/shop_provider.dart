@@ -214,10 +214,7 @@ class ShopProvider extends ChangeNotifier {
       final updateResponse = await supabase
           .from('shops')
           .update({'employees': currentEmployees})
-          .eq(
-            'shop_id',
-            shopId,
-          ); // Use .execute() to get `.error`
+          .eq('shop_id', shopId);
 
       if (updateResponse != null) {
         print('Failed to update shop: $updateResponse');
@@ -299,30 +296,8 @@ class ShopProvider extends ChangeNotifier {
 
   void toggleUpdated(bool value) {
     isUpdated = value;
-    print('Updated $value');
     notifyListeners();
   }
-
-  // Future<void> updateApp({required int shopId}) async {
-  //   try {
-  //     final response =
-  //         await supabase
-  //             .from('shops')
-  //             .update({'update': currentUpdate})
-  //             .eq('shop_id', shopId)
-  //             .maybeSingle();
-  //     final shop = await getUserShop(
-  //       AuthService().currentUser!.id,
-  //     );
-
-  //     if (response != null) {
-  //       setShop(shop!);
-  //       notifyListeners();
-  //     }
-  //   } catch (e) {
-  //     print("❌ Failed to update location: $e");
-  //   }
-  // }
 
   TempShopClass? userShop;
 

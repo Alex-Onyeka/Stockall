@@ -18,6 +18,7 @@ class TempProductSaleRecord {
   final bool customPriceSet;
   String? departmentName;
   int? departmentId;
+  bool? addToStock;
 
   TempProductSaleRecord({
     this.productRecordId,
@@ -39,6 +40,7 @@ class TempProductSaleRecord {
     required this.customPriceSet,
     this.departmentName,
     this.departmentId,
+    this.addToStock,
   });
 
   factory TempProductSaleRecord.fromJson(

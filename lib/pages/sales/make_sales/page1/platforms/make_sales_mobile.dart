@@ -122,29 +122,38 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         onChanged: (value) {
                           final parsedValue =
                               double.tryParse(value) ?? 0;
-                          if (parsedValue >
-                                  cartItem.item.quantity &&
-                              cartItem.item.id! > 80) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                // var theme = Provider.of<
-                                //   ThemeProvider
-                                // >(context);
-                                return InfoAlert(
-                                  theme: theme,
-                                  message:
-                                      "Only (${cartItem.item.quantity}) items available in stock.",
-                                  title:
-                                      'Quantity Limit Reached',
-                                );
-                              },
-                            );
-                            // Optionally reset to max or previous value
-                            setState(() {
-                              quantityController.text =
-                                  qqty.toString();
-                            });
+                          if (cartItem.item.isManaged) {
+                            if (parsedValue >
+                                    (cartItem
+                                            .item
+                                            .quantity ??
+                                        0) &&
+                                cartItem.item.id! > 80) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  // var theme = Provider.of<
+                                  //   ThemeProvider
+                                  // >(context);
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        "Only (${cartItem.item.quantity}) items available in stock.",
+                                    title:
+                                        'Quantity Limit Reached',
+                                  );
+                                },
+                              );
+                              // Optionally reset to max or previous value
+                              setState(() {
+                                quantityController.text =
+                                    qqty.toString();
+                              });
+                            } else {
+                              setState(() {
+                                qqty = parsedValue;
+                              });
+                            }
                           } else {
                             setState(() {
                               qqty = parsedValue;
@@ -354,24 +363,29 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {
-                                if (qqty >=
-                                        cartItem
-                                            .item
-                                            .quantity &&
-                                    cartItem.item.id! >
-                                        80) {
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (_) => InfoAlert(
-                                          title:
-                                              "Quantity Limit Reached",
-                                          message:
-                                              "Only (${cartItem.item.quantity}) items available in stock.",
-                                          theme: theme,
-                                        ),
-                                  );
-                                  return;
+                                if (cartItem
+                                    .item
+                                    .isManaged) {
+                                  if (qqty >=
+                                          (cartItem
+                                                  .item
+                                                  .quantity ??
+                                              0) &&
+                                      cartItem.item.id! >
+                                          80) {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (_) => InfoAlert(
+                                            title:
+                                                "Quantity Limit Reached",
+                                            message:
+                                                "Only (${cartItem.item.quantity}) items available in stock.",
+                                            theme: theme,
+                                          ),
+                                    );
+                                    return;
+                                  }
                                 }
                                 setState(() {
                                   qqty++;
@@ -607,7 +621,131 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                             ),
                           ),
                           SizedBox(height: 20),
-
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Add Product to your Stock?',
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    var salesProvider =
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        );
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              salesProvider
+                                                      .addToStock
+                                                  ? 'This product will not be added to your stock after this sale, are you sure you want to proceed?'
+                                                  : 'This product will be automatically added to your stock after this sale, are you sure you want to proceed?',
+                                          title:
+                                              !salesProvider
+                                                      .addToStock
+                                                  ? 'Add to Stock?'
+                                                  : 'Are you Sure?',
+                                          action: () async {
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                            salesProvider.toggleAddToStock(
+                                              salesProvider
+                                                      .addToStock
+                                                  ? false
+                                                  : true,
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 50,
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 5,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            20,
+                                          ),
+                                      border: Border.all(
+                                        color:
+                                            returnSalesProvider(
+                                                  context,
+                                                ).addToStock
+                                                ? theme
+                                                    .lightModeColor
+                                                    .prColor250
+                                                : Colors
+                                                    .grey,
+                                      ),
+                                      color:
+                                          returnSalesProvider(
+                                                context,
+                                              ).addToStock
+                                              ? theme
+                                                  .lightModeColor
+                                                  .prColor250
+                                              : Colors
+                                                  .grey
+                                                  .shade200,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          returnSalesProvider(
+                                                context,
+                                              ).addToStock
+                                              ? MainAxisAlignment
+                                                  .end
+                                              : MainAxisAlignment
+                                                  .start,
+                                      children: [
+                                        Container(
+                                          padding:
+                                              EdgeInsets.all(
+                                                5,
+                                              ),
+                                          decoration: BoxDecoration(
+                                            shape:
+                                                BoxShape
+                                                    .circle,
+                                            color:
+                                                returnSalesProvider(
+                                                      context,
+                                                    ).addToStock
+                                                    ? Colors
+                                                        .white
+                                                    : Colors
+                                                        .grey
+                                                        .shade600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           SizedBox(height: 20),
                           Padding(
                             padding:
@@ -729,6 +867,17 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         context,
                                         listen: false,
                                       );
+                                  var productIndex = returnData(
+                                    context,
+                                    listen: false,
+                                  ).productList.indexWhere((
+                                    item,
+                                  ) {
+                                    return item.name
+                                            .toLowerCase() ==
+                                        nameC.text
+                                            .toLowerCase();
+                                  });
                                   var cartItems =
                                       returnSalesProvider(
                                         context,
@@ -784,6 +933,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               'Item quantity cannot be set to (0)',
                                           title:
                                               'Invalid Quantity',
+                                        );
+                                      },
+                                    );
+                                  } else if (productIndex !=
+                                      -1) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme: theme,
+                                          message:
+                                              'This Product is already available in your Store. Please select the product from your stock and proceed to make sale.',
+                                          title:
+                                              'Duplicate Item.',
                                         );
                                       },
                                     );
@@ -872,6 +1035,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       1
                                                   : 1
                                               : 1;
+                                      cartItem.addToStock =
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).addToStock;
 
                                       returnSalesProvider(
                                         context,
@@ -1038,10 +1206,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         .name!;
                                                 costPriceC
                                                         .text =
-                                                    suggestion
-                                                        .costPrice
-                                                        .toString()
-                                                        .split(
+                                                    suggestion.costPrice ==
+                                                            null
+                                                        ? '0'
+                                                        : suggestion.costPrice.toString().split(
                                                           '.',
                                                         )[0];
 
@@ -1093,7 +1261,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          '${currencySymbol(context)} ${suggestion.costPrice}',
+                                                          '${currencySymbol(context)} ${suggestion.costPrice ?? 0}',
                                                         ),
                                                         Icon(
                                                           size:
@@ -1439,12 +1607,17 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                     height: 30,
                     icon: Icons.clear,
                     altAction: () {
+                      returnSalesProvider(
+                        context,
+                        listen: false,
+                      ).toggleAddToStock(true);
                       makeCustomSale(
                         closeAction: () {
                           Navigator.of(context).pop();
                         },
                         cartItem: TempCartItem(
                           item: TempProductClass(
+                            isManaged: false,
                             id: 111,
                             name: nameC.text,
                             unit: 'Others',
@@ -1465,6 +1638,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 ).userShop!.shopId!,
                             setCustomPrice: true,
                           ),
+                          addToStock: false,
                           quantity: 0,
                           discount: null,
                           setCustomPrice: true,
@@ -1504,12 +1678,17 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                             });
                           },
                           altAction: () {
+                            returnSalesProvider(
+                              context,
+                              listen: false,
+                            ).toggleAddToStock(true);
                             makeCustomSale(
                               closeAction: () {
                                 Navigator.of(context).pop();
                               },
                               cartItem: TempCartItem(
                                 item: TempProductClass(
+                                  isManaged: false,
                                   id: 000,
                                   name: nameC.text,
                                   unit: 'Others',
@@ -1531,6 +1710,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       ).userShop!.shopId!,
                                   setCustomPrice: true,
                                 ),
+                                addToStock: true,
                                 quantity: 0,
                                 discount: null,
                                 setCustomPrice: true,
@@ -1618,6 +1798,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   );
                                                 },
                                                 altAction: () {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).toggleAddToStock(
+                                                    true,
+                                                  );
                                                   makeCustomSale(
                                                     closeAction: () {
                                                       Navigator.of(
@@ -1626,6 +1813,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     },
                                                     cartItem: TempCartItem(
                                                       item: TempProductClass(
+                                                        isManaged:
+                                                            false,
                                                         id:
                                                             000,
                                                         name:
@@ -1653,6 +1842,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         setCustomPrice:
                                                             true,
                                                       ),
+                                                      addToStock:
+                                                          true,
                                                       quantity:
                                                           0,
                                                       discount:
@@ -1865,6 +2056,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ),
                                                 child: InkWell(
                                                   onTap: () {
+                                                    returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).toggleAddToStock(
+                                                      true,
+                                                    );
                                                     makeCustomSale(
                                                       closeAction: () {
                                                         Navigator.of(
@@ -1873,6 +2071,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       },
                                                       cartItem: TempCartItem(
                                                         item: TempProductClass(
+                                                          isManaged:
+                                                              false,
                                                           id:
                                                               000,
                                                           name:
@@ -1900,6 +2100,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           setCustomPrice:
                                                               true,
                                                         ),
+                                                        addToStock:
+                                                            true,
                                                         quantity:
                                                             0,
                                                         discount:

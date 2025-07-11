@@ -46,9 +46,11 @@ class _EditProductsPageState
     costController.text =
         widget.product.costPrice.toString();
     sellingController.text =
-        widget.product.sellingPrice.toString();
-    sellingController.text =
-        widget.product.sellingPrice.toString();
+        widget.product.sellingPrice == null
+            ? ''
+            : widget.product.sellingPrice.toString();
+    // sellingController.text =
+    //     widget.product.sellingPrice.toString();
     returnData(context, listen: false).selectedUnit =
         widget.product.unit;
     returnData(context, listen: false).unitValueSet = true;
@@ -61,16 +63,20 @@ class _EditProductsPageState
             ? sizeController.text = widget.product.size!
             : widget.product.size!;
     quantityController.text =
-        widget.product.quantity.toString();
+        widget.product.quantity == null
+            ? ''
+            : widget.product.quantity.toString();
     returnData(context, listen: false).selectedSize =
         widget.product.sizeType;
     returnData(context, listen: false).sizeValueSet =
         widget.product.sizeType != null ? true : false;
 
     returnData(context, listen: false).inStock =
-        widget.product.quantity > 0 ? true : false;
+        (widget.product.quantity ?? 0) > 0 ? true : false;
     returnData(context, listen: false).isRefundable =
         widget.product.isRefundable;
+    returnData(context, listen: false).isManaged =
+        widget.product.isManaged;
   }
 
   @override

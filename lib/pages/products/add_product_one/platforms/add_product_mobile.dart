@@ -71,8 +71,7 @@ class _AddProductMobileState
   bool setDate = false;
 
   void checkFields() async {
-    if (widget.nameController.text.isEmpty ||
-        widget.costController.text.isEmpty) {
+    if (widget.nameController.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
@@ -80,19 +79,7 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Product Name and Cost Price Must be set',
-            title: 'Empty Input',
-          );
-        },
-      );
-    } else if (widget.quantityController.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          var theme = returnTheme(context);
-          return InfoAlert(
-            theme: theme,
-            message: 'Product Quantity Must be set',
+                'Product Name Must be set before product can be created',
             title: 'Empty Input',
           );
         },
@@ -146,6 +133,10 @@ class _AddProductMobileState
 
               await dataProvider.createProduct(
                 TempProductClass(
+                  isManaged:
+                      widget.quantityController.text.isEmpty
+                          ? false
+                          : dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
                       dataProvider.selectedUnit ?? 'Others',
@@ -154,12 +145,13 @@ class _AddProductMobileState
                       dataProvider.isProductRefundable,
                   setCustomPrice:
                       dataProvider.setCustomPrice,
-                  costPrice: double.parse(
-                    widget.costController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
-                  ),
+                  costPrice:
+                      widget.costController.text.isNotEmpty
+                          ? double.parse(
+                            widget.costController.text
+                                .replaceAll(',', ''),
+                          )
+                          : 0,
                   shopId: userShop!.shopId!,
                   sellingPrice:
                       widget
@@ -171,10 +163,16 @@ class _AddProductMobileState
                                 .replaceAll(',', ''),
                           )
                           : null,
-                  quantity: double.parse(
-                    widget.quantityController.text
-                        .replaceAll(',', ''),
-                  ),
+                  quantity:
+                      widget
+                              .quantityController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.quantityController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
                   barcode: barcode,
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
@@ -260,16 +258,21 @@ class _AddProductMobileState
               context: context,
               product: TempProductClass(
                 setCustomPrice: provider.setCustomPrice,
+                isManaged:
+                    widget.quantityController.text.isEmpty
+                        ? false
+                        : provider.isManaged,
                 id: widget.product!.id,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
                 isRefundable: provider.isProductRefundable,
-                costPrice: double.parse(
-                  widget.costController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ),
+                costPrice:
+                    widget.costController.text.isNotEmpty
+                        ? double.parse(
+                          widget.costController.text
+                              .replaceAll(',', ''),
+                        )
+                        : 0,
                 sellingPrice:
                     widget.sellingController.text.isNotEmpty
                         ? double.parse(
@@ -277,12 +280,16 @@ class _AddProductMobileState
                               .replaceAll(',', ''),
                         )
                         : null,
-                quantity: double.parse(
-                  widget.quantityController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ),
+                quantity:
+                    widget
+                            .quantityController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.quantityController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
                 category: provider.selectedCategory,
@@ -367,7 +374,9 @@ class _AddProductMobileState
                   .split('.')[0]
               : '';
       widget.quantityController.text =
-          widget.product!.quantity.toString();
+          widget.product!.quantity == null
+              ? ''
+              : widget.product!.quantity.toString();
 
       widget.discountController.text =
           widget.product!.discount != null
@@ -378,6 +387,8 @@ class _AddProductMobileState
             listen: false,
           ).isProductRefundable =
           widget.product!.isRefundable;
+      returnData(context, listen: false).isManaged =
+          widget.product!.isManaged;
       returnData(context, listen: false).setCustomPrice =
           widget.product!.setCustomPrice;
       // returnData(context, listen: false).selectedUnit =
@@ -419,9 +430,14 @@ class _AddProductMobileState
                     (widget.product!.sellingPrice! *
                         (widget.product!.discount! / 100))
                 : 0;
-        selling = double.parse(
-          widget.sellingController.text.replaceAll(',', ''),
-        );
+        selling =
+            double.tryParse(
+              widget.sellingController.text.replaceAll(
+                ',',
+                '',
+              ),
+            ) ??
+            0;
       });
     }
   }
@@ -562,7 +578,8 @@ class _AddProductMobileState
                                       theme: theme,
                                       hint:
                                           'Enter Real Cost',
-                                      title: 'Cost - Price',
+                                      title:
+                                          'Cost - Price (Optional)',
                                       controller:
                                           widget
                                               .costController,
@@ -603,10 +620,88 @@ class _AddProductMobileState
                               EditCartTextField(
                                 theme: theme,
                                 hint: 'Enter Quantity',
-                                title: 'Quantity',
+                                title:
+                                    'Quantity (Optional)',
                                 controller:
                                     widget
                                         .quantityController,
+                              ),
+                              SizedBox(height: 20),
+                              InkWell(
+                                onTap: () {
+                                  returnData(
+                                    context,
+                                    listen: false,
+                                  ).toggleIsManaged();
+                                  FocusManager
+                                      .instance
+                                      .primaryFocus
+                                      ?.unfocus();
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Allow Stockall to Manage Product Quantity?',
+                                          ),
+                                          Column(
+                                            spacing: 5,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      10,
+                                                ),
+                                                'This controls wether Product quantity is automatically deducted after sales, and notifications are sent when product quantity is low or out of stock.',
+                                              ),
+                                              // Text(
+                                              //   'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
+                                              // ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      activeColor:
+                                          theme
+                                              .lightModeColor
+                                              .secColor100,
+                                      value:
+                                          returnData(
+                                            context,
+                                          ).isManaged,
+                                      onChanged: (value) {
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).toggleIsManaged();
+                                        FocusManager
+                                            .instance
+                                            .primaryFocus
+                                            ?.unfocus();
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                               SizedBox(height: 20),
                               InkWell(
@@ -645,12 +740,23 @@ class _AddProductMobileState
                                             'Allow To Set Custom Price?',
                                           ),
                                           Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .start,
                                             spacing: 5,
                                             children: [
                                               Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      10,
+                                                ),
                                                 'Allow Cashier to Set custom price during sale? ',
                                               ),
                                               Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      10,
+                                                ),
                                                 'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
                                               ),
                                             ],

@@ -88,13 +88,18 @@ class _TotalProductsPageState
           return products
               .where(
                 (p) =>
-                    p.quantity <= p.lowQtty! &&
+                    p.quantity != null &&
+                    p.quantity! <= p.lowQtty! &&
                     p.quantity != 0,
               )
               .toList();
         case 3:
           return products
               .where((p) => p.quantity == 0)
+              .toList();
+        case 4:
+          return products
+              .where((p) => p.quantity == null)
               .toList();
         case 0:
         default:
@@ -316,6 +321,21 @@ class _TotalProductsPageState
                                             number: 3,
                                             title:
                                                 'Out of Stock',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            currentSelected:
+                                                currentSelect,
+                                            action: () {
+                                              setState(() {
+                                                changeSelected(
+                                                  4,
+                                                );
+                                              });
+                                            },
+                                            number: 4,
+                                            title:
+                                                'UnManaged',
                                             theme: theme,
                                           ),
                                         ],

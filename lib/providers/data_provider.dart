@@ -127,7 +127,9 @@ class DataProvider extends ChangeNotifier {
     final data = await getProducts(shopId);
 
     final tempData = data.where(
-      (product) => product.quantity < product.lowQtty!,
+      (product) =>
+          product.quantity != null &&
+          product.quantity! < product.lowQtty!,
     );
 
     return tempData.toList();
@@ -182,21 +184,13 @@ class DataProvider extends ChangeNotifier {
         ).userShop!.shopId!,
       );
     }
-    // var newRes = TempProductClass.fromJson(response!);
-    // int index = productList.indexWhere(
-    //   (c) => c.id == newRes.id,
-    // );
-    // if (index != -1) {
-    //   productList[index] = newRes;
-    //   notifyListeners();
-    // }
     notifyListeners();
     return response != null;
   }
 
   Future<bool> updateQuantity({
     required int productId,
-    required double newQuantity,
+    required double? newQuantity,
     required BuildContext context,
   }) async {
     final response =
@@ -255,6 +249,31 @@ class DataProvider extends ChangeNotifier {
     return response != null;
   }
 
+  Future<bool> updateIsManaged({
+    required int productId,
+    required BuildContext context,
+    required bool value,
+    required int? qtty,
+  }) async {
+    final response =
+        await supabase
+            .from('products')
+            .update({'is_managed': value, 'quantity': qtty})
+            .eq('id', productId)
+            .maybeSingle();
+    print(response?['is_managed']);
+    if (context.mounted) {
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+    notifyListeners();
+    return response != null;
+  }
+
   Future<void> deleteProductMain(
     int productId,
     BuildContext context,
@@ -282,6 +301,7 @@ class DataProvider extends ChangeNotifier {
   String unit = '';
   bool isRefundable = false;
   bool setCustomPrice = false;
+  bool isManaged = true;
   String sizeType = '';
   String size = '';
   double costPrice = 0;
@@ -290,292 +310,6 @@ class DataProvider extends ChangeNotifier {
   double? discount;
   String color = '';
   String barcode = '';
-
-  List<TempProductClass> products = [
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 1,
-      id: 1,
-      name: 'Airpod Pro 2nd Gen',
-      brand: 'Gucci',
-      category: 'Gadgets',
-      unit: 'Number',
-      isRefundable: false,
-      barcode: ']C1CT:557C40DLLQ80S3',
-      sizeType: 'Small Medium',
-      size: '42',
-      costPrice: 10000,
-      quantity: 20,
-      sellingPrice: 12500,
-      discount: 15,
-      color: 'Red',
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 2,
-      id: 2,
-      name: 'Red T-Shirt',
-      brand: 'H&M',
-      category: 'Clothing',
-      barcode: '1234567890123',
-      unit: 'pcs',
-      isRefundable: true,
-      color: 'Red',
-      sizeType: 'Medium',
-      size: 'M',
-      costPrice: 3500,
-      sellingPrice: 5000,
-      discount: 10,
-      quantity: 20,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 3,
-      id: 3,
-      name: 'Bluetooth Speaker',
-      brand: 'JBL',
-      category: 'Electronics',
-      barcode: '2234567890123',
-      unit: 'pcs',
-      isRefundable: false,
-      color: 'Black',
-      sizeType: null,
-      size: null,
-      costPrice: 15000,
-      sellingPrice: 20000,
-      discount: 5,
-      quantity: 15,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 1,
-      id: 4,
-      name: 'Running Shoes',
-      brand: 'Nike',
-      category: 'Footwear',
-      barcode: '3234567890123',
-      unit: 'pair',
-      isRefundable: true,
-      color: 'Blue',
-      sizeType: 'US',
-      size: '42',
-      costPrice: 25000,
-      sellingPrice: 40000,
-      discount: null,
-      quantity: 10,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 1,
-      id: 5,
-      name: 'Notebook',
-      brand: 'Cambridge',
-      category: 'Stationery',
-      barcode: ']C1CT:557C40DLLQ80S3',
-      unit: 'pcs',
-      isRefundable: false,
-      color: null,
-      sizeType: null,
-      size: null,
-      costPrice: 500,
-      sellingPrice: 800,
-      discount: 5,
-      quantity: 100,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 2,
-      id: 6,
-      name: 'Coffee Mug',
-      brand: 'IKEA',
-      category: 'Kitchenware',
-      barcode: ']C1CT:557C40DLLQ80S3',
-      unit: 'pcs',
-      isRefundable: true,
-      color: 'White',
-      sizeType: null,
-      size: null,
-      costPrice: 700,
-      sellingPrice: 1200,
-      discount: 15,
-      quantity: 30,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 3,
-      id: 7,
-      name: 'Laptop Bag',
-      brand: 'Samsonite',
-      category: 'Accessories',
-      barcode: '6234567890123',
-      unit: 'pcs',
-      isRefundable: true,
-      color: 'Grey',
-      sizeType: 'Standard',
-      size: null,
-      costPrice: 10000,
-      sellingPrice: 15000,
-      discount: 10,
-      quantity: 0,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 2,
-      id: 8,
-      name: 'LED Bulb',
-      brand: 'Philips',
-      category: 'Electronics',
-      barcode: '7234567890123',
-      unit: 'pcs',
-      isRefundable: false,
-      color: null,
-      sizeType: null,
-      size: null,
-      costPrice: 300,
-      sellingPrice: 500,
-      discount: null,
-      quantity: 200,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 3,
-      id: 9,
-      name: 'Shampoo',
-      brand: 'Head & Shoulders',
-      category: 'Personal Care',
-      barcode: ']C1CT:557C40DLLQ80S3',
-      unit: 'bottle',
-      isRefundable: false,
-      color: null,
-      sizeType: null,
-      size: null,
-      costPrice: 1200,
-      sellingPrice: 1800,
-      discount: 20,
-      quantity: 60,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 2,
-      id: 10,
-      name: 'Wrist Watch',
-      brand: 'Fossil',
-      category: 'Watches',
-      barcode: '5060340392345',
-      unit: 'pcs',
-      isRefundable: true,
-      color: 'Brown',
-      sizeType: 'Men',
-      size: null,
-      costPrice: 20000,
-      sellingPrice: 30000,
-      discount: 25,
-      quantity: 8,
-    ),
-    TempProductClass(
-      setCustomPrice: false,
-      shopId: 3,
-      id: 10,
-      name: 'Face Mask Pack',
-      brand: null,
-      category: 'Health',
-      barcode: null,
-      unit: 'pack',
-      isRefundable: false,
-      color: 'Blue',
-      sizeType: null,
-      size: null,
-      costPrice: 1000,
-      sellingPrice: 1500,
-      discount: 5,
-      quantity: 4,
-    ),
-  ];
-
-  List<TempProductClass> sortProductsByName(
-    List<TempProductClass> products,
-  ) {
-    products.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    return products;
-  }
-
-  List<TempProductClass> returnOwnProducts(
-    BuildContext context,
-  ) {
-    return sortProductsByName(products)
-        .where(
-          (element) =>
-              element.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop!.shopId!,
-        )
-        .toList();
-  }
-
-  List<TempProductClass> searchProductsName(
-    String text,
-    BuildContext context,
-  ) {
-    List<TempProductClass> tempProducts =
-        returnOwnProducts(context)
-            .where(
-              (product) => product.name
-                  .toLowerCase()
-                  .contains(text.toLowerCase()),
-            )
-            .toList();
-
-    return tempProducts;
-  }
-
-  List<TempProductClass> searchProductsBarcode(
-    String text,
-    BuildContext context,
-  ) {
-    return returnOwnProducts(context)
-        .where(
-          (product) =>
-              product.barcode != null &&
-              product.barcode!.contains(text),
-        )
-        .toList();
-  }
-
-  int totalInStock(BuildContext context) {
-    int totalNum = 0;
-    for (var product in returnOwnProducts(context)) {
-      if (product.quantity != 0) {
-        totalNum += 1;
-      }
-    }
-    return totalNum;
-  }
-
-  int totalOutOfStock(BuildContext context) {
-    int totalNum = 0;
-    for (var product in returnOwnProducts(context)) {
-      if (product.quantity == 0) {
-        totalNum += 1;
-      }
-    }
-    return totalNum;
-  }
-
-  void deleteProduct(TempProductClass product) {
-    products.remove(product);
-    notifyListeners();
-  }
-
-  void addProduct(TempProductClass product) {
-    products.add(product);
-    notifyListeners();
-  }
 
   void clearFields() {
     isProductRefundable = false;
@@ -587,6 +321,7 @@ class DataProvider extends ChangeNotifier {
     selectedUnit = null;
     inStock = false;
     catValueSet = false;
+    isManaged = true;
     isOpen = false;
     unitValueSet = false;
     colorValueSet = false;
@@ -605,6 +340,11 @@ class DataProvider extends ChangeNotifier {
 
   void toggleSetCustomPrice() {
     setCustomPrice = !setCustomPrice;
+    notifyListeners();
+  }
+
+  void toggleIsManaged() {
+    isManaged = !isManaged;
     notifyListeners();
   }
 

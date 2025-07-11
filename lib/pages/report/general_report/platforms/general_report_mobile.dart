@@ -1779,8 +1779,10 @@ class _GeneralReportMobileState
                                                       (
                                                         product,
                                                       ) =>
-                                                          product.quantity >
-                                                          0,
+                                                          product.quantity !=
+                                                              null &&
+                                                          product.quantity! >
+                                                              0,
                                                     )
                                                     .length;
                                             var outOfStock =

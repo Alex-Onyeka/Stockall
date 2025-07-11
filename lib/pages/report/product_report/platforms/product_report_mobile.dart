@@ -279,6 +279,17 @@ class _ProductReportMobileState
                                               context,
                                               index,
                                             ) {
+                                              num returnNum(
+                                                num? number,
+                                              ) {
+                                                if (number ==
+                                                    null) {
+                                                  return 0;
+                                                } else {
+                                                  return number;
+                                                }
+                                              }
+
                                               products.sort((
                                                 a,
                                                 b,
@@ -291,11 +302,13 @@ class _ProductReportMobileState
                                                           b.name,
                                                         );
                                                   case 2:
-                                                    return b
-                                                        .quantity
-                                                        .compareTo(
-                                                          a.quantity,
-                                                        );
+                                                    return returnNum(
+                                                      b.quantity,
+                                                    ).compareTo(
+                                                      returnNum(
+                                                        a.quantity,
+                                                      ),
+                                                    );
                                                   default:
                                                     return b
                                                         .createdAt!
@@ -511,7 +524,7 @@ class _SummaryTableHeadingBarState
   double getTotalQuantity() {
     double tempTotal = 0;
     for (var item in widget.product) {
-      tempTotal += item.quantity;
+      tempTotal += item.quantity ?? 0;
     }
     return tempTotal;
   }

@@ -426,7 +426,9 @@ class _ProductPageMobileState
                             products
                                 .where(
                                   (product) =>
-                                      product.quantity > 0,
+                                      product.quantity !=
+                                          null &&
+                                      product.quantity! > 0,
                                 )
                                 .length
                                 .toDouble(),
