@@ -8,6 +8,12 @@ import 'package:stockall/providers/data_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
+  bool isLoading = false;
+  void toggleIsLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
+
   List<TempCartItem> cartItems = [];
   bool isInvoice = false;
 

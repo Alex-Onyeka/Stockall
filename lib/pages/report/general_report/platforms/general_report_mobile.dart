@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/product_summary_class.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -148,6 +150,82 @@ class _GeneralReportMobileState
                               context,
                             ).dateSet ??
                             'For Today',
+                      ),
+                      Visibility(
+                        visible: false,
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                var safeContext = context;
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to convert all your product records to pdf, are you sure you want to proceed?',
+                                      title:
+                                          'Are you sure?',
+                                      action: () async {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                        if (kIsWeb) {
+                                          if (safeContext
+                                              .mounted) {}
+                                        }
+
+                                        if (safeContext
+                                            .mounted) {
+                                          returnSalesProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).toggleIsLoading(
+                                            false,
+                                          );
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Pdf',
+                                    ),
+                                    Icon(
+                                      color: Colors.grey,
+                                      Icons.print,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       Visibility(
                         visible: authorization(

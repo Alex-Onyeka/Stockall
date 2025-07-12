@@ -293,7 +293,7 @@ class _ReceiptDetailsContainerState
                                               FontWeight
                                                   .bold,
                                         ),
-                                        'Casheir',
+                                        'Cashier',
                                       ),
                                       Text(
                                         style: TextStyle(

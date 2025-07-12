@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/currency_class.dart';
+import 'package:stockall/classes/product_report_summary.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
@@ -1749,6 +1750,1225 @@ void downloadPdfWebProducts({
     html.Url.revokeObjectUrl(url);
     if (context.mounted) {
       returnData(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
+  } catch (e, stackTrace) {
+    print('❌ Error downloading PDF: $e\n$stackTrace');
+  }
+}
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+// SALES RECORD PDF GENERATOR
+
+Future<void> generateAndPreviewPdfSales({
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  // 1. Build the PDF once (fastest way)
+  returnSalesProvider(
+    context,
+    listen: false,
+  ).toggleIsLoading(true);
+  final Uint8List pdfBytes = await _buildPdfSales(
+    records,
+    shop,
+    context,
+  );
+
+  // 2. Open native print/share/save dialog (cross-platform)
+  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  if (context.mounted) {
+    returnData(
+      context,
+      listen: false,
+    ).toggleIsLoading(false);
+  }
+}
+
+Future<Uint8List> _buildPdfSales(
+  List<TempProductSaleRecord> records,
+  TempShopClass shop,
+  BuildContext context,
+) async {
+  double totalQuantity() {
+    double tempQtty = 0;
+    for (var element in records) {
+      tempQtty += element.quantity;
+    }
+    return tempQtty;
+  }
+
+  double totalSellingPrice() {
+    double tempQtty = 0;
+    for (var element in records) {
+      tempQtty += element.revenue;
+    }
+    return tempQtty;
+  }
+
+  double totalCostPrice() {
+    double tempQtty = 0;
+    for (var element in records) {
+      tempQtty += element.costPrice ?? 0;
+    }
+    return tempQtty;
+  }
+
+  double totalProfit() {
+    double tempQtty = 0;
+    for (var element in records) {
+      if (element.costPrice != null) {
+        tempQtty += element.revenue - element.costPrice!;
+      }
+    }
+    return tempQtty;
+  }
+
+  String profit(
+    TempProductSaleRecord record,
+    BuildContext context,
+  ) {
+    String tempQtty =
+        record.costPrice != null
+            ? formatMoneyMid(
+              (record.revenue - record.costPrice!),
+              context,
+            )
+            : 'Nill';
+    return tempQtty;
+  }
+
+  final pdf = pw.Document();
+
+  // Load Plus Jakarta Sans from assets
+  final fontRegular = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
+  );
+  final fontBold = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
+  );
+
+  pdf.addPage(
+    pw.MultiPage(
+      pageFormat: PdfPageFormat.a4.landscape,
+      margin: const pw.EdgeInsets.only(
+        left: 30,
+        top: 30,
+        right: 30,
+        bottom: 10,
+      ),
+      // 🔹 HEADER
+      header:
+          (context) => pw.Column(
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center,
+            children: [
+              pw.Row(
+                mainAxisAlignment:
+                    pw.MainAxisAlignment.center,
+                children: [
+                  pw.Column(
+                    children: [
+                      pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        shop.name,
+                        style: pw.TextStyle(
+                          font: fontBold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      pw.SizedBox(height: 5),
+                      pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        shop.email,
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
+                      ),
+                      pw.SizedBox(height: 5),
+
+                      pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        shop.phoneNumber ?? '',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize:
+                              shop.phoneNumber == null
+                                  ? 1
+                                  : 9,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 5),
+              pw.Divider(
+                color: PdfColor.fromHex('#D3D3D3'),
+                thickness: 0.5,
+              ),
+            ],
+          ),
+      // 🔹 FOOTER
+      footer:
+          (context) => pw.Column(
+            children: [
+              pw.Divider(),
+              pw.SizedBox(height: 5),
+              pw.Align(
+                alignment: pw.Alignment.centerRight,
+                child: pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
+                  children: [
+                    pw.Text(
+                      '( Page ${context.pageNumber} of ${context.pagesCount} )',
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
+                    ),
+                    pw.SizedBox(width: 15),
+                    pw.Text(
+                      'Created by $appName Solutions - ( www.stockallapp.com )',
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+      build:
+          (pw.Context pdfContext) => [
+            pw.Builder(
+              builder: (pw.Context pdfContext) {
+                return pw.DefaultTextStyle(
+                  style: pw.TextStyle(
+                    font: fontRegular,
+                    fontSize: 12,
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment:
+                        pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.SizedBox(height: 10),
+                      pw.Container(
+                        child: pw.Table(
+                          columnWidths: {
+                            0: pw.FlexColumnWidth(1.2),
+                            1: pw.FlexColumnWidth(6),
+                            2: pw.FlexColumnWidth(2),
+                            3: pw.FlexColumnWidth(5),
+                            4: pw.FlexColumnWidth(5),
+                            5: pw.FlexColumnWidth(5),
+                            6: pw.FlexColumnWidth(3),
+                            7: pw.FlexColumnWidth(3),
+                          },
+                          border: pw.TableBorder.all(),
+                          children: [
+                            pw.TableRow(
+                              verticalAlignment:
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
+                              children: [
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'S/N',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Item Name',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Qtty',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Selling Price',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Cost Price',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Profit',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Date',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Time',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      pw.Table(
+                        columnWidths: {
+                          0: pw.FlexColumnWidth(1.2),
+                          1: pw.FlexColumnWidth(6),
+                          2: pw.FlexColumnWidth(2),
+                          3: pw.FlexColumnWidth(5),
+                          4: pw.FlexColumnWidth(5),
+                          5: pw.FlexColumnWidth(5),
+                          6: pw.FlexColumnWidth(3),
+                          7: pw.FlexColumnWidth(3),
+                        },
+                        border: pw.TableBorder.all(),
+                        children:
+                            records.map((record) {
+                              return pw.TableRow(
+                                verticalAlignment:
+                                    pw
+                                        .TableCellVerticalAlignment
+                                        .middle,
+                                children: [
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      (records.indexOf(
+                                                record,
+                                              ) +
+                                              1)
+                                          .toString(),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      record.productName,
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      (record.quantity)
+                                          .toStringAsFixed(
+                                            0,
+                                          ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatMoneyMid(
+                                        record.revenue,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatMoneyMid(
+                                        record.costPrice ??
+                                            0,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      profit(
+                                        record,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatDateWithoutYear(
+                                        record.createdAt,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatTime(
+                                        record.createdAt,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                      ),
+                      pw.Container(
+                        child: pw.Table(
+                          columnWidths: {
+                            0: pw.FlexColumnWidth(1.2),
+                            1: pw.FlexColumnWidth(6),
+                            2: pw.FlexColumnWidth(2),
+                            3: pw.FlexColumnWidth(5),
+                            4: pw.FlexColumnWidth(5),
+                            5: pw.FlexColumnWidth(5),
+                            6: pw.FlexColumnWidth(3),
+                            7: pw.FlexColumnWidth(3),
+                          },
+                          border: pw.TableBorder.all(),
+                          children: [
+                            pw.TableRow(
+                              verticalAlignment:
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
+                              children: [
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    '',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                      fontSize: 20,
+                                    ),
+                                    'Total',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    totalQuantity()
+                                        .toStringAsFixed(0),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    formatMoneyMid(
+                                      totalSellingPrice(),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    formatMoneyMid(
+                                      totalCostPrice(),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    formatMoneyMid(
+                                      totalProfit(),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    '',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    '',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            pw.Expanded(child: pw.Spacer()),
+          ],
+    ),
+  );
+
+  return pdf.save();
+}
+
+void downloadPdfWebSales({
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+  required String filename,
+}) async {
+  try {
+    print('Begin Download');
+    final pdfBytes = await _buildPdfSales(
+      records,
+      returnShopProvider(context, listen: false).userShop!,
+      context,
+    );
+    final blob = html.Blob([pdfBytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    final anchor =
+        html.AnchorElement(href: url)
+          ..download = filename
+          ..target = 'blank'
+          ..style.display = 'none';
+
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+
+    html.Url.revokeObjectUrl(url);
+    if (context.mounted) {
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
+  } catch (e, stackTrace) {
+    print('❌ Error downloading PDF: $e\n$stackTrace');
+  }
+}
+
+//
+//
+//
+//
+
+Future<void> generateAndPreviewPdfSalesSummary({
+  required List<ProductReportSummary> summary,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  // 1. Build the PDF once (fastest way)
+  returnSalesProvider(
+    context,
+    listen: false,
+  ).toggleIsLoading(true);
+  final Uint8List pdfBytes = await _buildPdfSalesSummary(
+    summary,
+    shop,
+    context,
+  );
+
+  // 2. Open native print/share/save dialog (cross-platform)
+  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  if (context.mounted) {
+    returnData(
+      context,
+      listen: false,
+    ).toggleIsLoading(false);
+  }
+}
+
+Future<Uint8List> _buildPdfSalesSummary(
+  List<ProductReportSummary> summary,
+  TempShopClass shop,
+  BuildContext context,
+) async {
+  double totalQuantity() {
+    double tempQtty = 0;
+    for (var element in summary) {
+      tempQtty += element.quantity;
+    }
+    return tempQtty;
+  }
+
+  double totalSellingPrice() {
+    double tempQtty = 0;
+    for (var element in summary) {
+      tempQtty += element.total;
+    }
+    return tempQtty;
+  }
+
+  double totalCostPrice() {
+    double tempQtty = 0;
+    for (var element in summary) {
+      tempQtty += element.costTotal;
+    }
+    return tempQtty;
+  }
+
+  double totalProfit() {
+    double tempQtty = 0;
+    for (var element in summary) {
+      tempQtty += element.total - element.costTotal;
+    }
+    return tempQtty;
+  }
+
+  final pdf = pw.Document();
+
+  // Load Plus Jakarta Sans from assets
+  final fontRegular = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Regular.ttf',
+    ),
+  );
+  final fontBold = pw.Font.ttf(
+    await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    ),
+  );
+
+  pdf.addPage(
+    pw.MultiPage(
+      pageFormat: PdfPageFormat.a4.landscape,
+      margin: const pw.EdgeInsets.only(
+        left: 30,
+        top: 30,
+        right: 30,
+        bottom: 10,
+      ),
+      // 🔹 HEADER
+      header:
+          (context) => pw.Column(
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center,
+            children: [
+              pw.Row(
+                mainAxisAlignment:
+                    pw.MainAxisAlignment.center,
+                children: [
+                  pw.Column(
+                    children: [
+                      pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        shop.name,
+                        style: pw.TextStyle(
+                          font: fontBold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      pw.SizedBox(height: 5),
+                      pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        shop.email,
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize: 9,
+                        ),
+                      ),
+                      pw.SizedBox(height: 5),
+
+                      pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        shop.phoneNumber ?? '',
+                        style: pw.TextStyle(
+                          font: fontRegular,
+                          fontSize:
+                              shop.phoneNumber == null
+                                  ? 1
+                                  : 9,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 5),
+              pw.Divider(
+                color: PdfColor.fromHex('#D3D3D3'),
+                thickness: 0.5,
+              ),
+            ],
+          ),
+      // 🔹 FOOTER
+      footer:
+          (context) => pw.Column(
+            children: [
+              pw.Divider(),
+              pw.SizedBox(height: 5),
+              pw.Align(
+                alignment: pw.Alignment.centerRight,
+                child: pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
+                  children: [
+                    pw.Text(
+                      '( Page ${context.pageNumber} of ${context.pagesCount} )',
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
+                    ),
+                    pw.SizedBox(width: 15),
+                    pw.Text(
+                      'Created by $appName Solutions - ( www.stockallapp.com )',
+                      style: pw.TextStyle(
+                        font: fontRegular,
+                        fontSize: 9,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+      build:
+          (pw.Context pdfContext) => [
+            pw.Builder(
+              builder: (pw.Context pdfContext) {
+                return pw.DefaultTextStyle(
+                  style: pw.TextStyle(
+                    font: fontRegular,
+                    fontSize: 12,
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment:
+                        pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.SizedBox(height: 10),
+                      pw.Container(
+                        child: pw.Table(
+                          columnWidths: {
+                            0: pw.FlexColumnWidth(1.2),
+                            1: pw.FlexColumnWidth(6),
+                            2: pw.FlexColumnWidth(2),
+                            3: pw.FlexColumnWidth(5),
+                            4: pw.FlexColumnWidth(5),
+                            5: pw.FlexColumnWidth(5),
+                          },
+                          border: pw.TableBorder.all(),
+                          children: [
+                            pw.TableRow(
+                              verticalAlignment:
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
+                              children: [
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'S/N',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Item Name',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Qtty',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Selling Price',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Cost Price',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    'Profit',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      pw.Table(
+                        columnWidths: {
+                          0: pw.FlexColumnWidth(1.2),
+                          1: pw.FlexColumnWidth(6),
+                          2: pw.FlexColumnWidth(2),
+                          3: pw.FlexColumnWidth(5),
+                          4: pw.FlexColumnWidth(5),
+                          5: pw.FlexColumnWidth(5),
+                        },
+                        border: pw.TableBorder.all(),
+                        children:
+                            summary.map((summ) {
+                              return pw.TableRow(
+                                verticalAlignment:
+                                    pw
+                                        .TableCellVerticalAlignment
+                                        .middle,
+                                children: [
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      (summary.indexOf(
+                                                summ,
+                                              ) +
+                                              1)
+                                          .toString(),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      summ.productName,
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      (summ.quantity)
+                                          .toStringAsFixed(
+                                            0,
+                                          ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatMoneyMid(
+                                        summ.total,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatMoneyMid(
+                                        summ.costTotal,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw
+                                        .EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: pw.Text(
+                                      formatMoneyMid(
+                                        summ.profit,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                      ),
+                      pw.Container(
+                        child: pw.Table(
+                          columnWidths: {
+                            0: pw.FlexColumnWidth(1.2),
+                            1: pw.FlexColumnWidth(6),
+                            2: pw.FlexColumnWidth(2),
+                            3: pw.FlexColumnWidth(5),
+                            4: pw.FlexColumnWidth(5),
+                            5: pw.FlexColumnWidth(5),
+                          },
+                          border: pw.TableBorder.all(),
+                          children: [
+                            pw.TableRow(
+                              verticalAlignment:
+                                  pw
+                                      .TableCellVerticalAlignment
+                                      .middle,
+                              children: [
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    '',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                      fontSize: 20,
+                                    ),
+                                    'Total',
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    totalQuantity()
+                                        .toStringAsFixed(0),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    formatMoneyMid(
+                                      totalSellingPrice(),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    formatMoneyMid(
+                                      totalCostPrice(),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw
+                                      .EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 10,
+                                  ),
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                    ),
+                                    formatMoneyMid(
+                                      totalProfit(),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            pw.Expanded(child: pw.Spacer()),
+          ],
+    ),
+  );
+
+  return pdf.save();
+}
+
+void downloadPdfWebSalesSummary({
+  required List<ProductReportSummary> summary,
+  required TempShopClass shop,
+  required BuildContext context,
+  required String filename,
+}) async {
+  try {
+    print('Begin Download');
+    final pdfBytes = await _buildPdfSalesSummary(
+      summary,
+      returnShopProvider(context, listen: false).userShop!,
+      context,
+    );
+    final blob = html.Blob([pdfBytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    final anchor =
+        html.AnchorElement(href: url)
+          ..download = filename
+          ..target = 'blank'
+          ..style.display = 'none';
+
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+
+    html.Url.revokeObjectUrl(url);
+    if (context.mounted) {
+      returnSalesProvider(
         context,
         listen: false,
       ).toggleIsLoading(false);
