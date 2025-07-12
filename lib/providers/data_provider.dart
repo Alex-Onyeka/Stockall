@@ -4,6 +4,13 @@ import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
+  bool isLoading = false;
+  void toggleIsLoading(bool value) {
+    isLoading = value;
+    print('Loading: ${value.toString()}');
+    notifyListeners();
+  }
+
   final supabase = Supabase.instance.client;
 
   Future<void> createProduct(

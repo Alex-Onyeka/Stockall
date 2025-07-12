@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -43,6 +45,10 @@ class _ProductReportMobileState
         context,
         listen: false,
       ).clearDate(context);
+      returnData(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
     });
     productsFuture = getProducts();
   }
@@ -168,248 +174,323 @@ class _ProductReportMobileState
               ),
             ),
           ),
-          body: Column(
+          body: Stack(
             children: [
-              Visibility(
-                visible: products.isEmpty,
-                child: SizedBox(height: 20),
-              ),
-              Visibility(
-                visible: products.isNotEmpty,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 10.0,
+              Column(
+                children: [
+                  Visibility(
+                    visible: products.isEmpty,
+                    child: SizedBox(height: 20),
                   ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                          ),
-                          child: Row(
-                            spacing: 5,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  color:
-                                      Colors.grey.shade700,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Downalod Pdf',
-                              ),
-                              Icon(
-                                color: Colors.grey,
-                                Icons.print,
-                              ),
-                            ],
-                          ),
-                        ),
+                  Visibility(
+                    visible: products.isNotEmpty,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 10.0,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 5),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  child: SingleChildScrollView(
-                    primary: false,
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width:
-                          products.isEmpty
-                              ? MediaQuery.of(
-                                context,
-                              ).size.width
-                              : MediaQuery.of(
-                                    context,
-                                  ).size.width <
-                                  555
-                              ? MediaQuery.of(
-                                    context,
-                                  ).size.width +
-                                  550
-                              : MediaQuery.of(
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              var safeContext = context;
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to convert all your product records to pdf, are you sure you want to proceed?',
+                                    title: 'Are you sure?',
+                                    action: () async {
+                                      Navigator.of(
                                         context,
-                                      ).size.width >
-                                      555 &&
-                                  MediaQuery.of(
+                                      ).pop();
+                                      if (kIsWeb) {
+                                        if (safeContext
+                                            .mounted) {
+                                          downloadPdfWebProducts(
+                                            products:
+                                                products,
+                                            shop:
+                                                returnShopProvider(
+                                                  safeContext,
+                                                  listen:
+                                                      false,
+                                                ).userShop!,
+                                            context:
+                                                safeContext,
+                                            filename:
+                                                'Stockall_Products Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
+                                          );
+                                        }
+                                      }
+                                      await generateAndPreviewPdfProducts(
+                                        context:
+                                            safeContext,
+                                        products: products,
+                                        shop:
+                                            returnShopProvider(
+                                              context,
+                                              listen: false,
+                                            ).userShop!,
+                                      );
+
+                                      if (safeContext
+                                          .mounted) {
+                                        returnData(
+                                          safeContext,
+                                          listen: false,
+                                        ).toggleIsLoading(
+                                          false,
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade700,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Downalod Pdf',
+                                  ),
+                                  Icon(
+                                    color: Colors.grey,
+                                    Icons.print,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0,
+                      ),
+                      child: SingleChildScrollView(
+                        primary: false,
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width:
+                              products.isEmpty
+                                  ? MediaQuery.of(
+                                    context,
+                                  ).size.width
+                                  : MediaQuery.of(
                                         context,
                                       ).size.width <
-                                      755
-                              ? MediaQuery.of(
-                                    context,
-                                  ).size.width +
-                                  350
-                              : MediaQuery.of(
-                                context,
-                              ).size.width,
-                      child: RefreshIndicator(
-                        onRefresh: () {
-                          return returnReceiptProvider(
-                            context,
-                            listen: false,
-                          ).loadProductSalesRecord(
-                            returnShopProvider(
-                              context,
-                              listen: false,
-                            ).userShop!.shopId!,
-                          );
-                        },
-                        backgroundColor: Colors.white,
-                        color:
-                            theme.lightModeColor.prColor300,
-                        displacement: 10,
-                        child: ListView(
-                          children: [
-                            SummaryTableHeadingBar(
-                              isHeading: true,
-                              theme: theme,
-                              product: products,
-                            ),
-                            Builder(
-                              builder: (context) {
-                                if (products.isEmpty) {
-                                  return EmptyWidgetDisplayOnly(
-                                    title: 'Empty List',
-                                    subText:
-                                        'No Product has been recorded yet',
-                                    theme: theme,
-                                    height: 35,
-                                    icon: Icons.clear,
-                                  );
-                                } else {
-                                  return RefreshIndicator(
-                                    onRefresh: () {
-                                      return returnReceiptProvider(
+                                      555
+                                  ? MediaQuery.of(
                                         context,
-                                        listen: false,
-                                      ).loadProductSalesRecord(
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).userShop!.shopId!,
+                                      ).size.width +
+                                      550
+                                  : MediaQuery.of(
+                                            context,
+                                          ).size.width >
+                                          555 &&
+                                      MediaQuery.of(
+                                            context,
+                                          ).size.width <
+                                          755
+                                  ? MediaQuery.of(
+                                        context,
+                                      ).size.width +
+                                      350
+                                  : MediaQuery.of(
+                                    context,
+                                  ).size.width,
+                          child: RefreshIndicator(
+                            onRefresh: () {
+                              return returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).loadProductSalesRecord(
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).userShop!.shopId!,
+                              );
+                            },
+                            backgroundColor: Colors.white,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .prColor300,
+                            displacement: 10,
+                            child: ListView(
+                              children: [
+                                SummaryTableHeadingBar(
+                                  isHeading: true,
+                                  theme: theme,
+                                  product: products,
+                                ),
+                                Builder(
+                                  builder: (context) {
+                                    if (products.isEmpty) {
+                                      return EmptyWidgetDisplayOnly(
+                                        title: 'Empty List',
+                                        subText:
+                                            'No Product has been recorded yet',
+                                        theme: theme,
+                                        height: 35,
+                                        icon: Icons.clear,
                                       );
-                                    },
-                                    backgroundColor:
-                                        Colors.white,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    displacement: 10,
-                                    child: SingleChildScrollView(
-                                      primary: true,
-                                      child: Column(
-                                        children: [
-                                          ListView.builder(
-                                            shrinkWrap:
-                                                true,
-                                            itemCount:
-                                                products
-                                                    .length,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
+                                    } else {
+                                      return RefreshIndicator(
+                                        onRefresh: () {
+                                          return returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).loadProductSalesRecord(
+                                            returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .userShop!
+                                                .shopId!,
+                                          );
+                                        },
+                                        backgroundColor:
+                                            Colors.white,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .prColor300,
+                                        displacement: 10,
+                                        child: SingleChildScrollView(
+                                          primary: true,
+                                          child: Column(
+                                            children: [
+                                              ListView.builder(
+                                                shrinkWrap:
+                                                    true,
+                                                itemCount:
+                                                    products
+                                                        .length,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
 
-                                            itemBuilder: (
-                                              context,
-                                              index,
-                                            ) {
-                                              num returnNum(
-                                                num? number,
-                                              ) {
-                                                if (number ==
-                                                    null) {
-                                                  return 0;
-                                                } else {
-                                                  return number;
-                                                }
-                                              }
+                                                itemBuilder: (
+                                                  context,
+                                                  index,
+                                                ) {
+                                                  num
+                                                  returnNum(
+                                                    num?
+                                                    number,
+                                                  ) {
+                                                    if (number ==
+                                                        null) {
+                                                      return 0;
+                                                    } else {
+                                                      return number;
+                                                    }
+                                                  }
 
-                                              products.sort((
-                                                a,
-                                                b,
-                                              ) {
-                                                switch (sortIndex) {
-                                                  case 1:
-                                                    return a
-                                                        .name
-                                                        .compareTo(
+                                                  products.sort((
+                                                    a,
+                                                    b,
+                                                  ) {
+                                                    switch (sortIndex) {
+                                                      case 1:
+                                                        return a.name.compareTo(
                                                           b.name,
                                                         );
-                                                  case 2:
-                                                    return returnNum(
-                                                      b.quantity,
-                                                    ).compareTo(
-                                                      returnNum(
-                                                        a.quantity,
-                                                      ),
-                                                    );
-                                                  default:
-                                                    return b
-                                                        .createdAt!
-                                                        .compareTo(
+                                                      case 2:
+                                                        return returnNum(
+                                                          b.quantity,
+                                                        ).compareTo(
+                                                          returnNum(
+                                                            a.quantity,
+                                                          ),
+                                                        );
+                                                      default:
+                                                        return b.createdAt!.compareTo(
                                                           a.createdAt!,
                                                         );
-                                                }
-                                              });
-                                              var product =
-                                                  products[index];
-                                              var productIndex =
-                                                  products.indexOf(
-                                                    product,
-                                                  ) +
-                                                  1;
-                                              return TableRowRecordWidget(
+                                                    }
+                                                  });
+                                                  var product =
+                                                      products[index];
+                                                  var productIndex =
+                                                      products.indexOf(
+                                                        product,
+                                                      ) +
+                                                      1;
+                                                  return TableRowRecordWidget(
+                                                    theme:
+                                                        theme,
+                                                    productIndex:
+                                                        productIndex,
+                                                    product:
+                                                        product,
+                                                  );
+                                                },
+                                              ),
+                                              SummaryTableHeadingBar(
+                                                isHeading:
+                                                    false,
                                                 theme:
                                                     theme,
-                                                productIndex:
-                                                    productIndex,
                                                 product:
-                                                    product,
-                                              );
-                                            },
+                                                    products,
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                            ],
                                           ),
-                                          SummaryTableHeadingBar(
-                                            isHeading:
-                                                false,
-                                            theme: theme,
-                                            product:
-                                                products,
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
+              ),
+              Visibility(
+                visible: returnData(context).isLoading,
+                child: returnCompProvider(
+                  context,
+                  listen: false,
+                ).showLoader('Generating Record'),
               ),
             ],
           ),
         ),
+
         if (returnReportProvider(context).setDate)
           Material(
             color: const Color.fromARGB(75, 0, 0, 0),
