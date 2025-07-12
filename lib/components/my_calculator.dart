@@ -264,7 +264,7 @@ class _MyCalculatorState extends State<MyCalculator> {
                 flex: 8,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: Colors.grey.shade100,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(30),
                     ),

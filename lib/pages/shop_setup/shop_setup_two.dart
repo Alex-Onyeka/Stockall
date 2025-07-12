@@ -14,6 +14,7 @@ import 'package:stockall/components/progress_bar.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/main_dropdown_only.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -175,6 +176,8 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                 });
                 await shopProvider.createShop(
                   TempShopClass(
+                    updateNumber: currentUpdate,
+                    isVerified: false,
                     currency: selectedCurrency!,
                     employees: [
                       AuthService().currentUser!.id,

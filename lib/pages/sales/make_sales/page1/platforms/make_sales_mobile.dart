@@ -1422,16 +1422,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
       child: PopScope(
         canPop: false,
-        // onPopInvokedWithResult: (didPop, result) {
-        //   Navigator.pushReplacement(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) {
-        //         return Home();
-        //       },
-        //     ),
-        //   );
-        // },
         child: Scaffold(
           appBar: appBar(
             // isMain: widget.isMain,
@@ -2325,66 +2315,72 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                   }
                 },
               ),
-              Align(
-                alignment: Alignment(0.9, 0.1),
-                child: Material(
-                  color: Colors.transparent,
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(
-                            35,
-                            0,
-                            0,
-                            0,
-                          ),
-                          blurRadius: 10,
+              Visibility(
+                visible:
+                    returnSalesProvider(
+                      context,
+                    ).cartItems.isNotEmpty,
+                child: Align(
+                  alignment: Alignment(0.9, 0.1),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          15,
                         ),
-                      ],
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
-                      onTap: () {
-                        showGeneralDialog(
-                          context: context,
-                          pageBuilder: (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                          ) {
-                            return MyCalculator();
-                          },
-                        );
-                      },
-                      child: Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(
-                                35,
-                                0,
-                                0,
-                                0,
-                              ),
-                              blurRadius: 10,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(
+                              35,
+                              0,
+                              0,
+                              0,
                             ),
-                          ],
-                          color: Colors.white,
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          15,
                         ),
-                        child: Center(
-                          child: Icon(
-                            size: 30,
-                            Icons.calculate_outlined,
+                        onTap: () {
+                          showGeneralDialog(
+                            context: context,
+                            pageBuilder: (
+                              context,
+                              animation,
+                              secondaryAnimation,
+                            ) {
+                              return MyCalculator();
+                            },
+                          );
+                        },
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(
+                                  35,
+                                  0,
+                                  0,
+                                  0,
+                                ),
+                                blurRadius: 10,
+                              ),
+                            ],
+                            color: Colors.white,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              size: 30,
+                              Icons.calculate_outlined,
+                            ),
                           ),
                         ),
                       ),

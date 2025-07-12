@@ -106,7 +106,7 @@ class ReportMobile extends StatelessWidget {
                             );
                           },
                           subText:
-                              'View a detailed your customers.',
+                              'View a detailed summary your customers purchases.',
                           title: 'Customer Report',
                         ),
                         ReportListTile(
