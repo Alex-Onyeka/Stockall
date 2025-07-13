@@ -82,15 +82,49 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
             onDetect: _onDetect,
             fit: BoxFit.cover,
           ),
-          Container(
-            height: 150,
-            width: 150,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
+          Center(
+            child: ClipPath(
+              clipper: HoleClipper(),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 0,
+                  sigmaY: 0,
+                ),
+                child: Container(color: Colors.transparent),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+// Custom clipper for the transparent square
+class HoleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    const double holeSize =
+        200; // size of the transparent square
+    final double left = (size.width - holeSize) / 2;
+    final double top = (size.height - holeSize) / 2;
+
+    final Path path =
+        Path()
+          ..addRect(
+            Rect.fromLTWH(0, 0, size.width, size.height),
+          )
+          ..addRect(
+            Rect.fromLTWH(left, top, holeSize, holeSize),
+          )
+          ..fillType =
+              PathFillType.evenOdd; // creates a "hole"
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(
+    covariant CustomClipper<Path> oldClipper,
+  ) => false;
 }
