@@ -721,6 +721,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                               height: 10,
                                             ),
                                             PinCodeTextField(
+                                              autoFocus:
+                                                  true,
                                               appContext:
                                                   context,
                                               length: 4,
