@@ -1,10 +1,6 @@
-// import 'package:flutter/foundation.dart';
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:stockall/constants/play_sounds.dart';
 
 class BarcodeScanner extends StatefulWidget {
   const BarcodeScanner({super.key});
@@ -22,8 +18,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       MobileScannerController();
 
   void _onDetect(BarcodeCapture capture) {
-    // var safeContext = context;
-    if (!isScanning) return;
+    if (!isScanning) return; // Prevent repeated scans
 
     final Barcode? barcode = capture.barcodes.first;
     final String? value = barcode?.rawValue;
@@ -33,16 +28,40 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
         scannedCode = value;
         isScanning = false;
       });
-      // await playBeep();
 
       // Stop scanning after first successful scan
       cameraController.stop();
 
       // Optional: Show result in dialog
-      // Navigator.of(context).pop();
-      if (context.mounted) {
-        Navigator.of(context).pop(value);
-      }
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('Scanned Code'),
+              content: Text(value),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      isScanning = true;
+                      cameraController.start();
+                    });
+                  },
+                  child: const Text('Scan Again'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(
+                      value,
+                    ); // return value to previous page
+                  },
+                  child: const Text('Done'),
+                ),
+              ],
+            ),
+      );
     }
   }
 
@@ -56,78 +75,25 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Barcode'),
+        title: const Text('Scan Barcode / QR Code'),
         actions: [
-          // Visibility(
-          //   visible: !kIsWeb,
-          //   child: Row(
-          //     children: [
-          //       IconButton(
-          //         icon: const Icon(Icons.flash_on),
-          //         onPressed:
-          //             () => cameraController.toggleTorch(),
-          //       ),
-          //       IconButton(
-          //         icon: const Icon(Icons.cameraswitch),
-          //         onPressed:
-          //             () => cameraController.switchCamera(),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          IconButton(
+            icon: const Icon(Icons.flash_on),
+            onPressed: () => cameraController.toggleTorch(),
+          ),
+          if (!kIsWeb)
+            IconButton(
+              icon: const Icon(Icons.cameraswitch),
+              onPressed:
+                  () => cameraController.switchCamera(),
+            ),
         ],
       ),
-      body: Stack(
-        children: [
-          MobileScanner(
-            controller: cameraController,
-            onDetect: _onDetect,
-            fit: BoxFit.cover,
-          ),
-          // Center(
-          //   child: ClipPath(
-          //     clipper: HoleClipper(),
-          //     child: BackdropFilter(
-          //       filter: ImageFilter.blur(
-          //         sigmaX: 0,
-          //         sigmaY: 0,
-          //       ),
-          //       child: Container(color: Colors.transparent),
-          //     ),
-          //   ),
-          // ),
-          // Container(color: Colors.black),
-        ],
+      body: MobileScanner(
+        controller: cameraController,
+        onDetect: _onDetect,
+        fit: BoxFit.cover,
       ),
     );
   }
 }
-
-// // Custom clipper for the transparent square
-// class HoleClipper extends CustomClipper<Path> {
-//   @override
-//   Path getClip(Size size) {
-//     const double holeSize =
-//         200; // size of the transparent square
-//     final double left = (size.width - holeSize) / 2;
-//     final double top = (size.height - holeSize) / 2;
-
-//     final Path path =
-//         Path()
-//           ..addRect(
-//             Rect.fromLTWH(0, 0, size.width, size.height),
-//           )
-//           ..addRect(
-//             Rect.fromLTWH(left, top, holeSize, holeSize),
-//           )
-//           ..fillType =
-//               PathFillType.evenOdd; // creates a "hole"
-
-//     return path;
-//   }
-
-//   @override
-//   bool shouldReclip(
-//     covariant CustomClipper<Path> oldClipper,
-//   ) => false;
-// }
