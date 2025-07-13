@@ -1,4 +1,6 @@
 // import 'package:flutter/foundation.dart';
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -56,23 +58,23 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       appBar: AppBar(
         title: const Text('Scan Barcode'),
         actions: [
-          Visibility(
-            visible: !kIsWeb,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.flash_on),
-                  onPressed:
-                      () => cameraController.toggleTorch(),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.cameraswitch),
-                  onPressed:
-                      () => cameraController.switchCamera(),
-                ),
-              ],
-            ),
-          ),
+          // Visibility(
+          //   visible: !kIsWeb,
+          //   child: Row(
+          //     children: [
+          //       IconButton(
+          //         icon: const Icon(Icons.flash_on),
+          //         onPressed:
+          //             () => cameraController.toggleTorch(),
+          //       ),
+          //       IconButton(
+          //         icon: const Icon(Icons.cameraswitch),
+          //         onPressed:
+          //             () => cameraController.switchCamera(),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
       body: Stack(
@@ -82,49 +84,50 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
             onDetect: _onDetect,
             fit: BoxFit.cover,
           ),
-          Center(
-            child: ClipPath(
-              clipper: HoleClipper(),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 0,
-                  sigmaY: 0,
-                ),
-                child: Container(color: Colors.transparent),
-              ),
-            ),
-          ),
+          // Center(
+          //   child: ClipPath(
+          //     clipper: HoleClipper(),
+          //     child: BackdropFilter(
+          //       filter: ImageFilter.blur(
+          //         sigmaX: 0,
+          //         sigmaY: 0,
+          //       ),
+          //       child: Container(color: Colors.transparent),
+          //     ),
+          //   ),
+          // ),
+          // Container(color: Colors.black),
         ],
       ),
     );
   }
 }
 
-// Custom clipper for the transparent square
-class HoleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    const double holeSize =
-        200; // size of the transparent square
-    final double left = (size.width - holeSize) / 2;
-    final double top = (size.height - holeSize) / 2;
+// // Custom clipper for the transparent square
+// class HoleClipper extends CustomClipper<Path> {
+//   @override
+//   Path getClip(Size size) {
+//     const double holeSize =
+//         200; // size of the transparent square
+//     final double left = (size.width - holeSize) / 2;
+//     final double top = (size.height - holeSize) / 2;
 
-    final Path path =
-        Path()
-          ..addRect(
-            Rect.fromLTWH(0, 0, size.width, size.height),
-          )
-          ..addRect(
-            Rect.fromLTWH(left, top, holeSize, holeSize),
-          )
-          ..fillType =
-              PathFillType.evenOdd; // creates a "hole"
+//     final Path path =
+//         Path()
+//           ..addRect(
+//             Rect.fromLTWH(0, 0, size.width, size.height),
+//           )
+//           ..addRect(
+//             Rect.fromLTWH(left, top, holeSize, holeSize),
+//           )
+//           ..fillType =
+//               PathFillType.evenOdd; // creates a "hole"
 
-    return path;
-  }
+//     return path;
+//   }
 
-  @override
-  bool shouldReclip(
-    covariant CustomClipper<Path> oldClipper,
-  ) => false;
-}
+//   @override
+//   bool shouldReclip(
+//     covariant CustomClipper<Path> oldClipper,
+//   ) => false;
+// }
