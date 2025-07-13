@@ -21,7 +21,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   final MobileScannerController cameraController =
       MobileScannerController();
 
-  void _onDetect(BarcodeCapture capture) async {
+  void _onDetect(BarcodeCapture capture) {
     var safeContext = context;
     if (!isScanning) return;
 
@@ -33,7 +33,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
         scannedCode = value;
         isScanning = false;
       });
-      await playBeep();
+      // await playBeep();
 
       // Stop scanning after first successful scan
       cameraController.stop();
