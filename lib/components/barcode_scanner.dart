@@ -22,7 +22,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       MobileScannerController();
 
   void _onDetect(BarcodeCapture capture) {
-    var safeContext = context;
+    // var safeContext = context;
     if (!isScanning) return;
 
     final Barcode? barcode = capture.barcodes.first;
@@ -40,8 +40,8 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
 
       // Optional: Show result in dialog
       // Navigator.of(context).pop();
-      if (safeContext.mounted) {
-        Navigator.of(safeContext).pop(value);
+      if (context.mounted) {
+        Navigator.of(context).pop(value);
       }
     }
   }
