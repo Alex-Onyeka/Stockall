@@ -1,4 +1,5 @@
 // import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:stockall/constants/play_sounds.dart';
@@ -55,22 +56,40 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       appBar: AppBar(
         title: const Text('Scan Barcode'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.flash_on),
-            onPressed: () => cameraController.toggleTorch(),
-          ),
-          // if (!kIsWeb)
-          IconButton(
-            icon: const Icon(Icons.cameraswitch),
-            onPressed:
-                () => cameraController.switchCamera(),
+          Visibility(
+            visible: !kIsWeb,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.flash_on),
+                  onPressed:
+                      () => cameraController.toggleTorch(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.cameraswitch),
+                  onPressed:
+                      () => cameraController.switchCamera(),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      body: MobileScanner(
-        controller: cameraController,
-        onDetect: _onDetect,
-        fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          MobileScanner(
+            controller: cameraController,
+            onDetect: _onDetect,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            height: 150,
+            width: 150,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+            ),
+          ),
+        ],
       ),
     );
   }
