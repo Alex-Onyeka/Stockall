@@ -12,6 +12,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/helpers/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
@@ -332,47 +333,53 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   onTap: () {
                                     print('$currentUpdate');
                                   },
-                                  child: DashboardTotalSalesBanner(
-                                    expenses: expensesLocal,
-                                    userValue: returnReceiptProvider(
-                                      context,
-                                    ).getTotalRevenueForSelectedDay(
-                                      context,
-                                      returnReceiptProvider(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      await playBeep();
+                                    },
+                                    child: DashboardTotalSalesBanner(
+                                      expenses:
+                                          expensesLocal,
+                                      userValue: returnReceiptProvider(
+                                        context,
+                                      ).getTotalRevenueForSelectedDay(
+                                        context,
+                                        returnReceiptProvider(
+                                              context,
+                                            ).receipts
+                                            .where(
+                                              (emp) =>
+                                                  emp.staffName ==
+                                                  userGeneral(
+                                                    context,
+                                                  ).name,
+                                            )
+                                            .toList(),
+                                        returnReceiptProvider(
+                                          context,
+                                        ).returnproductsRecordByDayOrWeek(
+                                          context,
+                                          returnReceiptProvider(
                                             context,
-                                          ).receipts
-                                          .where(
-                                            (emp) =>
-                                                emp.staffName ==
-                                                userGeneral(
-                                                  context,
-                                                ).name,
-                                          )
-                                          .toList(),
-                                      returnReceiptProvider(
+                                          ).produtRecordSalesMain,
+                                        ),
+                                      ),
+                                      currentUser:
+                                          userGeneral(
+                                            context,
+                                          ),
+                                      theme: theme,
+                                      value: returnReceiptProvider(
                                         context,
-                                      ).returnproductsRecordByDayOrWeek(
+                                      ).getTotalRevenueForSelectedDay(
                                         context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
                                         returnReceiptProvider(
                                           context,
                                         ).produtRecordSalesMain,
                                       ),
-                                    ),
-                                    currentUser:
-                                        userGeneral(
-                                          context,
-                                        ),
-                                    theme: theme,
-                                    value: returnReceiptProvider(
-                                      context,
-                                    ).getTotalRevenueForSelectedDay(
-                                      context,
-                                      returnReceiptProvider(
-                                        context,
-                                      ).receipts,
-                                      returnReceiptProvider(
-                                        context,
-                                      ).produtRecordSalesMain,
                                     ),
                                   ),
                                 ),
