@@ -29,10 +29,18 @@ class _MyCalculatorState extends State<MyCalculator> {
             }
           }
         } else if (number == '0') {
-          if (leftNumbers.isNotEmpty) {
+          if (leftNumbers.isEmpty) {
             setState(() {
               leftNumbers.add(number);
             });
+          } else {
+            if (leftNumbers.length > 1 &&
+                leftNumbers.first == '0' &&
+                leftNumbers[1] != '0') {
+              setState(() {
+                leftNumbers.add(number);
+              });
+            }
           }
         } else {
           setState(() {
