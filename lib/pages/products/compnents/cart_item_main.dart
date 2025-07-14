@@ -188,7 +188,12 @@ class _CartItemMainState extends State<CartItemMain> {
                                           .lightModeColor
                                           .prColor300,
                                 ),
-                                '${widget.cartItem.customPrice != null ? formatMoneyMid(widget.cartItem.customPrice ?? 0, context) : (widget.cartItem.customPrice) ?? (widget.cartItem.item.discount == null ? formatMoneyMid(widget.cartItem.totalCost(), context) : formatMoneyMid((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100))), context))}',
+                                formatMoneyMid(
+                                  widget.cartItem
+                                      .totalCost(),
+                                  context,
+                                ),
+                                // '${widget.cartItem.customPrice != null ? formatMoneyMid(widget.cartItem.customPrice ?? 0, context) : (widget.cartItem.customPrice) ?? (widget.cartItem.item.discount == null ? formatMoneyMid(widget.cartItem.totalCost(), context) : formatMoneyMid((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100))), context))}',
                               ),
                               Visibility(
                                 visible:

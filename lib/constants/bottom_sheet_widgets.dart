@@ -1340,14 +1340,23 @@ class _CustomBottomPanelState
                   vertical: 20,
                 ),
                 backgroundColor: Colors.white,
-                title: Text(
-                  'Enter Product Sales',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.h4.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
+                title: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Enter Product Sales',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.h4.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Divider(color: Colors.grey.shade300),
+                  ],
                 ),
+
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -1362,12 +1371,182 @@ class _CustomBottomPanelState
                                     .setCustomPrice ||
                             cartItem.item.sellingPrice ==
                                 null,
-                        child: Column(
+                        child: Row(
+                          spacing: 10,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.end,
                           children: [
-                            SizedBox(
-                              width: 450,
+                            Expanded(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    border: Border.all(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade300,
+                                      width: 0.5,
+                                    ),
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                  ),
+                                  child: InkWell(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    onTap: () {
+                                      if (returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).setTotalPrice ==
+                                          true) {
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).toggleSetTotalPrice(
+                                          false,
+                                        );
+                                      } else {
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).toggleSetTotalPrice(
+                                          true,
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(
+                                            10,
+                                            5,
+                                            5,
+                                            5,
+                                          ),
+                                      child: Column(
+                                        spacing: 5,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b2
+                                                      .fontSize,
+                                            ),
+                                            'Set Total Price?',
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              if (returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).setTotalPrice ==
+                                                  true) {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleSetTotalPrice(
+                                                  false,
+                                                );
+                                              } else {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleSetTotalPrice(
+                                                  true,
+                                                );
+                                              }
+                                            },
+                                            child: Container(
+                                              width: 50,
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        10,
+                                                    vertical:
+                                                        5,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      20,
+                                                    ),
+                                                border: Border.all(
+                                                  color:
+                                                      returnSalesProvider(
+                                                            context,
+                                                          ).setTotalPrice
+                                                          ? theme.lightModeColor.prColor250
+                                                          : Colors.grey,
+                                                ),
+                                                color:
+                                                    returnSalesProvider(
+                                                          context,
+                                                        ).setTotalPrice
+                                                        ? theme.lightModeColor.prColor250
+                                                        : Colors.grey.shade200,
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    returnSalesProvider(
+                                                          context,
+                                                        ).setTotalPrice
+                                                        ? MainAxisAlignment.end
+                                                        : MainAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          5,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      shape:
+                                                          BoxShape.circle,
+                                                      color:
+                                                          returnSalesProvider(
+                                                                context,
+                                                              ).setTotalPrice
+                                                              ? Colors.white
+                                                              : Colors.grey.shade600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
                               child: MoneyTextfield(
-                                title: 'Enter Custom Price',
+                                title:
+                                    returnSalesProvider(
+                                          context,
+                                        ).setTotalPrice
+                                        ? 'Total Price'
+                                        : 'Individual Price',
                                 hint: 'Enter Price',
                                 controller: priceController,
                                 theme: theme,
@@ -1380,6 +1559,7 @@ class _CustomBottomPanelState
                           ],
                         ),
                       ),
+                      SizedBox(height: 20),
                       SizedBox(
                         width: 450,
                         child: EditCartTextField(
@@ -1552,29 +1732,14 @@ class _CustomBottomPanelState
                                         .b1
                                         .fontWeightBold,
                               ),
-                              priceController.text.isEmpty
-                                  ? formatMoneyBig(
-                                    qqty *
-                                        (returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).discountCheck(
-                                          cartItem.item,
-                                        )),
-                                    context,
-                                  )
-                                  : formatMoneyBig(
-                                    double.tryParse(
-                                          priceController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
-                                        ) ??
-                                        0,
-                                    context,
+                              formatMoneyMid(
+                                double.parse(
+                                  formatSellingPrice(
+                                    cartItem,
                                   ),
+                                ),
+                                context,
+                              ),
                             ),
                           ],
                         ),
@@ -1756,6 +1921,11 @@ class _CustomBottomPanelState
                                               ),
                                         );
                                   }
+                                  cartItem.setTotalPrice =
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).setTotalPrice;
                                   cartItem.quantity =
                                       qqty.toDouble();
                                   cartItem.setCustomPrice =
@@ -1799,6 +1969,10 @@ class _CustomBottomPanelState
           context,
           listen: false,
         ).closeCustomPrice();
+        returnSalesProvider(
+          context,
+          listen: false,
+        ).toggleSetTotalPrice(false);
       }
     });
   }
@@ -1815,6 +1989,28 @@ class _CustomBottomPanelState
     searchResult = null;
     scanResult = '';
     productResults.clear();
+  }
+
+  String formatSellingPrice(TempCartItem cartItem) {
+    if (priceController.text.isNotEmpty) {
+      if (returnSalesProvider(context).setTotalPrice) {
+        return priceController.text.replaceAll(',', '');
+      } else {
+        return (int.parse(
+                  priceController.text.isNotEmpty
+                      ? priceController.text.replaceAll(
+                        ',',
+                        '',
+                      )
+                      : '0',
+                ) *
+                qqty.toInt())
+            .toString();
+      }
+    } else {
+      return (qqty * (cartItem.item.sellingPrice ?? 0))
+          .toString();
+    }
   }
 
   @override
@@ -2089,6 +2285,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2120,6 +2322,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2181,6 +2389,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2212,6 +2426,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2322,6 +2542,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2353,6 +2579,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2414,6 +2646,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:
@@ -2445,6 +2683,12 @@ class _CustomBottomPanelState
                                         selectProduct(
                                           theme: theme,
                                           cartItem: TempCartItem(
+                                            setTotalPrice:
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice,
                                             addToStock:
                                                 false,
                                             discount:

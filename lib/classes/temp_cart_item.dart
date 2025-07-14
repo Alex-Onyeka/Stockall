@@ -6,6 +6,7 @@ class TempCartItem {
   double quantity;
   double? customPrice;
   bool setCustomPrice;
+  bool setTotalPrice;
   bool addToStock;
 
   TempCartItem({
@@ -15,6 +16,7 @@ class TempCartItem {
     this.customPrice,
     this.setCustomPrice = true,
     required this.addToStock,
+    required this.setTotalPrice,
   });
 
   double discountCost() {
@@ -28,7 +30,11 @@ class TempCartItem {
 
   double totalCost() {
     if (customPrice != null) {
-      return customPrice!;
+      if (setTotalPrice) {
+        return customPrice!;
+      } else {
+        return customPrice! * quantity;
+      }
     } else {
       return item.sellingPrice != null
           ? item.sellingPrice! * quantity
@@ -38,7 +44,11 @@ class TempCartItem {
 
   double revenue() {
     if (customPrice != null) {
-      return customPrice!;
+      if (setTotalPrice) {
+        return customPrice!;
+      } else {
+        return customPrice! * quantity;
+      }
     } else {
       return totalCost() - discountCost();
     }
@@ -53,7 +63,6 @@ class TempCartItem {
   double profitOrLoss() {
     return item.costPrice == 0
         ? 0
-        : (item.sellingPrice ?? 0 - item.costPrice) *
-            quantity;
+        : totalCost() - (costPrice() ?? 0);
   }
 }

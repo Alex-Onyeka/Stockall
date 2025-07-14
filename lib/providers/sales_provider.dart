@@ -14,6 +14,12 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool setTotalPrice = false;
+  void toggleSetTotalPrice(bool value) {
+    setTotalPrice = value;
+    notifyListeners();
+  }
+
   List<TempCartItem> cartItems = [];
   bool isInvoice = false;
 

@@ -479,6 +479,27 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   TextEditingController nameC = TextEditingController();
   bool resultOn = false;
 
+  String formatSellingPrice() {
+    if (sellingPriceC.text.isNotEmpty) {
+      if (returnSalesProvider(context).setTotalPrice) {
+        return sellingPriceC.text.replaceAll(',', '');
+      } else {
+        return (int.parse(
+                  sellingPriceC.text.isNotEmpty
+                      ? sellingPriceC.text.replaceAll(
+                        ',',
+                        '',
+                      )
+                      : '0',
+                ) *
+                qqty.toInt())
+            .toString();
+      }
+    } else {
+      return '0.0';
+    }
+  }
+
   void makeCustomSale({
     required TempCartItem cartItem,
     required Function() closeAction,
@@ -503,13 +524,21 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                   vertical: 20,
                 ),
                 backgroundColor: Colors.white,
-                title: Text(
-                  'Enter Product Sales',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.h4.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
+                title: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Enter Product Sales',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.h4.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Divider(color: Colors.grey.shade300),
+                  ],
                 ),
                 content: SingleChildScrollView(
                   child: Stack(
@@ -559,25 +588,193 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
                               SizedBox(height: 10),
                               Row(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.end,
                                 spacing: 10,
                                 children: [
+                                  // Expanded(
+                                  //   child: MoneyTextfield(
+                                  //     title:
+                                  //         'Cost Price (Optional)',
+                                  //     hint: 'Enter Price',
+                                  //     controller:
+                                  //         costPriceC,
+                                  //     theme: theme,
+                                  //     onChanged: (p0) {
+                                  //       setState(() {});
+                                  //     },
+                                  //   ),
+                                  // ),
                                   Expanded(
-                                    child: MoneyTextfield(
-                                      title:
-                                          'Cost Price (Optional)',
-                                      hint: 'Enter Price',
-                                      controller:
-                                          costPriceC,
-                                      theme: theme,
-                                      onChanged: (p0) {
-                                        setState(() {});
-                                      },
+                                    child: Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: Ink(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                5,
+                                              ),
+                                          border: Border.all(
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade300,
+                                            width: 0.5,
+                                          ),
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade100,
+                                        ),
+                                        child: InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                5,
+                                              ),
+                                          onTap: () {
+                                            if (returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setTotalPrice ==
+                                                true) {
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).toggleSetTotalPrice(
+                                                false,
+                                              );
+                                            } else {
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).toggleSetTotalPrice(
+                                                true,
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.fromLTRB(
+                                                  10,
+                                                  5,
+                                                  5,
+                                                  5,
+                                                ),
+                                            child: Column(
+                                              spacing: 5,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    fontSize:
+                                                        theme.mobileTexts.b2.fontSize,
+                                                  ),
+                                                  'Set Total Price?',
+                                                ),
+                                                InkWell(
+                                                  onTap: () {
+                                                    if (returnSalesProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).setTotalPrice ==
+                                                        true) {
+                                                      returnSalesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).toggleSetTotalPrice(
+                                                        false,
+                                                      );
+                                                    } else {
+                                                      returnSalesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).toggleSetTotalPrice(
+                                                        true,
+                                                      );
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    width:
+                                                        50,
+                                                    padding: EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          10,
+                                                      vertical:
+                                                          5,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(
+                                                        20,
+                                                      ),
+                                                      border: Border.all(
+                                                        color:
+                                                            returnSalesProvider(
+                                                                  context,
+                                                                ).setTotalPrice
+                                                                ? theme.lightModeColor.prColor250
+                                                                : Colors.grey,
+                                                      ),
+                                                      color:
+                                                          returnSalesProvider(
+                                                                context,
+                                                              ).setTotalPrice
+                                                              ? theme.lightModeColor.prColor250
+                                                              : Colors.grey.shade200,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          returnSalesProvider(
+                                                                context,
+                                                              ).setTotalPrice
+                                                              ? MainAxisAlignment.end
+                                                              : MainAxisAlignment.start,
+                                                      children: [
+                                                        Container(
+                                                          padding: EdgeInsets.all(
+                                                            5,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color:
+                                                                returnSalesProvider(
+                                                                      context,
+                                                                    ).setTotalPrice
+                                                                    ? Colors.white
+                                                                    : Colors.grey.shade600,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   Expanded(
                                     child: MoneyTextfield(
                                       title:
-                                          'Selling Price',
+                                          returnSalesProvider(
+                                                context,
+                                              ).setTotalPrice
+                                              ? 'Total Price'
+                                              : 'Individual Price',
                                       hint: 'Enter Price',
                                       controller:
                                           sellingPriceC,
@@ -588,6 +785,67 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ),
                                   ),
                                 ],
+                              ),
+                              SizedBox(height: 20),
+                              Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  color:
+                                      Colors.grey.shade200,
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 50.0,
+                                      ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                        ),
+                                        'Total Cost',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                        ),
+                                        formatMoneyMid(
+                                          double.tryParse(
+                                                formatSellingPrice(),
+                                              ) ??
+                                              0,
+                                          context,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                               SizedBox(height: 20),
                             ],
@@ -610,7 +868,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
                                 setState(() {
                                   qqty = entered;
-                                  // cartItem.quantity = qqty;
                                 });
                               },
 
@@ -981,6 +1238,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           qqty.toDouble();
                                       cartItem.setCustomPrice =
                                           true;
+                                      cartItem.setTotalPrice =
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).setTotalPrice;
                                       cartItem.item.name =
                                           nameC.text;
                                       cartItem
@@ -1374,6 +1636,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
           context,
           listen: false,
         ).closeCustomPrice();
+        returnSalesProvider(
+          context,
+          listen: false,
+        ).toggleSetTotalPrice(false);
       }
     });
   }
@@ -1610,6 +1876,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               Navigator.of(context).pop();
                             },
                             cartItem: TempCartItem(
+                              setTotalPrice:
+                                  returnSalesProvider(
+                                    context,
+                                    listen: false,
+                                  ).setTotalPrice,
                               item: TempProductClass(
                                 isManaged: false,
                                 id: 111,
@@ -1684,6 +1955,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   cartItem: TempCartItem(
+                                    setTotalPrice:
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).setTotalPrice,
                                     item: TempProductClass(
                                       isManaged: false,
                                       id: 000,
@@ -1821,6 +2097,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           ).pop();
                                                         },
                                                         cartItem: TempCartItem(
+                                                          setTotalPrice:
+                                                              returnSalesProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).setTotalPrice,
                                                           item: TempProductClass(
                                                             isManaged:
                                                                 false,
@@ -2078,6 +2360,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             ).pop();
                                                           },
                                                           cartItem: TempCartItem(
+                                                            setTotalPrice:
+                                                                returnSalesProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).setTotalPrice,
                                                             item: TempProductClass(
                                                               isManaged:
                                                                   false,
