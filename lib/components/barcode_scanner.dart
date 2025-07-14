@@ -92,7 +92,10 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       body: MobileScanner(
         controller: cameraController,
         onDetect: _onDetect,
-        fit: BoxFit.cover,
+        onDetectError: (error, stackTrace) {
+          print(error.toString());
+          print('Error: ${stackTrace.toString()}');
+        },
       ),
     );
   }
