@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/play_sounds.dart';
 
 class BarcodeScanner extends StatefulWidget {
   const BarcodeScanner({super.key});
@@ -19,11 +20,11 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   bool isScanning = true;
 
   final MobileScannerController cameraController =
-      MobileScannerController();
+      MobileScannerController(facing: CameraFacing.back);
 
-  void _onDetect(BarcodeCapture capture) {
+  void _onDetect(BarcodeCapture capture) async {
     if (!isScanning) return; // Prevent repeated scans
-
+    var safeContext = context;
     final Barcode? barcode = capture.barcodes.first;
     final String? value = barcode?.rawValue;
 
@@ -35,38 +36,11 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
 
       // Stop scanning after first successful scan
       cameraController.stop();
-
+      await playBeep();
       // Optional: Show result in dialog
-      Navigator.of(context).pop(value);
-      // showDialog(
-      //   context: context,
-      //   builder:
-      //       (_) => AlertDialog(
-      //         title: const Text('Scanned Code'),
-      //         content: Text(value),
-      //         actions: [
-      //           TextButton(
-      //             onPressed: () {
-      //               Navigator.of(context).pop();
-      //               setState(() {
-      //                 isScanning = true;
-      //                 cameraController.start();
-      //               });
-      //             },
-      //             child: const Text('Scan Again'),
-      //           ),
-      //           TextButton(
-      //             onPressed: () {
-      //               Navigator.of(context).pop();
-      //               Navigator.of(context).pop(
-      //                 value,
-      //               ); // return value to previous page
-      //             },
-      //             child: const Text('Done'),
-      //           ),
-      //         ],
-      //       ),
-      // );
+      if (safeContext.mounted) {
+        Navigator.of(safeContext).pop(value);
+      }
     }
   }
 
@@ -84,17 +58,28 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
         title: 'Scan Barcode',
         widget: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.flash_on),
-              onPressed:
-                  () => cameraController.toggleTorch(),
-            ),
-            if (!kIsWeb)
-              IconButton(
-                icon: const Icon(Icons.cameraswitch),
-                onPressed:
-                    () => cameraController.switchCamera(),
+            Visibility(
+              visible: !kIsWeb,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.flash_on),
+                    onPressed:
+                        () =>
+                            cameraController.toggleTorch(),
+                  ),
+                  if (!kIsWeb)
+                    IconButton(
+                      icon: const Icon(Icons.cameraswitch),
+                      onPressed:
+                          () =>
+                              cameraController
+                                  .switchCamera(),
+                    ),
+                  SizedBox(width: 10),
+                ],
               ),
+            ),
           ],
         ),
       ),
