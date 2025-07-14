@@ -67,19 +67,17 @@ class _SalesAndRevenueReportMobileState
 
       if (summaryMap.containsKey(name)) {
         final existing = summaryMap[name]!;
+
+        final costPrice = record.costPrice ?? 0;
+
         summaryMap[name] = ProductReportSummary(
           productName: name,
           quantity: existing.quantity + record.quantity,
           total: existing.total + record.revenue,
-          costTotal:
-              existing.costTotal + (record.costPrice ?? 0),
+          costTotal: existing.costTotal + costPrice,
           profit:
-              (existing.total +
-                  (record.costPrice! == 0
-                      ? 0
-                      : record.revenue)) -
-              (existing.costTotal +
-                  (record.costPrice ?? 0)),
+              (existing.total + record.revenue) -
+              (existing.costTotal + costPrice),
         );
       } else {
         summaryMap[name] = ProductReportSummary(
