@@ -40,6 +40,10 @@ class _MyCalculatorState extends State<MyCalculator> {
               setState(() {
                 leftNumbers.add(number);
               });
+            } else {
+              setState(() {
+                leftNumbers.add(number);
+              });
             }
           }
         } else {
@@ -65,6 +69,10 @@ class _MyCalculatorState extends State<MyCalculator> {
             if (rightNumbers.length > 1 &&
                 rightNumbers.first == '0' &&
                 rightNumbers[1] != '0') {
+              setState(() {
+                rightNumbers.add(number);
+              });
+            } else {
               setState(() {
                 rightNumbers.add(number);
               });
@@ -157,6 +165,21 @@ class _MyCalculatorState extends State<MyCalculator> {
     });
   }
 
+  String number(List<String> numbers) {
+    String tempNumber = numbers.join();
+    if (!tempNumber.contains('.')) {
+      return formatLargeNumber(tempNumber);
+    } else {
+      if (tempNumber.length > 1 &&
+          tempNumber.contains('.') &&
+          tempNumber.split('.').length > 1) {
+        return "${formatLargeNumber(tempNumber.split('.').first)}.${tempNumber.split('.')[1]}";
+      } else {
+        return tempNumber;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
@@ -222,18 +245,9 @@ class _MyCalculatorState extends State<MyCalculator> {
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children:
-                                leftNumbers.map((item) {
-                                  return Row(
-                                    children: [
-                                      SubResult(
-                                        number: item,
-                                        theme: theme,
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
+                          SubResult(
+                            number: number(leftNumbers),
+                            theme: theme,
                           ),
                           Text(
                             style: TextStyle(
@@ -242,18 +256,9 @@ class _MyCalculatorState extends State<MyCalculator> {
                             ),
                             sign ?? '',
                           ),
-                          Row(
-                            children:
-                                rightNumbers.map((item) {
-                                  return Row(
-                                    children: [
-                                      SubResult(
-                                        number: item,
-                                        theme: theme,
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
+                          SubResult(
+                            number: number(rightNumbers),
+                            theme: theme,
                           ),
                         ],
                       ),

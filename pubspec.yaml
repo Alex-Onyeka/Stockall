@@ -96,7 +96,7 @@ flutter:
         - asset: assets/fonts/PlusJakartaSans-Regular.ttf
           weight: 400
         - asset: assets/fonts/PlusJakartaSans-Bold.ttf
-          weight: 700
+          weight: 600
 
   # To add assets to your application, add an assets section, like this:
   assets:
