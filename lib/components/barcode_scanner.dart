@@ -21,9 +21,10 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   final MobileScannerController cameraController =
       MobileScannerController(facing: CameraFacing.back);
 
-  void _onDetect(BarcodeCapture capture) {
-    if (!isScanning) return; // Prevent repeated scans
-    // var safeContext = context;
+  void _onDetect(BarcodeCapture capture) async {
+    if (!isScanning) return;
+    await playBeep(); // Prevent repeated scans
+    var safeContext = context;
     final Barcode? barcode = capture.barcodes.first;
     final String? value = barcode?.rawValue;
 
@@ -35,11 +36,11 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
 
       // Stop scanning after first successful scan
       cameraController.stop();
-      // await playBeep();
+
       // Optional: Show result in dialog
-      // if (safeContext.mounted) {
-      Navigator.of(context).pop(value);
-      // }
+      if (safeContext.mounted) {
+        Navigator.of(safeContext).pop(value);
+      }
     }
   }
 
