@@ -57,10 +57,18 @@ class _MyCalculatorState extends State<MyCalculator> {
             }
           }
         } else if (number == '0') {
-          if (rightNumbers.isNotEmpty) {
+          if (rightNumbers.isEmpty) {
             setState(() {
               rightNumbers.add(number);
             });
+          } else {
+            if (rightNumbers.length > 1 &&
+                rightNumbers.first == '0' &&
+                rightNumbers[1] != '0') {
+              setState(() {
+                rightNumbers.add(number);
+              });
+            }
           }
         } else {
           setState(() {

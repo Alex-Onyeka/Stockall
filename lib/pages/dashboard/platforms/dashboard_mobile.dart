@@ -191,6 +191,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
     fetchNotifications();
   }
 
+  Future<void> playSound() async {
+    Future.delayed((Duration(seconds: 2)), () async {
+      await playBeep();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -335,7 +341,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   },
                                   child: GestureDetector(
                                     onTap: () async {
-                                      await playBeep();
+                                      await playSound();
                                     },
                                     child: DashboardTotalSalesBanner(
                                       expenses:
