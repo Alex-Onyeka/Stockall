@@ -44,24 +44,24 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     }
   }
 
-  void _onDetectWeb(BarcodeCapture capture) {
-    if (!isScanning) return;
-    // Prevent repeated scans
-    final Barcode? barcode = capture.barcodes.first;
-    final String? value = barcode?.rawValue;
+  // void _onDetectWeb(BarcodeCapture capture) {
+  //   if (!isScanning) return;
+  //   // Prevent repeated scans
+  //   final Barcode? barcode = capture.barcodes.first;
+  //   final String? value = barcode?.rawValue;
 
-    if (value != null && value.isNotEmpty) {
-      setState(() {
-        scannedCode = value;
-        isScanning = false;
-      });
+  //   if (value != null && value.isNotEmpty) {
+  //     setState(() {
+  //       scannedCode = value;
+  //       isScanning = false;
+  //     });
 
-      // Stop scanning after first successful scan
-      cameraController.stop();
-      // Optional: Show result in dialog
-      Navigator.of(context).pop(value);
-    }
-  }
+  //     // Stop scanning after first successful scan
+  //     cameraController.stop();
+  //     // Optional: Show result in dialog
+  //     Navigator.of(context).pop(value);
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -127,10 +127,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
                 child: MobileScanner(
                   // fit: BoxFit.contain,
                   controller: cameraController,
-                  onDetect:
-                      kIsWeb
-                          ? _onDetectWeb
-                          : _onDetectNative,
+                  onDetect: _onDetectNative,
                   onDetectError: (error, stackTrace) {
                     print(error.toString());
                     print(
