@@ -138,6 +138,7 @@ class ShopProvider extends ChangeNotifier {
 
     final List<dynamic> categories =
         response['categories'] ?? [];
+    notifyListeners();
     return categories.cast<String>();
   }
 
@@ -167,10 +168,15 @@ class ShopProvider extends ChangeNotifier {
           }.toList();
 
       // Step 3: Update in database
+
       await supabase
           .from('shops')
           .update({'categories': updatedCategories})
-          .eq('shop_id', shopId);
+          .eq('shop_id', shopId)
+          .select();
+
+      await getUserShop(AuthService().currentUser!.id);
+      notifyListeners();
 
       // print('Updated categories: $updateResult');
     } catch (e) {

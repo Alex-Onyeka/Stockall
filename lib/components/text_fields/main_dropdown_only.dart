@@ -20,7 +20,7 @@ class MainDropdownOnly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 7,
+      spacing: 5,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
@@ -28,16 +28,24 @@ class MainDropdownOnly extends StatelessWidget {
           child: TextFormField(
             enabled: false,
             decoration: InputDecoration(
-              suffixIcon: Icon(
-                size: 30,
-                color: Colors.grey,
-                isOpen
-                    ? Icons.keyboard_arrow_up_rounded
-                    : Icons.keyboard_arrow_down_rounded,
+              isCollapsed: true,
+              suffixIcon: Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: Icon(
+                  size: 25,
+                  color: Colors.grey,
+                  isOpen
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                ),
+              ),
+              suffixIconConstraints: BoxConstraints(
+                minHeight: 0,
+                minWidth: 0,
               ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 20,
-                vertical: 13,
+                vertical: 12,
               ),
               hintText: hint,
               hintStyle: TextStyle(
@@ -45,7 +53,7 @@ class MainDropdownOnly extends StatelessWidget {
                     valueSet
                         ? Colors.grey.shade700
                         : Colors.grey.shade500,
-                fontSize: 14,
+                fontSize: theme.mobileTexts.b2.fontSize,
                 fontWeight:
                     valueSet
                         ? FontWeight.bold
@@ -57,7 +65,7 @@ class MainDropdownOnly extends StatelessWidget {
                       isOpen
                           ? theme.lightModeColor.prColor300
                           : Colors.grey,
-                  width: isOpen ? 1.8 : 1.5,
+                  width: isOpen ? 1.3 : 1,
                 ),
                 borderRadius: BorderRadius.circular(
                   isOpen ? 10 : 5,

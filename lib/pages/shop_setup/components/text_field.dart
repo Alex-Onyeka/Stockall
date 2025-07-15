@@ -27,20 +27,20 @@ class FormFieldShop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 10,
+      spacing: 5,
       children: [
         Row(
           spacing: 5,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              style: theme.mobileTexts.b2.textStyleBold,
+              style: theme.mobileTexts.b3.textStyleBold,
               title,
             ),
             Visibility(
               visible: isOptional,
               child: Text(
-                style: theme.mobileTexts.b2.textStyleBold,
+                style: theme.mobileTexts.b3.textStyleBold,
                 '(Optional)',
               ),
             ),
@@ -63,27 +63,34 @@ class FormFieldShop extends StatelessWidget {
                       ? TextCapitalization.none
                       : TextCapitalization.words,
               enableSuggestions: true,
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b2.fontSize,
+                fontWeight: FontWeight.bold,
+              ),
               decoration: InputDecoration(
+                isCollapsed: true,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 15,
+                  vertical: 13,
                 ),
                 hintText: hintText,
                 hintStyle: TextStyle(
                   color: Colors.grey.shade500,
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                  fontWeight: FontWeight.normal,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Colors.grey.shade500,
-                    width: 1.5,
+                    width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
                     color: theme.lightModeColor.prColor300,
-                    width: 2,
+                    width: 1.3,
                   ),
                 ),
               ),
@@ -93,7 +100,7 @@ class FormFieldShop extends StatelessWidget {
               child: Text(
                 style: TextStyle(
                   color: Colors.grey.shade600,
-                  fontSize: 13,
+                  fontSize: theme.mobileTexts.b3.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 message ?? '',

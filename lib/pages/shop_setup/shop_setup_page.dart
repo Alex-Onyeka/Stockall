@@ -250,7 +250,11 @@ class _ShopSetupPageState extends State<ShopSetupPage> {
                                               Colors
                                                   .grey
                                                   .shade600,
-                                          fontSize: 13,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
                                           fontWeight:
                                               FontWeight
                                                   .bold,

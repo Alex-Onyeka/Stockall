@@ -81,51 +81,56 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
       children: [
         Text(
           widget.title,
-          style: widget.theme.mobileTexts.b2.textStyleBold,
+          style: widget.theme.mobileTexts.b3.textStyleBold,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 5),
         TextFormField(
           onChanged: widget.onChanged,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade700,
-          ),
           keyboardType: TextInputType.number,
           autocorrect: false,
           enableSuggestions: false,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade700,
+          ),
           decoration: InputDecoration(
             isCollapsed: true,
-            prefixIcon: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                  currencySymbol(context),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(
+                left: 10,
+                right: 2,
+              ),
+              child: Text(
+                currencySymbol(context),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
                 ),
-              ],
+              ),
+            ),
+            prefixIconConstraints: BoxConstraints(
+              minWidth: 0,
+              minHeight: 0,
             ),
 
             contentPadding: EdgeInsets.only(
-              right: 20,
+              right: 15,
               left: 15,
-              top: 12,
-              bottom: 12,
+              top: 10,
+              bottom: 10,
             ),
-            hintText: widget.hint,
             hintStyle: TextStyle(
               color: Colors.grey.shade500,
               fontWeight: FontWeight.normal,
-              fontSize: 14,
+              fontSize: 12,
             ),
+            hintText: widget.hint,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
-                width: 1.5,
+                width: 1,
               ),
               borderRadius: BorderRadius.circular(5),
             ),
@@ -133,7 +138,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
               borderSide: BorderSide(
                 color:
                     widget.theme.lightModeColor.prColor300,
-                width: 1.8,
+                width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),

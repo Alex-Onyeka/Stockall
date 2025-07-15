@@ -916,7 +916,7 @@ class _AddProductMobileState
                                                 style:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .textStyleBold,
                                                 'Expiry Date (Optional)',
                                               ),
@@ -928,7 +928,7 @@ class _AddProductMobileState
                                                   vertical:
                                                       0,
                                                   horizontal:
-                                                      10,
+                                                      5,
                                                 ),
                                             decoration: BoxDecoration(
                                               border: Border.all(
@@ -940,7 +940,7 @@ class _AddProductMobileState
                                                 width:
                                                     returnData(context).expiryDate !=
                                                             null
-                                                        ? 1.5
+                                                        ? 1.3
                                                         : 1,
                                               ),
                                               borderRadius:
@@ -966,8 +966,8 @@ class _AddProductMobileState
                                                                       context,
                                                                     ).expiryDate !=
                                                                     null
-                                                                ? theme.mobileTexts.b1.fontSize
-                                                                : theme.mobileTexts.b1.fontSize,
+                                                                ? theme.mobileTexts.b2.fontSize
+                                                                : theme.mobileTexts.b2.fontSize,
                                                         fontWeight:
                                                             returnData(
                                                                       context,
@@ -997,17 +997,32 @@ class _AddProductMobileState
                                                     ),
                                                   ],
                                                 ),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    returnData(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).clearExpDate();
-                                                  },
-                                                  icon: Icon(
-                                                    Icons
-                                                        .clear,
+                                                Ink(
+                                                  child: InkWell(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                    onTap: () {
+                                                      returnData(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).clearExpDate();
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            7,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.circle,
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.clear,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ],

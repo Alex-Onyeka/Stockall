@@ -35,38 +35,59 @@ class _PhoneNumberTextFieldState
       children: [
         Text(
           widget.title,
-          style: widget.theme.mobileTexts.b2.textStyleBold,
+          style: widget.theme.mobileTexts.b3.textStyleBold,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 5),
         IntlPhoneField(
+          style: TextStyle(
+            fontSize: widget.theme.mobileTexts.b2.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
           enabled: widget.isEnabled ?? true,
           disableLengthCheck: false,
           controller: widget.controller,
           pickerDialogStyle: PickerDialogStyle(
             backgroundColor: Colors.white,
-            width: 400,
+            listTileDivider: Divider(
+              height: 0,
+              color: Colors.grey.shade400,
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 20,
+            ),
+            countryNameStyle: TextStyle(
+              fontSize:
+                  widget.theme.mobileTexts.b2.fontSize,
+            ),
+            width: 500,
           ),
           decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(
+              right: 20,
+              bottom: 10,
+              left: 10,
+              top: 10,
+            ),
             labelText: 'Enter Phone Number',
             labelStyle: TextStyle(
               color: Colors.grey.shade500,
-              fontSize: 14,
+              fontSize:
+                  widget.theme.mobileTexts.b2.fontSize,
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    widget.theme.lightModeColor.prColor200,
+                color: Colors.grey.shade700,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(5),
             ),
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    widget.theme.lightModeColor.prColor200,
+                color: Colors.grey.shade700,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(5),
@@ -75,7 +96,7 @@ class _PhoneNumberTextFieldState
               borderSide: BorderSide(
                 color:
                     widget.theme.lightModeColor.prColor300,
-                width: 1.5,
+                width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),

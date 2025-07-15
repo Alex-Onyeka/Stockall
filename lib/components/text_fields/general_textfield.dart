@@ -26,16 +26,20 @@ class GeneralTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 7,
+      spacing: 5,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          style: theme.mobileTexts.b2.textStyleBold,
+          style: theme.mobileTexts.b3.textStyleBold,
           title,
         ),
         TextFormField(
           enabled: isEnabled ?? true,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade700,
+          ),
           onChanged: onChanged,
           maxLines: lines,
           keyboardType:
@@ -49,46 +53,41 @@ class GeneralTextField extends StatelessWidget {
           autocorrect: isEmail == null ? true : false,
           enableSuggestions: isEmail == null ? true : false,
           decoration: InputDecoration(
+            isCollapsed: true,
             labelText: hint,
             labelStyle: TextStyle(
               fontWeight: FontWeight.normal,
               color: Colors.grey.shade400,
-              fontSize: 14,
+              fontSize: 12,
             ),
             floatingLabelStyle: TextStyle(
               fontWeight: FontWeight.w600,
               color: theme.lightModeColor.prColor300,
-              fontSize: 13,
+              fontSize: 11,
               letterSpacing: 0.5,
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 12,
             ),
-            // hintText: hint,
-            // hintStyle: TextStyle(
-            //   color: Colors.grey.shade500,
-            //   fontSize: 14,
-            //   fontWeight: FontWeight.normal,
-            // ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
-                width: 1.5,
+                width: 1,
               ),
               borderRadius: BorderRadius.circular(5),
             ),
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
-                width: 1.5,
+                width: 1.2,
               ),
               borderRadius: BorderRadius.circular(5),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: theme.lightModeColor.prColor300,
-                width: 1.8,
+                width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),

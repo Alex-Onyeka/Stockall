@@ -20,11 +20,11 @@ class BarcodeScanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 7,
+      spacing: 5,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          style: theme.mobileTexts.b2.textStyleBold,
+          style: theme.mobileTexts.b3.textStyleBold,
           title,
         ),
         InkWell(
@@ -32,14 +32,22 @@ class BarcodeScanner extends StatelessWidget {
           child: TextFormField(
             enabled: false,
             decoration: InputDecoration(
-              suffixIcon: Icon(
-                size: 30,
-                color: Colors.grey,
-                Icons.qr_code_scanner_sharp,
+              isCollapsed: true,
+              suffixIcon: Padding(
+                padding: const EdgeInsets.only(right: 50.0),
+                child: Icon(
+                  size: 20,
+                  color: Colors.grey,
+                  Icons.qr_code_scanner_sharp,
+                ),
+              ),
+              suffixIconConstraints: BoxConstraints(
+                maxHeight: 20,
+                maxWidth: 35,
               ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 20,
-                vertical: 13,
+                vertical: 8,
               ),
               hintText: hint,
               hintStyle: TextStyle(
@@ -47,7 +55,7 @@ class BarcodeScanner extends StatelessWidget {
                     valueSet
                         ? Colors.grey.shade700
                         : Colors.grey.shade500,
-                fontSize: 14,
+                fontSize: theme.mobileTexts.b2.fontSize,
                 fontWeight:
                     valueSet
                         ? FontWeight.bold
@@ -56,7 +64,7 @@ class BarcodeScanner extends StatelessWidget {
               disabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: Colors.grey,
-                  width: 1.5,
+                  width: 1,
                 ),
                 borderRadius: BorderRadius.circular(5),
               ),

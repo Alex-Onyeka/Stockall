@@ -44,12 +44,6 @@ class GeneralTextfieldOnly extends StatelessWidget {
           horizontal: 20,
           vertical: 15,
         ),
-        // hintText: hint,
-        // hintStyle: TextStyle(
-        //   color: Colors.grey.shade500,
-        //   fontSize: 14,
-        //   fontWeight: FontWeight.normal,
-        // ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: Colors.grey,

@@ -325,7 +325,6 @@ class DataProvider extends ChangeNotifier {
     selectedCategory = null;
     selectedColor = null;
     selectedSize = null;
-    selectedUnit = null;
     inStock = false;
     catValueSet = false;
     isManaged = true;
@@ -335,8 +334,9 @@ class DataProvider extends ChangeNotifier {
     sizeValueSet = false;
     clearEndDate();
     clearStartDate();
-    notifyListeners();
     clearExpDate();
+    clearExpenseUnit();
+    notifyListeners();
   }
 
   bool isProductRefundable = false;
@@ -477,6 +477,11 @@ class DataProvider extends ChangeNotifier {
   ];
 
   String? selectedUnit;
+
+  void clearExpenseUnit() {
+    selectedUnit = null;
+    notifyListeners();
+  }
 
   void selectUnit(String unit) {
     if (selectedUnit == null) {

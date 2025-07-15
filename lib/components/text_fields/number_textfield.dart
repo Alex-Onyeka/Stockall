@@ -80,13 +80,13 @@ class _NumberTextfieldState extends State<NumberTextfield> {
       children: [
         Text(
           widget.title,
-          style: widget.theme.mobileTexts.b2.textStyleBold,
+          style: widget.theme.mobileTexts.b3.textStyleBold,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 5),
         TextFormField(
           onChanged: widget.onChanged,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: widget.theme.mobileTexts.b2.fontSize,
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade700,
           ),
@@ -95,18 +95,24 @@ class _NumberTextfieldState extends State<NumberTextfield> {
           enableSuggestions: false,
           decoration: InputDecoration(
             isCollapsed: true,
-            prefixIcon: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                  '#',
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(
+                left: 15.0,
+                right: 5,
+              ),
+              child: Text(
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
                 ),
-              ],
+                '#',
+              ),
+            ),
+
+            prefixIconConstraints: BoxConstraints(
+              minHeight: 0,
+              minWidth: 0,
             ),
 
             contentPadding: EdgeInsets.only(
@@ -119,12 +125,13 @@ class _NumberTextfieldState extends State<NumberTextfield> {
             hintStyle: TextStyle(
               color: Colors.grey.shade500,
               fontWeight: FontWeight.normal,
-              fontSize: 14,
+              fontSize:
+                  widget.theme.mobileTexts.b2.fontSize,
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
-                width: 1.5,
+                width: 1,
               ),
               borderRadius: BorderRadius.circular(5),
             ),
@@ -132,7 +139,7 @@ class _NumberTextfieldState extends State<NumberTextfield> {
               borderSide: BorderSide(
                 color:
                     widget.theme.lightModeColor.prColor300,
-                width: 1.8,
+                width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),

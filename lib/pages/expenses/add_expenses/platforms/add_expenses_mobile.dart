@@ -226,6 +226,13 @@ class _AddExpensesMobileState
           .toStringAsFixed(0);
       returnData(context, listen: false).selectedUnit =
           widget.expenses!.unit;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        returnData(
+          context,
+          listen: false,
+        ).clearExpenseUnit();
+      });
     }
   }
 

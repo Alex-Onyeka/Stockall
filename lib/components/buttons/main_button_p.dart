@@ -24,7 +24,7 @@ class MainButtonP extends StatelessWidget {
             decoration: BoxDecoration(
               gradient:
                   themeProvider.lightModeColor.prGradient,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: InkWell(
               onTap: () {
@@ -35,7 +35,7 @@ class MainButtonP extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical:
-                      constraints.maxWidth < 600 ? 18 : 15,
+                      constraints.maxWidth < 600 ? 15 : 12,
                 ),
                 child: Center(
                   child: Text(
@@ -45,7 +45,7 @@ class MainButtonP extends StatelessWidget {
                           constraints.maxWidth < 600
                               ? themeProvider
                                   .mobileTexts
-                                  .b1
+                                  .b2
                                   .fontSize
                               : themeProvider
                                   .mobileTexts

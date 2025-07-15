@@ -35,7 +35,7 @@ class MainButtonTransparent extends StatelessWidget {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 14),
+            padding: EdgeInsets.symmetric(vertical: 13),
 
             child: Center(
               child: Text(

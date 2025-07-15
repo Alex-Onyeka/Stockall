@@ -30,11 +30,11 @@ class _EmailTextFieldState extends State<EmailTextField> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 10,
+      spacing: 5,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          style: widget.theme.mobileTexts.b2.textStyleBold,
+          style: widget.theme.mobileTexts.b3.textStyleBold,
           widget.title,
         ),
         TextFormField(
@@ -50,7 +50,12 @@ class _EmailTextFieldState extends State<EmailTextField> {
               widget.isEnabled == false
                   ? false
                   : hidden && !widget.isEmail,
+          style: TextStyle(
+            fontSize: widget.theme.mobileTexts.b2.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
           decoration: InputDecoration(
+            isCollapsed: true,
             suffixIcon: Visibility(
               visible: !widget.isEmail,
               child: InkWell(
@@ -59,40 +64,66 @@ class _EmailTextFieldState extends State<EmailTextField> {
                     hidden = !hidden;
                   });
                 },
-                child: Icon(
-                  color: Colors.grey,
-                  size: 23,
-                  hidden
-                      ? Icons.remove_red_eye_outlined
-                      : Icons.visibility_off_outlined,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 12,
+                  ),
+                  child: Icon(
+                    color: Colors.grey,
+                    size: 20,
+                    hidden
+                        ? Icons.remove_red_eye_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
                 ),
               ),
+            ),
+            suffixIconConstraints: BoxConstraints(
+              minHeight: 0,
+              minWidth: 0,
             ),
             hintText: widget.hint,
             hintStyle: TextStyle(
               color: Colors.grey.shade500,
-              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              fontSize:
+                  widget.theme.mobileTexts.b2.fontSize,
             ),
-            prefixIcon: Icon(
-              widget.isEmail
-                  ? Icons.email_outlined
-                  : Icons.lock_outline_rounded,
-              size: 20,
-              color:
-                  widget.theme.lightModeColor.secColor200,
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(
+                left: 15.0,
+                right: 5,
+              ),
+              child: Icon(
+                widget.isEmail
+                    ? Icons.email_outlined
+                    : Icons.lock_outline_rounded,
+                size: 16,
+                color:
+                    widget.theme.lightModeColor.secColor200,
+              ),
+            ),
+            prefixIconConstraints: BoxConstraints(
+              minHeight: 0,
+              minWidth: 0,
+            ),
+            contentPadding: EdgeInsets.fromLTRB(
+              10,
+              13,
+              10,
+              13,
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    widget.theme.lightModeColor.prColor200,
+                color: Colors.grey.shade500,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(5),
             ),
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    widget.theme.lightModeColor.prColor200,
+                color: Colors.grey.shade500,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(5),
@@ -100,8 +131,8 @@ class _EmailTextFieldState extends State<EmailTextField> {
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color:
-                    widget.theme.lightModeColor.prColor300,
-                width: 1.5,
+                    widget.theme.lightModeColor.prColor200,
+                width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),
