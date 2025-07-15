@@ -289,10 +289,12 @@ class SalesProvider extends ChangeNotifier {
     required TempCartItem cartItem,
     required double number,
     double? customPrice,
+    required bool setTotalPrice,
     required bool setCustomPrice,
   }) {
     cartItem.quantity = number;
     cartItem.customPrice = customPrice;
+    cartItem.setTotalPrice = setTotalPrice;
     cartItem.setCustomPrice = setCustomPrice;
     notifyListeners();
   }

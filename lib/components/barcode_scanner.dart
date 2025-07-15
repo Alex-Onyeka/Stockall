@@ -36,10 +36,19 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
 
       // Stop scanning after first successful scan
       cameraController.stop();
-      await playBeep();
-      // Optional: Show result in dialog
-      if (safeContext.mounted) {
-        Navigator.of(safeContext).pop(value);
+      if (kIsWeb &&
+          Theme.of(context).platform ==
+              TargetPlatform.iOS) {
+        // Optional: Show result in dialog
+        if (safeContext.mounted) {
+          Navigator.of(safeContext).pop(value);
+        }
+      } else {
+        await playBeep();
+        // Optional: Show result in dialog
+        if (safeContext.mounted) {
+          Navigator.of(safeContext).pop(value);
+        }
       }
     }
   }
