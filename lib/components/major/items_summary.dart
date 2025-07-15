@@ -36,6 +36,7 @@ class ItemsSummary extends StatefulWidget {
   final Function()? filterAction;
   final bool? isDateSet;
   final bool? setDate;
+  final Function()? clearTextField;
 
   const ItemsSummary({
     this.isDateSet,
@@ -69,6 +70,7 @@ class ItemsSummary extends StatefulWidget {
     this.isFilter,
     this.isProduct,
     this.filterAction,
+    this.clearTextField,
   });
 
   @override
@@ -266,6 +268,8 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                       MediaQuery.of(context).size.width -
                       ((returnDouble() * 2) + 40),
                   child: TextFieldBarcode(
+                    clearTextField:
+                        widget.clearTextField ?? () {},
                     searchController:
                         widget.searchController ??
                         TextEditingController(),

@@ -3,6 +3,7 @@ import 'package:stockall/main.dart';
 
 class TextFieldBarcode extends StatefulWidget {
   final TextEditingController searchController;
+  final Function() clearTextField;
   final Function(String)? onChanged;
   final Function()? onPressedScan;
 
@@ -11,6 +12,7 @@ class TextFieldBarcode extends StatefulWidget {
     required this.searchController,
     required this.onChanged,
     required this.onPressedScan,
+    required this.clearTextField,
   });
 
   @override
@@ -61,6 +63,7 @@ class _TextFieldBarcodeState
                     isFocus = true;
                   });
                 } else {
+                  widget.clearTextField();
                   widget.searchController.clear();
                   setState(() {
                     isFocus = false;

@@ -219,6 +219,9 @@ class _ProductPageMobileState
                     Align(
                       alignment: Alignment(0, 1),
                       child: ItemsSummary(
+                        clearTextField: () {
+                          setState(() {});
+                        },
                         searchController: searchController,
                         searchAction: (value) {
                           setState(() {

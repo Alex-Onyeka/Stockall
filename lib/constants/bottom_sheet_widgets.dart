@@ -1952,6 +1952,9 @@ class _CustomBottomPanelState
                     horizontal: 20.0,
                   ),
                   child: TextFieldBarcode(
+                    clearTextField: () {
+                      setState(() {});
+                    },
                     searchController:
                         widget.searchController,
                     onChanged: (value) {
@@ -1973,6 +1976,7 @@ class _CustomBottomPanelState
                         context,
                         'Failed',
                       );
+                      setState(() {});
                       if (result != null) {
                         widget.searchController.text =
                             result;
@@ -1988,6 +1992,7 @@ class _CustomBottomPanelState
                           ),
                         );
                       });
+                      setState(() {});
                     },
                   ),
                 ),

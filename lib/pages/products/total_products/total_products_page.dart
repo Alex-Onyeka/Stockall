@@ -153,6 +153,9 @@ class _TotalProductsPageState
                     horizontal: 30.0,
                   ),
                   child: TextFieldBarcode(
+                    clearTextField: () {
+                      setState(() {});
+                    },
                     searchController: searchController,
 
                     onChanged: (value) {
