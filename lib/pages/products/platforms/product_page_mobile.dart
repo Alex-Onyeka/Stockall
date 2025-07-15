@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // import 'package:shimmer/shimmer.dart';
@@ -394,6 +395,11 @@ class _ProductPageMobileState
                         mainTitle: 'Products Summary',
                         firsRow: true,
                         scanAction: () async {
+                          await AudioPlayer().play(
+                            AssetSource(
+                              'audio/short/barcode_beep.mp3',
+                            ),
+                          );
                           String? result = await scanCode(
                             context,
                             'Scan Failed',
@@ -545,13 +551,24 @@ class _ProductPageMobileState
                                       MainAxisAlignment
                                           .spaceBetween,
                                   children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize: 16,
+                                    InkWell(
+                                      onTap: () async {
+                                        await AudioPlayer()
+                                            .play(
+                                              AssetSource(
+                                                'audio/short/barcode_beep.mp3',
+                                              ),
+                                            );
+                                      },
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize: 16,
+                                        ),
+                                        'Products',
                                       ),
-                                      'Products',
                                     ),
                                     MaterialButton(
                                       onPressed: () {
