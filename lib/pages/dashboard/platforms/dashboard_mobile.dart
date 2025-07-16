@@ -195,7 +195,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
   Future<void> downloadApkFromApp() async {
     final url = Uri.parse(
-      'https://stockall.com/downloads/stockall.apk',
+      'https://stockallapp.com/downloads/stockall.apk',
     );
 
     if (await canLaunchUrl(url)) {
