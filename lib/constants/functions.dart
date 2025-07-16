@@ -1372,6 +1372,7 @@ Future<Uint8List> _buildPdfRoll(
                     ),
                   ],
                 ),
+                pw.SizedBox(height: 10),
               ],
             ),
           ),

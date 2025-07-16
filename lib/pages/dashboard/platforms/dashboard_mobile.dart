@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
@@ -26,6 +27,8 @@ import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+// import 'package:web/web.dart' as web;
 
 class DashboardMobile extends StatefulWidget {
   final int? shopId;
@@ -188,6 +191,21 @@ class _DashboardMobileState extends State<DashboardMobile> {
     getProducts();
     clearDate();
     fetchNotifications();
+  }
+
+  Future<void> downloadApkFromApp() async {
+    final url = Uri.parse(
+      'https://stockall.com/downloads/stockall.apk',
+    );
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   // Future<void> playSound() async {
@@ -1019,10 +1037,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                     ),
                   ),
                   Visibility(
-                    visible:
-                        !returnShopProvider(
-                          context,
-                        ).isUpdated,
+                    visible: true,
+                    // !returnShopProvider(
+                    //   context,
+                    // ).isUpdated,
                     child: Align(
                       alignment: Alignment(0, -0.8),
                       child: Material(
@@ -1116,64 +1134,237 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           .b3
                                           .fontSize,
                                 ),
-                                'Note: You might need to download more than twice before the update can relfect',
+                                'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
                               ),
                               SizedBox(height: 15),
-                              Material(
-                                color: Colors.transparent,
-                                child: Ink(
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                  ),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      setState(() {
-                                        isUpdateLodaing =
-                                            true;
-                                      });
-                                      performRestart();
-                                    },
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            vertical: 10,
-                                            horizontal: 15,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                children: [
+                                  Visibility(
+                                    visible:
+                                        !kIsWeb ||
+                                        (kIsWeb &&
+                                            Theme.of(
+                                                  context,
+                                                ).platform ==
+                                                TargetPlatform
+                                                    .android),
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
                                           ),
-                                      child: Center(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(
-                                                bottom: 3.0,
-                                              ),
-                                          child:
-                                              isUpdateLodaing
-                                                  ? CircularProgressIndicator(
-                                                    color:
-                                                        Colors.white,
-                                                  )
-                                                  : Text(
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colors.white,
-                                                      fontSize:
-                                                          theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'UPDATE',
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaing =
+                                                    true;
+                                              });
+                                              downloadApkFromApp();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
                                                   ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaing
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            !kIsWeb
+                                                                ? 'Install Update'
+                                                                : kIsWeb &&
+                                                                    Theme.of(
+                                                                          context,
+                                                                        ).platform ==
+                                                                        TargetPlatform.android
+                                                                ? 'Download App'
+                                                                : '',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                  Visibility(
+                                    visible:
+                                        kIsWeb &&
+                                        Theme.of(
+                                              context,
+                                            ).platform ==
+                                            TargetPlatform
+                                                .iOS,
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaing =
+                                                    true;
+                                              });
+                                              performRestart();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
+                                                  ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaing
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            'Install Update',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        kIsWeb &&
+                                        Theme.of(
+                                              context,
+                                            ).platform ==
+                                            TargetPlatform
+                                                .android,
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaing =
+                                                    true;
+                                              });
+                                              performRestart();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
+                                                  ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaing
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            'Install Update',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

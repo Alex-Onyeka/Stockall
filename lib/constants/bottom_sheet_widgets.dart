@@ -1905,14 +1905,20 @@ class _CustomBottomPanelState
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Add Products to Cart',
-                            style: TextStyle(
-                              fontSize:
-                                  returnTheme(
-                                    context,
-                                  ).mobileTexts.b1.fontSize,
-                              fontWeight: FontWeight.bold,
+                          InkWell(
+                            onTap: () {
+                              setState(() {});
+                            },
+                            child: Text(
+                              'Add Products to Cart',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           Text(
@@ -1986,6 +1992,7 @@ class _CustomBottomPanelState
                         productResults.addAll(
                           returnData(
                             context,
+                            listen: false,
                           ).productList.where(
                             (product) =>
                                 product.barcode == result,
