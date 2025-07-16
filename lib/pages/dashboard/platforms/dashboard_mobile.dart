@@ -53,7 +53,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
   }
 
   bool isFloatOpen = false;
-  bool isUpdateLodaing = false;
+  bool isUpdateLodaingWeb = false;
+  bool isUpdateLodaingMobile = false;
 
   void openFloat() {
     setState(() {
@@ -1037,10 +1038,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                     ),
                   ),
                   Visibility(
-                    visible: true,
-                    // !returnShopProvider(
-                    //   context,
-                    // ).isUpdated,
+                    visible:
+                        !returnShopProvider(
+                          context,
+                        ).isUpdated,
                     child: Align(
                       alignment: Alignment(0, -0.8),
                       child: Material(
@@ -1144,6 +1145,77 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 children: [
                                   Visibility(
                                     visible:
+                                        kIsWeb &&
+                                        Theme.of(
+                                              context,
+                                            ).platform ==
+                                            TargetPlatform
+                                                .iOS,
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaingWeb =
+                                                    true;
+                                              });
+                                              performRestart();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
+                                                  ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaingWeb
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            'Install Update',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
                                         !kIsWeb ||
                                         (kIsWeb &&
                                             Theme.of(
@@ -1170,7 +1242,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           child: InkWell(
                                             onTap: () async {
                                               setState(() {
-                                                isUpdateLodaing =
+                                                isUpdateLodaingMobile =
                                                     true;
                                               });
                                               downloadApkFromApp();
@@ -1190,7 +1262,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         3.0,
                                                   ),
                                                   child:
-                                                      isUpdateLodaing
+                                                      isUpdateLodaingMobile
                                                           ? CircularProgressIndicator(
                                                             color:
                                                                 Colors.white,
@@ -1224,73 +1296,15 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   ),
                                   Visibility(
                                     visible:
-                                        kIsWeb &&
-                                        Theme.of(
-                                              context,
-                                            ).platform ==
-                                            TargetPlatform
-                                                .iOS,
-                                    child: Expanded(
-                                      child: Material(
-                                        color:
-                                            Colors
-                                                .transparent,
-                                        child: Ink(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  5,
-                                                ),
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .prColor300,
-                                          ),
-                                          child: InkWell(
-                                            onTap: () async {
-                                              setState(() {
-                                                isUpdateLodaing =
-                                                    true;
-                                              });
-                                              performRestart();
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        10,
-                                                    horizontal:
-                                                        15,
-                                                  ),
-                                              child: Center(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(
-                                                    bottom:
-                                                        3.0,
-                                                  ),
-                                                  child:
-                                                      isUpdateLodaing
-                                                          ? CircularProgressIndicator(
-                                                            color:
-                                                                Colors.white,
-                                                          )
-                                                          : Text(
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                            ),
-                                                            'Install Update',
-                                                          ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                        !kIsWeb ||
+                                        (kIsWeb &&
+                                            Theme.of(
+                                                  context,
+                                                ).platform ==
+                                                TargetPlatform
+                                                    .android),
+                                    child: SizedBox(
+                                      width: 10,
                                     ),
                                   ),
                                   Visibility(
@@ -1320,7 +1334,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           child: InkWell(
                                             onTap: () async {
                                               setState(() {
-                                                isUpdateLodaing =
+                                                isUpdateLodaingWeb =
                                                     true;
                                               });
                                               performRestart();
@@ -1340,7 +1354,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                         3.0,
                                                   ),
                                                   child:
-                                                      isUpdateLodaing
+                                                      isUpdateLodaingWeb
                                                           ? CircularProgressIndicator(
                                                             color:
                                                                 Colors.white,
