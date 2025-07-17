@@ -5,6 +5,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
+
+  // int? printType;
+
+  // void selectPrintType(int type) {
+  //   printType = type;
+  //   notifyListeners();
+  // }
+
   Future<void> createShop(TempShopClass shop) async {
     // Insert the shop
     await supabase.from('shops').insert(shop.toJson());
@@ -33,12 +41,29 @@ class ShopProvider extends ChangeNotifier {
     return TempShopClass.fromJson(response);
   }
 
-  //   Stream<List<Map<String, dynamic>>> getUserShop(String userId) {
-  //   final response =  Supabase.instance.client
-  //       .from('shops')
-  //       .stream(primaryKey: ['shop_id'])
-  //       .order('created_at', ascending: false);
-  // }
+  Future<void> updatePrintType({
+    required int shopId,
+    required int? type,
+  }) async {
+    try {
+      await supabase
+          .from('shops')
+          .update({'print_type': type})
+          .eq('shop_id', shopId)
+          .maybeSingle();
+
+      final response = await getUserShop(
+        AuthService().currentUser!.id,
+      );
+
+      if (response != null) {
+        setShop(response);
+        notifyListeners();
+      }
+    } catch (e) {
+      print("❌ Failed to update print type: $e");
+    }
+  }
 
   Future<void> updateShopContactDetails({
     required int shopId,

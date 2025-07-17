@@ -2,15 +2,26 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Legacy external storage access (Android 10 and below) -->
+    <!-- Bluetooth (All Android versions) -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- Bluetooth (Android 12+) -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+
+    <!-- Location (needed for scanning nearby Bluetooth devices) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- USB Support -->
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
+
+    <!-- File access (legacy and scoped) -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-
-    <!-- Scoped storage (Android 11+) full access -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
 
     <!-- Android 13+ media access -->
@@ -18,11 +29,16 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
+    <!-- Camera (optional) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
     <application
         android:label="Stockall"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"> <!-- 👈 Needed for Android 10 -->
+        android:requestLegacyExternalStorage="true">
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
         <activity
             android:name=".MainActivity"
@@ -50,9 +66,20 @@
     </application>
 
     <queries>
+        <!-- Allow intent-based text processing -->
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
+        </intent>
+
+        <!-- Discover nearby Bluetooth devices -->
+        <intent>
+            <action android:name="android.bluetooth.device.action.FOUND" />
+        </intent>
+
+        <!-- Discover USB printers -->
+        <intent>
+            <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
         </intent>
     </queries>
 </manifest>

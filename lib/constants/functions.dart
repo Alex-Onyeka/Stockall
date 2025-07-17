@@ -329,6 +329,7 @@ Future<void> generateAndPreviewPdf({
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
+  required int printerType,
 }) async {
   // 1. Build the PDF once (fastest way)
   returnReceiptProvider(
@@ -340,6 +341,7 @@ Future<void> generateAndPreviewPdf({
     records,
     shop,
     context,
+    printerType,
   );
 
   // 2. Open native print/share/save dialog (cross-platform)
@@ -878,13 +880,18 @@ Future<Uint8List> _buildPdf(
   return pdf.save();
 }
 
-const double parText = 5;
+const double headingText = 12;
+
+const double parText = 7;
+
+const double parTextAlt = 5;
 
 Future<Uint8List> _buildPdfRoll(
   TempMainReceipt receipt,
   List<TempProductSaleRecord> records,
   TempShopClass shop,
   BuildContext context,
+  int printerType,
 ) async {
   final pdf = pw.Document();
 
@@ -902,7 +909,10 @@ Future<Uint8List> _buildPdfRoll(
 
   pdf.addPage(
     pw.Page(
-      pageFormat: PdfPageFormat.roll57,
+      pageFormat:
+          printerType == 1
+              ? PdfPageFormat.roll57
+              : PdfPageFormat.roll80,
       margin: const pw.EdgeInsets.only(
         left: 15,
         top: 15,
@@ -937,7 +947,7 @@ Future<Uint8List> _buildPdfRoll(
                               shop.name,
                               style: pw.TextStyle(
                                 font: fontBold,
-                                fontSize: 7,
+                                fontSize: headingText,
                               ),
                             ),
                             pw.SizedBox(height: 1),
@@ -1116,7 +1126,8 @@ Future<Uint8List> _buildPdfRoll(
                                           style: pw.TextStyle(
                                             font:
                                                 fontRegular,
-                                            fontSize: 4,
+                                            fontSize:
+                                                parTextAlt,
                                           ),
                                           'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
                                         ),
@@ -1124,7 +1135,8 @@ Future<Uint8List> _buildPdfRoll(
                                           style: pw.TextStyle(
                                             font:
                                                 fontRegular,
-                                            fontSize: 4,
+                                            fontSize:
+                                                parTextAlt,
                                           ),
                                           'Bank: ${formatMoneyMid(receipt.bank, context)}',
                                         ),
@@ -1203,7 +1215,7 @@ Future<Uint8List> _buildPdfRoll(
                     pw.Text(
                       'Items:',
                       style: pw.TextStyle(
-                        fontSize: 6,
+                        fontSize: parText,
                         font: fontBold,
                       ),
                     ),
@@ -1224,7 +1236,7 @@ Future<Uint8List> _buildPdfRoll(
                           flex: 5,
                           child: pw.Text(
                             style: pw.TextStyle(
-                              fontSize: 5,
+                              fontSize: parText,
                             ),
                             '${record.productName} ',
                           ),
@@ -1233,7 +1245,7 @@ Future<Uint8List> _buildPdfRoll(
                           flex: 1,
                           child: pw.Text(
                             style: pw.TextStyle(
-                              fontSize: 5,
+                              fontSize: parText,
                             ),
                             '( ${record.quantity.toStringAsFixed(0)} ) ',
                           ),
@@ -1242,7 +1254,7 @@ Future<Uint8List> _buildPdfRoll(
                           flex: 3,
                           child: pw.Text(
                             style: pw.TextStyle(
-                              fontSize: 5,
+                              fontSize: parText,
                             ),
                             formatMoneyMid(
                               record.revenue,
@@ -1263,7 +1275,7 @@ Future<Uint8List> _buildPdfRoll(
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1273,7 +1285,7 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1299,7 +1311,7 @@ Future<Uint8List> _buildPdfRoll(
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1309,7 +1321,7 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1342,7 +1354,7 @@ Future<Uint8List> _buildPdfRoll(
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1352,11 +1364,11 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontBold,
-                          fontSize: parText,
+                          fontSize: 8,
                         ),
                         formatMoneyMid(
                           returnReceiptProvider(

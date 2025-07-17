@@ -17,6 +17,7 @@ class TempShopClass {
   String currency;
   int? updateNumber;
   bool isVerified;
+  int? printType;
 
   TempShopClass({
     this.shopId,
@@ -37,6 +38,7 @@ class TempShopClass {
     required this.currency,
     this.updateNumber,
     required this.isVerified,
+    this.printType,
   });
 
   factory TempShopClass.fromJson(
@@ -63,6 +65,7 @@ class TempShopClass {
       currency: json['currency'],
       updateNumber: json['update_number'] as int?,
       isVerified: json['is_verified'] as bool,
+      printType: json['print_type'] as int?,
     );
   }
 
@@ -84,6 +87,7 @@ class TempShopClass {
       'currency': currency,
       'update_number': updateNumber,
       'is_verified': isVerified,
+      'print_type': printType,
     };
   }
 }

@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_customers_class.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -101,6 +102,165 @@ class _ReceiptPageMobileState
                         theme: theme,
                         bottomSpace: 200,
                         topSpace: 10,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment(0.95, -0.95),
+                      child: PopupMenuButton(
+                        offset: Offset(-20, 30),
+                        color: Colors.white,
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                              onTap: () {
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).updatePrintType(
+                                  shopId: shopId(context),
+                                  type: 1,
+                                );
+                              },
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).userShop!.printType !=
+                                                  null &&
+                                              returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).userShop!.printType ==
+                                                  1
+                                          ? FontWeight.bold
+                                          : null,
+                                ),
+                                'Printer Type -- 58mm',
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).updatePrintType(
+                                  shopId: shopId(context),
+                                  type: 2,
+                                );
+                              },
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).userShop!.printType !=
+                                                  null &&
+                                              returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).userShop!.printType ==
+                                                  2
+                                          ? FontWeight.bold
+                                          : null,
+                                ),
+                                'Printer Type -- 80mm',
+                              ),
+                            ),
+                          ];
+                        },
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              mainAxisSize:
+                                  MainAxisSize.min,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                    color: Colors.white,
+                                  ),
+                                  'Printer Type:',
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    color: Colors.white,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .userShop!
+                                                  .printType !=
+                                              null &&
+                                          returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .userShop!
+                                                  .printType ==
+                                              2
+                                      ? '( 80mm )'
+                                      : returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .userShop!
+                                                  .printType !=
+                                              null &&
+                                          returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .userShop!
+                                                  .printType ==
+                                              1
+                                      ? '( 58mm )'
+                                      // : sortIndex == 2
+                                      // ? 'Price'
+                                      : 'Settings',
+                                ),
+                              ],
+                            ),
+                            Icon(Icons.more_vert_rounded),
+                          ],
+                        ),
                       ),
                     ),
                     Positioned(
@@ -1087,48 +1247,73 @@ class _ReceiptDetailsContainerState
                 BottomActionButton(
                   action: () {
                     var safeContext = context;
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ConfirmationAlert(
-                          theme: widget.theme,
-                          message:
-                              'You are about to download This Receipt. Are you sure you want to Proceed?',
-                          title: 'Download Receipt',
-                          action: () async {
-                            returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).toggleIsLoading(true);
-                            Navigator.of(context).pop();
-                            if (kIsWeb) {
-                              downloadPdfWeb(
-                                filename:
-                                    'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
+                    if (returnShopProvider(
+                          context,
+                          listen: false,
+                        ).userShop!.printType ==
+                        null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return InfoAlert(
+                            theme: widget.theme,
+                            message:
+                                'Please select Printer type from the settings at the top right corner of the page',
+                            title: 'Printer type not set',
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ConfirmationAlert(
+                            theme: widget.theme,
+                            message:
+                                'You are about to download This Receipt. Are you sure you want to Proceed?',
+                            title: 'Download Receipt',
+                            action: () async {
+                              returnReceiptProvider(
+                                context,
+                                listen: false,
+                              ).toggleIsLoading(true);
+                              Navigator.of(context).pop();
+                              if (kIsWeb) {
+                                downloadPdfWeb(
+                                  filename:
+                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
+                                  context: safeContext,
+                                  receipt:
+                                      widget.mainReceipt,
+                                  records: records,
+                                  shop:
+                                      returnShopProvider(
+                                        safeContext,
+                                        listen: false,
+                                      ).userShop!,
+                                );
+                              }
+                              await generateAndPreviewPdf(
                                 context: safeContext,
                                 receipt: widget.mainReceipt,
                                 records: records,
+                                printerType:
+                                    returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    ).userShop!.printType ??
+                                    1,
                                 shop:
                                     returnShopProvider(
                                       safeContext,
                                       listen: false,
                                     ).userShop!,
                               );
-                            }
-                            await generateAndPreviewPdf(
-                              context: safeContext,
-                              receipt: widget.mainReceipt,
-                              records: records,
-                              shop:
-                                  returnShopProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).userShop!,
-                            );
-                          },
-                        );
-                      },
-                    );
+                            },
+                          );
+                        },
+                      );
+                    }
                   },
                   text: 'Download',
                   color: Colors.grey,

@@ -28,7 +28,6 @@ import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:web/web.dart' as web;
 
 class DashboardMobile extends StatefulWidget {
   final int? shopId;
@@ -209,12 +208,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     }
   }
 
-  // Future<void> playSound() async {
-  //   Future.delayed((Duration(seconds: 4)), () async {
-  //     await playBeep();
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -353,46 +346,54 @@ class _DashboardMobileState extends State<DashboardMobile> {
                             child: ListView(
                               children: [
                                 SizedBox(height: 10),
-                                DashboardTotalSalesBanner(
-                                  expenses: expensesLocal,
-                                  userValue: returnReceiptProvider(
-                                    context,
-                                  ).getTotalRevenueForSelectedDay(
-                                    context,
-                                    returnReceiptProvider(
+                                GestureDetector(
+                                  onTap: () {
+                                    // scanBluetoothPrinters(
+                                    //   context,
+                                    // );
+                                  },
+                                  child: DashboardTotalSalesBanner(
+                                    expenses: expensesLocal,
+                                    userValue: returnReceiptProvider(
+                                      context,
+                                    ).getTotalRevenueForSelectedDay(
+                                      context,
+                                      returnReceiptProvider(
+                                            context,
+                                          ).receipts
+                                          .where(
+                                            (emp) =>
+                                                emp.staffName ==
+                                                userGeneral(
+                                                  context,
+                                                ).name,
+                                          )
+                                          .toList(),
+                                      returnReceiptProvider(
+                                        context,
+                                      ).returnproductsRecordByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
                                           context,
-                                        ).receipts
-                                        .where(
-                                          (emp) =>
-                                              emp.staffName ==
-                                              userGeneral(
-                                                context,
-                                              ).name,
-                                        )
-                                        .toList(),
-                                    returnReceiptProvider(
+                                        ).produtRecordSalesMain,
+                                      ),
+                                    ),
+                                    currentUser:
+                                        userGeneral(
+                                          context,
+                                        ),
+                                    theme: theme,
+                                    value: returnReceiptProvider(
                                       context,
-                                    ).returnproductsRecordByDayOrWeek(
+                                    ).getTotalRevenueForSelectedDay(
                                       context,
+                                      returnReceiptProvider(
+                                        context,
+                                      ).receipts,
                                       returnReceiptProvider(
                                         context,
                                       ).produtRecordSalesMain,
                                     ),
-                                  ),
-                                  currentUser: userGeneral(
-                                    context,
-                                  ),
-                                  theme: theme,
-                                  value: returnReceiptProvider(
-                                    context,
-                                  ).getTotalRevenueForSelectedDay(
-                                    context,
-                                    returnReceiptProvider(
-                                      context,
-                                    ).receipts,
-                                    returnReceiptProvider(
-                                      context,
-                                    ).produtRecordSalesMain,
                                   ),
                                 ),
 

@@ -5,10 +5,9 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   audioplayers_windows
-  permission_handler_windows
+  flutter_thermal_printer
   printing
   url_launcher_windows
-  webview_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
