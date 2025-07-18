@@ -1279,17 +1279,20 @@ class _ReceiptDetailsContainerState
                                       ).userShop!,
                                 );
                               }
-                              await generateAndPreviewPdf(
-                                context: safeContext,
-                                receipt: widget.mainReceipt,
-                                records: records,
+                              if (!kIsWeb) {
+                                await generateAndPreviewPdf(
+                                  context: safeContext,
+                                  receipt:
+                                      widget.mainReceipt,
+                                  records: records,
 
-                                shop:
-                                    returnShopProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).userShop!,
-                              );
+                                  shop:
+                                      returnShopProvider(
+                                        safeContext,
+                                        listen: false,
+                                      ).userShop!,
+                                );
+                              }
                               if (safeContext.mounted) {
                                 returnReceiptProvider(
                                   safeContext,
