@@ -1471,13 +1471,12 @@ void downloadPdfWeb({
       returnShopProvider(context, listen: false).userShop!,
       context,
     );
-    final blob = html.Blob([pdfBytes]);
+    final blob = html.Blob([pdfBytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
 
     final anchor =
         html.AnchorElement(href: url)
           ..download = filename
-          ..target = 'blank'
           ..style.display = 'none';
 
     html.document.body?.append(anchor);
@@ -1485,6 +1484,7 @@ void downloadPdfWeb({
     anchor.remove();
 
     html.Url.revokeObjectUrl(url);
+
     if (context.mounted) {
       returnReceiptProvider(
         context,
