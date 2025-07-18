@@ -910,12 +910,6 @@ Future<Uint8List> _buildPdf(
   return pdf.save();
 }
 
-const double headingText = 12;
-
-const double parText = 7;
-
-const double parTextAlt = 5;
-
 Future<void> printWithRawBT(
 // Uint8List pdfBytes,
 {
@@ -953,6 +947,10 @@ Future<Uint8List> _buildPdfRoll(
   BuildContext context,
   int printerType,
 ) async {
+  double headingText = printerType == 1 ? 12 : 14;
+  double parText = printerType == 1 ? 7 : 9;
+  double parTextAlt = printerType == 1 ? 5 : 7;
+  double totalText = printerType == 1 ? 8 : 10;
   final pdf = pw.Document();
 
   // Load Plus Jakarta Sans from assets
@@ -995,52 +993,48 @@ Future<Uint8List> _buildPdfRoll(
                   crossAxisAlignment:
                       pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Row(
-                      mainAxisAlignment:
-                          pw.MainAxisAlignment.center,
+                    pw.Column(
+                      // mainAxisAlignment:
+                      //     pw.MainAxisAlignment.start,
                       children: [
-                        pw.Column(
-                          children: [
-                            pw.Text(
-                              textAlign:
-                                  pw.TextAlign.center,
-                              shop.name,
-                              style: pw.TextStyle(
-                                font: fontBold,
-                                fontSize: headingText,
-                              ),
-                            ),
-                            pw.SizedBox(height: 1),
-                            pw.Text(
-                              textAlign:
-                                  pw.TextAlign.center,
-                              shop.email,
-                              style: pw.TextStyle(
-                                font: fontRegular,
-                                fontSize: parText,
-                              ),
-                            ),
-                            pw.SizedBox(height: 1),
+                        pw.Text(
+                          textAlign: pw.TextAlign.center,
+                          shop.name,
+                          style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: headingText,
+                          ),
+                          // maxLines: 2,
+                          overflow: pw.TextOverflow.clip,
+                        ),
+                        pw.SizedBox(height: 1),
+                        pw.Text(
+                          textAlign: pw.TextAlign.center,
+                          shop.email,
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: parText,
+                          ),
+                          overflow: pw.TextOverflow.clip,
+                        ),
+                        pw.SizedBox(height: 1),
 
-                            pw.Text(
-                              textAlign:
-                                  pw.TextAlign.center,
-                              shop.phoneNumber ?? '',
-                              style: pw.TextStyle(
-                                font: fontRegular,
-                                fontSize:
-                                    shop.phoneNumber == null
-                                        ? 1
-                                        : parText,
-                              ),
-                            ),
-                          ],
+                        pw.Text(
+                          textAlign: pw.TextAlign.center,
+                          shop.phoneNumber ?? '',
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize:
+                                shop.phoneNumber == null
+                                    ? 1
+                                    : parText,
+                          ),
                         ),
                       ],
                     ),
                     pw.SizedBox(height: 3),
                     pw.Divider(
-                      color: PdfColor.fromHex('#D3D3D3'),
+                      color: PdfColor.fromHex('#1C1C1C'),
                       thickness: 0.5,
                       height: 4,
                     ),
@@ -1064,7 +1058,7 @@ Future<Uint8List> _buildPdfRoll(
                 ),
                 pw.SizedBox(height: 2),
                 pw.Divider(
-                  color: PdfColor.fromHex('#D3D3D3'),
+                  color: PdfColor.fromHex('#1C1C1C'),
                   thickness: 0.5,
                   height: 3,
                 ),
@@ -1328,14 +1322,14 @@ Future<Uint8List> _buildPdfRoll(
                 ),
 
                 pw.SizedBox(height: 3),
-                pw.Divider(thickness: 0.6, height: 6),
+                pw.Divider(thickness: 0.6, height: 10),
 
                 pw.Row(
                   mainAxisAlignment:
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 3,
+                      flex: 9,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1345,7 +1339,7 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 2,
+                      flex: 7,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1371,7 +1365,7 @@ Future<Uint8List> _buildPdfRoll(
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 3,
+                      flex: 9,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1381,7 +1375,7 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 2,
+                      flex: 7,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1414,7 +1408,7 @@ Future<Uint8List> _buildPdfRoll(
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 3,
+                      flex: 9,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -1424,11 +1418,11 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 2,
+                      flex: 7,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontBold,
-                          fontSize: 8,
+                          fontSize: totalText,
                         ),
                         formatMoneyMid(
                           returnReceiptProvider(

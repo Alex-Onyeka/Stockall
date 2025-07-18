@@ -20,6 +20,8 @@ class _SignUpPageState extends State<SignUpPage> {
       TextEditingController();
   TextEditingController nameController =
       TextEditingController();
+  TextEditingController lastNameController =
+      TextEditingController();
   TextEditingController phoneNumberController =
       TextEditingController();
 
@@ -32,6 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
     confirmPasswordController.dispose();
     passwordController.dispose();
     nameController.dispose();
+    lastNameController.dispose();
     phoneNumberController.dispose();
   }
 
@@ -67,6 +70,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   confirmPasswordController,
               emailController: emailController,
               passwordController: passwordController,
+              lastNameController: lastNameController,
               theme: theme,
             );
           } else {

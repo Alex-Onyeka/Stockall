@@ -39,6 +39,20 @@ class _PhoneNumberTextFieldState
         ),
         SizedBox(height: 5),
         IntlPhoneField(
+          onChanged: (value) {
+            if (widget.controller.text.split('').first ==
+                '0') {
+              setState(() {
+                widget.controller.text = widget
+                    .controller
+                    .text
+                    .substring(
+                      1,
+                      widget.controller.text.length,
+                    );
+              });
+            }
+          },
           style: TextStyle(
             fontSize: widget.theme.mobileTexts.b2.fontSize,
             fontWeight: FontWeight.bold,

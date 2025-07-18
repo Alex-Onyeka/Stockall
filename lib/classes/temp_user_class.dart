@@ -37,11 +37,15 @@ class TempUserClass extends HiveObject {
   @HiveField(10)
   String? pin;
 
+  @HiveField(10)
+  String? lastName;
+
   TempUserClass({
     this.userId,
     this.createdAt,
     required this.password,
     required this.name,
+    this.lastName,
     required this.email,
     this.phone,
     required this.role,
@@ -59,7 +63,8 @@ class TempUserClass extends HiveObject {
       createdAt: DateTime.tryParse(
         json['created_at'] ?? '',
       ),
-      name: json['name'] ?? '',
+      name: json['name'],
+      lastName: json['last_name'] as String?,
       email: json['email'] ?? '',
       phone: json['phone'],
       role: json['role'] ?? '',
@@ -74,6 +79,7 @@ class TempUserClass extends HiveObject {
   Map<String, dynamic> toJson({bool includeUserId = true}) {
     final map = {
       'name': name,
+      'last_name': lastName,
       'email': email,
       'phone': phone,
       'role': role,

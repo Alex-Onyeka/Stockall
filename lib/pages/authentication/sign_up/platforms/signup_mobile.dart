@@ -22,6 +22,7 @@ class SignupMobile extends StatefulWidget {
   final TextEditingController confirmPasswordController;
   final TextEditingController nameController;
   final TextEditingController phoneNumberController;
+  final TextEditingController lastNameController;
   final Function()? onTap;
   final bool checked;
   final Function(bool?)? onChanged;
@@ -37,6 +38,7 @@ class SignupMobile extends StatefulWidget {
     required this.checked,
     required this.nameController,
     required this.phoneNumberController,
+    required this.lastNameController,
   });
 
   @override
@@ -58,7 +60,8 @@ class _SignupMobileState extends State<SignupMobile> {
         builder: (context) {
           return InfoAlert(
             theme: widget.theme,
-            message: 'Please fill out all Fields',
+            message:
+                'Please fill out all input Fields before proceeding to create your user account.',
             title: 'Empty Input',
           );
         },
@@ -105,7 +108,8 @@ class _SignupMobileState extends State<SignupMobile> {
         builder: (context) {
           return InfoAlert(
             theme: widget.theme,
-            message: 'Agree to Terms and Conditions',
+            message:
+                'You need to Agree to Terms and Conditions before proceeding to create your account.',
             title: 'Check the Box to Continue',
           );
         },
@@ -132,6 +136,7 @@ class _SignupMobileState extends State<SignupMobile> {
             phone: widget.phoneNumberController.text.trim(),
             role: 'Owner',
             password: widget.passwordController.text,
+            lastName: widget.lastNameController.text,
           ),
         );
 
@@ -142,7 +147,7 @@ class _SignupMobileState extends State<SignupMobile> {
             showSuccess = true;
           });
 
-          Future.delayed(Duration(seconds: 3), () {
+          Future.delayed(Duration(seconds: 2), () {
             if (!mounted) return;
             Navigator.pushReplacement(
               context,
@@ -321,7 +326,7 @@ class _SignupMobileState extends State<SignupMobile> {
                                                 .h3
                                                 .fontWeightBold,
                                       ),
-                                      'Get Started Now',
+                                      'Create User Account',
                                     ),
                                   ],
                                 ),
@@ -335,24 +340,47 @@ class _SignupMobileState extends State<SignupMobile> {
                                               .mobileTexts
                                               .b1
                                               .textStyleNormal,
-                                      "Let's create your Account",
+                                      "Let's create your User Account",
                                     ),
                                   ],
                                 ),
                               ],
                             ),
                             SizedBox(height: 15),
-                            GeneralTextField(
-                              title: 'Name*',
-                              hint: 'Enter Your Name',
-                              controller:
-                                  widget.nameController,
-                              lines: 1,
-                              theme: widget.theme,
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  child: GeneralTextField(
+                                    title: 'First Name*',
+                                    hint:
+                                        'Enter Your First Name',
+                                    controller:
+                                        widget
+                                            .nameController,
+                                    lines: 1,
+                                    theme: widget.theme,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: GeneralTextField(
+                                    title:
+                                        'Last Name (Optional)',
+                                    hint: 'Enter Last Name',
+                                    controller:
+                                        widget
+                                            .lastNameController,
+                                    lines: 1,
+                                    theme: widget.theme,
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(height: 10),
                             EmailTextField(
-                              title: 'Set Email Address*',
+                              title: 'User Email Address*',
                               hint: 'Enter Email',
                               isEmail: true,
                               controller:
@@ -380,7 +408,7 @@ class _SignupMobileState extends State<SignupMobile> {
                             ),
                             SizedBox(height: 10),
                             PhoneNumberTextField(
-                              title: 'Phone Number*',
+                              title: 'User Phone Number*',
                               hint:
                                   'Enter your Phone Number',
                               controller:
@@ -413,7 +441,7 @@ class _SignupMobileState extends State<SignupMobile> {
                         action: () {
                           checkInputs();
                         },
-                        text: 'Create Account',
+                        text: 'Create User Account',
                       ),
                       SizedBox(height: 15),
                       // MainButtonTransparent(

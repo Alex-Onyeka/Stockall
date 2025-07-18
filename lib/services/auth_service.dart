@@ -38,6 +38,7 @@ class AuthService extends ChangeNotifier {
       userId: userId,
       createdAt: DateTime.now(),
       name: user.name,
+      lastName: user.lastName,
       email: email,
       phone: user.phone,
       role: user.role,
