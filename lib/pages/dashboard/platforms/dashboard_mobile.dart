@@ -27,7 +27,6 @@ import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DashboardMobile extends StatefulWidget {
   final int? shopId;
@@ -193,21 +192,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     fetchNotifications();
   }
 
-  Future<void> downloadApkFromApp() async {
-    final url = Uri.parse(
-      'https://stockallapp.com/downloads/stockall.apk',
-    );
-
-    if (await canLaunchUrl(url)) {
-      await launchUrl(
-        url,
-        mode: LaunchMode.externalApplication,
-      );
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -250,6 +234,15 @@ class _DashboardMobileState extends State<DashboardMobile> {
                 }
               },
               drawer: MyDrawerWidget(
+                // logOutAction: () {
+                //   isUpdateLodaingMobile
+                //       ? setState(() {
+                //         isUpdateLodaingMobile = false;
+                //       })
+                //       : setState(() {
+                //         isUpdateLodaingMobile = true;
+                //       });
+                // },
                 action: () {
                   showDialog(
                     context: context,
@@ -346,54 +339,46 @@ class _DashboardMobileState extends State<DashboardMobile> {
                             child: ListView(
                               children: [
                                 SizedBox(height: 10),
-                                GestureDetector(
-                                  onTap: () {
-                                    // scanBluetoothPrinters(
-                                    //   context,
-                                    // );
-                                  },
-                                  child: DashboardTotalSalesBanner(
-                                    expenses: expensesLocal,
-                                    userValue: returnReceiptProvider(
-                                      context,
-                                    ).getTotalRevenueForSelectedDay(
-                                      context,
-                                      returnReceiptProvider(
-                                            context,
-                                          ).receipts
-                                          .where(
-                                            (emp) =>
-                                                emp.staffName ==
-                                                userGeneral(
-                                                  context,
-                                                ).name,
-                                          )
-                                          .toList(),
-                                      returnReceiptProvider(
-                                        context,
-                                      ).returnproductsRecordByDayOrWeek(
-                                        context,
-                                        returnReceiptProvider(
+                                DashboardTotalSalesBanner(
+                                  expenses: expensesLocal,
+                                  userValue: returnReceiptProvider(
+                                    context,
+                                  ).getTotalRevenueForSelectedDay(
+                                    context,
+                                    returnReceiptProvider(
                                           context,
-                                        ).produtRecordSalesMain,
-                                      ),
-                                    ),
-                                    currentUser:
-                                        userGeneral(
-                                          context,
-                                        ),
-                                    theme: theme,
-                                    value: returnReceiptProvider(
+                                        ).receipts
+                                        .where(
+                                          (emp) =>
+                                              emp.staffName ==
+                                              userGeneral(
+                                                context,
+                                              ).name,
+                                        )
+                                        .toList(),
+                                    returnReceiptProvider(
                                       context,
-                                    ).getTotalRevenueForSelectedDay(
+                                    ).returnproductsRecordByDayOrWeek(
                                       context,
-                                      returnReceiptProvider(
-                                        context,
-                                      ).receipts,
                                       returnReceiptProvider(
                                         context,
                                       ).produtRecordSalesMain,
                                     ),
+                                  ),
+                                  currentUser: userGeneral(
+                                    context,
+                                  ),
+                                  theme: theme,
+                                  value: returnReceiptProvider(
+                                    context,
+                                  ).getTotalRevenueForSelectedDay(
+                                    context,
+                                    returnReceiptProvider(
+                                      context,
+                                    ).receipts,
+                                    returnReceiptProvider(
+                                      context,
+                                    ).produtRecordSalesMain,
                                   ),
                                 ),
 
@@ -1297,7 +1282,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   ),
                                   Visibility(
                                     visible:
-                                        !kIsWeb ||
                                         (kIsWeb &&
                                             Theme.of(
                                                   context,

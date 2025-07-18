@@ -6,6 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthService extends ChangeNotifier {
   bool isLoading = false;
   bool isSuccessLoading = false;
+  void toggleIsLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
 
   final SupabaseClient _client = Supabase.instance.client;
 

@@ -68,6 +68,7 @@ dependencies:
   universal_html: ^2.2.4
   mobile_scanner: ^7.0.1
   flutter_thermal_printer: ^1.2.1+1
+  open_file: ^3.5.10
   
 
 

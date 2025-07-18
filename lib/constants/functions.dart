@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:stockall/classes/currency_class.dart';
 import 'package:stockall/classes/product_report_summary.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
@@ -16,6 +17,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -323,8 +326,35 @@ final List<CurrencyClass> currencies = [
 //
 //
 // PDF RECEIPT GENERATOR
-
 Future<void> generateAndPreviewPdf({
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  // 1. Build the PDF once (fastest way)
+  returnReceiptProvider(
+    context,
+    listen: false,
+  ).toggleIsLoading(true);
+  final Uint8List pdfBytes = await _buildPdf(
+    receipt,
+    records,
+    shop,
+    context,
+  );
+
+  // 2. Open native print/share/save dialog (cross-platform)
+  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  if (context.mounted) {
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).toggleIsLoading(false);
+  }
+}
+
+Future<void> generateAndPreviewPdfRoll({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
@@ -886,6 +916,36 @@ const double parText = 7;
 
 const double parTextAlt = 5;
 
+Future<void> printWithRawBT(
+// Uint8List pdfBytes,
+{
+  required String fileName,
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+  required int printerType,
+}) async {
+  final dir = await getTemporaryDirectory();
+  final file = File('${dir.path}/$fileName.pdf');
+
+  var pdfBytes = await _buildPdfRoll(
+    receipt,
+    records,
+    shop,
+    context,
+    printerType,
+  );
+
+  await file.writeAsBytes(pdfBytes);
+
+  // This will prompt Android to open the file with available apps (including RawBT)
+  final result = await OpenFile.open(file.path);
+  print(
+    result.message,
+  ); // Optional: See what app handled it
+}
+
 Future<Uint8List> _buildPdfRoll(
   TempMainReceipt receipt,
   List<TempProductSaleRecord> records,
@@ -1410,6 +1470,48 @@ void downloadPdfWeb({
       records,
       returnShopProvider(context, listen: false).userShop!,
       context,
+    );
+    final blob = html.Blob([pdfBytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    final anchor =
+        html.AnchorElement(href: url)
+          ..download = filename
+          ..target = 'blank'
+          ..style.display = 'none';
+
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+
+    html.Url.revokeObjectUrl(url);
+    if (context.mounted) {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
+  } catch (e, stackTrace) {
+    print('❌ Error downloading PDF: $e\n$stackTrace');
+  }
+}
+
+void downloadPdfWebRoll({
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+  required String filename,
+  required int printType,
+}) async {
+  try {
+    print('Begin Download');
+    final pdfBytes = await _buildPdfRoll(
+      receipt,
+      records,
+      returnShopProvider(context, listen: false).userShop!,
+      context,
+      printType,
     );
     final blob = html.Blob([pdfBytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
@@ -3493,5 +3595,32 @@ void downloadPdfWebSalesSummary({
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
+  }
+}
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+Future<void> downloadApkFromApp() async {
+  final url = Uri.parse(
+    'https://stockallapp.com/downloads/stockall.apk',
+  );
+
+  if (await canLaunchUrl(url)) {
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+  } else {
+    throw 'Could not launch $url';
   }
 }

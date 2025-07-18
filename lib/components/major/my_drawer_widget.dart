@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -509,6 +511,42 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                               title: 'Open Calculator',
                               icon:
                                   Icons.calculate_outlined,
+                            ),
+                            Visibility(
+                              visible:
+                                  kIsWeb &&
+                                  Theme.of(
+                                        context,
+                                      ).platform ==
+                                      TargetPlatform
+                                          .android,
+                              child: NavListTileAlt(
+                                height: 20,
+                                action: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: widget.theme,
+                                        message:
+                                            'You are about to download and install our official mobile application, for better experience.',
+                                        title:
+                                            'Proceed to Download Mobile App',
+                                        action: () async {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                          await downloadApkFromApp();
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                title:
+                                    'Download Mobile App',
+                                icon:
+                                    Icons.download_outlined,
+                              ),
                             ),
                             // NavListTileAlt(
                             //   height: 20,
