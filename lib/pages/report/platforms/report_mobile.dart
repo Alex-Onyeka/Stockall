@@ -36,7 +36,21 @@ class ReportMobile extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Row(children: [Text('Reports List:')]),
+                    Row(
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'Reports List:',
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 15),
                     Column(
                       spacing: 10,

@@ -365,6 +365,13 @@ class _TotalSalesMobileState
                                     .spaceBetween,
                             children: [
                               Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                ),
                                 returnReceiptProvider(
                                           context,
                                         ).dateSet ==

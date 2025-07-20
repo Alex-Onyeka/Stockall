@@ -388,7 +388,11 @@ class _ProductPageMobileState
                                       style: TextStyle(
                                         fontWeight:
                                             FontWeight.bold,
-                                        fontSize: 16,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
                                       ),
                                       'Products',
                                     ),
@@ -419,6 +423,11 @@ class _ProductPageMobileState
                                                   theme
                                                       .lightModeColor
                                                       .secColor100,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b1
+                                                      .fontSize,
                                             ),
                                             'See All',
                                           ),

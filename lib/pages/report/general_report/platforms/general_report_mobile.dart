@@ -146,6 +146,10 @@ class _GeneralReportMobileState
                         MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                        ),
                         returnReportProvider(
                               context,
                             ).dateSet ??

@@ -722,6 +722,8 @@ class _ProductDetailsMobileState
                                                                         style: TextStyle(
                                                                           fontWeight:
                                                                               FontWeight.bold,
+                                                                          fontSize:
+                                                                              widget.theme.mobileTexts.b1.fontSize,
                                                                         ),
                                                                         product.quantity ==
                                                                                 null
@@ -1166,7 +1168,7 @@ class _ProductDetailsMobileState
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b1
+                                          .b2
                                           .fontSize,
                                   fontWeight:
                                       FontWeight.bold,

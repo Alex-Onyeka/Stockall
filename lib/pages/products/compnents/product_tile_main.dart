@@ -381,7 +381,12 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                           ),
                                       child: Text(
                                         style: TextStyle(
-                                          fontSize: 12,
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
                                           fontWeight:
                                               FontWeight
                                                   .bold,
@@ -498,7 +503,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                         widget
                             .theme
                             .mobileTexts
-                            .b4
+                            .b3
                             .fontSize,
                   ),
                   '${widget.product.discount ?? '0'}%',

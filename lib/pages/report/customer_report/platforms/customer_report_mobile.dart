@@ -187,6 +187,13 @@ class _CustomerReportMobileState
                       children: [
                         SizedBox(width: 10),
                         Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                          ),
                           returnReportProvider(
                                 context,
                               ).dateSet ??

@@ -27,17 +27,16 @@ class ProductsFilterButton extends StatelessWidget {
               currentSelected == number
                   ? theme.lightModeColor.prColor300
                   : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           border: Border.all(
             color:
                 currentSelected == number
                     ? Colors.transparent
                     : theme.lightModeColor.prColor300,
-            width: currentSelected == number ? 1 : 1,
           ),
         ),
         child: InkWell(
-          radius: 15,
+          borderRadius: BorderRadius.circular(5),
           onTap: action,
           child: Container(
             padding: EdgeInsets.symmetric(
@@ -54,7 +53,9 @@ class ProductsFilterButton extends StatelessWidget {
                           : theme.lightModeColor.prColor300,
                   fontWeight: FontWeight.bold,
                   fontSize:
-                      currentSelected == number ? 13 : 12,
+                      currentSelected == number
+                          ? theme.mobileTexts.b1.fontSize
+                          : theme.mobileTexts.b2.fontSize,
                 ),
                 title,
               ),

@@ -122,9 +122,18 @@ class EmptyWidgetDisplay extends StatelessWidget {
                           mainAxisAlignment:
                               MainAxisAlignment.center,
                           children: [
-                            Text(altActionText ?? ''),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              altActionText ?? '',
+                            ),
                             Icon(
-                              size: 20,
+                              size: 18,
                               altIcon ?? Icons.refresh,
                             ),
                           ],

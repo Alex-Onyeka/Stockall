@@ -126,7 +126,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                           color: Colors.grey.shade400,
                         ),
                       ),
-                      child: Center(child: Text('Reset')),
+                      child: Center(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                          ),
+                          'Reset',
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -298,6 +309,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                     style: TextStyle(
                                       fontWeight:
                                           FontWeight.bold,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
                                       color:
                                           theme
                                               .lightModeColor
@@ -308,7 +324,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 ],
                               ),
                               Icon(
-                                size: 18,
+                                size: 16,
                                 color: Colors.grey.shade500,
                                 Icons
                                     .arrow_forward_ios_rounded,
@@ -330,7 +346,40 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               focusedDay: focusedDay ?? DateTime.now(),
               selectedDayPredicate:
                   (day) => isSameDay(selectedDay, day),
-              calendarFormat: calendarFormat,
+              calendarFormat: CalendarFormat.month,
+              calendarStyle: CalendarStyle(
+                defaultTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                ),
+                disabledTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                ),
+                rangeEndTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                ),
+                rangeStartTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                ),
+                weekendTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b2.fontSize,
+                ),
+                selectedDecoration: BoxDecoration(
+                  color: theme.lightModeColor.prColor300,
+                ),
+                todayTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.b1.fontSize,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  fontSize: theme.mobileTexts.h4.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
                   this.selectedDay = selectedDay;
