@@ -303,7 +303,7 @@ class _AddExpensesMobileState
                       SizedBox(height: 15),
                       NumberTextfield(
                         title:
-                            'Amount (${currencySymbol(context)})',
+                            'Amount (${currencySymbol(context: context)})',
                         hint: 'Enter Expense Amount',
                         controller: widget.amountController,
                         theme: theme,

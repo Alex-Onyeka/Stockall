@@ -328,6 +328,12 @@ class _NotificatonTileMainState
                                 style: TextStyle(
                                   fontWeight:
                                       FontWeight.bold,
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
                                 ),
                                 widget.notif.title,
                               ),
@@ -342,7 +348,7 @@ class _NotificatonTileMainState
                                   fontWeight:
                                       FontWeight.normal,
                                   color:
-                                      Colors.grey.shade500,
+                                      Colors.grey.shade700,
                                 ),
                                 widget.notif.text,
                               ),

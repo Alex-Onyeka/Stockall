@@ -388,7 +388,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b1
+                                      .h4
                                       .fontSize,
                             ),
                             shop.name,
@@ -438,7 +438,19 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: Text('Country:'),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                      ),
+                                      'Country:',
+                                    ),
                                   ),
                                   Expanded(
                                     flex: 3,
@@ -448,6 +460,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                       style: TextStyle(
                                         fontWeight:
                                             FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
                                       ),
                                       shop.country ??
                                           'Not Set',
@@ -462,7 +479,19 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: Text('State:'),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                      ),
+                                      'State:',
+                                    ),
                                   ),
                                   Expanded(
                                     flex: 3,
@@ -472,6 +501,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                       style: TextStyle(
                                         fontWeight:
                                             FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
                                       ),
                                       shop.state ??
                                           'Not Set',
@@ -486,7 +520,19 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: Text('City:'),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                      ),
+                                      'City:',
+                                    ),
                                   ),
                                   Expanded(
                                     flex: 3,
@@ -496,6 +542,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                       style: TextStyle(
                                         fontWeight:
                                             FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
                                       ),
 
                                       shop.city ??
@@ -511,7 +562,19 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: Text('Address:'),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                      ),
+                                      'Address:',
+                                    ),
                                   ),
                                   Expanded(
                                     flex: 3,
@@ -521,6 +584,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                       style: TextStyle(
                                         fontWeight:
                                             FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
                                       ),
                                       shop.shopAddress ??
                                           'Address Not Set',
@@ -592,6 +660,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 style: TextStyle(
                                   fontWeight:
                                       FontWeight.bold,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
                                 ),
                                 'Set your Currency',
                               ),
@@ -612,325 +685,332 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                       animation,
                                       secondaryAnimation,
                                     ) {
-                                      return StatefulBuilder(
-                                        builder:
-                                            (
-                                              context,
-                                              setState,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              // elevation: 1,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      top:
-                                                          10.0,
-                                                    ),
-                                                child: Ink(
-                                                  height:
-                                                      MediaQuery.of(
-                                                        context,
-                                                      ).size.height,
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        Colors.grey.shade100,
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: const Color.fromARGB(
-                                                          55,
-                                                          0,
-                                                          0,
-                                                          0,
-                                                        ),
-                                                        blurRadius:
-                                                            5,
+                                      return GestureDetector(
+                                        onTap:
+                                            () =>
+                                                FocusManager
+                                                    .instance
+                                                    .primaryFocus
+                                                    ?.unfocus(),
+                                        child: StatefulBuilder(
+                                          builder:
+                                              (
+                                                context,
+                                                setState,
+                                              ) => Material(
+                                                color:
+                                                    Colors
+                                                        .transparent,
+                                                // elevation: 1,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        top:
+                                                            10.0,
                                                       ),
-                                                    ],
-                                                    borderRadius: BorderRadius.vertical(
-                                                      top: Radius.circular(
-                                                        20,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  child: Container(
+                                                  child: Ink(
                                                     height:
                                                         MediaQuery.of(
                                                           context,
-                                                        ).size.height *
-                                                        0.9,
-
-                                                    padding:
-                                                        const EdgeInsets.fromLTRB(
-                                                          15,
-                                                          15,
-                                                          15,
-                                                          45,
+                                                        ).size.height,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade100,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: const Color.fromARGB(
+                                                            55,
+                                                            0,
+                                                            0,
+                                                            0,
+                                                          ),
+                                                          blurRadius:
+                                                              5,
                                                         ),
-                                                    child: Column(
-                                                      children: [
-                                                        Material(
-                                                          color:
-                                                              Colors.white,
-                                                          child: Column(
-                                                            children: [
-                                                              Center(
-                                                                child: Container(
-                                                                  height:
-                                                                      4,
-                                                                  width:
-                                                                      70,
-                                                                  decoration: BoxDecoration(
-                                                                    borderRadius: BorderRadius.circular(
-                                                                      15,
+                                                      ],
+                                                      borderRadius: BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                          20,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Container(
+                                                      height:
+                                                          MediaQuery.of(
+                                                            context,
+                                                          ).size.height *
+                                                          0.9,
+
+                                                      padding: const EdgeInsets.fromLTRB(
+                                                        15,
+                                                        15,
+                                                        15,
+                                                        45,
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Material(
+                                                            color:
+                                                                Colors.white,
+                                                            child: Column(
+                                                              children: [
+                                                                Center(
+                                                                  child: Container(
+                                                                    height:
+                                                                        4,
+                                                                    width:
+                                                                        70,
+                                                                    decoration: BoxDecoration(
+                                                                      borderRadius: BorderRadius.circular(
+                                                                        15,
+                                                                      ),
+                                                                      color:
+                                                                          Colors.grey.shade400,
                                                                     ),
-                                                                    color:
-                                                                        Colors.grey.shade400,
                                                                   ),
                                                                 ),
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    10,
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      15.0,
+                                                                SizedBox(
+                                                                  height:
+                                                                      10,
                                                                 ),
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.spaceBetween,
-                                                                  children: [
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment.start,
-                                                                      children: [
-                                                                        Text(
-                                                                          'Select Your Currency',
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                returnTheme(
-                                                                                  context,
-                                                                                ).mobileTexts.b1.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
+                                                                Padding(
+                                                                  padding: const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        15.0,
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment.spaceBetween,
+                                                                    children: [
+                                                                      Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                            'Select Your Currency',
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  returnTheme(
+                                                                                    context,
+                                                                                  ).mobileTexts.b1.fontSize,
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                        Text(
-                                                                          'Search For Countries or Currency name',
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                returnTheme(
-                                                                                  context,
-                                                                                ).mobileTexts.b2.fontSize,
+                                                                          Text(
+                                                                            'Search For Countries or Currency name',
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  returnTheme(
+                                                                                    context,
+                                                                                  ).mobileTexts.b2.fontSize,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    InkWell(
-                                                                      onTap: () {
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop();
-                                                                        currencyController.clear();
-                                                                      },
-                                                                      child: Container(
-                                                                        padding: EdgeInsets.all(
-                                                                          10,
-                                                                        ),
-                                                                        decoration: BoxDecoration(
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                          color:
-                                                                              Colors.grey.shade800,
-                                                                        ),
-                                                                        child: Icon(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          Icons.clear_rounded,
+                                                                        ],
+                                                                      ),
+                                                                      InkWell(
+                                                                        onTap: () {
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop();
+                                                                          currencyController.clear();
+                                                                        },
+                                                                        child: Container(
+                                                                          padding: EdgeInsets.all(
+                                                                            10,
+                                                                          ),
+                                                                          decoration: BoxDecoration(
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            color:
+                                                                                Colors.grey.shade800,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            Icons.clear_rounded,
+                                                                          ),
                                                                         ),
                                                                       ),
-                                                                    ),
-                                                                  ],
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    10,
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      20.0,
+                                                                SizedBox(
+                                                                  height:
+                                                                      10,
                                                                 ),
-                                                                child: GeneralTextfieldOnly(
-                                                                  hint:
-                                                                      'Search for country or currency',
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
-                                                                  controller:
-                                                                      currencyController,
-                                                                  onChanged: (
-                                                                    value,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {},
-                                                                    );
-                                                                  },
+                                                                Padding(
+                                                                  padding: const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        20.0,
+                                                                  ),
+                                                                  child: GeneralTextfieldOnly(
+                                                                    hint:
+                                                                        'Search for country or currency',
+                                                                    lines:
+                                                                        1,
+                                                                    theme:
+                                                                        theme,
+                                                                    controller:
+                                                                        currencyController,
+                                                                    onChanged: (
+                                                                      value,
+                                                                    ) {
+                                                                      setState(
+                                                                        () {},
+                                                                      );
+                                                                    },
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Builder(
-                                                            builder: (
-                                                              context,
-                                                            ) {
-                                                              var safeContext =
-                                                                  context;
-                                                              var currenciies = currencies.where(
-                                                                (
-                                                                  currency,
-                                                                ) =>
-                                                                    currency.country.toLowerCase().contains(
-                                                                      currencyController.text.toLowerCase(),
-                                                                    ) ||
-                                                                    currency.currency.toLowerCase().contains(
-                                                                      currencyController.text.toLowerCase(),
-                                                                    ),
-                                                              );
-                                                              if (isLoading) {
-                                                                return Container(
-                                                                  color: const Color.fromARGB(
-                                                                    67,
-                                                                    255,
-                                                                    255,
-                                                                    255,
-                                                                  ),
-                                                                  child: Center(
-                                                                    child: returnCompProvider(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    ).showLoader(
-                                                                      'Loading',
-                                                                    ),
-                                                                  ),
+                                                          Expanded(
+                                                            child: Builder(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                var safeContext =
+                                                                    context;
+                                                                var currenciies = currencies.where(
+                                                                  (
+                                                                    currency,
+                                                                  ) =>
+                                                                      currency.country.toLowerCase().contains(
+                                                                        currencyController.text.toLowerCase(),
+                                                                      ) ||
+                                                                      currency.currency.toLowerCase().contains(
+                                                                        currencyController.text.toLowerCase(),
+                                                                      ),
                                                                 );
-                                                              } else {
-                                                                if (currenciies.isEmpty) {
+                                                                if (isLoading) {
                                                                   return Container(
-                                                                    color:
-                                                                        Colors.white,
+                                                                    color: const Color.fromARGB(
+                                                                      67,
+                                                                      255,
+                                                                      255,
+                                                                      255,
+                                                                    ),
                                                                     child: Center(
-                                                                      child: Text(
-                                                                        'Not Found',
+                                                                      child: returnCompProvider(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      ).showLoader(
+                                                                        'Loading',
                                                                       ),
                                                                     ),
                                                                   );
                                                                 } else {
-                                                                  return ListView.builder(
-                                                                    itemCount:
-                                                                        currenciies.length,
-                                                                    itemBuilder: (
-                                                                      context,
-                                                                      index,
-                                                                    ) {
-                                                                      var item =
-                                                                          currenciies.toList()[index];
-                                                                      return Padding(
-                                                                        padding: const EdgeInsets.symmetric(
-                                                                          vertical:
-                                                                              5,
+                                                                  if (currenciies.isEmpty) {
+                                                                    return Container(
+                                                                      color:
+                                                                          Colors.white,
+                                                                      child: Center(
+                                                                        child: Text(
+                                                                          'Not Found',
                                                                         ),
-                                                                        child: ListTile(
-                                                                          tileColor:
-                                                                              Colors.white,
-                                                                          subtitle: Text(
-                                                                            style: TextStyle(
-                                                                              fontSize:
-                                                                                  12,
-                                                                              fontWeight:
-                                                                                  FontWeight.normal,
-                                                                              color:
-                                                                                  theme.lightModeColor.secColor100,
-                                                                            ),
-                                                                            item.currency,
+                                                                      ),
+                                                                    );
+                                                                  } else {
+                                                                    return ListView.builder(
+                                                                      itemCount:
+                                                                          currenciies.length,
+                                                                      itemBuilder: (
+                                                                        context,
+                                                                        index,
+                                                                      ) {
+                                                                        var item =
+                                                                            currenciies.toList()[index];
+                                                                        return Padding(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                            vertical:
+                                                                                5,
                                                                           ),
-                                                                          title: Text(
-                                                                            style: TextStyle(
-                                                                              fontSize:
-                                                                                  16,
-                                                                              fontWeight:
-                                                                                  FontWeight.normal,
-                                                                            ),
-                                                                            item.country,
-                                                                          ),
-                                                                          trailing: Text(
-                                                                            style: TextStyle(
-                                                                              fontSize:
-                                                                                  16,
-                                                                              fontWeight:
-                                                                                  FontWeight.bold,
-                                                                              color:
-                                                                                  theme.lightModeColor.secColor100,
-                                                                            ),
-                                                                            item.symbol,
-                                                                          ),
-                                                                          onTap: () async {
-                                                                            setState(
-                                                                              () {
-                                                                                isLoading =
-                                                                                    true;
-                                                                              },
-                                                                            );
-                                                                            await returnShopProvider(
-                                                                              context,
-                                                                              listen:
-                                                                                  false,
-                                                                            ).updateShopCurrency(
-                                                                              currency:
-                                                                                  item.symbol,
-                                                                              shopId: shopId(
-                                                                                context,
+                                                                          child: ListTile(
+                                                                            tileColor:
+                                                                                Colors.white,
+                                                                            subtitle: Text(
+                                                                              style: TextStyle(
+                                                                                fontSize:
+                                                                                    theme.mobileTexts.b2.fontSize,
+                                                                                fontWeight:
+                                                                                    FontWeight.normal,
+                                                                                color:
+                                                                                    theme.lightModeColor.secColor100,
                                                                               ),
-                                                                            );
-                                                                            setState(
-                                                                              () {
-                                                                                selectedCurrency =
-                                                                                    item.symbol;
-                                                                                displayCurrency =
-                                                                                    '${item.currency} (${item.symbol})';
-                                                                                isLoading =
-                                                                                    false;
-                                                                              },
-                                                                            );
-                                                                            if (safeContext.mounted) {
-                                                                              Navigator.of(
-                                                                                safeContext,
-                                                                              ).pop();
-                                                                            }
-                                                                          },
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                  );
+                                                                              item.currency,
+                                                                            ),
+                                                                            title: Text(
+                                                                              style: TextStyle(
+                                                                                fontSize:
+                                                                                    theme.mobileTexts.b1.fontSize,
+                                                                                fontWeight:
+                                                                                    FontWeight.bold,
+                                                                              ),
+                                                                              item.country,
+                                                                            ),
+                                                                            trailing: Text(
+                                                                              style: TextStyle(
+                                                                                fontSize:
+                                                                                    theme.mobileTexts.b1.fontSize,
+                                                                                fontWeight:
+                                                                                    FontWeight.bold,
+                                                                                color:
+                                                                                    theme.lightModeColor.secColor100,
+                                                                              ),
+                                                                              item.symbol,
+                                                                            ),
+                                                                            onTap: () async {
+                                                                              setState(
+                                                                                () {
+                                                                                  isLoading =
+                                                                                      true;
+                                                                                },
+                                                                              );
+                                                                              await returnShopProvider(
+                                                                                context,
+                                                                                listen:
+                                                                                    false,
+                                                                              ).updateShopCurrency(
+                                                                                currency:
+                                                                                    item.symbol,
+                                                                                shopId: shopId(
+                                                                                  context,
+                                                                                ),
+                                                                              );
+                                                                              setState(
+                                                                                () {
+                                                                                  selectedCurrency =
+                                                                                      item.symbol;
+                                                                                  displayCurrency =
+                                                                                      '${item.currency} (${item.symbol})';
+                                                                                  isLoading =
+                                                                                      false;
+                                                                                },
+                                                                              );
+                                                                              if (safeContext.mounted) {
+                                                                                Navigator.of(
+                                                                                  safeContext,
+                                                                                ).pop();
+                                                                              }
+                                                                            },
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  }
                                                                 }
-                                                              }
-                                                            },
+                                                              },
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
+                                        ),
                                       );
                                     },
                                   ).then((context) {

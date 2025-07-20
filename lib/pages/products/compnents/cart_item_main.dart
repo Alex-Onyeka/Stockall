@@ -189,9 +189,10 @@ class _CartItemMainState extends State<CartItemMain> {
                                           .prColor300,
                                 ),
                                 formatMoneyMid(
-                                  widget.cartItem
-                                      .totalCost(),
-                                  context,
+                                  amount:
+                                      widget.cartItem
+                                          .totalCost(),
+                                  context: context,
                                 ),
                                 // '${widget.cartItem.customPrice != null ? formatMoneyMid(widget.cartItem.customPrice ?? 0, context) : (widget.cartItem.customPrice) ?? (widget.cartItem.item.discount == null ? formatMoneyMid(widget.cartItem.totalCost(), context) : formatMoneyMid((widget.cartItem.totalCost() * (1 - (widget.cartItem.item.discount! / 100))), context))}',
                               ),
@@ -235,9 +236,10 @@ class _CartItemMainState extends State<CartItemMain> {
                                     color: Colors.grey,
                                   ),
                                   formatMoneyMid(
-                                    widget.cartItem
-                                        .totalCost(),
-                                    context,
+                                    amount:
+                                        widget.cartItem
+                                            .totalCost(),
+                                    context: context,
                                   ),
                                 ),
                               ),

@@ -1566,12 +1566,12 @@ class _CustomBottomPanelState
                                         .fontWeightBold,
                               ),
                               formatMoneyMid(
-                                double.parse(
+                                amount: double.parse(
                                   formatSellingPrice(
                                     cartItem,
                                   ),
                                 ),
-                                context,
+                                context: context,
                               ),
                             ),
                           ],

@@ -333,7 +333,11 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                                         .grey
                                                         .shade900,
                                                 fontSize:
-                                                    14,
+                                                    returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).mobileTexts.b1.fontSize,
                                                 fontWeight:
                                                     FontWeight
                                                         .normal,
@@ -475,7 +479,7 @@ class _MyDrawerWidgetState extends State<MyDrawerWidget> {
                                 context: context,
                               ),
                               child: NavListTileAlt(
-                                height: 20,
+                                height: 16,
                                 action: () async {
                                   openWhatsApp();
                                 },
@@ -776,6 +780,7 @@ class NavListTileAlt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = returnTheme(context);
     return InkWell(
       onTap: () {
         Navigator.of(context).pop();
@@ -830,8 +835,9 @@ class NavListTileAlt extends StatelessWidget {
                   Text(
                     style: TextStyle(
                       color: color ?? Colors.grey.shade900,
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
+                      fontSize:
+                          theme.mobileTexts.b1.fontSize,
+                      fontWeight: FontWeight.w500,
                     ),
                     title,
                   ),
@@ -839,7 +845,7 @@ class NavListTileAlt extends StatelessWidget {
               ),
               Icon(
                 color: Colors.grey.shade600,
-                size: 18,
+                size: 14,
                 Icons.arrow_forward_ios_rounded,
               ),
             ],

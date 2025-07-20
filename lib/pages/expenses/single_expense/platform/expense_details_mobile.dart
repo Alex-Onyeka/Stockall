@@ -391,11 +391,11 @@ class ExpenseDetailsContainer extends StatelessWidget {
                   flex: 5,
                   child: TabBarUserInfoSection(
                     mainText: formatMoneyMid(
-                      expense.amount,
-                      context,
+                      amount: expense.amount,
+                      context: context,
                     ),
                     text:
-                        'Amount (${currencySymbol(context)})',
+                        'Amount (${currencySymbol(context: context)})',
                   ),
                 ),
               ],

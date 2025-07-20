@@ -654,9 +654,11 @@ class _TotalProductsPageState
                                                             FontWeight.bold,
                                                       ),
                                                       formatMoneyMid(
-                                                        product.sellingPrice ??
+                                                        amount:
+                                                            product.sellingPrice ??
                                                             0,
-                                                        context,
+                                                        context:
+                                                            context,
                                                       ),
                                                     ),
                                                   ],

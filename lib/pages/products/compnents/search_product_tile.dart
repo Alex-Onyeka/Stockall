@@ -32,8 +32,8 @@ class SearchProductTile extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
             formatMoneyMid(
-              product.sellingPrice ?? 0,
-              context,
+              amount: product.sellingPrice ?? 0,
+              context: context,
             ),
           ),
         ],

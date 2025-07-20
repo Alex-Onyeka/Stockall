@@ -77,7 +77,7 @@ class _ProductSummaryTabState
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
                   ),
-                  currencySymbol(context),
+                  currencySymbol(context: context),
                 ),
               ),
               SizedBox(width: 2),
@@ -91,7 +91,10 @@ class _ProductSummaryTabState
                   color: Colors.grey.shade700,
                 ),
                 widget.isMoney != null
-                    ? formatMoneyMid(widget.value, context)
+                    ? formatMoneyMid(
+                      amount: widget.value,
+                      context: context,
+                    )
                     : formatLargeNumberDouble(widget.value),
               ),
             ],

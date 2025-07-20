@@ -425,35 +425,60 @@ Future<Uint8List> _buildPdf(
                 children: [
                   pw.Column(
                     children: [
-                      pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        shop.name,
-                        style: pw.TextStyle(
-                          font: fontBold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      pw.SizedBox(height: 5),
-                      pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        shop.email,
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize: 9,
-                        ),
-                      ),
-                      pw.SizedBox(height: 5),
+                      pw.Column(
+                        // mainAxisAlignment:
+                        //     pw.MainAxisAlignment.start,
+                        children: [
+                          pw.Container(
+                            width:
+                                PdfPageFormat
+                                    .a5
+                                    .availableWidth -
+                                60, // match margins
+                            alignment: pw.Alignment.center,
+                            child: pw.Text(
+                              shop.name,
+                              textAlign:
+                                  pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          pw.SizedBox(height: 4),
+                          pw.Container(
+                            width:
+                                PdfPageFormat
+                                    .a5
+                                    .availableWidth -
+                                60,
+                            alignment: pw.Alignment.center,
+                            child: pw.Text(
+                              shop.email,
+                              textAlign:
+                                  pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: fontRegular,
+                                fontSize: 9,
+                              ),
+                            ),
+                          ),
 
-                      pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        shop.phoneNumber ?? '',
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize:
-                              shop.phoneNumber == null
-                                  ? 1
-                                  : 9,
-                        ),
+                          pw.SizedBox(height: 1),
+
+                          pw.Text(
+                            textAlign: pw.TextAlign.center,
+                            shop.phoneNumber ?? '',
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize:
+                                  shop.phoneNumber == null
+                                      ? 1
+                                      : 9,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -654,7 +679,7 @@ Future<Uint8List> _buildPdf(
                                                   fontRegular,
                                               fontSize: 8,
                                             ),
-                                            'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
+                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
                                           ),
                                           pw.Text(
                                             style: pw.TextStyle(
@@ -662,7 +687,7 @@ Future<Uint8List> _buildPdf(
                                                   fontRegular,
                                               fontSize: 8,
                                             ),
-                                            'Bank: ${formatMoneyMid(receipt.bank, context)}',
+                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
                                           ),
                                         ],
                                       ),
@@ -772,8 +797,8 @@ Future<Uint8List> _buildPdf(
                                 fontSize: 10,
                               ),
                               formatMoneyMid(
-                                record.revenue,
-                                context,
+                                amount: record.revenue,
+                                context: context,
                               ),
                             ),
                           ),
@@ -807,14 +832,14 @@ Future<Uint8List> _buildPdf(
                             fontSize: 10,
                           ),
                           formatMoneyMid(
-                            returnReceiptProvider(
+                            amount: returnReceiptProvider(
                               context,
                               listen: false,
                             ).getSubTotalRevenueForReceipt(
                               context,
                               records,
                             ),
-                            context,
+                            context: context,
                           ),
                         ),
                       ),
@@ -843,7 +868,8 @@ Future<Uint8List> _buildPdf(
                             fontSize: 10,
                           ),
                           formatMoneyMid(
-                            returnReceiptProvider(
+                            amount:
+                                returnReceiptProvider(
                                   context,
                                   listen: false,
                                 ).getTotalMainRevenueReceipt(
@@ -857,7 +883,7 @@ Future<Uint8List> _buildPdf(
                                   context,
                                   records,
                                 ),
-                            context,
+                            context: context,
                           ),
                         ),
                       ),
@@ -886,14 +912,14 @@ Future<Uint8List> _buildPdf(
                             fontSize: 12,
                           ),
                           formatMoneyMid(
-                            returnReceiptProvider(
+                            amount: returnReceiptProvider(
                               context,
                               listen: false,
                             ).getTotalMainRevenueReceipt(
                               records,
                               context,
                             ),
-                            context,
+                            context: context,
                           ),
                         ),
                       ),
@@ -1183,7 +1209,7 @@ Future<Uint8List> _buildPdfRoll(
                                             fontSize:
                                                 parTextAlt,
                                           ),
-                                          'Cash: ${formatMoneyMid(receipt.cashAlt, context)}',
+                                          'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
                                         ),
                                         pw.Text(
                                           style: pw.TextStyle(
@@ -1192,7 +1218,7 @@ Future<Uint8List> _buildPdfRoll(
                                             fontSize:
                                                 parTextAlt,
                                           ),
-                                          'Bank: ${formatMoneyMid(receipt.bank, context)}',
+                                          'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
                                         ),
                                       ],
                                     ),
@@ -1311,8 +1337,8 @@ Future<Uint8List> _buildPdfRoll(
                               fontSize: parText,
                             ),
                             formatMoneyMid(
-                              record.revenue,
-                              context,
+                              amount: record.revenue,
+                              context: context,
                             ),
                           ),
                         ),
@@ -1346,14 +1372,14 @@ Future<Uint8List> _buildPdfRoll(
                           fontSize: parText,
                         ),
                         formatMoneyMid(
-                          returnReceiptProvider(
+                          amount: returnReceiptProvider(
                             context,
                             listen: false,
                           ).getSubTotalRevenueForReceipt(
                             context,
                             records,
                           ),
-                          context,
+                          context: context,
                         ),
                       ),
                     ),
@@ -1382,7 +1408,8 @@ Future<Uint8List> _buildPdfRoll(
                           fontSize: parText,
                         ),
                         formatMoneyMid(
-                          returnReceiptProvider(
+                          amount:
+                              returnReceiptProvider(
                                 context,
                                 listen: false,
                               ).getTotalMainRevenueReceipt(
@@ -1396,7 +1423,7 @@ Future<Uint8List> _buildPdfRoll(
                                 context,
                                 records,
                               ),
-                          context,
+                          context: context,
                         ),
                       ),
                     ),
@@ -1425,14 +1452,14 @@ Future<Uint8List> _buildPdfRoll(
                           fontSize: totalText,
                         ),
                         formatMoneyMid(
-                          returnReceiptProvider(
+                          amount: returnReceiptProvider(
                             context,
                             listen: false,
                           ).getTotalMainRevenueReceipt(
                             records,
                             context,
                           ),
-                          context,
+                          context: context,
                         ),
                       ),
                     ),
@@ -2097,9 +2124,11 @@ Future<Uint8List> _buildPdfProducts(
                                 ),
                                 child: pw.Text(
                                   formatMoneyMid(
-                                    product.sellingPrice ??
+                                    amount:
+                                        product
+                                            .sellingPrice ??
                                         0,
-                                    context,
+                                    context: context,
                                   ),
                                 ),
                               ),
@@ -2111,8 +2140,9 @@ Future<Uint8List> _buildPdfProducts(
                                 ),
                                 child: pw.Text(
                                   formatMoneyMid(
-                                    product.costPrice,
-                                    context,
+                                    amount:
+                                        product.costPrice,
+                                    context: context,
                                   ),
                                 ),
                               ),
@@ -2246,8 +2276,9 @@ Future<Uint8List> _buildPdfProducts(
                                   font: fontBold,
                                 ),
                                 formatMoneyMid(
-                                  totalSellingPrice(),
-                                  context,
+                                  amount:
+                                      totalSellingPrice(),
+                                  context: context,
                                 ),
                               ),
                             ),
@@ -2262,8 +2293,8 @@ Future<Uint8List> _buildPdfProducts(
                                   font: fontBold,
                                 ),
                                 formatMoneyMid(
-                                  totalCostPrice(),
-                                  context,
+                                  amount: totalCostPrice(),
+                                  context: context,
                                 ),
                               ),
                             ),
@@ -2464,8 +2495,8 @@ Future<Uint8List> _buildPdfSales(
     String tempQtty =
         record.costPrice != null
             ? formatMoneyMid(
-              (record.revenue - record.costPrice!),
-              context,
+              amount: (record.revenue - record.costPrice!),
+              context: context,
             )
             : 'Nill';
     return tempQtty;
@@ -2788,8 +2819,9 @@ Future<Uint8List> _buildPdfSales(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        record.revenue,
-                                        context,
+                                        amount:
+                                            record.revenue,
+                                        context: context,
                                       ),
                                     ),
                                   ),
@@ -2801,9 +2833,11 @@ Future<Uint8List> _buildPdfSales(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        record.costPrice ??
+                                        amount:
+                                            record
+                                                .costPrice ??
                                             0,
-                                        context,
+                                        context: context,
                                       ),
                                     ),
                                   ),
@@ -2920,8 +2954,9 @@ Future<Uint8List> _buildPdfSales(
                                       font: fontBold,
                                     ),
                                     formatMoneyMid(
-                                      totalSellingPrice(),
-                                      context,
+                                      amount:
+                                          totalSellingPrice(),
+                                      context: context,
                                     ),
                                   ),
                                 ),
@@ -2936,8 +2971,9 @@ Future<Uint8List> _buildPdfSales(
                                       font: fontBold,
                                     ),
                                     formatMoneyMid(
-                                      totalCostPrice(),
-                                      context,
+                                      amount:
+                                          totalCostPrice(),
+                                      context: context,
                                     ),
                                   ),
                                 ),
@@ -2952,8 +2988,8 @@ Future<Uint8List> _buildPdfSales(
                                       font: fontBold,
                                     ),
                                     formatMoneyMid(
-                                      totalProfit(),
-                                      context,
+                                      amount: totalProfit(),
+                                      context: context,
                                     ),
                                   ),
                                 ),
@@ -3394,8 +3430,8 @@ Future<Uint8List> _buildPdfSalesSummary(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        summ.total,
-                                        context,
+                                        amount: summ.total,
+                                        context: context,
                                       ),
                                     ),
                                   ),
@@ -3407,8 +3443,9 @@ Future<Uint8List> _buildPdfSalesSummary(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        summ.costTotal,
-                                        context,
+                                        amount:
+                                            summ.costTotal,
+                                        context: context,
                                       ),
                                     ),
                                   ),
@@ -3420,8 +3457,8 @@ Future<Uint8List> _buildPdfSalesSummary(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        summ.profit,
-                                        context,
+                                        amount: summ.profit,
+                                        context: context,
                                       ),
                                     ),
                                   ),
@@ -3499,8 +3536,9 @@ Future<Uint8List> _buildPdfSalesSummary(
                                       font: fontBold,
                                     ),
                                     formatMoneyMid(
-                                      totalSellingPrice(),
-                                      context,
+                                      amount:
+                                          totalSellingPrice(),
+                                      context: context,
                                     ),
                                   ),
                                 ),
@@ -3515,8 +3553,9 @@ Future<Uint8List> _buildPdfSalesSummary(
                                       font: fontBold,
                                     ),
                                     formatMoneyMid(
-                                      totalCostPrice(),
-                                      context,
+                                      amount:
+                                          totalCostPrice(),
+                                      context: context,
                                     ),
                                   ),
                                 ),
@@ -3531,8 +3570,8 @@ Future<Uint8List> _buildPdfSalesSummary(
                                       font: fontBold,
                                     ),
                                     formatMoneyMid(
-                                      totalProfit(),
-                                      context,
+                                      amount: totalProfit(),
+                                      context: context,
                                     ),
                                   ),
                                 ),

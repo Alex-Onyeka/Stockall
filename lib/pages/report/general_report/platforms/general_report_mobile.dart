@@ -518,7 +518,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else if (receiptSnapshot.hasError) {
                                                                     return Text(
@@ -530,7 +530,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else if (receiptSnapshot.data ==
                                                                       null) {
@@ -543,7 +543,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.grey.shade700,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var total = returnReceiptProvider(
@@ -568,8 +568,10 @@ class _GeneralReportMobileState
                                                                             Colors.grey.shade700,
                                                                       ),
                                                                       formatMoneyMid(
-                                                                        total,
-                                                                        context,
+                                                                        amount:
+                                                                            total,
+                                                                        context:
+                                                                            context,
                                                                       ),
                                                                     );
                                                                   }
@@ -699,7 +701,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.redAccent,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0',
+                                                                      '${currencySymbol(context: context)} 0',
                                                                     );
                                                                   } else if (expensesSnapshot.hasError) {
                                                                     return Text(
@@ -711,7 +713,7 @@ class _GeneralReportMobileState
                                                                         color:
                                                                             Colors.redAccent,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0',
+                                                                      '${currencySymbol(context: context)} 0',
                                                                     );
                                                                   } else {
                                                                     var expenses = returnExpensesProvider(
@@ -742,8 +744,10 @@ class _GeneralReportMobileState
                                                                             Colors.redAccent,
                                                                       ),
                                                                       formatMoneyMid(
-                                                                        getTotal(),
-                                                                        context,
+                                                                        amount:
+                                                                            getTotal(),
+                                                                        context:
+                                                                            context,
                                                                       ),
                                                                     );
                                                                   }
@@ -838,7 +842,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                  '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else if (receiptSnapshot.hasError ||
                                                                   expensesSnapshot.hasError) {
@@ -851,7 +855,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                  '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else {
                                                                 var receipts = returnReceiptProvider(
@@ -901,7 +905,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${formatMoneyMid(total, context)} - ${formatMoneyMid(totalExpenses(), context)}',
+                                                                  '${formatMoneyMid(amount: total, context: context)} - ${formatMoneyMid(amount: totalExpenses(), context: context)}',
                                                                 );
                                                               }
                                                             },
@@ -949,7 +953,7 @@ class _GeneralReportMobileState
                                                                         fontWeight:
                                                                             FontWeight.w700,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else if (receiptSnapshot.hasError ||
                                                                       expensesSnapshot.hasError) {
@@ -962,7 +966,7 @@ class _GeneralReportMobileState
                                                                         fontWeight:
                                                                             FontWeight.w700,
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var receipts = returnReceiptProvider(
@@ -1026,9 +1030,11 @@ class _GeneralReportMobileState
                                                                                 ),
                                                                       ),
                                                                       formatMoneyMid(
-                                                                        total -
+                                                                        amount:
+                                                                            total -
                                                                             totalExpenses(),
-                                                                        context,
+                                                                        context:
+                                                                            context,
                                                                       ),
                                                                     );
                                                                   }
@@ -1155,7 +1161,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                  '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else if (productRecordSnapShot.hasError) {
                                                                 return Text(
@@ -1167,7 +1173,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                  '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else {
                                                                 var receipts = returnReceiptProvider(
@@ -1190,7 +1196,7 @@ class _GeneralReportMobileState
                                                                       fontWeight:
                                                                           FontWeight.w700,
                                                                     ),
-                                                                    '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                    '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                   );
                                                                 } else if (productRecordSnapShot.hasError) {
                                                                   return Text(
@@ -1202,7 +1208,7 @@ class _GeneralReportMobileState
                                                                       fontWeight:
                                                                           FontWeight.w700,
                                                                     ),
-                                                                    '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                    '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                   );
                                                                 } else {
                                                                   var total = returnReceiptProvider(
@@ -1255,7 +1261,7 @@ class _GeneralReportMobileState
                                                                       fontWeight:
                                                                           FontWeight.w700,
                                                                     ),
-                                                                    '${formatMoneyMid(total, context)} - ${formatMoneyMid(totalCostPrice, context)}',
+                                                                    '${formatMoneyMid(amount: total, context: context)} - ${formatMoneyMid(amount: totalCostPrice, context: context)}',
                                                                   );
                                                                 }
                                                               }
@@ -1306,7 +1312,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else if (productRecordSnapShot.hasError) {
                                                                     return Text(
@@ -1322,7 +1328,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var receipts = returnReceiptProvider(
@@ -1348,7 +1354,7 @@ class _GeneralReportMobileState
                                                                             48,
                                                                           ),
                                                                         ),
-                                                                        '${currencySymbol(context)} 0.0',
+                                                                        '${currencySymbol(context: context)} 0.0',
                                                                       );
                                                                     } else if (productRecordSnapShot.hasError) {
                                                                       return Text(
@@ -1364,7 +1370,7 @@ class _GeneralReportMobileState
                                                                             48,
                                                                           ),
                                                                         ),
-                                                                        '${currencySymbol(context)} 0.0',
+                                                                        '${currencySymbol(context: context)} 0.0',
                                                                       );
                                                                     } else {
                                                                       var total = returnReceiptProvider(
@@ -1432,9 +1438,11 @@ class _GeneralReportMobileState
                                                                                   ),
                                                                         ),
                                                                         formatMoneyMid(
-                                                                          total -
+                                                                          amount:
+                                                                              total -
                                                                               totalCostPrice,
-                                                                          context,
+                                                                          context:
+                                                                              context,
                                                                         ),
                                                                       );
                                                                     }
@@ -1528,7 +1536,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                  '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else if (productRecordSnapShot.hasError ||
                                                                   expensesSnapshot.hasError ||
@@ -1542,7 +1550,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${currencySymbol(context)} 0.0 - ${currencySymbol(context)} 0.0',
+                                                                  '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else {
                                                                 var receipts = returnReceiptProvider(
@@ -1625,7 +1633,7 @@ class _GeneralReportMobileState
                                                                     fontWeight:
                                                                         FontWeight.w700,
                                                                   ),
-                                                                  '${formatMoneyMid(total - totalCostPrice, context)} - (-${formatMoneyMid(getExpensesTotal(), context)})',
+                                                                  '${formatMoneyMid(amount: total - totalCostPrice, context: context)} - (-${formatMoneyMid(amount: getExpensesTotal(), context: context)})',
                                                                 );
                                                               }
                                                             },
@@ -1678,7 +1686,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else if (productRecordSnapShot.hasError ||
                                                                       expensesSnapshot.hasError ||
@@ -1696,7 +1704,7 @@ class _GeneralReportMobileState
                                                                           48,
                                                                         ),
                                                                       ),
-                                                                      '${currencySymbol(context)} 0.0',
+                                                                      '${currencySymbol(context: context)} 0.0',
                                                                     );
                                                                   } else {
                                                                     var receipts = returnReceiptProvider(
@@ -1795,10 +1803,12 @@ class _GeneralReportMobileState
                                                                                 ),
                                                                       ),
                                                                       formatMoneyMid(
-                                                                        (total -
+                                                                        amount:
+                                                                            (total -
                                                                                 totalCostPrice) -
                                                                             getExpensesTotal(),
-                                                                        context,
+                                                                        context:
+                                                                            context,
                                                                       ),
                                                                     );
                                                                   }

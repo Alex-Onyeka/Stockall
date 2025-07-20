@@ -332,7 +332,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         .fontWeightBold,
                               ),
                               formatMoneyMid(
-                                double.parse(
+                                amount: double.parse(
                                   priceController
                                           .text
                                           .isNotEmpty
@@ -362,7 +362,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   0))
                                           .toString(),
                                 ),
-                                context,
+                                context: context,
                               ),
 
                               // priceController.text.isEmpty
@@ -778,11 +778,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   .fontSize,
                                         ),
                                         formatMoneyMid(
-                                          double.tryParse(
+                                          amount:
+                                              double.tryParse(
                                                 formatSellingPrice(),
                                               ) ??
                                               0,
-                                          context,
+                                          context: context,
                                         ),
                                       ),
                                     ],
@@ -1466,7 +1467,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          '${currencySymbol(context)} ${suggestion.costPrice ?? 0}',
+                                                          '${currencySymbol(context: context)} ${suggestion.costPrice ?? 0}',
                                                         ),
                                                         Icon(
                                                           size:
@@ -2401,14 +2402,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   // fontWeight: FontWeight.bold,
                                                 ),
                                                 formatMoneyBig(
-                                                  returnSalesProvider(
+                                                  amount: returnSalesProvider(
                                                     context,
                                                   ).calcTotalMain(
                                                     returnSalesProvider(
                                                       context,
                                                     ).cartItems,
                                                   ),
-                                                  context,
+                                                  context:
+                                                      context,
                                                 ),
                                               ),
                                             ],
@@ -2478,14 +2480,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           .bold,
                                                 ),
                                                 formatMoneyBig(
-                                                  returnSalesProvider(
+                                                  amount: returnSalesProvider(
                                                     context,
                                                   ).calcFinalTotalMain(
                                                     returnSalesProvider(
                                                       context,
                                                     ).cartItems,
                                                   ),
-                                                  context,
+                                                  context:
+                                                      context,
                                                 ),
                                               ),
                                             ],

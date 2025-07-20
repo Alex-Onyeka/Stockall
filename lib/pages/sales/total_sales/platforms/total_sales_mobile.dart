@@ -293,6 +293,12 @@ class _TotalSalesMobileState
                                           .returnReceipts(
                                             context,
                                           )
+                                          .where(
+                                            (receipt) =>
+                                                receipt
+                                                    .staffId ==
+                                                widget.id,
+                                          )
                                           .toList()
                                           .length
                                           .toDouble()
@@ -303,6 +309,13 @@ class _TotalSalesMobileState
                                           )
                                           .returnReceipts(
                                             context,
+                                          )
+                                          .where(
+                                            (receipt) =>
+                                                receipt
+                                                    .customerId ==
+                                                widget
+                                                    .customerId,
                                           )
                                           .toList()
                                           .length
@@ -755,7 +768,10 @@ class ValueSummaryTabSmall extends StatelessWidget {
                         color: Colors.grey.shade700,
                       ),
                       isMoney
-                          ? formatMoneyMid(value, context)
+                          ? formatMoneyMid(
+                            amount: value,
+                            context: context,
+                          )
                           : formatLargeNumberDoubleWidgetDecimal(
                             value,
                           ),

@@ -113,12 +113,29 @@ const String plusIconSvg = 'assets/svgs/plus_icon.svg';
 const String whatsappIconSvg =
     'assets/svgs/whatsapp_logo_icon.svg';
 
-String currencySymbol(BuildContext context) {
-  return returnShopProvider(
+String currencySymbol({
+  required BuildContext context,
+  bool? isR,
+}) {
+  var shopC =
+      returnShopProvider(
         context,
         listen: false,
-      ).userShop?.currency ??
-      '';
+      ).userShop?.currency;
+  var iR = isR != null ? true : false;
+  if (shopC == '₦' && iR) {
+    return 'N';
+  } else if (shopC == '₹' && iR) {
+    return 'R';
+  } else if (shopC == '₺' && iR) {
+    return 'L';
+  } else {
+    return returnShopProvider(
+          context,
+          listen: false,
+        ).userShop?.currency ??
+        '';
+  }
 }
 
 const String appName = 'Stockall';

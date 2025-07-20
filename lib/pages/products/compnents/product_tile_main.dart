@@ -207,20 +207,26 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                         .sellingPrice !=
                                                     null
                                                 ? formatMoneyMid(
-                                                  widget.product.sellingPrice ??
+                                                  amount:
+                                                      widget
+                                                          .product
+                                                          .sellingPrice ??
                                                       0,
-                                                  context,
+                                                  context:
+                                                      context,
                                                 )
                                                 : 'Price Not Set')
                                             : formatMoneyMid(
-                                              (widget
-                                                      .product
-                                                      .sellingPrice ??
-                                                  0.0 *
-                                                      (1 -
-                                                          (widget.product.discount! /
-                                                              100))),
-                                              context,
+                                              amount:
+                                                  (widget
+                                                          .product
+                                                          .sellingPrice ??
+                                                      0.0 *
+                                                          (1 -
+                                                              (widget.product.discount! /
+                                                                  100))),
+                                              context:
+                                                  context,
                                             ),
                                       ),
                                     ),
@@ -256,11 +262,12 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               Colors.grey,
                                         ),
                                         formatMoneyMid(
-                                          widget
+                                          amount:
+                                              widget
                                                   .product
                                                   .sellingPrice ??
                                               0,
-                                          context,
+                                          context: context,
                                         ),
                                       ),
                                     ),

@@ -1270,8 +1270,8 @@ class _SummaryTableHeadingBarState
                         widget.isHeading
                             ? 'Selling-Price'
                             : formatMoneyBig(
-                              getTotal(),
-                              context,
+                              amount: getTotal(),
+                              context: context,
                             ),
                       ),
                     ),
@@ -1312,8 +1312,8 @@ class _SummaryTableHeadingBarState
                           widget.isHeading
                               ? 'Cost-Price'
                               : formatMoneyBig(
-                                getTotalCostPrice(),
-                                context,
+                                amount: getTotalCostPrice(),
+                                context: context,
                               ),
                         ),
                       ),
@@ -1351,8 +1351,8 @@ class _SummaryTableHeadingBarState
                               : getTotalProfit() == 0
                               ? "Nill"
                               : formatMoneyBig(
-                                getTotalProfit(),
-                                context,
+                                amount: getTotalProfit(),
+                                context: context,
                               ),
                         ),
                       ),
@@ -1491,8 +1491,8 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          record.total,
-                          context,
+                          amount: record.total,
+                          context: context,
                         ),
                       ),
                     ),
@@ -1522,8 +1522,8 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          record.costTotal,
-                          context,
+                          amount: record.costTotal,
+                          context: context,
                         ),
                       ),
                     ),
@@ -1556,7 +1556,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                                     76,
                                   ),
                         ),
-                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(record.profit, context)}",
+                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(amount: record.profit, context: context)}",
                       ),
                     ),
                   ],
@@ -1594,7 +1594,7 @@ class _TableRowRecordWidgetState
         widget.record.costPrice == 0) {
       return "Nill";
     } else {
-      return "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(widget.record.revenue - (widget.record.costPrice ?? 0), context)}";
+      return "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(amount: widget.record.revenue - (widget.record.costPrice ?? 0), context: context)}";
     }
   }
 
@@ -1725,8 +1725,8 @@ class _TableRowRecordWidgetState
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          widget.record.revenue,
-                          context,
+                          amount: widget.record.revenue,
+                          context: context,
                         ),
                       ),
                     ),
@@ -1760,8 +1760,9 @@ class _TableRowRecordWidgetState
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          widget.record.costPrice ?? 0,
-                          context,
+                          amount:
+                              widget.record.costPrice ?? 0,
+                          context: context,
                         ),
                       ),
                     ),

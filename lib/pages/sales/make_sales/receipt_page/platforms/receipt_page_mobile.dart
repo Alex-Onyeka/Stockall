@@ -610,10 +610,10 @@ class _ReceiptDetailsContainerState
                                                         FontWeight.bold,
                                                   ),
                                                   formatMoneyMid(
-                                                    widget
-                                                        .mainReceipt
-                                                        .cashAlt,
-                                                    context,
+                                                    amount:
+                                                        widget.mainReceipt.cashAlt,
+                                                    context:
+                                                        context,
                                                   ),
                                                 ),
                                               ],
@@ -649,10 +649,10 @@ class _ReceiptDetailsContainerState
                                                         FontWeight.bold,
                                                   ),
                                                   formatMoneyMid(
-                                                    widget
-                                                        .mainReceipt
-                                                        .bank,
-                                                    context,
+                                                    amount:
+                                                        widget.mainReceipt.bank,
+                                                    context:
+                                                        context,
                                                   ),
                                                 ),
                                               ],
@@ -852,9 +852,11 @@ class _ReceiptDetailsContainerState
                                                           .bold,
                                                 ),
                                                 formatMoneyMid(
-                                                  productRecord
-                                                      .revenue,
-                                                  context,
+                                                  amount:
+                                                      productRecord
+                                                          .revenue,
+                                                  context:
+                                                      context,
                                                 ),
                                               ),
                                               Visibility(
@@ -873,9 +875,10 @@ class _ReceiptDetailsContainerState
                                                         FontWeight.normal,
                                                   ),
                                                   formatMoneyMid(
-                                                    productRecord
-                                                        .originalCost!,
-                                                    context,
+                                                    amount:
+                                                        productRecord.originalCost!,
+                                                    context:
+                                                        context,
                                                   ),
                                                 ),
                                               ),
@@ -930,14 +933,14 @@ class _ReceiptDetailsContainerState
                                       FontWeight.bold,
                                 ),
                                 formatMoneyMid(
-                                  returnReceiptProvider(
+                                  amount: returnReceiptProvider(
                                     context,
                                     listen: false,
                                   ).getSubTotalRevenueForReceipt(
                                     context,
                                     records,
                                   ),
-                                  context,
+                                  context: context,
                                 ),
                               ),
                             ),
@@ -978,7 +981,8 @@ class _ReceiptDetailsContainerState
                                       FontWeight.bold,
                                 ),
                                 formatMoneyMid(
-                                  returnReceiptProvider(
+                                  amount:
+                                      returnReceiptProvider(
                                         context,
                                         listen: false,
                                       ).getTotalMainRevenueReceipt(
@@ -992,7 +996,7 @@ class _ReceiptDetailsContainerState
                                         context,
                                         records,
                                       ),
-                                  context,
+                                  context: context,
                                 ),
                               ),
                             ),
@@ -1034,14 +1038,14 @@ class _ReceiptDetailsContainerState
                                 ),
 
                                 formatMoneyMid(
-                                  returnReceiptProvider(
+                                  amount: returnReceiptProvider(
                                     context,
                                     listen: false,
                                   ).getTotalMainRevenueReceipt(
                                     records,
                                     context,
                                   ),
-                                  context,
+                                  context: context,
                                 ),
                               ),
                             ),
@@ -1094,11 +1098,13 @@ class _ReceiptDetailsContainerState
                   //   },
                   // ),
                   Visibility(
-                    visible: authorization(
-                      authorized:
-                          Authorizations().deleteSale,
-                      context: context,
-                    ),
+                    visible:
+                        authorization(
+                          authorized:
+                              Authorizations().deleteSale,
+                          context: context,
+                        ) ||
+                        widget.mainReceipt.isInvoice,
                     child: BottomActionButton(
                       text:
                           widget.mainReceipt.isInvoice
@@ -1751,27 +1757,39 @@ class _ReceiptDetailsContainerState
                                   );
                                 }
                                 if (!kIsWeb) {
-                                  await printWithRawBT(
-                                    fileName:
-                                        'Alex Printing',
-                                    context: safeContext,
-                                    receipt:
-                                        widget.mainReceipt,
-                                    records: records,
-                                    printerType:
-                                        returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            )
-                                            .userShop!
-                                            .printType ??
-                                        1,
-                                    shop:
-                                        returnShopProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).userShop!,
-                                  );
+                                  // await printWithRawBT(
+                                  //   fileName:
+                                  //       'Alex Printing',
+                                  //   context: safeContext,
+                                  //   receipt:
+                                  //       widget.mainReceipt,
+                                  //   records: records,
+                                  //   printerType:
+                                  //       returnShopProvider(
+                                  //             context,
+                                  //             listen: false,
+                                  //           )
+                                  //           .userShop!
+                                  //           .printType ??
+                                  //       1,
+                                  //   shop:
+                                  //       returnShopProvider(
+                                  //         safeContext,
+                                  //         listen: false,
+                                  //       ).userShop!,
+                                  // );
+
+                                  // scanBluetoothPrinters(
+                                  //   receipt:
+                                  //       widget.mainReceipt,
+                                  //   context: safeContext,
+                                  //   records: records,
+                                  //   shop:
+                                  //       returnShopProvider(
+                                  //         context,
+                                  //         listen: false,
+                                  //       ).userShop!,
+                                  // );
                                 }
                                 if (safeContext.mounted) {
                                   returnReceiptProvider(

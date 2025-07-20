@@ -74,11 +74,11 @@ String formatMoney(num amount, BuildContext context) {
   if (amount < 1000000) {
     return NumberFormat.currency(
       locale: 'en_NG',
-      symbol: currencySymbol(context),
+      symbol: currencySymbol(context: context),
       decimalDigits: 1,
     ).format(amount);
   } else {
-    String symbol = currencySymbol(context);
+    String symbol = currencySymbol(context: context);
     String suffix = '';
     double value = amount.toDouble();
 
@@ -97,15 +97,22 @@ String formatMoney(num amount, BuildContext context) {
   }
 }
 
-String formatMoneyMid(num amount, BuildContext context) {
+String formatMoneyMid({
+  required num amount,
+  required BuildContext context,
+  bool? isR,
+}) {
   if (amount < 100000000) {
     return NumberFormat.currency(
       locale: 'en_NG',
-      symbol: currencySymbol(context),
+      symbol: currencySymbol(context: context, isR: isR),
       decimalDigits: 1,
     ).format(amount);
   } else {
-    String symbol = currencySymbol(context);
+    String symbol = currencySymbol(
+      context: context,
+      isR: isR,
+    );
     String suffix = '';
     double value = amount.toDouble();
 
@@ -124,15 +131,22 @@ String formatMoneyMid(num amount, BuildContext context) {
   }
 }
 
-String formatMoneyBig(num amount, BuildContext context) {
+String formatMoneyBig({
+  required num amount,
+  required BuildContext context,
+  bool? isR,
+}) {
   if (amount < 1000000000) {
     return NumberFormat.currency(
       locale: 'en_NG',
-      symbol: currencySymbol(context),
+      symbol: currencySymbol(context: context, isR: isR),
       decimalDigits: 1,
     ).format(amount);
   } else {
-    String symbol = currencySymbol(context);
+    String symbol = currencySymbol(
+      context: context,
+      isR: isR,
+    );
     String suffix = '';
     double value = amount.toDouble();
 

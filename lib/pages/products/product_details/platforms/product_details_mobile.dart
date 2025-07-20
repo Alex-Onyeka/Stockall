@@ -118,6 +118,12 @@ class _ProductDetailsMobileState
                         Text(
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
                           ),
                           'Edit',
                         ),
@@ -1188,6 +1194,17 @@ class _ProductDetailsMobileState
                                           .spaceBetween,
                                   children: [
                                     Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                      ),
                                       'Manage this Item?',
                                     ),
                                     InkWell(
@@ -1403,14 +1420,14 @@ class _ProductDetailsMobileState
                                   text:
                                       'Low Quantity Limit',
                                 ),
-                                BottomInfoSection(
-                                  theme: widget.theme,
-                                  mainText:
-                                      product.isRefundable
-                                          ? 'True'
-                                          : 'False',
-                                  text: 'Is Refundable?',
-                                ),
+                                // BottomInfoSection(
+                                //   theme: widget.theme,
+                                //   mainText:
+                                //       product.isRefundable
+                                //           ? 'True'
+                                //           : 'False',
+                                //   text: 'Is Refundable?',
+                                // ),
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:
@@ -1579,7 +1596,13 @@ class BottomInfoSection extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('$text:'),
+        Text(
+          style: TextStyle(
+            fontSize: theme.mobileTexts.b1.fontSize,
+            fontWeight: FontWeight.normal,
+          ),
+          '$text:',
+        ),
         Text(
           style: TextStyle(
             fontSize: theme.mobileTexts.b2.fontSize,
@@ -1614,13 +1637,13 @@ class EditButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: Colors.transparent,
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: InkWell(
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 13),
+          padding: EdgeInsets.symmetric(vertical: 9),
 
           child: Center(
             child: Row(
@@ -1630,7 +1653,7 @@ class EditButton extends StatelessWidget {
                 Text(
                   style: TextStyle(
                     color: theme.lightModeColor.prColor300,
-                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontSize: theme.mobileTexts.b2.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                   text,
@@ -1698,7 +1721,7 @@ class TabContainer extends StatelessWidget {
                   fontSize: theme.mobileTexts.b1.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
-                '${isMoney ? currencySymbol(context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
+                '${isMoney ? currencySymbol(context: context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
               ),
             ],
           ),

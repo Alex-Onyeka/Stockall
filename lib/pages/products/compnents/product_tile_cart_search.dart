@@ -202,22 +202,26 @@ class _ProductTileCartSearchState
                                                       .sellingPrice !=
                                                   null
                                               ? formatMoneyMid(
-                                                widget
+                                                amount:
+                                                    widget
                                                         .product
                                                         .sellingPrice ??
                                                     0,
-                                                context,
+                                                context:
+                                                    context,
                                               )
                                               : 'Price Not Set')
                                           : formatMoneyMid(
-                                            (widget
-                                                    .product
-                                                    .sellingPrice ??
-                                                0.0 *
-                                                    (1 -
-                                                        (widget.product.discount! /
-                                                            100))),
-                                            context,
+                                            amount:
+                                                (widget
+                                                        .product
+                                                        .sellingPrice ??
+                                                    0.0 *
+                                                        (1 -
+                                                            (widget.product.discount! /
+                                                                100))),
+                                            context:
+                                                context,
                                           ),
                                     ),
                                   ),
@@ -251,11 +255,12 @@ class _ProductTileCartSearchState
                                         color: Colors.grey,
                                       ),
                                       formatMoneyMid(
-                                        widget
+                                        amount:
+                                            widget
                                                 .product
                                                 .sellingPrice ??
                                             0,
-                                        context,
+                                        context: context,
                                       ),
                                     ),
                                   ),

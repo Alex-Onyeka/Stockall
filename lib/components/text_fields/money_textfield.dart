@@ -102,7 +102,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
                 right: 2,
               ),
               child: Text(
-                currencySymbol(context),
+                currencySymbol(context: context),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

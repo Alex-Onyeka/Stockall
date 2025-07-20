@@ -84,7 +84,7 @@ class _DashboardTotalSalesBannerState
                                     widget
                                         .theme
                                         .mobileTexts
-                                        .b3
+                                        .b2
                                         .fontSize,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
@@ -97,7 +97,7 @@ class _DashboardTotalSalesBannerState
                               ),
                               child: Center(
                                 child: Icon(
-                                  size: 20,
+                                  size: 18,
                                   color:
                                       Colors.grey.shade300,
                                   visible.isVisible
@@ -132,10 +132,15 @@ class _DashboardTotalSalesBannerState
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
-                            currencySymbol(context),
+                            currencySymbol(
+                              context: context,
+                            ),
                           ),
                         ),
-                        SizedBox(width: 5),
+                        Visibility(
+                          visible: !visible.isVisible,
+                          child: SizedBox(width: 5),
+                        ),
                         Text(
                           style: TextStyle(
                             fontSize:
@@ -151,10 +156,11 @@ class _DashboardTotalSalesBannerState
                             context,
                           ).returnMoney(
                             formatMoneyMid(
-                              widget.value != null
-                                  ? widget.value!
-                                  : 0,
-                              context,
+                              amount:
+                                  widget.value != null
+                                      ? widget.value!
+                                      : 0,
+                              context: context,
                             ),
                           ),
                         ),
@@ -194,14 +200,14 @@ class _DashboardTotalSalesBannerState
                         widget: widget,
                         expenses: visible.returnMoney(
                           formatMoneyMid(
-                            getTotal(),
-                            context,
+                            amount: getTotal(),
+                            context: context,
                           ),
                         ),
                         profit: visible.returnMoney(
                           formatMoneyMid(
-                            getProfit(),
-                            context,
+                            amount: getProfit(),
+                            context: context,
                           ),
                         ),
                       );
@@ -265,8 +271,9 @@ class _DashboardTotalSalesBannerState
 
                             visible.returnMoney(
                               formatMoneyMid(
-                                widget.userValue ?? 0,
-                                context,
+                                amount:
+                                    widget.userValue ?? 0,
+                                context: context,
                               ),
                             ),
                           ),

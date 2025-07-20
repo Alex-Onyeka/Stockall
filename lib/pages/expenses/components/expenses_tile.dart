@@ -169,8 +169,8 @@ class _ExpensesTileState extends State<ExpensesTile> {
                               fontWeight: FontWeight.bold,
                             ),
                             formatMoneyMid(
-                              widget.expense.amount,
-                              context,
+                              amount: widget.expense.amount,
+                              context: context,
                             ),
                           ),
                         ],

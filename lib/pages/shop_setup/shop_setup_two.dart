@@ -3114,287 +3114,295 @@ class _ShopSetupTwoState extends State<ShopSetupTwo> {
                                       animation,
                                       secondaryAnimation,
                                     ) {
-                                      return StatefulBuilder(
-                                        builder:
-                                            (
-                                              context,
-                                              setState,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              // elevation: 1,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      top:
-                                                          10.0,
-                                                    ),
-                                                child: Ink(
-                                                  height:
-                                                      MediaQuery.of(
-                                                        context,
-                                                      ).size.height,
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        Colors.grey.shade100,
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: const Color.fromARGB(
-                                                          55,
-                                                          0,
-                                                          0,
-                                                          0,
-                                                        ),
-                                                        blurRadius:
-                                                            5,
+                                      return GestureDetector(
+                                        onTap:
+                                            () =>
+                                                FocusManager
+                                                    .instance
+                                                    .primaryFocus
+                                                    ?.unfocus(),
+                                        child: StatefulBuilder(
+                                          builder:
+                                              (
+                                                context,
+                                                setState,
+                                              ) => Material(
+                                                color:
+                                                    Colors
+                                                        .transparent,
+                                                // elevation: 1,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        top:
+                                                            10.0,
                                                       ),
-                                                    ],
-                                                    borderRadius: BorderRadius.vertical(
-                                                      top: Radius.circular(
-                                                        20,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  child: Container(
+                                                  child: Ink(
                                                     height:
                                                         MediaQuery.of(
                                                           context,
-                                                        ).size.height *
-                                                        0.9,
-
-                                                    padding:
-                                                        const EdgeInsets.fromLTRB(
-                                                          15,
-                                                          15,
-                                                          15,
-                                                          45,
-                                                        ),
-                                                    child: Column(
-                                                      children: [
-                                                        Material(
-                                                          color:
-                                                              Colors.white,
-                                                          child: Column(
-                                                            children: [
-                                                              Center(
-                                                                child: Container(
-                                                                  height:
-                                                                      4,
-                                                                  width:
-                                                                      70,
-                                                                  decoration: BoxDecoration(
-                                                                    borderRadius: BorderRadius.circular(
-                                                                      15,
-                                                                    ),
-                                                                    color:
-                                                                        Colors.grey.shade400,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    10,
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      15.0,
-                                                                ),
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.spaceBetween,
-                                                                  children: [
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment.start,
-                                                                      children: [
-                                                                        Text(
-                                                                          'Select Your Currency',
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                returnTheme(
-                                                                                  context,
-                                                                                ).mobileTexts.b1.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                          ),
-                                                                        ),
-                                                                        Text(
-                                                                          'Search For Countries or Currency name',
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                returnTheme(
-                                                                                  context,
-                                                                                ).mobileTexts.b2.fontSize,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    InkWell(
-                                                                      onTap: () {
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop();
-                                                                        currencyController.clear();
-                                                                      },
-                                                                      child: Container(
-                                                                        padding: EdgeInsets.all(
-                                                                          10,
-                                                                        ),
-                                                                        decoration: BoxDecoration(
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                          color:
-                                                                              Colors.grey.shade800,
-                                                                        ),
-                                                                        child: Icon(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          Icons.clear_rounded,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height:
-                                                                    10,
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      20.0,
-                                                                ),
-                                                                child: GeneralTextfieldOnly(
-                                                                  hint:
-                                                                      'Search for country or currency',
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
-                                                                  controller:
-                                                                      currencyController,
-                                                                  onChanged: (
-                                                                    value,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {},
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              ),
-                                                            ],
+                                                        ).size.height,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade100,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: const Color.fromARGB(
+                                                            55,
+                                                            0,
+                                                            0,
+                                                            0,
                                                           ),
+                                                          blurRadius:
+                                                              5,
                                                         ),
-                                                        Expanded(
-                                                          child: Builder(
-                                                            builder: (
-                                                              context,
-                                                            ) {
-                                                              var currenciies = currencies.where(
-                                                                (
-                                                                  currency,
-                                                                ) =>
-                                                                    currency.country.toLowerCase().contains(
-                                                                      currencyController.text.toLowerCase(),
-                                                                    ) ||
-                                                                    currency.currency.toLowerCase().contains(
-                                                                      currencyController.text.toLowerCase(),
-                                                                    ),
-                                                              );
-                                                              if (currenciies.isEmpty) {
-                                                                return Container(
-                                                                  color:
-                                                                      Colors.white,
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      'Not Found',
+                                                      ],
+                                                      borderRadius: BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                          20,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Container(
+                                                      height:
+                                                          MediaQuery.of(
+                                                            context,
+                                                          ).size.height *
+                                                          0.9,
+
+                                                      padding: const EdgeInsets.fromLTRB(
+                                                        15,
+                                                        15,
+                                                        15,
+                                                        45,
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Material(
+                                                            color:
+                                                                Colors.white,
+                                                            child: Column(
+                                                              children: [
+                                                                Center(
+                                                                  child: Container(
+                                                                    height:
+                                                                        4,
+                                                                    width:
+                                                                        70,
+                                                                    decoration: BoxDecoration(
+                                                                      borderRadius: BorderRadius.circular(
+                                                                        15,
+                                                                      ),
+                                                                      color:
+                                                                          Colors.grey.shade400,
                                                                     ),
                                                                   ),
-                                                                );
-                                                              } else {
-                                                                return ListView.builder(
-                                                                  itemCount:
-                                                                      currenciies.length,
-                                                                  itemBuilder: (
-                                                                    context,
-                                                                    index,
-                                                                  ) {
-                                                                    var item =
-                                                                        currenciies.toList()[index];
-                                                                    return Padding(
-                                                                      padding: const EdgeInsets.symmetric(
-                                                                        vertical:
-                                                                            5,
+                                                                ),
+                                                                SizedBox(
+                                                                  height:
+                                                                      10,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        15.0,
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment.spaceBetween,
+                                                                    children: [
+                                                                      Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                            'Select Your Currency',
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  returnTheme(
+                                                                                    context,
+                                                                                  ).mobileTexts.b1.fontSize,
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                            ),
+                                                                          ),
+                                                                          Text(
+                                                                            'Search For Countries or Currency name',
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  returnTheme(
+                                                                                    context,
+                                                                                  ).mobileTexts.b2.fontSize,
+                                                                            ),
+                                                                          ),
+                                                                        ],
                                                                       ),
-                                                                      child: ListTile(
-                                                                        tileColor:
-                                                                            Colors.white,
-                                                                        subtitle: Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                12,
-                                                                            fontWeight:
-                                                                                FontWeight.normal,
-                                                                            color:
-                                                                                theme.lightModeColor.secColor100,
-                                                                          ),
-                                                                          item.currency,
-                                                                        ),
-                                                                        title: Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                16,
-                                                                            fontWeight:
-                                                                                FontWeight.normal,
-                                                                          ),
-                                                                          item.country,
-                                                                        ),
-                                                                        trailing: Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                16,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color:
-                                                                                theme.lightModeColor.secColor100,
-                                                                          ),
-                                                                          item.symbol,
-                                                                        ),
+                                                                      InkWell(
                                                                         onTap: () {
-                                                                          setState(
-                                                                            () {
-                                                                              selectedCurrency =
-                                                                                  item.symbol;
-                                                                              displayCurrency =
-                                                                                  '${item.currency} (${item.symbol})';
-                                                                            },
-                                                                          );
                                                                           Navigator.of(
                                                                             context,
                                                                           ).pop();
-                                                                          setState(
-                                                                            () {
-                                                                              cityController.clear();
-                                                                            },
-                                                                          );
+                                                                          currencyController.clear();
                                                                         },
+                                                                        child: Container(
+                                                                          padding: EdgeInsets.all(
+                                                                            10,
+                                                                          ),
+                                                                          decoration: BoxDecoration(
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            color:
+                                                                                Colors.grey.shade800,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            Icons.clear_rounded,
+                                                                          ),
+                                                                        ),
                                                                       ),
-                                                                    );
-                                                                  },
-                                                                );
-                                                              }
-                                                            },
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  height:
+                                                                      10,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        20.0,
+                                                                  ),
+                                                                  child: GeneralTextfieldOnly(
+                                                                    hint:
+                                                                        'Search for country or currency',
+                                                                    lines:
+                                                                        1,
+                                                                    theme:
+                                                                        theme,
+                                                                    controller:
+                                                                        currencyController,
+                                                                    onChanged: (
+                                                                      value,
+                                                                    ) {
+                                                                      setState(
+                                                                        () {},
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                          Expanded(
+                                                            child: Builder(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                var currenciies = currencies.where(
+                                                                  (
+                                                                    currency,
+                                                                  ) =>
+                                                                      currency.country.toLowerCase().contains(
+                                                                        currencyController.text.toLowerCase(),
+                                                                      ) ||
+                                                                      currency.currency.toLowerCase().contains(
+                                                                        currencyController.text.toLowerCase(),
+                                                                      ),
+                                                                );
+                                                                if (currenciies.isEmpty) {
+                                                                  return Container(
+                                                                    color:
+                                                                        Colors.white,
+                                                                    child: Center(
+                                                                      child: Text(
+                                                                        'Not Found',
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                } else {
+                                                                  return ListView.builder(
+                                                                    itemCount:
+                                                                        currenciies.length,
+                                                                    itemBuilder: (
+                                                                      context,
+                                                                      index,
+                                                                    ) {
+                                                                      var item =
+                                                                          currenciies.toList()[index];
+                                                                      return Padding(
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                          vertical:
+                                                                              5,
+                                                                        ),
+                                                                        child: ListTile(
+                                                                          tileColor:
+                                                                              Colors.white,
+                                                                          subtitle: Text(
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  theme.mobileTexts.b2.fontSize,
+                                                                              fontWeight:
+                                                                                  FontWeight.normal,
+                                                                              color:
+                                                                                  theme.lightModeColor.secColor100,
+                                                                            ),
+                                                                            item.currency,
+                                                                          ),
+                                                                          title: Text(
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  theme.mobileTexts.b1.fontSize,
+
+                                                                              fontWeight:
+                                                                                  FontWeight.normal,
+                                                                            ),
+                                                                            item.country,
+                                                                          ),
+                                                                          trailing: Text(
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  16,
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                              color:
+                                                                                  theme.lightModeColor.secColor100,
+                                                                            ),
+                                                                            item.symbol,
+                                                                          ),
+                                                                          onTap: () {
+                                                                            setState(
+                                                                              () {
+                                                                                selectedCurrency =
+                                                                                    item.symbol;
+                                                                                displayCurrency =
+                                                                                    '${item.currency} (${item.symbol})';
+                                                                              },
+                                                                            );
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
+                                                                            setState(
+                                                                              () {
+                                                                                cityController.clear();
+                                                                              },
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                }
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
+                                        ),
                                       );
                                     },
                                   ).then((context) {

@@ -263,8 +263,8 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                 fontWeight: FontWeight.bold,
                               ),
                               formatMoneyMid(
-                                getTotal(),
-                                context,
+                                amount: getTotal(),
+                                context: context,
                               ),
                             ),
                           ],

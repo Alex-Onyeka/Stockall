@@ -568,7 +568,7 @@ class ValueSummaryTabSmall extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade700,
                         ),
-                        currencySymbol(context),
+                        currencySymbol(context: context),
                       ),
                     ),
                     SizedBox(width: 2),

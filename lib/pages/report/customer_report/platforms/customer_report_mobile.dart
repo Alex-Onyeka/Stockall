@@ -1074,8 +1074,8 @@ class _TableRowRecordWidgetState
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          widget.record.revenue,
-                          context,
+                          amount: widget.record.revenue,
+                          context: context,
                         ),
                       ),
                     ),

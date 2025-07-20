@@ -45,19 +45,10 @@ class MainButtonTransparent extends StatelessWidget {
                           .lightModeColor
                           .prColor300,
                   fontSize:
-                      themeProvider
-                          .returnPlatform(
-                            constraints,
-                            context,
-                          )
-                          .b2
-                          .fontSize,
+                      themeProvider.mobileTexts.b1.fontSize,
                   fontWeight:
                       themeProvider
-                          .returnPlatform(
-                            constraints,
-                            context,
-                          )
+                          .mobileTexts
                           .b2
                           .fontWeightRegular,
                 ),

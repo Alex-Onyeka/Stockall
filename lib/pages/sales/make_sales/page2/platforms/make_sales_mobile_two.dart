@@ -584,14 +584,14 @@ class _MakeSalesMobileTwoState
                                       // fontWeight: FontWeight.bold,
                                     ),
                                     formatMoneyMid(
-                                      returnSalesProvider(
+                                      amount: returnSalesProvider(
                                         context,
                                       ).calcTotalMain(
                                         returnSalesProvider(
                                           context,
                                         ).cartItems,
                                       ),
-                                      context,
+                                      context: context,
                                     ),
                                   ),
                                 ],
@@ -622,7 +622,7 @@ class _MakeSalesMobileTwoState
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
-                                    '-${formatMoneyMid(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems), context)}',
+                                    '-${formatMoneyMid(amount: returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems), context: context)}',
                                   ),
                                 ],
                               ),
@@ -655,14 +655,14 @@ class _MakeSalesMobileTwoState
                                           FontWeight.bold,
                                     ),
                                     formatMoneyMid(
-                                      returnSalesProvider(
+                                      amount: returnSalesProvider(
                                         context,
                                       ).calcFinalTotalMain(
                                         returnSalesProvider(
                                           context,
                                         ).cartItems,
                                       ),
-                                      context,
+                                      context: context,
                                     ),
                                   ),
                                 ],
