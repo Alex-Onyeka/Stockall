@@ -13,6 +13,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/import_helper.dart';
 
 class ReceiptPageMobile extends StatefulWidget {
   final bool isMain;
@@ -1779,17 +1780,17 @@ class _ReceiptDetailsContainerState
                                   //       ).userShop!,
                                   // );
 
-                                  // scanBluetoothPrinters(
-                                  //   receipt:
-                                  //       widget.mainReceipt,
-                                  //   context: safeContext,
-                                  //   records: records,
-                                  //   shop:
-                                  //       returnShopProvider(
-                                  //         context,
-                                  //         listen: false,
-                                  //       ).userShop!,
-                                  // );
+                                  scanBluetoothPrinters(
+                                    receipt:
+                                        widget.mainReceipt,
+                                    context: safeContext,
+                                    records: records,
+                                    shop:
+                                        returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        ).userShop!,
+                                  );
                                 }
                                 if (safeContext.mounted) {
                                   returnReceiptProvider(
