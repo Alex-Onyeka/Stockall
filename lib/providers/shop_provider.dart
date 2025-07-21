@@ -6,13 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
 
-  // int? printType;
-
-  // void selectPrintType(int type) {
-  //   printType = type;
-  //   notifyListeners();
-  // }
-
   Future<void> createShop(TempShopClass shop) async {
     // Insert the shop
     await supabase.from('shops').insert(shop.toJson());

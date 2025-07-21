@@ -222,3 +222,11 @@ void scanBluetoothPrinters({
   required TempShopClass shop,
   required BuildContext context,
 }) {}
+
+Future<void> connectToUsbDevice({
+  required TempMainReceipt receipt,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+  required bool checkPrinters,
+}) async {}

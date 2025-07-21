@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   audioplayers_windows
   flutter_thermal_printer
+  flutter_usb_thermal_plugin
   printing
   url_launcher_windows
 )

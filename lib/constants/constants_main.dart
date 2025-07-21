@@ -140,4 +140,4 @@ String currencySymbol({
 
 const String appName = 'Stockall';
 
-const int currentUpdate = 15;
+const int currentUpdate = 16;

@@ -7,7 +7,6 @@ import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -143,7 +142,9 @@ class _ReceiptPageMobileState
                                           ? FontWeight.bold
                                           : null,
                                 ),
-                                'Printer Type -- 58mm',
+                                kIsWeb
+                                    ? 'Printer Type -- 58mm'
+                                    : 'Select USB Printer',
                               ),
                             ),
                             PopupMenuItem(
@@ -179,7 +180,9 @@ class _ReceiptPageMobileState
                                           ? FontWeight.bold
                                           : null,
                                 ),
-                                'Printer Type -- 80mm',
+                                kIsWeb
+                                    ? 'Printer Type -- 80mm'
+                                    : 'Select Bluetooth Printer',
                               ),
                             ),
                           ];
@@ -233,7 +236,9 @@ class _ReceiptPageMobileState
                                                   .userShop!
                                                   .printType ==
                                               2
-                                      ? '( 80mm )'
+                                      ? (kIsWeb
+                                          ? '80mm'
+                                          : '( Bluetooth )')
                                       : returnShopProvider(
                                                     context,
                                                     listen:
@@ -250,7 +255,9 @@ class _ReceiptPageMobileState
                                                   .userShop!
                                                   .printType ==
                                               1
-                                      ? '( 58mm )'
+                                      ? (kIsWeb
+                                          ? '58mm'
+                                          : '( USB )')
                                       // : sortIndex == 2
                                       // ? 'Price'
                                       : 'Settings',
@@ -375,11 +382,19 @@ class _ReceiptDetailsContainerState
                         child: Column(
                           children: [
                             SizedBox(height: 5),
-                            Image.asset(
-                              mainLogoIcon,
-                              height: 40,
-                            ),
-                            SizedBox(height: 15),
+                            // GestureDetector(
+                            //   onTap: () {
+                            //     returnShopProvider(
+                            //       context,
+                            //       listen: false,
+                            //     ).deletePrinter();
+                            //   },
+                            //   child: Image.asset(
+                            //     mainLogoIcon,
+                            //     height: 40,
+                            //   ),
+                            // ),
+                            // SizedBox(height: 15),
                             Column(
                               spacing: 8,
                               children: [
@@ -1320,13 +1335,15 @@ class _ReceiptDetailsContainerState
                   BottomActionButton(
                     action: () {
                       var safeContext = context;
+                      var popContext = context;
                       if (returnShopProvider(
-                            context,
-                            listen: false,
-                          ).userShop!.printType ==
-                          null) {
+                                context,
+                                listen: false,
+                              ).userShop!.printType ==
+                              null &&
+                          !kIsWeb) {
                         showDialog(
-                          context: context,
+                          context: popContext,
                           builder: (context) {
                             return AlertDialog(
                               backgroundColor: Colors.white,
@@ -1336,7 +1353,7 @@ class _ReceiptDetailsContainerState
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                'SELECT PRINTER SIZE',
+                                'SELECT PRINTER TYPE',
                               ),
                               content: Column(
                                 mainAxisSize:
@@ -1372,102 +1389,6 @@ class _ReceiptDetailsContainerState
 
                                       if (safeContext
                                           .mounted) {
-                                        if (kIsWeb &&
-                                            Theme.of(
-                                                  context,
-                                                ).platform ==
-                                                TargetPlatform
-                                                    .iOS) {
-                                          downloadPdfWebRoll(
-                                            filename:
-                                                'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
-                                            context:
-                                                safeContext,
-                                            receipt:
-                                                widget
-                                                    .mainReceipt,
-                                            records:
-                                                records,
-                                            shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!,
-                                            printType:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.printType ??
-                                                1,
-                                          );
-                                        }
-                                      }
-                                      if (safeContext
-                                          .mounted) {
-                                        if (kIsWeb &&
-                                            Theme.of(
-                                                  context,
-                                                ).platform ==
-                                                TargetPlatform
-                                                    .android) {
-                                          await generateAndPreviewPdfRoll(
-                                            context:
-                                                safeContext,
-                                            receipt:
-                                                widget
-                                                    .mainReceipt,
-                                            records:
-                                                records,
-                                            shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!,
-                                            printerType:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.printType ??
-                                                1,
-                                          );
-                                        }
-                                      }
-                                      if (safeContext
-                                          .mounted) {
-                                        if (!kIsWeb) {
-                                          await printWithRawBT(
-                                            fileName:
-                                                'Alex Printing',
-                                            context:
-                                                safeContext,
-                                            receipt:
-                                                widget
-                                                    .mainReceipt,
-                                            records:
-                                                records,
-                                            printerType:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.printType ??
-                                                1,
-                                            shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!,
-                                          );
-                                        }
-                                      }
-
-                                      if (safeContext
-                                          .mounted) {
                                         returnReceiptProvider(
                                           safeContext,
                                           listen: false,
@@ -1482,7 +1403,9 @@ class _ReceiptDetailsContainerState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Printer Size -- ( 58mm )',
+                                      kIsWeb
+                                          ? 'Select Paper Size -- 58mm'
+                                          : 'Select Type - USB',
                                     ),
                                     trailing: Container(
                                       padding:
@@ -1562,102 +1485,6 @@ class _ReceiptDetailsContainerState
 
                                       if (safeContext
                                           .mounted) {
-                                        if (kIsWeb &&
-                                            Theme.of(
-                                                  context,
-                                                ).platform ==
-                                                TargetPlatform
-                                                    .iOS) {
-                                          downloadPdfWebRoll(
-                                            filename:
-                                                'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
-                                            context:
-                                                safeContext,
-                                            receipt:
-                                                widget
-                                                    .mainReceipt,
-                                            records:
-                                                records,
-                                            shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!,
-                                            printType:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.printType ??
-                                                2,
-                                          );
-                                        }
-                                      }
-                                      if (safeContext
-                                          .mounted) {
-                                        if (kIsWeb &&
-                                            Theme.of(
-                                                  context,
-                                                ).platform ==
-                                                TargetPlatform
-                                                    .android) {
-                                          await generateAndPreviewPdfRoll(
-                                            context:
-                                                safeContext,
-                                            receipt:
-                                                widget
-                                                    .mainReceipt,
-                                            records:
-                                                records,
-                                            shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!,
-                                            printerType:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.printType ??
-                                                2,
-                                          );
-                                        }
-                                      }
-                                      if (safeContext
-                                          .mounted) {
-                                        if (!kIsWeb) {
-                                          await printWithRawBT(
-                                            fileName:
-                                                'Alex Printing',
-                                            context:
-                                                safeContext,
-                                            receipt:
-                                                widget
-                                                    .mainReceipt,
-                                            records:
-                                                records,
-                                            printerType:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!.printType ??
-                                                2,
-                                            shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop!,
-                                          );
-                                        }
-                                      }
-
-                                      if (safeContext
-                                          .mounted) {
                                         returnReceiptProvider(
                                           safeContext,
                                           listen: false,
@@ -1672,7 +1499,9 @@ class _ReceiptDetailsContainerState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Printer Size -- ( 80mm )',
+                                      kIsWeb
+                                          ? 'Select Paper Size -- 80mm'
+                                          : 'Select Type - Bluetooth',
                                     ),
                                     trailing: Container(
                                       padding:
@@ -1780,19 +1609,44 @@ class _ReceiptDetailsContainerState
                                   //       ).userShop!,
                                   // );
 
-                                  scanBluetoothPrinters(
-                                    receipt:
-                                        widget.mainReceipt,
-                                    context: safeContext,
-                                    records: records,
-                                    shop:
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).userShop!,
-                                  );
+                                  if (returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .userShop!
+                                          .printType! ==
+                                      1) {
+                                    connectToUsbDevice(
+                                      checkPrinters: false,
+                                      receipt:
+                                          widget
+                                              .mainReceipt,
+                                      context: safeContext,
+                                      records: records,
+                                      shop:
+                                          returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).userShop!,
+                                    );
+                                  } else {
+                                    scanBluetoothPrinters(
+                                      checkPrinters: true,
+                                      receipt:
+                                          widget
+                                              .mainReceipt,
+                                      context: safeContext,
+                                      records: records,
+                                      shop:
+                                          returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).userShop!,
+                                    );
+                                  }
                                 }
-                                if (safeContext.mounted) {
+                                if (safeContext.mounted &&
+                                    kIsWeb) {
                                   returnReceiptProvider(
                                     safeContext,
                                     listen: false,
