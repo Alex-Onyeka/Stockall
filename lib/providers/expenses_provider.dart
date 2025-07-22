@@ -8,6 +8,10 @@ class ExpensesProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
 
   List<TempExpensesClass> expenses = [];
+  void clearExpenses() {
+    expenses.clear();
+    notifyListeners();
+  }
 
   Future<void> addExpense(
     TempExpensesClass expense,

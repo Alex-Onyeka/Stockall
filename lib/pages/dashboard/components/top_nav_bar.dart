@@ -252,8 +252,9 @@ class TopNavBar extends StatelessWidget {
                                   dialogContext,
                                 ).pop();
 
-                                await AuthService()
-                                    .signOut();
+                                await AuthService().signOut(
+                                  context,
+                                );
                                 if (context.mounted) {
                                   Navigator.pushReplacement(
                                     context,

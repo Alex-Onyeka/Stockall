@@ -198,7 +198,30 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
+    returnShopProvider(context, listen: false).clearShop();
+    returnCustomers(
+      context,
+      listen: false,
+    ).clearCustomers();
+    returnData(context, listen: false).clearProducts();
+    returnExpensesProvider(
+      context,
+      listen: false,
+    ).clearExpenses();
+    returnNotificationProvider(
+      context,
+      listen: false,
+    ).clearNotifications();
+    returnSuggestionProvider(
+      context,
+      listen: false,
+    ).clearSuggestionsMain();
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceipts();
+    returnSalesProvider(context, listen: false).clearCart();
     await _client.auth.signOut();
     notifyListeners();
   }

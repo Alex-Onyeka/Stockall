@@ -325,6 +325,11 @@ class ShopProvider extends ChangeNotifier {
 
   TempShopClass? userShop;
 
+  void clearShop() {
+    userShop = null;
+    notifyListeners();
+  }
+
   void setShop(TempShopClass? shop) {
     userShop = shop;
     notifyListeners();

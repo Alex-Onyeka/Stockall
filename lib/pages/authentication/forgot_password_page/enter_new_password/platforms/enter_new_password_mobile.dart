@@ -51,7 +51,9 @@ class _EnterNewPasswordMobileState
           isExpired = true;
         });
         await Future.delayed(Duration(seconds: 2));
-        await AuthService().signOut();
+        if (context.mounted) {
+          await AuthService().signOut(context);
+        }
         if (context.mounted) {
           Navigator.pushReplacement(
             context,
@@ -289,7 +291,7 @@ class _EnterNewPasswordMobileState
                     constraints: BoxConstraints(),
                     text: 'Cancel',
                     action: () async {
-                      await AuthService().signOut();
+                      await AuthService().signOut(context);
                       if (context.mounted) {
                         Navigator.of(context).pop();
                       }

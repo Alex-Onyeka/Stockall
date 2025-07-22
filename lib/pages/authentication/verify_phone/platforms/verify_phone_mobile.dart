@@ -39,7 +39,9 @@ class _VerifyPhoneMobileState
         timer.cancel();
         setState(() {});
         await Future.delayed(Duration(seconds: 2));
-        await AuthService().signOut();
+        if (context.mounted) {
+          await AuthService().signOut(context);
+        }
         if (context.mounted) {
           Navigator.pushReplacement(
             context,

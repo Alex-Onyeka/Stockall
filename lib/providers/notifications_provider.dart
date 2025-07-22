@@ -10,6 +10,11 @@ class NotificationProvider with ChangeNotifier {
   List<TempNotification> get notifications =>
       _notifications;
 
+  void clearNotifications() {
+    _notifications.clear();
+    notifyListeners();
+  }
+
   void deleteNotification(TempNotification notif) {
     notifications.remove(notif);
     notifyListeners();

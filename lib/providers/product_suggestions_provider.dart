@@ -8,6 +8,12 @@ class ProductSuggestionProvider extends ChangeNotifier {
   List<ProductSuggestion> _suggestions = [];
   List<ProductSuggestion> get suggestions => _suggestions;
 
+  void clearSuggestionsMain() {
+    _suggestions.clear();
+    tempSuggestions.clear();
+    notifyListeners();
+  }
+
   List<ProductSuggestion> tempSuggestions = [];
   void addTempSugg(ProductSuggestion sug) {
     final alreadyExists =

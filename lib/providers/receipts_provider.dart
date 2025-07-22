@@ -23,6 +23,11 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempMainReceipt> _receipts = [];
   List<TempMainReceipt> get receipts => _receipts;
 
+  void clearReceipts() {
+    _receipts.clear();
+    notifyListeners();
+  }
+
   bool isLoaded = false;
   void load() {
     isLoaded = true;

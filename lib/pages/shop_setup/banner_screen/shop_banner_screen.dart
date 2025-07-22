@@ -201,7 +201,7 @@ class _ShopBannerScreenState
                                       isLoading = true;
                                     });
                                     await AuthService()
-                                        .signOut();
+                                        .signOut(context);
                                     if (context.mounted) {
                                       Navigator.pushReplacement(
                                         context,

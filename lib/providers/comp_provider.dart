@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/local_database/local_user/local_user_database.dart';

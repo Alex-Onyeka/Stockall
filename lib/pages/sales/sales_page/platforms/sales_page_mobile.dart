@@ -134,7 +134,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                       message: 'You are about to Logout',
                       title: 'Are you Sure?',
                       action: () {
-                        AuthService().signOut();
+                        AuthService().signOut(context);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

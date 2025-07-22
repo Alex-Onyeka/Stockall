@@ -98,6 +98,11 @@ class DataProvider extends ChangeNotifier {
 
   List<TempProductClass> productList = [];
 
+  void clearProducts() {
+    productList.clear();
+    notifyListeners();
+  }
+
   Future<List<TempProductClass>> getProducts(
     int shopId,
   ) async {
@@ -392,6 +397,7 @@ class DataProvider extends ChangeNotifier {
     'Household Supplies',
     'Jewelry',
     'Kitchenware',
+    'Length',
     'Meat & Seafood',
     'Medicines',
     'Mobile Phones',
