@@ -4,323 +4,322 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_thermal_printer/flutter_thermal_printer.dart';
 import 'package:flutter_thermal_printer/utils/printer.dart';
-// import 'package:flutter_usb_thermal_plugin/model/usb_device_model.dart';
+import 'package:flutter_usb_thermal_plugin/model/usb_device_model.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
-// import 'package:flutter_usb_thermal_plugin/flutter_usb_thermal_plugin.dart';
+import 'package:flutter_usb_thermal_plugin/flutter_usb_thermal_plugin.dart';
 
-// FlutterUsbThermalPlugin usbPrinter =
-//     FlutterUsbThermalPlugin();
-// UsbDevice? deviceVar;
-// void setPrinter(UsbDevice newDevice) {
-//   deviceVar = newDevice;
-// }
+FlutterUsbThermalPlugin usbPrinter =
+    FlutterUsbThermalPlugin();
+UsbDevice? deviceVar;
+void setPrinter(UsbDevice newDevice) {
+  deviceVar = newDevice;
+}
 
-// void deletePrinter() {
-//   print(
-//     'Printer ${deviceVar?.productName} deleted Successfully',
-//   );
-//   deviceVar = null;
-// }
+void deletePrinter() {
+  print(
+    'Printer ${deviceVar?.productName} deleted Successfully',
+  );
+  deviceVar = null;
+}
 
 Future<void> connectToUsbDevice({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
-  required bool checkPrinters,
 }) async {
   var safeContext = context;
 
   // Step 1: Get list of USB devices
-  // List<UsbDevice> devices =
-  //     await usbPrinter.getUSBDeviceList();
+  List<UsbDevice> devices =
+      await usbPrinter.getUSBDeviceList();
 
-  // if (deviceVar != null) {
-  //   await usbPrinter.connect(
-  //     int.tryParse(deviceVar!.vendorId) ?? 0,
-  //     int.tryParse(deviceVar!.productId) ?? 0,
-  //   );
-  //   if (safeContext.mounted) {
-  //     connectToPrinter(
-  //       isConnected: true,
-  //       safeContext: safeContext,
-  //       device: deviceVar,
-  //       receipt: receipt,
-  //       records: records,
-  //       shop: shop,
-  //     );
-  //     returnReceiptProvider(
-  //       safeContext,
-  //       listen: false,
-  //     ).toggleIsLoading(false);
-  //   }
-  //   print(
-  //     'Usb Device: ${deviceVar!.manufacturer} ${deviceVar!.productName} already connected',
-  //   );
+  if (deviceVar != null) {
+    await usbPrinter.connect(
+      int.tryParse(deviceVar!.vendorId) ?? 0,
+      int.tryParse(deviceVar!.productId) ?? 0,
+    );
+    if (safeContext.mounted) {
+      connectToPrinter(
+        isConnected: true,
+        safeContext: safeContext,
+        device: deviceVar,
+        receipt: receipt,
+        records: records,
+        shop: shop,
+      );
+      returnReceiptProvider(
+        safeContext,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
+    print(
+      'Usb Device: ${deviceVar!.manufacturer} ${deviceVar!.productName} already connected',
+    );
 
-  //   return;
-  // } else {
-  //   if (safeContext.mounted) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         var theme = returnTheme(context, listen: false);
-  //         return GestureDetector(
-  //           onTap: () {
-  //             Navigator.of(context).pop();
-  //           },
-  //           child: Material(
-  //             color: const Color.fromARGB(63, 0, 0, 0),
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Container(
-  //                   padding: EdgeInsets.symmetric(
-  //                     vertical: 30,
-  //                     horizontal: 20,
-  //                   ),
-  //                   height:
-  //                       MediaQuery.of(context).size.height -
-  //                       200,
-  //                   width: 300,
-  //                   decoration: BoxDecoration(
-  //                     borderRadius: BorderRadius.circular(
-  //                       10,
-  //                     ),
-  //                     color: Colors.white,
-  //                   ),
-  //                   child: Column(
-  //                     mainAxisSize: MainAxisSize.min,
-  //                     children: [
-  //                       Row(
-  //                         mainAxisAlignment:
-  //                             MainAxisAlignment
-  //                                 .spaceBetween,
-  //                         children: [
-  //                           Opacity(
-  //                             opacity: 0,
-  //                             child: Container(
-  //                               padding: EdgeInsets.all(10),
-  //                               decoration: BoxDecoration(
-  //                                 shape: BoxShape.circle,
-  //                               ),
-  //                               child: Icon(
-  //                                 size: 18,
-  //                                 Icons.clear,
-  //                               ),
-  //                             ),
-  //                           ),
-  //                           Text(
-  //                             style: TextStyle(
-  //                               fontSize:
-  //                                   theme
-  //                                       .mobileTexts
-  //                                       .h4
-  //                                       .fontSize,
-  //                               fontWeight: FontWeight.bold,
-  //                             ),
-  //                             'Available Devices',
-  //                           ),
-  //                           Material(
-  //                             color: Colors.transparent,
-  //                             child: InkWell(
-  //                               borderRadius:
-  //                                   BorderRadius.circular(
-  //                                     30,
-  //                                   ),
-  //                               onTap: () {
-  //                                 Navigator.of(
-  //                                   context,
-  //                                 ).pop();
-  //                               },
-  //                               child: Container(
-  //                                 padding: EdgeInsets.all(
-  //                                   10,
-  //                                 ),
-  //                                 decoration: BoxDecoration(
-  //                                   shape: BoxShape.circle,
-  //                                 ),
-  //                                 child: Icon(
-  //                                   size: 18,
-  //                                   Icons.clear,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
+    return;
+  } else {
+    if (safeContext.mounted) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context, listen: false);
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Material(
+              color: const Color.fromARGB(63, 0, 0, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 30,
+                      horizontal: 20,
+                    ),
+                    height:
+                        MediaQuery.of(context).size.height -
+                        200,
+                    width: 300,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Opacity(
+                              opacity: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  size: 18,
+                                  Icons.clear,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .h4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Available Devices',
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      30,
+                                    ),
+                                onTap: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(
+                                    10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    size: 18,
+                                    Icons.clear,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
 
-  //                       Divider(
-  //                         color: Colors.grey.shade400,
-  //                         height: 30,
-  //                       ),
-  //                       Builder(
-  //                         builder: (context) {
-  //                           if (devices.isEmpty) {
-  //                             return Expanded(
-  //                               child: Center(
-  //                                 child: Column(
-  //                                   spacing: 10,
-  //                                   mainAxisSize:
-  //                                       MainAxisSize.max,
-  //                                   mainAxisAlignment:
-  //                                       MainAxisAlignment
-  //                                           .center,
-  //                                   children: [
-  //                                     Icon(
-  //                                       size: 25,
-  //                                       Icons
-  //                                           .print_disabled_rounded,
-  //                                     ),
-  //                                     Text(
-  //                                       style: TextStyle(
-  //                                         fontWeight:
-  //                                             FontWeight
-  //                                                 .bold,
-  //                                         fontSize:
-  //                                             theme
-  //                                                 .mobileTexts
-  //                                                 .h4
-  //                                                 .fontSize,
-  //                                       ),
-  //                                       'No Printer Found',
-  //                                     ),
-  //                                   ],
-  //                                 ),
-  //                               ),
-  //                             );
-  //                           } else {
-  //                             return Expanded(
-  //                               child: ListView(
-  //                                 children:
-  //                                     devices
-  //                                         .map(
-  //                                           (
-  //                                             device,
-  //                                           ) => Material(
-  //                                             color:
-  //                                                 Colors
-  //                                                     .transparent,
-  //                                             child: ListTile(
-  //                                               contentPadding:
-  //                                                   EdgeInsets.symmetric(
-  //                                                     vertical:
-  //                                                         5,
-  //                                                     horizontal:
-  //                                                         10,
-  //                                                   ),
-  //                                               shape: Border(
-  //                                                 top: BorderSide(
-  //                                                   color:
-  //                                                       Colors.grey.shade200,
-  //                                                 ),
-  //                                               ),
-  //                                               title: Row(
-  //                                                 spacing:
-  //                                                     10,
-  //                                                 children: [
-  //                                                   Icon(
-  //                                                     size:
-  //                                                         17,
-  //                                                     Icons
-  //                                                         .usb_rounded,
-  //                                                   ),
-  //                                                   Flexible(
-  //                                                     child: Column(
-  //                                                       crossAxisAlignment:
-  //                                                           CrossAxisAlignment.start,
-  //                                                       spacing:
-  //                                                           5,
-  //                                                       children: [
-  //                                                         Text(
-  //                                                           style: TextStyle(
-  //                                                             fontWeight:
-  //                                                                 FontWeight.bold,
-  //                                                             fontSize:
-  //                                                                 returnTheme(
-  //                                                                   context,
-  //                                                                   listen:
-  //                                                                       false,
-  //                                                                 ).mobileTexts.b1.fontSize,
-  //                                                           ),
-  //                                                           device.productName,
-  //                                                         ),
-  //                                                         Text(
-  //                                                           style: TextStyle(
-  //                                                             fontWeight:
-  //                                                                 FontWeight.bold,
-  //                                                             fontSize:
-  //                                                                 theme.mobileTexts.b4.fontSize,
-  //                                                           ),
-  //                                                           'Usb',
-  //                                                         ),
-  //                                                       ],
-  //                                                     ),
-  //                                                   ),
-  //                                                 ],
-  //                                               ),
-  //                                               onTap: () async {
-  //                                                 Navigator.pop(
-  //                                                   context,
-  //                                                 );
-  //                                                 await usbPrinter.connect(
-  //                                                   int.tryParse(
-  //                                                         device.vendorId,
-  //                                                       ) ??
-  //                                                       0,
-  //                                                   int.tryParse(
-  //                                                         device.productId,
-  //                                                       ) ??
-  //                                                       0,
-  //                                                 );
-  //                                                 if (safeContext
-  //                                                     .mounted) {
-  //                                                   connectToPrinter(
-  //                                                     safeContext:
-  //                                                         safeContext,
-  //                                                     device:
-  //                                                         device,
-  //                                                     receipt:
-  //                                                         receipt,
-  //                                                     records:
-  //                                                         records,
-  //                                                     shop:
-  //                                                         shop,
-  //                                                   );
-  //                                                 }
-  //                                               },
-  //                                             ),
-  //                                           ),
-  //                                         )
-  //                                         .toList(),
-  //                               ),
-  //                             );
-  //                           }
-  //                         },
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ).then((_) {
-  //       if (safeContext.mounted) {
-  //         returnReceiptProvider(
-  //           safeContext,
-  //           listen: false,
-  //         ).toggleIsLoading(false);
-  //       }
-  //     });
-  //   }
-  // }
+                        Divider(
+                          color: Colors.grey.shade400,
+                          height: 30,
+                        ),
+                        Builder(
+                          builder: (context) {
+                            if (devices.isEmpty) {
+                              return Expanded(
+                                child: Center(
+                                  child: Column(
+                                    spacing: 10,
+                                    mainAxisSize:
+                                        MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    children: [
+                                      Icon(
+                                        size: 25,
+                                        Icons
+                                            .print_disabled_rounded,
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .h4
+                                                  .fontSize,
+                                        ),
+                                        'No Printer Found',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Expanded(
+                                child: ListView(
+                                  children:
+                                      devices
+                                          .map(
+                                            (
+                                              device,
+                                            ) => Material(
+                                              color:
+                                                  Colors
+                                                      .transparent,
+                                              child: ListTile(
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          5,
+                                                      horizontal:
+                                                          10,
+                                                    ),
+                                                shape: Border(
+                                                  top: BorderSide(
+                                                    color:
+                                                        Colors.grey.shade200,
+                                                  ),
+                                                ),
+                                                title: Row(
+                                                  spacing:
+                                                      10,
+                                                  children: [
+                                                    Icon(
+                                                      size:
+                                                          17,
+                                                      Icons
+                                                          .usb_rounded,
+                                                    ),
+                                                    Flexible(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        spacing:
+                                                            5,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                              fontSize:
+                                                                  returnTheme(
+                                                                    context,
+                                                                    listen:
+                                                                        false,
+                                                                  ).mobileTexts.b1.fontSize,
+                                                            ),
+                                                            device.productName,
+                                                          ),
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b4.fontSize,
+                                                            ),
+                                                            'Usb',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                onTap: () async {
+                                                  Navigator.pop(
+                                                    context,
+                                                  );
+                                                  await usbPrinter.connect(
+                                                    int.tryParse(
+                                                          device.vendorId,
+                                                        ) ??
+                                                        0,
+                                                    int.tryParse(
+                                                          device.productId,
+                                                        ) ??
+                                                        0,
+                                                  );
+                                                  if (safeContext
+                                                      .mounted) {
+                                                    connectToPrinter(
+                                                      safeContext:
+                                                          safeContext,
+                                                      device:
+                                                          device,
+                                                      receipt:
+                                                          receipt,
+                                                      records:
+                                                          records,
+                                                      shop:
+                                                          shop,
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        if (safeContext.mounted) {
+          returnReceiptProvider(
+            safeContext,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
+      });
+    }
+  }
 }
 
 void scanBluetoothPrinters({
@@ -328,7 +327,6 @@ void scanBluetoothPrinters({
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
-  required bool checkPrinters,
 }) async {
   var safeContext = context;
   var isTurnedOn =
@@ -641,7 +639,7 @@ void scanBluetoothPrinters({
 
 void connectToPrinter({
   Printer? printer,
-  // UsbDevice? device,
+  UsbDevice? device,
   required BuildContext safeContext,
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
@@ -672,7 +670,7 @@ void connectToPrinter({
       );
     } else {
       // setPrinter(device!);
-      // await sendReceiptInChunks(data: data, device: device);
+      await sendReceiptInChunks(data: data, device: device);
     }
   }
 
@@ -687,7 +685,7 @@ void connectToPrinter({
 Future<void> sendReceiptInChunks({
   required Uint8List data,
   Printer? printer,
-  // UsbDevice? device,
+  UsbDevice? device,
   int chunkSize = 240, // Safe under BLE MTU
 }) async {
   int offset = 0;

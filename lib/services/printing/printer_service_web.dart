@@ -228,5 +228,4 @@ Future<void> connectToUsbDevice({
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
-  required bool checkPrinters,
 }) async {}

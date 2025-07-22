@@ -12,7 +12,8 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:stockall/services/printing/import_helper.dart';
+import 'package:stockall/services/printing/import_helper.dart'
+    show connectToUsbDevice, scanBluetoothPrinters;
 
 class ReceiptPageMobile extends StatefulWidget {
   final bool isMain;
@@ -1608,41 +1609,39 @@ class _ReceiptDetailsContainerState
                                   //       ).userShop!,
                                   // );
 
-                                  // if (returnShopProvider(
-                                  //           context,
-                                  //           listen: false,
-                                  //         )
-                                  //         .userShop!
-                                  //         .printType! ==
-                                  //     1) {
-                                  //   await connectToUsbDevice(
-                                  //     checkPrinters: false,
-                                  //     receipt:
-                                  //         widget
-                                  //             .mainReceipt,
-                                  //     context: safeContext,
-                                  //     records: records,
-                                  //     shop:
-                                  //         returnShopProvider(
-                                  //           context,
-                                  //           listen: false,
-                                  //         ).userShop!,
-                                  //   );
-                                  // } else {
-                                  //   scanBluetoothPrinters(
-                                  //     checkPrinters: true,
-                                  //     receipt:
-                                  //         widget
-                                  //             .mainReceipt,
-                                  //     context: safeContext,
-                                  //     records: records,
-                                  //     shop:
-                                  //         returnShopProvider(
-                                  //           context,
-                                  //           listen: false,
-                                  //         ).userShop!,
-                                  //   );
-                                  // }
+                                  if (returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .userShop!
+                                          .printType! ==
+                                      1) {
+                                    await connectToUsbDevice(
+                                      receipt:
+                                          widget
+                                              .mainReceipt,
+                                      context: safeContext,
+                                      records: records,
+                                      shop:
+                                          returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).userShop!,
+                                    );
+                                  } else {
+                                    scanBluetoothPrinters(
+                                      receipt:
+                                          widget
+                                              .mainReceipt,
+                                      context: safeContext,
+                                      records: records,
+                                      shop:
+                                          returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).userShop!,
+                                    );
+                                  }
                                 }
                                 if (safeContext.mounted &&
                                     kIsWeb) {

@@ -330,7 +330,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "1e072e07875f1903c3cf94c09c45d467
 "downloads/stockall.apk": "b38be52bcbaf3ebce50a1bc953d1d9ae",
 "favicon.png": "04e096bc5c04887dc60542dc80909f9b",
 "flutter.js": "76f08d47ff9f5715220992f993002504",
-"flutter_bootstrap.js": "fd176d04acc7e7f749b67608812ff24b",
+"flutter_bootstrap.js": "e56f0fb31a6ceb0f6767ee48be383085",
 "icons/Icon-192.png": "066c7955a028e7c2162d3d942c1b1f45",
 "icons/Icon-512.png": "c13fd8ddf9c757d44c9097391d8fbdf5",
 "icons/Icon-maskable-192.png": "066c7955a028e7c2162d3d942c1b1f45",
