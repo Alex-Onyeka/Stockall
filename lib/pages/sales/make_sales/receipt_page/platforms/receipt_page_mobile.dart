@@ -1335,7 +1335,6 @@ class _ReceiptDetailsContainerState
                   BottomActionButton(
                     action: () {
                       var safeContext = context;
-                      var popContext = context;
                       if (returnShopProvider(
                                 context,
                                 listen: false,
@@ -1343,7 +1342,7 @@ class _ReceiptDetailsContainerState
                               null &&
                           !kIsWeb) {
                         showDialog(
-                          context: popContext,
+                          context: context,
                           builder: (context) {
                             return AlertDialog(
                               backgroundColor: Colors.white,
@@ -1609,41 +1608,41 @@ class _ReceiptDetailsContainerState
                                   //       ).userShop!,
                                   // );
 
-                                  if (returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .userShop!
-                                          .printType! ==
-                                      1) {
-                                    connectToUsbDevice(
-                                      checkPrinters: false,
-                                      receipt:
-                                          widget
-                                              .mainReceipt,
-                                      context: safeContext,
-                                      records: records,
-                                      shop:
-                                          returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).userShop!,
-                                    );
-                                  } else {
-                                    scanBluetoothPrinters(
-                                      checkPrinters: true,
-                                      receipt:
-                                          widget
-                                              .mainReceipt,
-                                      context: safeContext,
-                                      records: records,
-                                      shop:
-                                          returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).userShop!,
-                                    );
-                                  }
+                                  // if (returnShopProvider(
+                                  //           context,
+                                  //           listen: false,
+                                  //         )
+                                  //         .userShop!
+                                  //         .printType! ==
+                                  //     1) {
+                                  //   await connectToUsbDevice(
+                                  //     checkPrinters: false,
+                                  //     receipt:
+                                  //         widget
+                                  //             .mainReceipt,
+                                  //     context: safeContext,
+                                  //     records: records,
+                                  //     shop:
+                                  //         returnShopProvider(
+                                  //           context,
+                                  //           listen: false,
+                                  //         ).userShop!,
+                                  //   );
+                                  // } else {
+                                  //   scanBluetoothPrinters(
+                                  //     checkPrinters: true,
+                                  //     receipt:
+                                  //         widget
+                                  //             .mainReceipt,
+                                  //     context: safeContext,
+                                  //     records: records,
+                                  //     shop:
+                                  //         returnShopProvider(
+                                  //           context,
+                                  //           listen: false,
+                                  //         ).userShop!,
+                                  //   );
+                                  // }
                                 }
                                 if (safeContext.mounted &&
                                     kIsWeb) {

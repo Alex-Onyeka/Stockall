@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_thermal_printer/flutter_thermal_printer.dart';
 import 'package:flutter_thermal_printer/utils/printer.dart';
-import 'package:flutter_usb_thermal_plugin/model/usb_device_model.dart';
+// import 'package:flutter_usb_thermal_plugin/model/usb_device_model.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
@@ -641,7 +641,7 @@ void scanBluetoothPrinters({
 
 void connectToPrinter({
   Printer? printer,
-  UsbDevice? device,
+  // UsbDevice? device,
   required BuildContext safeContext,
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
@@ -672,7 +672,7 @@ void connectToPrinter({
       );
     } else {
       // setPrinter(device!);
-      await sendReceiptInChunks(data: data, device: device);
+      // await sendReceiptInChunks(data: data, device: device);
     }
   }
 
@@ -687,7 +687,7 @@ void connectToPrinter({
 Future<void> sendReceiptInChunks({
   required Uint8List data,
   Printer? printer,
-  UsbDevice? device,
+  // UsbDevice? device,
   int chunkSize = 240, // Safe under BLE MTU
 }) async {
   int offset = 0;
