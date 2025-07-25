@@ -213,7 +213,7 @@ class _MainReceiptTileState extends State<MainReceiptTile> {
                                         .b3
                                         .fontSize,
                               ),
-                              'Product Name',
+                              'Item Name',
                             ),
                             Text(
                               style: TextStyle(

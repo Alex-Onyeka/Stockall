@@ -21,20 +21,21 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       createdAt: fields[1] as DateTime?,
       password: fields[2] as String,
       name: fields[3] as String,
-      email: fields[4] as String,
-      phone: fields[5] as String?,
-      role: fields[6] as String,
-      authUserId: fields[7] as String?,
-      departmentName: fields[8] as String?,
-      departmentId: fields[9] as int?,
-      pin: fields[10] as String?,
+      lastName: fields[4] as String?,
+      email: fields[5] as String,
+      phone: fields[6] as String?,
+      role: fields[7] as String,
+      authUserId: fields[8] as String?,
+      departmentName: fields[9] as String?,
+      departmentId: fields[10] as int?,
+      pin: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempUserClass obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -44,18 +45,20 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       ..writeByte(3)
       ..write(obj.name)
       ..writeByte(4)
-      ..write(obj.email)
+      ..write(obj.lastName)
       ..writeByte(5)
-      ..write(obj.phone)
+      ..write(obj.email)
       ..writeByte(6)
-      ..write(obj.role)
+      ..write(obj.phone)
       ..writeByte(7)
-      ..write(obj.authUserId)
+      ..write(obj.role)
       ..writeByte(8)
-      ..write(obj.departmentName)
+      ..write(obj.authUserId)
       ..writeByte(9)
-      ..write(obj.departmentId)
+      ..write(obj.departmentName)
       ..writeByte(10)
+      ..write(obj.departmentId)
+      ..writeByte(11)
       ..write(obj.pin);
   }
 

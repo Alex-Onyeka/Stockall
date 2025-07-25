@@ -208,9 +208,8 @@ class _ProductPageMobileState
                 child: Stack(
                   children: [
                     TopBanner(
-                      subTitle:
-                          'Data of All Product Records',
-                      title: 'Products',
+                      subTitle: 'Data of All Item Records',
+                      title: 'Items',
                       theme: widget.theme,
                       bottomSpace: 100,
                       topSpace: 20,
@@ -229,8 +228,8 @@ class _ProductPageMobileState
                                 searchController.text;
                           });
                         },
-                        hintText: 'Search Product Name',
-                        mainTitle: 'Products Summary',
+                        hintText: 'Search Item Name',
+                        mainTitle: 'Items Summary',
                         firsRow: true,
                         scanAction: () async {
                           String? result = await scanCode(
@@ -312,9 +311,9 @@ class _ProductPageMobileState
                                 displacement: 10,
                                 child: EmptyWidgetDisplayOnly(
                                   subText:
-                                      'No Product has been added to this store yet.',
+                                      'No Item has been added to this store yet.',
                                   title:
-                                      'You have no Products Yet',
+                                      'You have no Items Yet',
                                   height: 35,
                                   icon: Icons.clear,
 
@@ -336,11 +335,11 @@ class _ProductPageMobileState
                                     Colors.white,
                                 displacement: 10,
                                 child: EmptyWidgetDisplay(
-                                  buttonText: 'Add Product',
+                                  buttonText: 'Add Item',
                                   subText:
-                                      'Click on the button below to start adding Products to your store.',
+                                      'Click on the button below to start adding Items to your store.',
                                   title:
-                                      'You have no Products Yet',
+                                      'You have no Items Yet',
                                   svg: productIconSvg,
                                   height: 35,
                                   action: () {
@@ -394,7 +393,7 @@ class _ProductPageMobileState
                                                 .b1
                                                 .fontSize,
                                       ),
-                                      'Products',
+                                      'Items',
                                     ),
                                     MaterialButton(
                                       onPressed: () {

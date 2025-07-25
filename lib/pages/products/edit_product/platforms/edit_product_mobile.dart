@@ -61,7 +61,7 @@ class _EditProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Product Cost Price, Selling Price and Product Unit Must be set',
+                'Item Cost Price, Selling Price and Item Unit Must be set',
             title: 'Empty Input',
           );
         },
@@ -137,14 +137,14 @@ class _EditProductMobileState
                 fontSize: theme.mobileTexts.h4.fontSize,
                 fontWeight: FontWeight.bold,
               ),
-              'Edit Product',
+              'Edit Item',
             ),
             SizedBox(height: 5),
             Text(
               style: TextStyle(
                 fontSize: theme.mobileTexts.b2.fontSize,
               ),
-              'Edit Product Info',
+              'Edit Item Info',
             ),
           ],
         ),
@@ -163,9 +163,9 @@ class _EditProductMobileState
                     children: [
                       GeneralTextField(
                         theme: theme,
-                        hint: 'Enter Product Name',
+                        hint: 'Enter Item Name',
                         lines: 1,
-                        title: 'Product Name',
+                        title: 'Item Name',
                         controller: widget.nameController,
                       ),
                       SizedBox(height: 20),
@@ -199,7 +199,7 @@ class _EditProductMobileState
                             returnData(
                               context,
                             ).selectedCategory ??
-                            'Select Product Category',
+                            'Select Item Category',
                         theme: theme,
                       ),
                       SizedBox(height: 20),
@@ -215,10 +215,10 @@ class _EditProductMobileState
                             barCodeSet = true;
                           });
                         },
-                        title: 'Product Barcode',
+                        title: 'Item Barcode',
                         hint:
                             barcode ??
-                            'Click to Scan Product Barcode',
+                            'Click to Scan Item Barcode',
                         theme: theme,
                       ),
                       SizedBox(height: 20),
@@ -233,7 +233,7 @@ class _EditProductMobileState
                       MoneyTextfield(
                         theme: theme,
                         hint:
-                            'Enter the Amount you wish to sell this Product',
+                            'Enter the Amount you wish to sell this Item',
                         title: 'Selling - Price',
                         controller:
                             widget.sellingController,
@@ -260,7 +260,7 @@ class _EditProductMobileState
                             returnData(
                               context,
                             ).selectedUnit ??
-                            'Select Product Unit',
+                            'Select Item Unit',
                         theme: theme,
                       ),
                       SizedBox(height: 20),
@@ -285,12 +285,12 @@ class _EditProductMobileState
                             returnData(
                               context,
                             ).selectedColor ??
-                            'Select Product Color',
+                            'Select Item Color',
                         theme: theme,
                       ),
                       NumberTextfield(
                         theme: theme,
-                        hint: 'Enter Product Size',
+                        hint: 'Enter Item Size',
                         title: 'Size  (Optional)',
                         controller: widget.sizeController,
                       ),
@@ -327,7 +327,7 @@ class _EditProductMobileState
                             returnData(
                               context,
                             ).selectedSize ??
-                            'Select Product Size Name (Optional)',
+                            'Select Item Size Name (Optional)',
                         theme: theme,
                       ),
                       SizedBox(height: 20),

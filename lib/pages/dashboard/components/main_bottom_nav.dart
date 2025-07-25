@@ -50,7 +50,7 @@ class MainBottomNav extends StatelessWidget {
                       ).currentPage,
                   index: 1,
                   icon: Icons.book,
-                  title: 'Products',
+                  title: 'Items',
                 ),
               ),
               SizedBox(width: 90),

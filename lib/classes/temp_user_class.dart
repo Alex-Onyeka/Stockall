@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'temp_user_class.g.dart'; // needed for code generation
+part 'temp_user_class.g.dart';
 
 @HiveType(typeId: 0)
 class TempUserClass extends HiveObject {
@@ -17,28 +17,28 @@ class TempUserClass extends HiveObject {
   String name;
 
   @HiveField(4)
-  String email;
+  String? lastName;
 
   @HiveField(5)
-  String? phone;
+  String email;
 
   @HiveField(6)
-  String role;
+  String? phone;
 
   @HiveField(7)
-  String? authUserId;
+  String role;
 
   @HiveField(8)
-  String? departmentName;
+  String? authUserId;
 
   @HiveField(9)
+  String? departmentName;
+
+  @HiveField(10)
   int? departmentId;
 
-  @HiveField(10)
+  @HiveField(11)
   String? pin;
-
-  @HiveField(10)
-  String? lastName;
 
   TempUserClass({
     this.userId,

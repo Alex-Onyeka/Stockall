@@ -348,7 +348,7 @@ class ReceiptsProvider extends ChangeNotifier {
             )
             .toList();
 
-    print('Products Records gotten');
+    print('Items Records gotten');
 
     notifyListeners();
     return _sales;

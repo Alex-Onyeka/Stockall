@@ -170,7 +170,7 @@ class _GeneralReportMobileState
                                     return ConfirmationAlert(
                                       theme: theme,
                                       message:
-                                          'You are about to convert all your product records to pdf, are you sure you want to proceed?',
+                                          'You are about to convert all your item records to pdf, are you sure you want to proceed?',
                                       title:
                                           'Are you sure?',
                                       action: () async {
@@ -1076,14 +1076,14 @@ class _GeneralReportMobileState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  'Standard Product Sales Profit',
+                                                  'Standard Item Sales Profit',
                                                 ),
                                                 Text(
                                                   style: TextStyle(
                                                     fontSize:
                                                         theme.mobileTexts.b4.fontSize,
                                                   ),
-                                                  '(Products with both Cost Price and Selling Price)',
+                                                  '(Items with both Cost Price and Selling Price)',
                                                 ),
                                               ],
                                             ),

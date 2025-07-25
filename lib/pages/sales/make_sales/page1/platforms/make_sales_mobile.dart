@@ -208,7 +208,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                             }
                           },
 
-                          title: 'Enter Product Quantity',
+                          title: 'Enter Item Quantity',
                           hint: 'Quantity',
                           controller: quantityController,
                           theme: theme,
@@ -626,7 +626,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Enter Product Sales',
+                      'Enter Item Sales',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
@@ -647,8 +647,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           Column(
                             children: [
                               GeneralTextField(
-                                title: 'Product Name',
-                                hint: 'Enter Product name',
+                                title: 'Item Name',
+                                hint: 'Enter Item name',
                                 controller: nameC,
                                 lines: 1,
                                 theme: theme,
@@ -814,8 +814,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 });
                               },
 
-                              title:
-                                  'Enter Product Quantity',
+                              title: 'Enter Item Quantity',
                               hint: 'Quantity',
                               controller: pQuantity,
                               theme: theme,
@@ -837,7 +836,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  'Add Product to your Stock?',
+                                  'Add Item to your Stock?',
                                 ),
                                 InkWell(
                                   onTap: () {
@@ -854,8 +853,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           message:
                                               salesProvider
                                                       .addToStock
-                                                  ? 'This product will not be added to your stock after this sale, are you sure you want to proceed?'
-                                                  : 'This product will be automatically added to your stock after this sale, are you sure you want to proceed?',
+                                                  ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
+                                                  : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
                                           title:
                                               !salesProvider
                                                       .addToStock
@@ -1145,7 +1144,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         return InfoAlert(
                                           theme: theme,
                                           message:
-                                              'This Product is already available in your Store. Please select the product from your stock and proceed to make sale.',
+                                              'This Item is already available in your Store. Please select the Item from your stock and proceed to make sale.',
                                           title:
                                               'Duplicate Item.',
                                         );
@@ -1493,7 +1492,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                   theme:
                                                                       theme,
                                                                   message:
-                                                                      'Are you sure you want to delete your product suggestion?',
+                                                                      'Are you sure you want to delete your item suggestion?',
                                                                   title:
                                                                       isLoading
                                                                           ? 'Deleting'
@@ -1803,9 +1802,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       context: context,
                     )) {
                       return EmptyWidgetDisplayOnly(
-                        title: 'No Products',
+                        title: 'No Items',
                         subText:
-                            'No Products have been added to your stock.',
+                            'No Items have been added to your stock.',
                         theme: theme,
                         height: 30,
                         icon: Icons.clear,
@@ -1867,13 +1866,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               MainAxisAlignment.center,
                           children: [
                             EmptyWidgetDisplay(
-                              title: 'No products',
+                              title: 'No items',
                               subText:
-                                  'You currently do not have have any product. Add products to start making sales.',
+                                  'You currently do not have have any item. Add items to start making sales.',
                               theme: theme,
                               height: 30,
                               svg: productIconSvg,
-                              buttonText: 'Add Product',
+                              buttonText: 'Add Item',
                               action: () {
                                 Navigator.push(
                                   context,

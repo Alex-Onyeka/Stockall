@@ -9,7 +9,6 @@ import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
-// import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
@@ -17,11 +16,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
-// import 'package:stockall/pages/products/add_product_one/add_product.dart';
-// import 'package:stockall/pages/products/compnents/edit_product_tile.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
-// import 'package:stockall/pages/products/edit_product/edit_products_page.dart';
-// import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/shop_setup/create_category/create_category.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -90,7 +85,7 @@ void unitsBottomSheet(
                           ),
                         ),
                         Text(
-                          'Select Product Unit',
+                          'Select Item Unit',
                           style: TextStyle(
                             fontSize:
                                 returnTheme(
@@ -321,7 +316,7 @@ void categoriesBottomSheet(
                               ),
                             ),
                             Text(
-                              'Select Product Category',
+                              'Select Item Category',
                               style: TextStyle(
                                 fontSize:
                                     returnTheme(context)
@@ -822,7 +817,7 @@ void colorsBottomSheet(
                           ),
                         ),
                         Text(
-                          'Select Product Colors',
+                          'Select Item Colors',
                           style: TextStyle(
                             fontSize:
                                 returnTheme(
@@ -995,7 +990,7 @@ void sizeTypeBottomSheet(
                               ),
                             ),
                             Text(
-                              'Select Product Size Name',
+                              'Select Item Size Name',
                               style: TextStyle(
                                 fontSize:
                                     returnTheme(context)
@@ -1335,7 +1330,7 @@ class _CustomBottomPanelState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Enter Product Sales',
+                      'Enter Item Sales',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
@@ -1445,7 +1440,7 @@ class _CustomBottomPanelState
                             });
                           },
 
-                          title: 'Enter Product Quantity',
+                          title: 'Enter Item Quantity',
                           hint: 'Quantity',
                           controller: quantityController,
                           theme: theme,
@@ -1910,7 +1905,7 @@ class _CustomBottomPanelState
                               setState(() {});
                             },
                             child: Text(
-                              'Add Products to Cart',
+                              'Add Item to Cart',
                               style: TextStyle(
                                 fontSize:
                                     returnTheme(context)
@@ -1922,7 +1917,7 @@ class _CustomBottomPanelState
                             ),
                           ),
                           Text(
-                            'Search For products',
+                            'Search For items',
                             style: TextStyle(
                               fontSize:
                                   returnTheme(
@@ -2030,7 +2025,7 @@ class _CustomBottomPanelState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    'Product Not Registered In Your Stock',
+                                    'Item Not Registered In Your Stock',
                                   ),
                                 ],
                               ),
@@ -2072,7 +2067,7 @@ class _CustomBottomPanelState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    'Found 0 Product(s)',
+                                    'Found 0 Item(s)',
                                   ),
                                 ],
                               ),
@@ -2213,9 +2208,9 @@ class _CustomBottomPanelState
                                             return InfoAlert(
                                               theme: theme,
                                               message:
-                                                  'Product Quantity is Zero, Therefore, this product cannot be sold',
+                                                  'Item Quantity is Zero, Therefore, this item cannot be sold',
                                               title:
-                                                  'Product out of Stock',
+                                                  'Item out of Stock',
                                             );
                                           },
                                         );
@@ -2470,9 +2465,9 @@ class _CustomBottomPanelState
                                             return InfoAlert(
                                               theme: theme,
                                               message:
-                                                  'Product Quantity is Zero, Therefore, this product cannot be sold',
+                                                  'Item Quantity is Zero, Therefore, this item cannot be sold',
                                               title:
-                                                  'Product out of Stock',
+                                                  'Item out of Stock',
                                             );
                                           },
                                         );
@@ -2699,31 +2694,6 @@ void editCartItemBottomSheet(
                         child: Column(
                           spacing: 5,
                           children: [
-                            // Visibility(
-                            //   visible:
-                            //       cartItem.setCustomPrice ||
-                            //       returnSalesProvider(
-                            //         context,
-                            //       ).isSetCustomPrice,
-                            //   child: Column(
-                            //     children: [
-                            //       SizedBox(
-                            //         width: 450,
-                            //         child: EditCartTextField(
-                            //           title: 'Custom Price',
-                            //           hint: 'Enter Price',
-                            //           controller:
-                            //               priceController,
-                            //           theme: theme,
-                            //           onChanged: (p0) {
-                            //             setState(() {});
-                            //           },
-                            //         ),
-                            //       ),
-                            //       SizedBox(height: 20),
-                            //     ],
-                            //   ),
-                            // ),
                             EditCartTextField(
                               title: 'Enter Number',
                               hint: 'Start Typing',
@@ -2747,7 +2717,7 @@ void editCartItemBottomSheet(
                                       return InfoAlert(
                                         theme: theme,
                                         message:
-                                            'Total product quantity can\'t be exceeded',
+                                            'Total item quantity can\'t be exceeded',
                                         title:
                                             'Quantity Exceeded',
                                       );
@@ -2765,82 +2735,6 @@ void editCartItemBottomSheet(
                                 }
                               },
                             ),
-                            // SizedBox(height: 20),
-                            // Visibility(
-                            //   visible:
-                            //       cartItem.customPrice ==
-                            //       null,
-                            //   child: InkWell(
-                            //     onTap: () {
-                            //       returnSalesProvider(
-                            //         context,
-                            //         listen: false,
-                            //       ).toggleSetCustomPrice();
-                            //       priceController.clear();
-                            //     },
-                            //     child: Container(
-                            //       padding:
-                            //           EdgeInsets.symmetric(
-                            //             vertical: 5,
-                            //             horizontal: 10,
-                            //           ),
-                            //       child: Row(
-                            //         mainAxisSize:
-                            //             MainAxisSize.min,
-                            //         mainAxisAlignment:
-                            //             MainAxisAlignment
-                            //                 .center,
-                            //         spacing: 5,
-                            //         children: [
-                            //           Text(
-                            //             style: TextStyle(
-                            //               fontSize:
-                            //                   theme
-                            //                       .mobileTexts
-                            //                       .b1
-                            //                       .fontSize,
-                            //               fontWeight:
-                            //                   FontWeight
-                            //                       .bold,
-                            //             ),
-                            //             returnSalesProvider(
-                            //                   context,
-                            //                 ).isSetCustomPrice
-                            //                 ? 'Cancel Custom Price'
-                            //                 : 'Set Custom Price',
-                            //           ),
-                            //           Stack(
-                            //             children: [
-                            //               Visibility(
-                            //                 visible:
-                            //                     returnSalesProvider(
-                            //                       context,
-                            //                     ).isSetCustomPrice ==
-                            //                     false,
-                            //                 child:
-                            //                     SvgPicture.asset(
-                            //                       editIconSvg,
-                            //                       height:
-                            //                           20,
-                            //                     ),
-                            //               ),
-                            //               Visibility(
-                            //                 visible:
-                            //                     returnSalesProvider(
-                            //                       context,
-                            //                     ).isSetCustomPrice ==
-                            //                     true,
-                            //                 child: Icon(
-                            //                   Icons.clear,
-                            //                 ),
-                            //               ),
-                            //             ],
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
                             SizedBox(height: 20),
                             Row(
                               mainAxisAlignment:
@@ -2935,7 +2829,7 @@ void editCartItemBottomSheet(
                                                 theme:
                                                     theme,
                                                 message:
-                                                    'Total product quantity can\'t be exceeded',
+                                                    'Total item quantity can\'t be exceeded',
                                                 title:
                                                     'Quantity Exceeded',
                                               );
@@ -2983,218 +2877,7 @@ void editCartItemBottomSheet(
       );
     },
   );
-  // .then((_) {
-  //   var safeContext = context;
-  //   if (safeContext.mounted) {
-  //     returnSalesProvider(
-  //       safeContext,
-  //       listen: false,
-  //     ).closeCustomPrice();
-  //   }
-  // });
 }
-
-//
-//
-//
-
-//
-//
-//
-//
-// C U S T O M E R   S E A R C H     B O T T O M  S H E E T
-
-// class CustomerSearchBottomSheet extends StatefulWidget {
-//   final TextEditingController searchController;
-//   final VoidCallback close;
-//   const CustomerSearchBottomSheet({
-//     super.key,
-//     required this.searchController,
-//     required this.close,
-//   });
-
-//   @override
-//   State<CustomerSearchBottomSheet> createState() =>
-//       _CustomerSearchBottomSheetState();
-// }
-
-// class _CustomerSearchBottomSheetState
-//     extends State<CustomerSearchBottomSheet> {
-//   //
-//   //
-//   //
-
-//   List customerResults = [];
-
-//   String? searchResult;
-//   void clear() {
-//     searchResult = null;
-//     customerResults.clear();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     var theme = returnTheme(context);
-//     return Material(
-//       color: Colors.transparent,
-//       // elevation: 1,
-//       child: Padding(
-//         padding: const EdgeInsets.only(top: 10.0),
-//         child: Ink(
-//           height: MediaQuery.of(context).size.height,
-//           decoration: BoxDecoration(
-//             color: Colors.grey.shade100,
-//             boxShadow: [
-//               BoxShadow(
-//                 color: const Color.fromARGB(55, 0, 0, 0),
-//                 blurRadius: 5,
-//               ),
-//             ],
-//             borderRadius: BorderRadius.vertical(
-//               top: Radius.circular(20),
-//             ),
-//           ),
-//           child: Container(
-//             height:
-//                 MediaQuery.of(context).size.height * 0.9,
-
-//             padding: const EdgeInsets.fromLTRB(
-//               15,
-//               15,
-//               15,
-//               45,
-//             ),
-//             child: Column(
-//               children: [
-//                 Center(
-//                   child: Container(
-//                     height: 4,
-//                     width: 70,
-//                     decoration: BoxDecoration(
-//                       borderRadius: BorderRadius.circular(
-//                         15,
-//                       ),
-//                       color: Colors.grey.shade400,
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(height: 10),
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(
-//                     horizontal: 15.0,
-//                   ),
-//                   child: Row(
-//                     mainAxisAlignment:
-//                         MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       Column(
-//                         crossAxisAlignment:
-//                             CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             'Add A Customer',
-//                             style: TextStyle(
-//                               fontSize:
-//                                   returnTheme(
-//                                     context,
-//                                   ).mobileTexts.b1.fontSize,
-//                               fontWeight: FontWeight.bold,
-//                             ),
-//                           ),
-//                           Text(
-//                             'Search For Your Customers to Add to Sale',
-//                             style: TextStyle(
-//                               fontSize:
-//                                   returnTheme(
-//                                     context,
-//                                   ).mobileTexts.b2.fontSize,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                       IconButton(
-//                         onPressed: () {
-//                           widget.close();
-//                           clear();
-//                         },
-//                         icon: Icon(Icons.clear_rounded),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 SizedBox(height: 10),
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(
-//                     horizontal: 20.0,
-//                   ),
-//                   child: GeneralTextField(
-//                     hint: "Enter Customers' Name",
-//                     lines: 1,
-//                     theme: theme,
-//                     title: 'Add Customer (Optional)',
-//                     controller: widget.searchController,
-//                     onChanged: (value) {
-//                       setState(() {
-//                         if (value == '') {
-//                           searchResult = null;
-//                         } else {
-//                           searchResult =
-//                               value.toLowerCase();
-//                         }
-//                       });
-//                     },
-//                   ),
-//                 ),
-//                 Expanded(
-//                   child: Builder(
-//                     builder: (context) {
-//                       var customers = customerResults;
-//                       if (customers.isEmpty &&
-//                           searchResult == null) {
-//                         return Center(
-//                           child: Text('Empty List'),
-//                         );
-//                       } else {
-//                         return ListView.builder(
-//                           padding: EdgeInsets.only(top: 10),
-//                           itemCount:
-//                               returnData(context)
-//                                   .searchProductsName(
-//                                     widget
-//                                         .searchController
-//                                         .text,
-//                                     context,
-//                                   )
-//                                   .length,
-//                           itemBuilder: (context, index) {
-//                             final product =
-//                                 returnData(
-//                                   context,
-//                                 ).searchProductsName(
-//                                   widget
-//                                       .searchController
-//                                       .text,
-//                                   context,
-//                                 )[index];
-//                             return ProductTileCartSearch(
-//                               action: () {},
-//                               theme: theme,
-//                               product: product,
-//                             );
-//                           },
-//                         );
-//                       }
-//                     },
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 //
 //
@@ -3217,7 +2900,7 @@ void selectProduct(
           return AlertDialog(
             backgroundColor: Colors.white,
             title: Text(
-              'Enter Product Quantity',
+              'Enter Item Quantity',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: theme.mobileTexts.h4.fontSize,
@@ -3227,20 +2910,6 @@ void selectProduct(
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // SizedBox(
-                //   width: 450,
-                //   child: NumberTextfield(
-                //     onChanged: (value) {
-                //       setState(() {
-
-                //       });
-                //     },
-                //     title: 'Enter Product Quantity',
-                //     hint: 'Quantity',
-                //     controller: quantityController,
-                //     theme: theme,
-                //   ),
-                // ),
                 SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(

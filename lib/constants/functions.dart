@@ -80,9 +80,9 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'Owner',
     'auths': [
-      'Add Products',
-      'Update Products',
-      'Delete Products',
+      'Add Items',
+      'Update Items',
+      'Delete Items',
       'Add Customers',
       'Update Customers',
       'Delete Customers',
@@ -106,9 +106,9 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'General Manager',
     'auths': [
-      'Add Products',
-      'Update Products',
-      'Delete Products',
+      'Add Items',
+      'Update Items',
+      'Delete Items',
       'Add Customers',
       'Update Customers',
       'Delete Customers',
@@ -145,7 +145,7 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'Asst. Manager',
     'auths': [
-      'Add Products',
+      'Add Items',
       'Add Customers',
       'Update Customers',
       'Delete Customers',
@@ -161,7 +161,7 @@ List<Map<String, dynamic>> employees = [
     'auths': [
       'Add Customers',
       'Make Sale',
-      'View Products',
+      'View Items',
       'View Daily Sales',
       'Add Expenses',
       'Update Expenses',
@@ -170,9 +170,9 @@ List<Map<String, dynamic>> employees = [
 ];
 
 class Authorizations {
-  String addProduct = 'Add Products';
-  String updateProduct = 'Update Products';
-  String deleteProduct = 'Delete Products';
+  String addProduct = 'Add Items';
+  String updateProduct = 'Update Items';
+  String deleteProduct = 'Delete Items';
   String addCustomer = 'Add Customers';
   String updateCustomer = 'Update Customers';
   String deleteCustomer = 'Delete Customers';

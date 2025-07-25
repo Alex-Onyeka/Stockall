@@ -114,7 +114,7 @@ class _TotalProductsPageState
       child: Scaffold(
         appBar: appBar(
           context: context,
-          title: 'All Products',
+          title: 'All Items',
         ),
         floatingActionButton: Visibility(
           visible: authorization(
@@ -207,11 +207,11 @@ class _TotalProductsPageState
                                     Colors.white,
                                 displacement: 10,
                                 child: EmptyWidgetDisplay(
-                                  buttonText: 'Add Product',
+                                  buttonText: 'Add Item',
                                   subText:
-                                      'Click on the button below to start adding Products to your store.',
+                                      'Click on the button below to start adding Items to your store.',
                                   title:
-                                      'You have no Products Yet',
+                                      'You have no Items Yet',
                                   svg: productIconSvg,
                                   height: 35,
                                   action: () {
@@ -278,7 +278,7 @@ class _TotalProductsPageState
                                                 currentSelect,
                                             number: 0,
                                             title:
-                                                'All Products',
+                                                'All Items',
                                             theme: theme,
                                           ),
                                           ProductsFilterButton(
@@ -427,7 +427,7 @@ class _TotalProductsPageState
                                             title:
                                                 'Empty List',
                                             subText:
-                                                'You Don\'t have any product under this category',
+                                                'You Don\'t have any item under this category',
 
                                             icon:
                                                 Icons

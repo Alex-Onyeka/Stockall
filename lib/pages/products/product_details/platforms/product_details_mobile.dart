@@ -83,7 +83,7 @@ class _ProductDetailsMobileState
           Scaffold(
             appBar: appBar(
               context: context,
-              title: 'Product Details',
+              title: 'Item Details',
               widget: Visibility(
                 visible: authorization(
                   authorized:
@@ -1224,8 +1224,8 @@ class _ProductDetailsMobileState
                                                       .theme,
                                               message:
                                                   product.isManaged
-                                                      ? 'This product quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
-                                                      : 'This product quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
+                                                      ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
+                                                      : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
                                               title:
                                                   'Proceed with Action?',
                                               action: () async {

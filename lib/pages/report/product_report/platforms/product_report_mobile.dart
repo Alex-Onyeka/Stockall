@@ -63,7 +63,7 @@ class _ProductReportMobileState
         Scaffold(
           appBar: appBar(
             context: context,
-            title: 'Products',
+            title: 'Items',
             widget: Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: PopupMenuButton(
@@ -222,7 +222,7 @@ class _ProductReportMobileState
                                             context:
                                                 safeContext,
                                             filename:
-                                                'Stockall_Products Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
+                                                'Stockall_Items Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
                                           );
                                         }
                                       }
@@ -355,7 +355,7 @@ class _ProductReportMobileState
                                       return EmptyWidgetDisplayOnly(
                                         title: 'Empty List',
                                         subText:
-                                            'No Product has been recorded yet',
+                                            'No Item has been recorded yet',
                                         theme: theme,
                                         height: 35,
                                         icon: Icons.clear,

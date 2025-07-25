@@ -247,7 +247,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                   color:
                                       Colors.grey.shade700,
                                 ),
-                                'Add Product',
+                                'Add Item',
                               ),
                             ],
                           ),

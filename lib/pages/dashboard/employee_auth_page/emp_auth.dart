@@ -161,8 +161,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             theme: theme,
                                             icon:
                                                 productIconSvg,
-                                            title:
-                                                'Products',
+                                            title: 'Items',
                                             action: () {},
                                           ),
                                           ButtonTab(
@@ -230,8 +229,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             theme: theme,
                                             icon:
                                                 productIconSvg,
-                                            title:
-                                                'Products',
+                                            title: 'Items',
                                             action: () {},
                                           ),
                                           ButtonTab(

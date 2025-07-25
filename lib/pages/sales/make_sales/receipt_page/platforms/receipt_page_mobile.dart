@@ -787,7 +787,7 @@ class _ReceiptDetailsContainerState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  'Product Record',
+                                  'Item Record',
                                 ),
                               ],
                             ),

@@ -239,7 +239,7 @@ class _NotificatonTileMainState
                                     .lightModeColor
                                     .secColor200
                                 : widget.notif.notifId ==
-                                    'product_expire'
+                                    'item_expire'
                                 ? widget
                                     .theme
                                     .lightModeColor
@@ -257,7 +257,7 @@ class _NotificatonTileMainState
                                     .lightModeColor
                                     .errorColor200
                                 : widget.notif.notifId ==
-                                    'product_deleted'
+                                    'item_deleted'
                                 ? widget
                                     .theme
                                     .lightModeColor
@@ -269,7 +269,7 @@ class _NotificatonTileMainState
                         widget.notif.notifId == 'low_stock'
                             ? Icons.warning_amber_rounded
                             : widget.notif.notifId ==
-                                'product_expire'
+                                'item_expire'
                             ? Icons.warning_amber_rounded
                             : widget.notif.notifId ==
                                 'out_of_stock'
@@ -278,10 +278,10 @@ class _NotificatonTileMainState
                                 'expired'
                             ? Icons.dangerous_outlined
                             : widget.notif.notifId ==
-                                'product_created'
+                                'item_created'
                             ? Icons.plus_one
                             : widget.notif.notifId ==
-                                'product_deleted'
+                                'item_deleted'
                             ? Icons.exposure_minus_1_rounded
                             : Icons.add_chart_rounded,
                       ),
@@ -420,7 +420,7 @@ class _NotificatonTileMainState
                                         widget
                                                 .notif
                                                 .itemName ??
-                                            'Product',
+                                            'Item',
                                       ),
                                     ),
                                   ),

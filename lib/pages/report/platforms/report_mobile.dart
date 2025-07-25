@@ -104,7 +104,7 @@ class ReportMobile extends StatelessWidget {
                           },
                           subText:
                               'Veiw A Summary of your Stock and Inventory',
-                          title: 'Product Report',
+                          title: 'Items Report',
                         ),
                         ReportListTile(
                           isActive: true,

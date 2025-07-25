@@ -23,7 +23,7 @@ class DataProvider extends ChangeNotifier {
         .insert(product.toJson())
         .select()
         .single();
-    print('Product added successfully');
+    print('Item added successfully');
     // final newProduct = TempProductClass.fromJson(data);
 
     // productList.add(newProduct);
@@ -111,7 +111,7 @@ class DataProvider extends ChangeNotifier {
         .select()
         .eq('shop_id', shopId)
         .order('name', ascending: true);
-    print('Products gotten');
+    print('Items gotten');
     productList =
         (data as List)
             .map((json) => TempProductClass.fromJson(json))
@@ -380,7 +380,7 @@ class DataProvider extends ChangeNotifier {
   List<String> categories = [
     'Appliances',
     'Automotive',
-    'Baby Products',
+    'Baby Items',
     'Beverages',
     'Books',
     'Clothing',

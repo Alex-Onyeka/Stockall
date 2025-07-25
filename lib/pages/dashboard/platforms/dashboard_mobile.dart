@@ -397,8 +397,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         icon: pulseIconSvg,
                                         number:
                                             '${productsLocal.length}',
-                                        title:
-                                            'All Products',
+                                        title: 'All Items',
                                         action: () {
                                           returnNavProvider(
                                             context,
@@ -477,7 +476,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       icon:
                                                           productIconSvg,
                                                       title:
-                                                          'Products',
+                                                          'Items',
                                                       action: () {
                                                         returnNavProvider(
                                                           context,
@@ -664,7 +663,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       icon:
                                                           productIconSvg,
                                                       title:
-                                                          'Products',
+                                                          'Items',
                                                       action: () {
                                                         returnNavProvider(
                                                           context,

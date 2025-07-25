@@ -79,7 +79,7 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Product Name Must be set before product can be created',
+                'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
@@ -94,7 +94,7 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'If you want to set a discount for this product, you must set end date for that discount.',
+                'If you want to set a discount for this item, you must set end date for that discount.',
             title: 'Set End Date for Discount',
           );
         },
@@ -108,7 +108,7 @@ class _AddProductMobileState
           return ConfirmationAlert(
             theme: returnTheme(safeContext),
             message:
-                'You are about to add a new product to your stock, are you sure you want to proceed?',
+                'You are about to add a new item to your stock, are you sure you want to proceed?',
             title: 'Are you sure?',
             action: () async {
               if (safeContext.mounted) {
@@ -513,8 +513,8 @@ class _AddProductMobileState
                     fontWeight: FontWeight.bold,
                   ),
                   widget.product != null
-                      ? 'Edit Product'
-                      : 'New Product',
+                      ? 'Edit Item'
+                      : 'New Item',
                 ),
                 SizedBox(height: 5),
                 Text(
@@ -522,8 +522,8 @@ class _AddProductMobileState
                     fontSize: theme.mobileTexts.b2.fontSize,
                   ),
                   widget.product != null
-                      ? 'Edit product details'
-                      : 'Add a new product to your store.',
+                      ? 'Edit item details'
+                      : 'Add a new item to your store.',
                 ),
               ],
             ),
@@ -546,9 +546,9 @@ class _AddProductMobileState
                             children: [
                               GeneralTextField(
                                 theme: theme,
-                                hint: 'Enter Product Name',
+                                hint: 'Enter Item Name',
                                 lines: 1,
-                                title: 'Product Name',
+                                title: 'Item Name',
                                 controller:
                                     widget.nameController,
                               ),
@@ -660,7 +660,7 @@ class _AddProductMobileState
                                                   FontWeight
                                                       .bold,
                                             ),
-                                            'Allow Stockall to Manage Product Quantity?',
+                                            'Allow Stockall to Manage Item Quantity?',
                                           ),
                                           Column(
                                             spacing: 5,
@@ -670,7 +670,7 @@ class _AddProductMobileState
                                                   fontSize:
                                                       10,
                                                 ),
-                                                'This controls wether Product quantity is automatically deducted after sales, and notifications are sent when product quantity is low or out of stock.',
+                                                'This controls wether Item quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
                                               ),
                                               // Text(
                                               //   'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
@@ -874,10 +874,10 @@ class _AddProductMobileState
                                         });
                                       },
                                       title:
-                                          'Product Barcode (Optional)',
+                                          'Item Barcode (Optional)',
                                       hint:
                                           barcode ??
-                                          'Click to Scan Product Barcode',
+                                          'Click to Scan Item Barcode',
                                       theme: theme,
                                     ),
                                     SizedBox(height: 10),
@@ -1054,12 +1054,12 @@ class _AddProductMobileState
                                       },
                                       isOpen: isOpenUnit,
                                       title:
-                                          'Product Unit (Optional)',
+                                          'Item Unit (Optional)',
                                       hint:
                                           returnData(
                                             context,
                                           ).selectedUnit ??
-                                          'Select Product Unit',
+                                          'Select Item Unit',
                                       theme: theme,
                                     ),
                                     SizedBox(height: 10),
@@ -1091,7 +1091,7 @@ class _AddProductMobileState
                                           returnData(
                                             context,
                                           ).selectedSize ??
-                                          'Select Product Size Type',
+                                          'Select Item Size Type',
                                       theme: theme,
                                     ),
 
@@ -1122,7 +1122,7 @@ class _AddProductMobileState
                                           returnData(
                                             context,
                                           ).selectedCategory ??
-                                          'Select Product Category',
+                                          'Select Item Category',
                                       theme: theme,
                                     ),
                                     SizedBox(height: 10),
@@ -1494,8 +1494,8 @@ class _AddProductMobileState
                         },
                         text:
                             widget.product != null
-                                ? 'Update Product'
-                                : 'Create Product',
+                                ? 'Update Item'
+                                : 'Create Item',
                       ),
                     ),
                   ),
@@ -1654,8 +1654,8 @@ class _AddProductMobileState
             listen: false,
           ).showLoader(
             widget.product != null
-                ? 'Updating Product'
-                : 'Creating Product',
+                ? 'Updating Item'
+                : 'Creating Item',
           ),
         ),
         Visibility(
@@ -1665,8 +1665,8 @@ class _AddProductMobileState
             listen: false,
           ).showSuccess(
             widget.product != null
-                ? 'Product Updated Successfully'
-                : 'Product Created Successfully',
+                ? 'Item Updated Successfully'
+                : 'Item Created Successfully',
           ),
         ),
       ],
