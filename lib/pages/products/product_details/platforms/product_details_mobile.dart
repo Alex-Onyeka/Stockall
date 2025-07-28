@@ -1461,7 +1461,7 @@ class _ProductDetailsMobileState
                         ),
                         child: Expanded(
                           child: EditButton(
-                            text: 'Delete Product',
+                            text: 'Delete Item',
                             action: () {
                               final safeContext = context;
                               showDialog(
@@ -1542,7 +1542,7 @@ class _ProductDetailsMobileState
                         ),
                         child: Expanded(
                           child: EditButton(
-                            text: 'Edit Product',
+                            text: 'Edit Item',
                             action: () {
                               Navigator.push(
                                 context,
