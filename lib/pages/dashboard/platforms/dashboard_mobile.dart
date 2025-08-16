@@ -252,10 +252,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                         message: 'You are about to Logout',
                         title: 'Are you Sure?',
                         action: () async {
-                          await AuthService().signOut(
-                            context,
-                          );
-
                           if (context.mounted) {
                             Navigator.pushReplacement(
                               context,
@@ -269,6 +265,11 @@ class _DashboardMobileState extends State<DashboardMobile> {
                               context,
                               listen: false,
                             ).navigate(0);
+                          }
+                          if (context.mounted) {
+                            await AuthService().signOut(
+                              context,
+                            );
                           }
                         },
                       );

@@ -212,16 +212,16 @@ class MobileTexts {
   B1 b1 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 12.0,
+    fontSize: 13.0,
     letterSpacing: 0,
     lineHeight: 24,
     textStyleBold: TextStyle(
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -230,16 +230,16 @@ class MobileTexts {
   B1 b2 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 11.0,
+    fontSize: 12.0,
     letterSpacing: 0,
     lineHeight: 21,
     textStyleBold: TextStyle(
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -248,16 +248,16 @@ class MobileTexts {
   B1 b3 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 10.0,
+    fontSize: 11.0,
     letterSpacing: 0,
     lineHeight: 18,
     textStyleBold: TextStyle(
-      fontSize: 10,
+      fontSize: 11,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 10,
+      fontSize: 11,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),
@@ -266,16 +266,16 @@ class MobileTexts {
   B1 b4 = B1(
     fontWeightBold: FontWeight.bold,
     fontWeightRegular: FontWeight.normal,
-    fontSize: 8,
+    fontSize: 9,
     letterSpacing: 0,
     lineHeight: 15,
     textStyleBold: TextStyle(
-      fontSize: 8,
+      fontSize: 9,
       fontWeight: FontWeight.bold,
       color: LightModeColor().greyColor100,
     ),
     textStyleNormal: TextStyle(
-      fontSize: 8,
+      fontSize: 9,
       fontWeight: FontWeight.w500,
       color: LightModeColor().greyColor100,
     ),

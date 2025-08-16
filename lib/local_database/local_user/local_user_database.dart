@@ -23,9 +23,9 @@ class LocalUserDatabase extends ChangeNotifier {
     await Hive.initFlutter();
 
     // Register adapter (if not already done outside)
-    if (!Hive.isAdapterRegistered(0)) {
-      Hive.registerAdapter(TempUserClassAdapter());
-    }
+    // if (!Hive.isAdapterRegistered(0)) {
+    //   Hive.registerAdapter(TempUserClassAdapter());
+    // }
 
     _userBox ??= await Hive.openBox<TempUserClass>(
       _userBoxName,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
-// import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
