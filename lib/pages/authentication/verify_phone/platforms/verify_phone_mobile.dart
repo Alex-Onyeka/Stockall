@@ -147,7 +147,7 @@ class _VerifyPhoneMobileState
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      'We have sent a Password Reset Link to your Email',
+                      'A Password Reset Link has been sent to your Email',
                       style: TextStyle(
                         color:
                             widget
@@ -224,12 +224,6 @@ class _VerifyPhoneMobileState
                         ),
                       ],
                     ),
-                    // SizedBox(height: 20),
-                    // MainButtonP(
-                    //   themeProvider: widget.theme,
-                    //   action: () {},
-                    //   text: 'Proceed to Verify',
-                    // ),
                   ],
                 ),
               ),

@@ -26,10 +26,6 @@ class EmpAuth extends StatefulWidget {
 }
 
 class _EmpAuthState extends State<EmpAuth> {
-  // bool isKeyboardVisible(BuildContext context) {
-  //   return MediaQuery.of(context).viewInsets.bottom > 0;
-  // }
-
   TextEditingController passwordController =
       TextEditingController();
   bool isLoading = false;
@@ -60,12 +56,7 @@ class _EmpAuthState extends State<EmpAuth> {
           bottomNavigationBar: MainBottomNav(
             globalKey: GlobalKey(),
           ),
-          body:
-          // Container(
-          //   color: Colors.grey.shade100,
-          //   child: Column(children: [Row()]),
-          // ),
-          Column(
+          body: Column(
             children: [
               SizedBox(height: 20),
               TopNavBar(
@@ -335,9 +326,17 @@ class _EmpAuthState extends State<EmpAuth> {
                           Container(
                             width:
                                 MediaQuery.of(
-                                  context,
-                                ).size.width *
-                                0.85,
+                                          context,
+                                        ).size.width <
+                                        550
+                                    ? MediaQuery.of(
+                                          context,
+                                        ).size.width *
+                                        0.85
+                                    : MediaQuery.of(
+                                          context,
+                                        ).size.width *
+                                        0.4,
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.circular(5),
@@ -529,16 +528,6 @@ class _EmpAuthState extends State<EmpAuth> {
                                   ],
                                 ),
                                 SizedBox(height: 15),
-                                // EmailTextField(
-                                //   controller:
-                                //       emailController,
-                                //   theme: theme,
-                                //   isEmail: true,
-                                //   hint: 'Enter Email',
-                                //   title: 'Email',
-                                // ),
-
-                                // SizedBox(height: 20),
                                 Stack(
                                   children: [
                                     Visibility(
@@ -740,12 +729,6 @@ class _EmpAuthState extends State<EmpAuth> {
                                               onCompleted: (
                                                 value,
                                               ) async {
-                                                // final compProvider =
-                                                //     returnCompProvider(
-                                                //       context,
-                                                //       listen:
-                                                //           false,
-                                                //     );
                                                 setState(() {
                                                   isLoading =
                                                       true;
@@ -1038,12 +1021,6 @@ class _EmpAuthState extends State<EmpAuth> {
                           ),
                           Container(
                             height:
-                                // isKeyboardVisible(
-                                //           context,
-                                //         ) ==
-                                //         false
-                                //     ? 0
-                                //     :
                                 MediaQuery.of(
                                   context,
                                 ).size.height *

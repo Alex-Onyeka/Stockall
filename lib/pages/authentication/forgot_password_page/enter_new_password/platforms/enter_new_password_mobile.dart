@@ -195,13 +195,10 @@ class _EnterNewPasswordMobileState
                                   'Are you sure you want to proceed?',
                               title: 'Proceed?',
                               action: () async {
-                                // Navigator.of(context).pop();
-
                                 setState(() {
                                   isLoading = true;
                                 });
 
-                                // Try to change password
                                 var res = await AuthService()
                                     .changePasswordAndUpdateLocal(
                                       newPassword:
@@ -211,7 +208,6 @@ class _EnterNewPasswordMobileState
                                       context: safeContex,
                                     );
 
-                                // 💡 Handle "new password = old password" (422 error)
                                 if (res == '422' &&
                                     safeContex.mounted) {
                                   await showDialog(
@@ -231,25 +227,6 @@ class _EnterNewPasswordMobileState
                                   });
                                   return;
                                 }
-                                // else if (res == '400' &&
-                                //     safeContex.mounted) {
-                                //   await showDialog(
-                                //     context: safeContex,
-                                //     builder: (context) {
-                                //       return InfoAlert(
-                                //         theme: theme,
-                                //         message:
-                                //             'Auth Token not valid. Please click on the reset password link, go to your email and verify your password again.',
-                                //         title:
-                                //             'Auth Token Not Valid',
-                                //       );
-                                //     },
-                                //   );
-                                //   setState(() {
-                                //     isLoading = false;
-                                //   });
-                                //   return;
-                                // }
 
                                 setState(() {
                                   isLoading = false;
@@ -265,13 +242,6 @@ class _EnterNewPasswordMobileState
                                     (route) => false,
                                   );
                                 }
-
-                                // if (safeContex.mounted) {
-                                //   Navigator.pushReplacementNamed(
-                                //     context,
-                                //     '/',
-                                //   );
-                                // }
 
                                 setState(() {
                                   isLoading = false;

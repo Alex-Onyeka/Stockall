@@ -8,8 +8,8 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/shop_setup/shop_setup_page.dart';
-import 'package:stockall/pages/shop_setup/shop_setup_two.dart';
+import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
+import 'package:stockall/pages/shop_setup/shop_setup_two/shop_setup_two.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ShopPageMobile extends StatefulWidget {

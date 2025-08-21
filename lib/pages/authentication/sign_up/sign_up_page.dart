@@ -76,9 +76,13 @@ class _SignUpPageState extends State<SignUpPage> {
           } else {
             return SignupDesktop(
               theme: theme,
+              nameController: nameController,
+              phoneNumberController: phoneNumberController,
               confirmPasswordController:
                   confirmPasswordController,
               emailController: emailController,
+              passwordController: passwordController,
+              lastNameController: lastNameController,
               onChanged: (p0) {
                 setState(() {
                   checked = p0!;
@@ -89,7 +93,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   checked = !checked;
                 });
               },
-              passwordController: passwordController,
               checked: checked,
             );
           }

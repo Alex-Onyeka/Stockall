@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/components/major/unsupported_platform.dart';
+import 'package:stockall/pages/authentication/login/platforms/login_desktop.dart';
 import 'package:stockall/pages/authentication/login/platforms/login_mobile.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -42,12 +42,11 @@ class _LoginPageState extends State<LoginPage> {
               passwordController: passwordController,
             );
           } else {
-            return UnsupportedPlatform();
-            // return LoginDesktop(
-            //   theme: theme,
-            //   emailController: emailController,
-            //   passwordController: passwordController,
-            // );
+            return LoginDesktop(
+              theme: theme,
+              emailController: emailController,
+              passwordController: passwordController,
+            );
           }
         },
       ),

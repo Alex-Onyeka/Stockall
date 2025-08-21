@@ -121,7 +121,7 @@ class AuthLandingMobile extends StatelessWidget {
                                 )
                                 .b1
                                 .textStyleNormal,
-                        'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀',
+                        appDesc,
                       ),
                       SizedBox(height: 20),
 

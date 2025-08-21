@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/pages/profile/edit/platforms/edit_desktop.dart';
 import 'package:stockall/pages/profile/edit/platforms/edit_mobile.dart';
 
 class Edit extends StatefulWidget {
@@ -54,11 +55,20 @@ class _EditState extends State<Edit> {
                   confirmPasswordController,
               main: widget.main,
             );
-          } else if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
-            return Scaffold();
           } else {
-            return Scaffold();
+            return EditDesktop(
+              user: widget.user,
+              nameController: nameController,
+              phoneController: phoneController,
+              action: widget.action,
+              emailController: emailController,
+              passwordController: passwordController,
+              oldEmailController: oldEmailController,
+              oldPasswordController: oldPassordController,
+              confirmPasswordController:
+                  confirmPasswordController,
+              main: widget.main,
+            );
           }
         },
       ),

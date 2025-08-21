@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/components/major/unsupported_platform.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/platforms/enter_new_password_desktop.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/platforms/enter_new_password_mobile.dart';
 
 class EnterNewPassword extends StatefulWidget {
@@ -31,26 +31,17 @@ class _EnterNewPasswordState
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // return Scaffold(
-        //   body: Center(
-        //     child: Text(
-        //       textAlign: TextAlign.center,
-        //       'Unauthorized Access. Check your email to reset your password.',
-        //     ),
-        //   ),
-        // );
-
         if (constraints.maxWidth < 550) {
           return EnterNewPasswordMobile(
             passwordC: passwordC,
             confirmPasswordC: confirmPasswordC,
             accessToken: accessToken,
           );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return UnsupportedPlatform();
         } else {
-          return UnsupportedPlatform();
+          return EnterNewPasswordDesktop(
+            passwordC: passwordC,
+            confirmPasswordC: confirmPasswordC,
+          );
         }
       },
     );

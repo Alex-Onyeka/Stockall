@@ -444,14 +444,6 @@ class _SignupMobileState extends State<SignupMobile> {
                         text: 'Create User Account',
                       ),
                       SizedBox(height: 15),
-                      // MainButtonTransparent(
-                      //   themeProvider: widget.theme,
-                      //   constraints: BoxConstraints(),
-                      //   text: 'Go Back',
-                      //   action: () {
-                      //     Navigator.of(context).pop();
-                      //   },
-                      // ),
                     ],
                   ),
                 ),

@@ -201,38 +201,7 @@ class _EditMobileState extends State<EditMobile> {
                                 value1 = value;
                               });
                             },
-                            onCompleted: (value) {
-                              // setState(() {
-                              //   isLoading = true;
-                              // });
-
-                              // if (widget.user.pin != null &&
-                              //     widget.user.pin! != value) {
-                              //   setState(() {
-                              //     isLoading = false;
-                              //   });
-                              //   showDialog(
-                              //     context: context,
-                              //     builder: (context) {
-                              //       return InfoAlert(
-                              //         theme: theme,
-                              //         message:
-                              //             'Old Pin is Incorrect. Please Try again, or try logging in with your password.',
-                              //         title: 'Incorrect PIN',
-                              //       );
-                              //     },
-                              //   );
-                              // } else {
-                              //   setState(() {
-                              //     isLoading = false;
-                              //     showSuccess = true;
-                              //   });
-
-                              //   setState(() {
-                              //     showSuccess = false;
-                              //   });
-                              // }
-                            },
+                            onCompleted: (value) {},
                             pinTheme: PinTheme(
                               shape: PinCodeFieldShape.box,
                               borderRadius:

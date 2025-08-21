@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/authentication/sign_up/signup_two.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginDesktop extends StatefulWidget {
   final TextEditingController emailController;
@@ -31,7 +35,10 @@ class _LoginDesktopState extends State<LoginDesktop> {
     return emailRegex.hasMatch(email);
   }
 
-  void checkInputs() {
+  bool issLoading = false;
+  bool showwSuccess = false;
+
+  Future<void> checkInputs() async {
     if (widget.emailController.text.isEmpty ||
         widget.passwordController.text.isEmpty) {
       showDialog(
@@ -59,16 +66,92 @@ class _LoginDesktopState extends State<LoginDesktop> {
         },
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
+      setState(() {
+        issLoading = true;
+      });
+      try {
+        var res = await AuthService().signIn(
+          widget.emailController.text,
+          widget.passwordController.text,
+          context,
+        );
+        if (res.user != null && context.mounted) {
+          setState(() {
+            issLoading = false;
+            showwSuccess = true;
+          });
+
+          Future.delayed(Duration(seconds: 3), () {
+            Navigator.pushReplacementNamed(
+              // ignore: use_build_context_synchronously
+              context,
+              '/',
+            );
+            setState(() {
+              showwSuccess = false;
+            });
+          });
+        }
+      } on SocketException catch (_) {
+        // No internet
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
           builder: (context) {
-            return SignupTwo();
+            return InfoAlert(
+              theme: widget.theme,
+              message:
+                  'No internet connection. Please check your network.',
+              title: 'Authentication Error',
+            );
           },
-        ),
-      );
-      widget.emailController.clear();
-      widget.passwordController.clear();
+        );
+      } on AuthException catch (e) {
+        setState(() {
+          issLoading = false;
+        });
+        if (!context.mounted) return;
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              theme: widget.theme,
+              message:
+                  e.statusCode == '400'
+                      ? 'Invalid email or password. Please try again.'
+                      : e.statusCode == '401'
+                      ? 'Invalid email or password. Please try again.'
+                      : e.statusCode == '404'
+                      ? 'User not found. Please check your email and try again.'
+                      : e.statusCode == '500'
+                      ? 'An error occurred on the server. Please try again later.'
+                      : e.statusCode == null
+                      ? 'No internet connection. Please check your network and try again.'
+                      : 'An error occurred. Please try again later.',
+              // 'An Error occured while tryin to create your account, please check you internet and try again.',
+              title: 'Authentication Error',
+            );
+          },
+        );
+      } catch (e) {
+        setState(() {
+          issLoading = false;
+        });
+
+        if (!context.mounted) return;
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              theme: widget.theme,
+              message: e.toString(),
+              title: 'Unexpected Error',
+            );
+          },
+        );
+      }
     }
   }
 
@@ -219,6 +302,46 @@ class _LoginDesktopState extends State<LoginDesktop> {
                             ),
 
                             SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ForgotPasswordPage();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                          right: 0.0,
+                                          top: 15,
+                                          bottom: 15,
+                                          left: 20,
+                                        ),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            widget
+                                                .theme
+                                                .lightModeColor
+                                                .secColor100,
+                                      ),
+                                      'Forgot Password?',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
 
                             MainButtonP(
                               themeProvider: widget.theme,
@@ -235,6 +358,20 @@ class _LoginDesktopState extends State<LoginDesktop> {
                   ],
                 ),
               ),
+            ),
+            Visibility(
+              visible: issLoading,
+              child: returnCompProvider(
+                context,
+                listen: false,
+              ).showLoader('Logging In'),
+            ),
+            Visibility(
+              visible: showwSuccess,
+              child: returnCompProvider(
+                context,
+                listen: false,
+              ).showSuccess('Logged In Successfully'),
             ),
           ],
         ),

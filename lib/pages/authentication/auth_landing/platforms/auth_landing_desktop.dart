@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/login/login_page.dart';
+import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class AuthLandingDesktop extends StatelessWidget {
@@ -113,15 +114,19 @@ class AuthLandingDesktop extends StatelessWidget {
                                   )
                                   .b1
                                   .textStyleNormal,
-                          'Lorem ipsum dolor sit amet, consectetur  adipiscing elit ut aliquam, purus sit  amet luctus v magna fringilla urna',
+                          appDesc,
                         ),
                         SizedBox(height: 20),
                         MainButtonP(
                           action: () {
-                            returnNavProvider(
+                            Navigator.push(
                               context,
-                              listen: false,
-                            ).navigateAuth(3);
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SignUpPage();
+                                },
+                              ),
+                            );
                           },
                           text: 'Create an Account',
                           themeProvider: themeProvider,
@@ -129,10 +134,14 @@ class AuthLandingDesktop extends StatelessWidget {
                         SizedBox(height: 10),
                         InkWell(
                           onTap: () {
-                            returnNavProvider(
+                            Navigator.push(
                               context,
-                              listen: false,
-                            ).navigateAuth(2);
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return LoginPage();
+                                },
+                              ),
+                            );
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(

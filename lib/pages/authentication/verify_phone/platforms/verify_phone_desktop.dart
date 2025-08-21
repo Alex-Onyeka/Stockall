@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/pages/authentication/verify_phone/enter_code.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class VerifyPhoneDesktop extends StatelessWidget {
@@ -21,9 +19,7 @@ class VerifyPhoneDesktop extends StatelessWidget {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(backGroundImage),
-            fit:
-                BoxFit
-                    .cover, // Options: cover, contain, fill, fitWidth, fitHeight
+            fit: BoxFit.cover,
           ),
         ),
         child: Stack(
@@ -155,7 +151,7 @@ class VerifyPhoneDesktop extends StatelessWidget {
                                 Text(
                                   textAlign:
                                       TextAlign.center,
-                                  'We have sent a code to your Phone',
+                                  'A Password Reset Link has been sent to your Email',
                                   style: TextStyle(
                                     color:
                                         theme
@@ -179,26 +175,27 @@ class VerifyPhoneDesktop extends StatelessWidget {
                                           .mobileTexts
                                           .b1
                                           .textStyleNormal,
-                                  'Check your message to verify your phone Number',
+                                  'Check your mail to Reset Your Password',
                                 ),
                                 SizedBox(height: 20),
-                                MainButtonP(
-                                  themeProvider: theme,
-                                  action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return EnterCode(
-                                            number:
-                                                'number',
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  text: 'Proceed to Verify',
-                                ),
+                                // MainButtonP(
+                                //   themeProvider: theme,
+                                //   action: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) {
+                                //           return EnterCode(
+                                //             number:
+                                //                 'number',
+                                //           );
+                                //         },
+                                //       ),
+                                //     );
+                                //   },
+                                //   text: 'Proceed to Verify',
+                                // ),
+                                // SizedBox(height: 20),
                               ],
                             ),
                           ),

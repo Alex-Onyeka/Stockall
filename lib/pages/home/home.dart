@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
-// import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
-// import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/pages/products/products_page.dart';
 import 'package:stockall/pages/profile/edit/edit.dart';
 import 'package:stockall/pages/sales/sales_page/sales_page.dart';
@@ -22,48 +21,57 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // bool _navigated = false;
-  // bool _providersInitialized = false;
   bool _handledNoShop = false;
+
+  TempUserClass? user;
 
   @override
   void initState() {
     super.initState();
     shopFuture = getUserShop();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _safeHandlePostFrameLogic();
-      }
-    });
+    userFuture = getUser();
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (mounted) {
+    //     _safeHandlePostFrameLogic();
+    //   }
+    // });
 
     // localUserFuture = getUserEmp();
   }
 
-  Future<void> _safeHandlePostFrameLogic() async {
-    if (!mounted) return;
-    final userProvider = returnUserProvider(
+  // Future<void> _safeHandlePostFrameLogic() async {
+  //   if (!mounted) return;
+  //   final userProvider = returnUserProvider(
+  //     context,
+  //     listen: false,
+  //   );
+  //   user = await userProvider.fetchCurrentUser(context);
+  //   // if (!mounted) return;
+
+  //   // if (user != null && user.pin == null) {
+  //   //   Navigator.pushAndRemoveUntil(
+  //   //     context,
+  //   //     MaterialPageRoute(
+  //   //       builder:
+  //   //           (_) => Edit(
+  //   //             user: user,
+  //   //             action: 'PIN',
+  //   //             main: true,
+  //   //           ),
+  //   //     ),
+  //   //     (route) => false,
+  //   //   );
+  //   // }
+  // }
+
+  late Future<TempUserClass?> userFuture;
+  Future<TempUserClass?> getUser() async {
+    var user = await returnUserProvider(
       context,
       listen: false,
-    );
-    final user = await userProvider.fetchCurrentUser(
-      context,
-    );
-    if (!mounted) return;
-
-    if (user != null && user.pin == null) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder:
-              (_) => Edit(
-                user: user,
-                action: 'PIN',
-                main: true,
-              ),
-        ),
-        (route) => false,
-      );
-    }
+    ).fetchCurrentUser(context);
+    return user;
   }
 
   void _handleNoShop() {
@@ -85,77 +93,109 @@ class _HomeState extends State<Home> {
     final navProv = Provider.of<NavProvider>(context);
     final theme = returnTheme(context);
 
-    return Stack(
-      children: [
-        FutureBuilder<TempShopClass?>(
-          future: shopFuture,
-          builder: (context, shopSnapshot) {
-            if (shopSnapshot.connectionState ==
-                ConnectionState.waiting) {
-              return returnCompProvider(
-                context,
-                listen: false,
-              ).showLoader('Loading');
-            } else if (shopSnapshot.hasError) {
-              return Scaffold(
-                body: Center(
-                  child: EmptyWidgetDisplay(
-                    title: 'An Error Occurred',
-                    subText:
-                        'We couldn\'t load your data. Check your internet.',
-                    icon: Icons.clear,
-                    theme: theme,
-                    height: 30,
-                    buttonText: 'Reload Page',
-                    action: () {
-                      Navigator.pushReplacement(
+    return FutureBuilder(
+      future: userFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState ==
+                ConnectionState.waiting ||
+            snapshot.hasError) {
+          return returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Loading...');
+        } else {
+          if (snapshot.data != null &&
+              snapshot.data!.pin == null) {
+            return Edit(
+              user: snapshot.data!,
+              action: 'PIN',
+              main: true,
+            );
+          } else if (snapshot.data == null) {
+            return Scaffold(
+              body: Center(child: Text('User is empty')),
+            );
+          } else {
+            return Stack(
+              children: [
+                FutureBuilder<TempShopClass?>(
+                  future: shopFuture,
+                  builder: (context, shopSnapshot) {
+                    if (shopSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return returnCompProvider(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return Home();
-                          },
+                        listen: false,
+                      ).showLoader('Loading');
+                    } else if (shopSnapshot.hasError) {
+                      return Scaffold(
+                        body: Center(
+                          child: EmptyWidgetDisplay(
+                            title: 'An Error Occurred',
+                            subText:
+                                'We couldn\'t load your data. Check your internet.',
+                            icon: Icons.clear,
+                            theme: theme,
+                            height: 30,
+                            buttonText: 'Reload Page',
+                            action: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return Home();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       );
+                    } else if (shopSnapshot.data == null) {
+                      if (!_handledNoShop) {
+                        _handledNoShop = true;
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) {
+                              if (mounted) _handleNoShop();
+                            });
+                      }
+                      return ShopBannerScreen();
+                    } else {
+                      switch (navProv.currentPage) {
+                        case 0:
+                          return Dashboard(
+                            shopId:
+                                shopSnapshot.data!.shopId!,
+                          );
+                        case 1:
+                          return const ProductsPage();
+                        case 2:
+                          return const SalesPage();
+                        default:
+                          return Dashboard(
+                            shopId:
+                                shopSnapshot.data!.shopId!,
+                          );
+                      }
+                    }
+                  },
+                ),
+                Visibility(
+                  visible:
+                      returnNavProvider(
+                        context,
+                      ).isNotVerified,
+                  child: EmpAuth(
+                    action: () {
+                      _handleNoShop();
                     },
                   ),
                 ),
-              );
-            } else if (shopSnapshot.data == null) {
-              if (!_handledNoShop) {
-                _handledNoShop = true;
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                      if (mounted) _handleNoShop();
-                    });
-              }
-              return ShopBannerScreen();
-            } else {
-              switch (navProv.currentPage) {
-                case 0:
-                  return Dashboard(
-                    shopId: shopSnapshot.data!.shopId!,
-                  );
-                case 1:
-                  return const ProductsPage();
-                case 2:
-                  return const SalesPage();
-                default:
-                  return Dashboard(
-                    shopId: shopSnapshot.data!.shopId!,
-                  );
-              }
-            }
-          },
-        ),
-        Visibility(
-          visible: returnNavProvider(context).isNotVerified,
-          child: EmpAuth(
-            action: () {
-              _handleNoShop();
-            },
-          ),
-        ),
-      ],
+              ],
+            );
+          }
+        }
+      },
     );
   }
 }

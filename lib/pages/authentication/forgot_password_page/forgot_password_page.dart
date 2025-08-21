@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/components/major/unsupported_platform.dart';
+import 'package:stockall/pages/authentication/forgot_password_page/platforms/forgot_password_desktop.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/platforms/forgot_password_mobile.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -28,12 +28,11 @@ class _ForgotPasswordPageState
               emailController: emailController,
               isMain: widget.isMain,
             );
-          } else if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
-            // return Scaffold();
-            return UnsupportedPlatform();
           } else {
-            return UnsupportedPlatform();
+            return ForgotPasswordDesktop(
+              emailController: emailController,
+              isMain: widget.isMain,
+            );
             // return Scaffold();
           }
         },
