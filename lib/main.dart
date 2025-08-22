@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/local_database/local_user/local_user_database.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -8,6 +9,7 @@ import 'package:stockall/pages/authentication/forgot_password_page/enter_new_pas
 import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart';
+import 'package:stockall/pages/authentication/translations/translation_provider.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -155,15 +157,12 @@ ReceiptsProvider returnReceiptProvider(
   );
 }
 
-// TempShopClass currentShop(BuildContext context) {
-//   return returnShopProvider(
-//     context,
-//     listen: false,
-//   ).shops.firstWhere(
-//     (element) =>
-//         element.userId == AuthService().currentUser!.id,
-//   );
-// }
+TempShopClass? shop(BuildContext context) {
+  return returnShopProvider(
+    context,
+    listen: false,
+  ).userShop;
+}
 
 UserProvider returnUserProvider(
   BuildContext context, {
@@ -245,6 +244,16 @@ ProductSuggestionProvider returnSuggestionProvider(
   bool listen = true,
 }) {
   return Provider.of<ProductSuggestionProvider>(
+    context,
+    listen: listen,
+  );
+}
+
+TranslationProvider returnTranslationProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<TranslationProvider>(
     context,
     listen: listen,
   );
@@ -402,6 +411,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ReportProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TranslationProvider(),
         ),
       ],
       child: MaterialApp(

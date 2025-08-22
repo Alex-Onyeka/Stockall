@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class CheckAgree extends StatelessWidget {
@@ -39,10 +40,12 @@ class CheckAgree extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: "I've read and Agreed with the ",
+                    text: CheckAgreeTexts().iHaveRead,
                   ),
                   TextSpan(
-                    text: 'Terms and Conditions ',
+                    text:
+                        CheckAgreeTexts()
+                            .termsAndConditions,
                     recognizer:
                         TapGestureRecognizer()
                           ..onTap = () {},
@@ -51,9 +54,9 @@ class CheckAgree extends StatelessWidget {
                           theme.lightModeColor.secColor200,
                     ),
                   ),
-                  TextSpan(text: "and the "),
+                  TextSpan(text: CheckAgreeTexts().andThe),
                   TextSpan(
-                    text: 'Privacy Policy.',
+                    text: CheckAgreeTexts().privacyPolicy,
                     recognizer:
                         TapGestureRecognizer()
                           ..onTap = () {},

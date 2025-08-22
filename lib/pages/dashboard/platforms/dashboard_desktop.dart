@@ -11,6 +11,7 @@ import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/helpers/clean_up_url.dart';
@@ -23,7 +24,9 @@ import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -303,6 +306,8 @@ class _DashboardDesktopState
                                   snapshot,
                                 ) {
                                   return TopNavBar(
+                                    refreshAction:
+                                        refreshAll,
                                     action: () {
                                       Navigator.push(
                                         context,
@@ -594,398 +599,197 @@ class _DashboardDesktopState
                                               width:
                                                   double
                                                       .infinity,
-                                              child: LayoutBuilder(
-                                                builder: (
-                                                  context,
-                                                  constraints,
-                                                ) {
-                                                  if (constraints
-                                                          .maxWidth >
-                                                      320) {
-                                                    return Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.center,
-                                                      spacing:
-                                                          15,
-                                                      children: [
-                                                        Row(
-                                                          spacing:
-                                                              15,
-                                                          children: [
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  productIconSvg,
-                                                              title:
-                                                                  'Items',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  1,
-                                                                );
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .center,
+                                                spacing: 15,
+                                                children: [
+                                                  Row(
+                                                    spacing:
+                                                        15,
+                                                    children: [
+                                                      ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            productIconSvg,
+                                                        title:
+                                                            'Items',
+                                                        action: () {
+                                                          returnNavProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).navigate(
+                                                            1,
+                                                          );
+                                                        },
+                                                      ),
+                                                      ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            salesIconSvg,
+                                                        title:
+                                                            'Sales',
+                                                        action: () {
+                                                          returnNavProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).navigate(
+                                                            2,
+                                                          );
+                                                        },
+                                                      ),
+                                                      ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            reportIconSvg,
+                                                        title:
+                                                            'Report',
+                                                        action: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return ReportPage();
                                                               },
                                                             ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  salesIconSvg,
-                                                              title:
-                                                                  'Sales',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  2,
-                                                                );
-                                                              },
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  reportIconSvg,
-                                                              title:
-                                                                  'Report',
-                                                              action: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ReportPage();
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
-                                                                    context,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                            ),
-                                                          ],
+                                                          ).then(
+                                                            (
+                                                              context,
+                                                            ) {
+                                                              setState(
+                                                                () {
+                                                                  clearDate();
+                                                                },
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    // spacing:
+                                                    //     15,
+                                                    children: [
+                                                      Visibility(
+                                                        visible: authorization(
+                                                          authorized:
+                                                              Authorizations().employeePage,
+                                                          context:
+                                                              context,
                                                         ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment.start,
-                                                          // spacing:
-                                                          //     15,
-                                                          children: [
-                                                            Visibility(
-                                                              visible: authorization(
-                                                                authorized:
-                                                                    Authorizations().employeePage,
-                                                                context:
-                                                                    context,
-                                                              ),
-                                                              child: ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    employeesIconSvg,
-                                                                title:
-                                                                    'Employees',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return EmployeeListPage(
-                                                                          empId:
-                                                                              userGeneral(
-                                                                                context,
-                                                                              ).userId!,
-                                                                        );
-                                                                      },
-                                                                    ),
+                                                        child: ButtonTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              employeesIconSvg,
+                                                          title:
+                                                              'Employees',
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return EmployeeListPage(
+                                                                    empId:
+                                                                        userGeneral(
+                                                                          context,
+                                                                        ).userId!,
                                                                   );
                                                                 },
                                                               ),
-                                                            ),
-                                                            Visibility(
-                                                              visible: authorization(
-                                                                authorized:
-                                                                    Authorizations().employeePage,
-                                                                context:
-                                                                    context,
-                                                              ),
-                                                              child: SizedBox(
-                                                                width:
-                                                                    15,
-                                                              ),
-                                                            ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                        visible: authorization(
+                                                          authorized:
+                                                              Authorizations().employeePage,
+                                                          context:
+                                                              context,
+                                                        ),
+                                                        child: SizedBox(
+                                                          width:
+                                                              15,
+                                                        ),
+                                                      ),
 
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  custBookIconSvg,
-                                                              title:
-                                                                  'Invoices',
-                                                              action: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return TotalSalesPage(
-                                                                        isInvoice:
-                                                                            true,
-                                                                      );
-                                                                    },
-                                                                  ),
+                                                      ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            custBookIconSvg,
+                                                        title:
+                                                            'Invoices',
+                                                        action: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return TotalSalesPage(
+                                                                  isInvoice:
+                                                                      true,
                                                                 );
                                                               },
                                                             ),
-                                                            SizedBox(
-                                                              width:
-                                                                  15,
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  expensesIconSvg,
-                                                              title:
-                                                                  'Expenses',
-                                                              action: () async {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ExpensesPage(
-                                                                        isMain:
-                                                                            true,
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
-                                                                    context,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
-                                                                      },
-                                                                    );
-                                                                  },
+                                                          );
+                                                        },
+                                                      ),
+                                                      SizedBox(
+                                                        width:
+                                                            15,
+                                                      ),
+                                                      ButtonTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            expensesIconSvg,
+                                                        title:
+                                                            'Expenses',
+                                                        action: () async {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                context,
+                                                              ) {
+                                                                return ExpensesPage(
+                                                                  isMain:
+                                                                      true,
                                                                 );
                                                               },
                                                             ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    );
-                                                  } else {
-                                                    return Column(
-                                                      spacing:
-                                                          15,
-                                                      children: [
-                                                        Row(
-                                                          spacing:
-                                                              15,
-                                                          children: [
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  productIconSvg,
-                                                              title:
-                                                                  'Items',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  1,
-                                                                );
-                                                              },
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  salesIconSvg,
-                                                              title:
-                                                                  'Sales',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  2,
-                                                                );
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  custBookIconSvg,
-                                                              title:
-                                                                  'Invoices',
-                                                              action: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return TotalSalesPage(
-                                                                        isInvoice:
-                                                                            true,
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                );
-                                                              },
-                                                            ),
-                                                            SizedBox(
-                                                              width:
-                                                                  15,
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  expensesIconSvg,
-                                                              title:
-                                                                  'Expenses',
-                                                              action: () async {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ExpensesPage(
-                                                                        isMain:
-                                                                            true,
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
-                                                                    context,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            Visibility(
-                                                              visible: authorization(
-                                                                authorized:
-                                                                    Authorizations().employeePage,
-                                                                context:
-                                                                    context,
-                                                              ),
-                                                              child: ButtonTab(
-                                                                theme:
-                                                                    theme,
-                                                                icon:
-                                                                    employeesIconSvg,
-                                                                title:
-                                                                    'Employees',
-                                                                action: () {
-                                                                  Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (
-                                                                        context,
-                                                                      ) {
-                                                                        return EmployeeListPage(
-                                                                          empId:
-                                                                              userGeneral(
-                                                                                context,
-                                                                              ).role,
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                  );
+                                                          ).then(
+                                                            (
+                                                              context,
+                                                            ) {
+                                                              setState(
+                                                                () {
+                                                                  clearDate();
                                                                 },
-                                                              ),
-                                                            ),
-                                                            Visibility(
-                                                              visible: authorization(
-                                                                authorized:
-                                                                    Authorizations().employeePage,
-                                                                context:
-                                                                    context,
-                                                              ),
-                                                              child: SizedBox(
-                                                                width:
-                                                                    15,
-                                                              ),
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  reportIconSvg,
-                                                              title:
-                                                                  'Report',
-                                                              action: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ReportPage();
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
-                                                                    context,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }
-                                                },
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -1597,22 +1401,334 @@ class _DashboardDesktopState
                   ),
                   child: Column(
                     children: [
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(20),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ProfilePage();
+                                },
+                              ),
+                            );
+                          },
+                          child: SizedBox(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 60),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  clipBehavior:
+                                      Clip.hardEdge,
+                                  child: Image.asset(
+                                    profileIconImage,
+                                    height: 70,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                  ),
+                                  userGeneral(context).name,
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.normal,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+                                  userGeneral(
+                                    context,
+                                  ).email,
+                                ),
+                                SizedBox(height: 5),
+                                Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                        vertical: 2,
+                                      ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        const Color.fromARGB(
+                                          32,
+                                          255,
+                                          193,
+                                          7,
+                                        ),
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          5,
+                                        ),
+                                    border: Border.all(
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      // color:
+                                      //     theme
+                                      //         .lightModeColor
+                                      //         .secColor200,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                    ),
+                                    userGeneral(
+                                      context,
+                                    ).role,
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(
+                                        0,
+                                        0,
+                                        20,
+                                        20,
+                                      ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .end,
+                                    children: [
+                                      Icon(
+                                        size: 15,
+                                        color: Colors.grey,
+                                        Icons
+                                            .arrow_forward_ios_rounded,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey.shade300,
+                        height: 50,
+                      ),
                       SizedBox(
                         child: Column(
+                          spacing: 10,
                           children: [
-                            SizedBox(height: 40),
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              clipBehavior: Clip.hardEdge,
-                              child: Image.asset(
-                                profileIconImage,
-                                height: 70,
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {},
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(
+                                        0,
+                                        10,
+                                        0,
+                                        10,
+                                      ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Todays Sales',
+                                      ),
+                                      Icon(
+                                        size: 15,
+                                        color: Colors.grey,
+                                        Icons
+                                            .arrow_forward_ios_rounded,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text(userGeneral(context).name),
+                            SizedBox(
+                              height: 250,
+                              child: ListView.builder(
+                                itemCount:
+                                    returnReceiptProvider(
+                                          context,
+                                        )
+                                        .returnOwnReceiptsByDayOrWeek(
+                                          context,
+                                          receiptsLocal,
+                                        )
+                                        .length,
+                                itemBuilder: (
+                                  context,
+                                  index,
+                                ) {
+                                  TempMainReceipt rec =
+                                      returnReceiptProvider(
+                                        context,
+                                      ).returnOwnReceiptsByDayOrWeek(
+                                        context,
+                                        receiptsLocal,
+                                      )[index];
+                                  // TempProductSaleRecord
+                                  // firstP = returnReceiptProvider(
+                                  //       context,
+                                  //     ).productSaleRecords
+                                  //     .firstWhere(
+                                  //       (record) =>
+                                  //           record
+                                  //               .recepitId ==
+                                  //           rec.id!,
+                                  //     );
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                          bottom: 5,
+                                        ),
+                                    child: Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ReceiptPage(
+                                                  receiptId:
+                                                      rec.id!,
+                                                  isMain:
+                                                      true,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    5,
+                                                vertical:
+                                                    13,
+                                              ),
+                                          child: Row(
+                                            spacing: 10,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Row(
+                                                spacing: 10,
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          2,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      shape:
+                                                          BoxShape.circle,
+                                                      color:
+                                                          Colors.grey,
+                                                    ),
+                                                  ),
+                                                  SvgPicture.asset(
+                                                    salesIconSvg,
+                                                    height:
+                                                        15,
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    cutLongText(
+                                                      'Product Name',
+                                                      12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                spacing: 10,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    formatMoneyMid(
+                                                      amount:
+                                                          rec.bank +
+                                                          rec.cashAlt,
+                                                      context:
+                                                          context,
+                                                    ),
+                                                  ),
+                                                  Icon(
+                                                    size:
+                                                        15,
+                                                    color:
+                                                        Colors.grey,
+                                                    Icons
+                                                        .arrow_forward_ios_rounded,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
                         ),
                       ),

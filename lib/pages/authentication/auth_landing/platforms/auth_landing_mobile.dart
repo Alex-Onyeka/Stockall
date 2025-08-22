@@ -5,6 +5,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class AuthLandingMobile extends StatelessWidget {
@@ -105,7 +106,8 @@ class AuthLandingMobile extends StatelessWidget {
                                     .h1
                                     .fontWeightBold,
                           ),
-                          'Welcome to $appName',
+                          AuthLandingTexts()
+                              .authLandingWelcome,
                         ),
                       ),
                       SizedBox(height: 20),
@@ -142,12 +144,16 @@ class AuthLandingMobile extends StatelessWidget {
                                   ),
                                 );
                               },
-                              text: 'Create an Account',
+                              text:
+                                  AuthLandingTexts()
+                                      .authLandingCreateAccount,
                               themeProvider: themeProvider,
                             ),
                             SizedBox(height: 10),
                             MainButtonTransparent(
-                              text: 'Login',
+                              text:
+                                  AuthLandingTexts()
+                                      .authLandingLogin,
                               themeProvider: themeProvider,
                               constraints: constraints,
                               action: () {

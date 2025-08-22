@@ -9,6 +9,8 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EnterNewPasswordMobile extends StatefulWidget {
@@ -100,7 +102,7 @@ class _EnterNewPasswordMobileState
         Scaffold(
           appBar: appBar(
             context: context,
-            title: 'Change Password',
+            title: EnterNewPasswordTexts().changePassword,
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(
@@ -114,16 +116,24 @@ class _EnterNewPasswordMobileState
                     children: [
                       EmailTextField(
                         isEmail: false,
-                        title: 'New Password',
-                        hint: 'Enter New Password',
+                        title:
+                            EnterNewPasswordTexts()
+                                .newPassword,
+                        hint:
+                            EnterNewPasswordTexts()
+                                .enterNewPassword,
                         controller: widget.passwordC,
                         theme: theme,
                       ),
                       SizedBox(height: 10),
                       EmailTextField(
                         isEmail: false,
-                        title: 'Confirm Password',
-                        hint: 'Confirm New Password',
+                        title:
+                            EnterNewPasswordTexts()
+                                .confirmPassword,
+                        hint:
+                            EnterNewPasswordTexts()
+                                .confirmNewPassword,
                         controller: widget.confirmPasswordC,
                         theme: theme,
                       ),
@@ -135,7 +145,10 @@ class _EnterNewPasswordMobileState
                         MainAxisAlignment.center,
                     spacing: 5,
                     children: [
-                      Text('Remaining Token Valid Time'),
+                      Text(
+                        EnterNewPasswordTexts()
+                            .remainingTokenTime,
+                      ),
                       Text(
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -165,8 +178,9 @@ class _EnterNewPasswordMobileState
                             return InfoAlert(
                               theme: theme,
                               message:
-                                  'Name field can\'t be empty. Enter all fields and try again.',
-                              title: 'Empty Fields',
+                                  EnterNewPasswordTexts()
+                                      .nameFieldCantBeEmpty,
+                              title: General().emptyFields,
                             );
                           },
                         );
@@ -178,8 +192,11 @@ class _EnterNewPasswordMobileState
                             return InfoAlert(
                               theme: theme,
                               message:
-                                  'Passwords do not match. Please check the passwords fields and try again.',
-                              title: 'Password Mismatch',
+                                  EnterNewPasswordTexts()
+                                      .passwordsDoNotMatch,
+                              title:
+                                  EnterNewPasswordTexts()
+                                      .passswordMismatch,
                             );
                           },
                         );
@@ -191,9 +208,9 @@ class _EnterNewPasswordMobileState
                           builder: (context) {
                             return ConfirmationAlert(
                               theme: theme,
-                              message:
-                                  'Are you sure you want to proceed?',
-                              title: 'Proceed?',
+                              message: General().areYouSure,
+                              title:
+                                  '${General().proceed}?',
                               action: () async {
                                 setState(() {
                                   isLoading = true;
@@ -216,9 +233,11 @@ class _EnterNewPasswordMobileState
                                       return InfoAlert(
                                         theme: theme,
                                         message:
-                                            'New password cannot be the same as the old password.',
+                                            EnterNewPasswordTexts()
+                                                .newPasswordCannotBeTheSame,
                                         title:
-                                            'Password Not Changed',
+                                            EnterNewPasswordTexts()
+                                                .passwordNotChanged,
                                       );
                                     },
                                   );
@@ -253,13 +272,15 @@ class _EnterNewPasswordMobileState
                         );
                       }
                     },
-                    text: 'Update Passord',
+                    text:
+                        EnterNewPasswordTexts()
+                            .updatePassword,
                   ),
                   SizedBox(height: 10),
                   MainButtonTransparent(
                     themeProvider: theme,
                     constraints: BoxConstraints(),
-                    text: 'Cancel',
+                    text: General().cancelText,
                     action: () async {
                       await AuthService().signOut(context);
                       if (context.mounted) {
@@ -316,7 +337,8 @@ class _EnterNewPasswordMobileState
                         color:
                             theme.lightModeColor.prColor200,
                       ),
-                      'Password Token Expired',
+                      EnterNewPasswordTexts()
+                          .passwordTokenExpired,
                     ),
                   ],
                 ),
@@ -329,14 +351,17 @@ class _EnterNewPasswordMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(General().loadingText),
         ),
         Visibility(
           visible: showSuccess,
           child: returnCompProvider(
             context,
             listen: false,
-          ).showSuccess('Password Updated Successfully'),
+          ).showSuccess(
+            EnterNewPasswordTexts()
+                .passwordUpdatedSuccessfully,
+          ),
         ),
       ],
     );

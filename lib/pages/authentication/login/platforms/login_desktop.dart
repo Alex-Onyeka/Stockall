@@ -7,6 +7,8 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -47,8 +49,9 @@ class _LoginDesktopState extends State<LoginDesktop> {
           var theme = Provider.of<ThemeProvider>(context);
           return InfoAlert(
             theme: theme,
-            message: 'Please fill out all Fields',
-            title: 'Empty Input',
+            message:
+                LoginPageTexts().pleaseFillOutAllFields,
+            title: General().emptyFields,
           );
         },
       );
@@ -59,9 +62,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
           var theme = Provider.of<ThemeProvider>(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Email Address is Badly Formatted. Please Enter a Valid Email Address',
-            title: 'Invalid Email',
+            message: General().emailIsBadlyFormatted,
+            title: General().invalidEmail,
           );
         },
       );
@@ -100,9 +102,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
           builder: (context) {
             return InfoAlert(
               theme: widget.theme,
-              message:
-                  'No internet connection. Please check your network.',
-              title: 'Authentication Error',
+              message: General().noInternetConnection,
+              title: General().authenticationError,
             );
           },
         );
@@ -119,18 +120,18 @@ class _LoginDesktopState extends State<LoginDesktop> {
               theme: widget.theme,
               message:
                   e.statusCode == '400'
-                      ? 'Invalid email or password. Please try again.'
+                      ? General().invalidEmailOrPassword
                       : e.statusCode == '401'
-                      ? 'Invalid email or password. Please try again.'
+                      ? General().invalidEmailOrPassword
                       : e.statusCode == '404'
-                      ? 'User not found. Please check your email and try again.'
+                      ? '${General().userNotFound}. Please check your email and try again.'
                       : e.statusCode == '500'
-                      ? 'An error occurred on the server. Please try again later.'
+                      ? General().anErrorOccuredOnTheServer
                       : e.statusCode == null
-                      ? 'No internet connection. Please check your network and try again.'
-                      : 'An error occurred. Please try again later.',
+                      ? General().noInternetConnection
+                      : General().anErrorOccured,
               // 'An Error occured while tryin to create your account, please check you internet and try again.',
-              title: 'Authentication Error',
+              title: General().authenticationError,
             );
           },
         );
@@ -147,7 +148,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
             return InfoAlert(
               theme: widget.theme,
               message: e.toString(),
-              title: 'Unexpected Error',
+              title: General().unexpectedError,
             );
           },
         );
@@ -262,7 +263,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
                                                 .h3
                                                 .fontWeightBold,
                                       ),
-                                      'Welcome Back',
+                                      General().welcomeBack,
                                     ),
                                   ],
                                 ),
@@ -276,7 +277,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
                                               .mobileTexts
                                               .b1
                                               .textStyleNormal,
-                                      "Please Fill in The form to Login to your Account",
+                                      LoginPageTexts()
+                                          .pleaseFillInTheForm,
                                     ),
                                   ],
                                 ),
@@ -284,8 +286,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
                             ),
                             SizedBox(height: 30),
                             EmailTextField(
-                              title: 'Email Address',
-                              hint: 'Enter Email',
+                              title: General().emailAddress,
+                              hint: General().enterEmail,
                               isEmail: true,
                               controller:
                                   widget.emailController,
@@ -293,8 +295,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
                             ),
                             SizedBox(height: 15),
                             EmailTextField(
-                              title: 'Password',
-                              hint: 'Enter Password',
+                              title: General().password,
+                              hint: General().enterPassword,
                               isEmail: false,
                               controller:
                                   widget.passwordController,
@@ -335,7 +337,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
                                                 .lightModeColor
                                                 .secColor100,
                                       ),
-                                      'Forgot Password?',
+                                      LoginPageTexts()
+                                          .forgetPassword,
                                     ),
                                   ),
                                 ),
@@ -348,7 +351,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
                               action: () {
                                 checkInputs();
                               },
-                              text: 'Login',
+                              text: General().login,
                             ),
                             SizedBox(height: 10),
                           ],
@@ -364,14 +367,14 @@ class _LoginDesktopState extends State<LoginDesktop> {
               child: returnCompProvider(
                 context,
                 listen: false,
-              ).showLoader('Logging In'),
+              ).showLoader(General().loadingText),
             ),
             Visibility(
               visible: showwSuccess,
               child: returnCompProvider(
                 context,
                 listen: false,
-              ).showSuccess('Logged In Successfully'),
+              ).showSuccess(General().successfully),
             ),
           ],
         ),

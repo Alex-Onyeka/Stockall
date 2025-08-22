@@ -5,6 +5,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -115,7 +117,8 @@ class _ForgotPasswordDesktopState
                                                 .h3
                                                 .fontWeightBold,
                                       ),
-                                      'Forgot Password',
+                                      ForgetPasswordPageTexts()
+                                          .forgetPassword,
                                     ),
                                   ],
                                 ),
@@ -129,7 +132,8 @@ class _ForgotPasswordDesktopState
                                               .mobileTexts
                                               .b1
                                               .textStyleNormal,
-                                      "Enter your email below and you will receive a password reset token.",
+                                      ForgetPasswordPageTexts()
+                                          .enterEmailBelow,
                                     ),
                                   ],
                                 ),
@@ -141,8 +145,8 @@ class _ForgotPasswordDesktopState
                                   widget.emailController,
                               theme: theme,
                               isEmail: true,
-                              hint: 'Enter Email',
-                              title: 'Email',
+                              hint: General().enterEmail,
+                              title: General().email,
                             ),
                             SizedBox(height: 20),
                             MainButtonP(
@@ -158,9 +162,11 @@ class _ForgotPasswordDesktopState
                                       return InfoAlert(
                                         theme: theme,
                                         message:
-                                            'Email Field can\'t be empty. Please enter your email and try again.',
+                                            ForgetPasswordPageTexts()
+                                                .emailCantBeEmpty,
                                         title:
-                                            'Empty Email Field',
+                                            ForgetPasswordPageTexts()
+                                                .emptyEmailField,
                                       );
                                     },
                                   );
@@ -175,9 +181,11 @@ class _ForgotPasswordDesktopState
                                       return InfoAlert(
                                         theme: theme,
                                         message:
-                                            'Email is Invalid. Please enter a vaild email and try again.',
+                                            General()
+                                                .emailIsBadlyFormatted,
                                         title:
-                                            'Ivalid Email',
+                                            General()
+                                                .invalidEmail,
                                       );
                                     },
                                   );
@@ -205,7 +213,9 @@ class _ForgotPasswordDesktopState
                                   }
                                 }
                               },
-                              text: 'Send Recovery Link',
+                              text:
+                                  ForgetPasswordPageTexts()
+                                      .sendRecoveryLink,
                             ),
                             SizedBox(height: 20),
                             InkWell(
@@ -232,7 +242,9 @@ class _ForgotPasswordDesktopState
                                       vertical: 10,
                                     ),
                                 child: Center(
-                                  child: Text('Cancel'),
+                                  child: Text(
+                                    General().cancelText,
+                                  ),
                                 ),
                               ),
                             ),
@@ -249,7 +261,7 @@ class _ForgotPasswordDesktopState
               child: returnCompProvider(
                 context,
                 listen: false,
-              ).showLoader('Loading'),
+              ).showLoader(General().loadingText),
             ),
           ],
         ),

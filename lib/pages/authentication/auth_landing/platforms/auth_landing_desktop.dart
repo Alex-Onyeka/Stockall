@@ -4,6 +4,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class AuthLandingDesktop extends StatelessWidget {
@@ -98,7 +99,8 @@ class AuthLandingDesktop extends StatelessWidget {
                                       .h1
                                       .fontWeightBold,
                             ),
-                            'Welcome to $appName',
+                            AuthLandingTexts()
+                                .authLandingWelcome,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -128,7 +130,9 @@ class AuthLandingDesktop extends StatelessWidget {
                               ),
                             );
                           },
-                          text: 'Create an Account',
+                          text:
+                              AuthLandingTexts()
+                                  .authLandingCreateAccount,
                           themeProvider: themeProvider,
                         ),
                         SizedBox(height: 10),
@@ -183,7 +187,8 @@ class AuthLandingDesktop extends StatelessWidget {
                                           .b1
                                           .fontWeightRegular,
                                 ),
-                                'Already Have an account? Login',
+                                AuthLandingTexts()
+                                    .authLandingAlreadyHaveAnAccount,
                               ),
                             ),
                           ),

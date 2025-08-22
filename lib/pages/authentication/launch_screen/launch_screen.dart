@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 
 class LaunchScreen extends StatefulWidget {
   const LaunchScreen({super.key});
@@ -40,7 +41,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
         returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading'),
+        ).showLoader(General().loadingText),
       ),
     );
   }

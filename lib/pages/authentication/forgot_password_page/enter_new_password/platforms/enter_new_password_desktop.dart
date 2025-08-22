@@ -9,6 +9,8 @@ import 'package:stockall/helpers/clean_up_url_stub.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EnterNewPasswordDesktop extends StatefulWidget {
@@ -171,7 +173,8 @@ class _EnterNewPasswordDesktopState
                                                 .h3
                                                 .fontWeightBold,
                                       ),
-                                      'Change Password',
+                                      EnterNewPasswordTexts()
+                                          .changePassword,
                                     ),
                                   ],
                                 ),
@@ -187,9 +190,11 @@ class _EnterNewPasswordDesktopState
                                       EmailTextField(
                                         isEmail: false,
                                         title:
-                                            'New Password',
+                                            EnterNewPasswordTexts()
+                                                .newPassword,
                                         hint:
-                                            'Enter New Password',
+                                            EnterNewPasswordTexts()
+                                                .enterNewPassword,
                                         controller:
                                             widget
                                                 .passwordC,
@@ -199,9 +204,11 @@ class _EnterNewPasswordDesktopState
                                       EmailTextField(
                                         isEmail: false,
                                         title:
-                                            'Confirm Password',
+                                            EnterNewPasswordTexts()
+                                                .confirmPassword,
                                         hint:
-                                            'Confirm New Password',
+                                            EnterNewPasswordTexts()
+                                                .confirmNewPassword,
                                         controller:
                                             widget
                                                 .confirmPasswordC,
@@ -217,7 +224,8 @@ class _EnterNewPasswordDesktopState
                                     spacing: 5,
                                     children: [
                                       Text(
-                                        'Remaining Token Valid Time',
+                                        EnterNewPasswordTexts()
+                                            .remainingTokenTime,
                                       ),
                                       Text(
                                         style: TextStyle(
@@ -255,9 +263,11 @@ class _EnterNewPasswordDesktopState
                                             return InfoAlert(
                                               theme: theme,
                                               message:
-                                                  'Name field can\'t be empty. Enter all fields and try again.',
+                                                  EnterNewPasswordTexts()
+                                                      .nameFieldCantBeEmpty,
                                               title:
-                                                  'Empty Fields',
+                                                  General()
+                                                      .emptyFields,
                                             );
                                           },
                                         );
@@ -275,9 +285,11 @@ class _EnterNewPasswordDesktopState
                                             return InfoAlert(
                                               theme: theme,
                                               message:
-                                                  'Passwords do not match. Please check the passwords fields and try again.',
+                                                  EnterNewPasswordTexts()
+                                                      .passwordsDoNotMatch,
                                               title:
-                                                  'Password Mismatch',
+                                                  EnterNewPasswordTexts()
+                                                      .passswordMismatch,
                                             );
                                           },
                                         );
@@ -294,9 +306,10 @@ class _EnterNewPasswordDesktopState
                                             return ConfirmationAlert(
                                               theme: theme,
                                               message:
-                                                  'Are you sure you want to proceed?',
+                                                  General()
+                                                      .areYouSure,
                                               title:
-                                                  'Proceed?',
+                                                  '${General().proceed}?',
                                               action: () async {
                                                 // Navigator.of(context).pop();
 
@@ -328,9 +341,9 @@ class _EnterNewPasswordDesktopState
                                                         theme:
                                                             theme,
                                                         message:
-                                                            'New password cannot be the same as the old password.',
+                                                            EnterNewPasswordTexts().newPasswordCannotBeTheSame,
                                                         title:
-                                                            'Password Not Changed',
+                                                            EnterNewPasswordTexts().passwordNotChanged,
                                                       );
                                                     },
                                                   );
@@ -374,14 +387,18 @@ class _EnterNewPasswordDesktopState
                                         );
                                       }
                                     },
-                                    text: 'Update Passord',
+                                    text:
+                                        EnterNewPasswordTexts()
+                                            .updatePassword,
                                   ),
                                   SizedBox(height: 10),
                                   MainButtonTransparent(
                                     themeProvider: theme,
                                     constraints:
                                         BoxConstraints(),
-                                    text: 'Cancel',
+                                    text:
+                                        General()
+                                            .cancelText,
                                     action: () async {
                                       await AuthService()
                                           .signOut(context);
@@ -453,7 +470,8 @@ class _EnterNewPasswordDesktopState
                                     .lightModeColor
                                     .prColor200,
                           ),
-                          'Password Token Expired',
+                          EnterNewPasswordTexts()
+                              .passwordTokenExpired,
                         ),
                       ],
                     ),
@@ -466,7 +484,7 @@ class _EnterNewPasswordDesktopState
               child: returnCompProvider(
                 context,
                 listen: false,
-              ).showLoader('Loading'),
+              ).showLoader(General().loadingText),
             ),
             Visibility(
               visible: showSuccess,
@@ -474,7 +492,8 @@ class _EnterNewPasswordDesktopState
                 context,
                 listen: false,
               ).showSuccess(
-                'Password Updated Successfully',
+                EnterNewPasswordTexts()
+                    .passwordUpdatedSuccessfully,
               ),
             ),
           ],

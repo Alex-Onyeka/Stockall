@@ -4,6 +4,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/pages/authentication/verify_phone/verify_phone.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -41,7 +43,7 @@ class _ForgotPasswordMobileState
           appBar: appBar(
             isMain: widget.isMain,
             context: context,
-            title: 'Forgot Password',
+            title: ForgetPasswordPageTexts().forgetPassword,
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(
@@ -51,15 +53,15 @@ class _ForgotPasswordMobileState
               children: [
                 SizedBox(height: 20),
                 Text(
-                  'Enter your email below and you will receive a password reset token.',
+                  ForgetPasswordPageTexts().enterEmailBelow,
                 ),
                 SizedBox(height: 20),
                 EmailTextField(
                   controller: widget.emailController,
                   theme: theme,
                   isEmail: true,
-                  hint: 'Enter Email',
-                  title: 'Email',
+                  hint: General().enterEmail,
+                  title: General().email,
                 ),
                 SizedBox(height: 20),
                 MainButtonP(
@@ -75,8 +77,11 @@ class _ForgotPasswordMobileState
                           return InfoAlert(
                             theme: theme,
                             message:
-                                'Email Field can\'t be empty. Please enter your email and try again.',
-                            title: 'Empty Email Field',
+                                ForgetPasswordPageTexts()
+                                    .emailCantBeEmpty,
+                            title:
+                                ForgetPasswordPageTexts()
+                                    .emptyEmailField,
                           );
                         },
                       );
@@ -89,8 +94,9 @@ class _ForgotPasswordMobileState
                           return InfoAlert(
                             theme: theme,
                             message:
-                                'Email is Invalid. Please enter a vaild email and try again.',
-                            title: 'Ivalid Email',
+                                General()
+                                    .emailIsBadlyFormatted,
+                            title: General().invalidEmail,
                           );
                         },
                       );
@@ -116,7 +122,9 @@ class _ForgotPasswordMobileState
                       }
                     }
                   },
-                  text: 'Send Recovery Link',
+                  text:
+                      ForgetPasswordPageTexts()
+                          .sendRecoveryLink,
                 ),
                 SizedBox(height: 20),
                 InkWell(
@@ -141,7 +149,9 @@ class _ForgotPasswordMobileState
                       horizontal: 30,
                       vertical: 10,
                     ),
-                    child: Center(child: Text('Cancel')),
+                    child: Center(
+                      child: Text(General().cancelText),
+                    ),
                   ),
                 ),
               ],
@@ -153,7 +163,7 @@ class _ForgotPasswordMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(General().loadingText),
         ),
       ],
     );

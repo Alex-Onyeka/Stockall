@@ -41,7 +41,7 @@ class _MyDrawerWidgetDesktopState
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.23,
+        width: MediaQuery.of(context).size.width * 0.21,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
