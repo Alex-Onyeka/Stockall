@@ -1538,198 +1538,206 @@ class _DashboardDesktopState
                         color: Colors.grey.shade300,
                         height: 50,
                       ),
-                      SizedBox(
-                        child: Column(
-                          spacing: 10,
-                          children: [
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {},
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(
-                                        0,
-                                        10,
-                                        0,
-                                        10,
-                                      ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                      Expanded(
+                        child: SizedBox(
+                          child: Column(
+                            spacing: 10,
+                            children: [
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(
+                                          0,
+                                          10,
+                                          0,
+                                          10,
                                         ),
-                                        'Todays Sales',
-                                      ),
-                                      Icon(
-                                        size: 15,
-                                        color: Colors.grey,
-                                        Icons
-                                            .arrow_forward_ios_rounded,
-                                      ),
-                                    ],
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Todays Sales',
+                                        ),
+                                        Icon(
+                                          size: 15,
+                                          color:
+                                              Colors.grey,
+                                          Icons
+                                              .arrow_forward_ios_rounded,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 10),
-                            SizedBox(
-                              height: 250,
-                              child: ListView.builder(
-                                itemCount:
-                                    returnReceiptProvider(
+                              // SizedBox(height: 10),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount:
+                                      returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            context,
+                                            receiptsLocal,
+                                          )
+                                          .length,
+                                  itemBuilder: (
+                                    context,
+                                    index,
+                                  ) {
+                                    TempMainReceipt rec =
+                                        returnReceiptProvider(
                                           context,
-                                        )
-                                        .returnOwnReceiptsByDayOrWeek(
+                                        ).returnOwnReceiptsByDayOrWeek(
                                           context,
                                           receiptsLocal,
+                                        )[index];
+                                    TempProductSaleRecord
+                                    firstP = returnReceiptProvider(
+                                          context,
                                         )
-                                        .length,
-                                itemBuilder: (
-                                  context,
-                                  index,
-                                ) {
-                                  TempMainReceipt rec =
-                                      returnReceiptProvider(
-                                        context,
-                                      ).returnOwnReceiptsByDayOrWeek(
-                                        context,
-                                        receiptsLocal,
-                                      )[index];
-                                  // TempProductSaleRecord
-                                  // firstP = returnReceiptProvider(
-                                  //       context,
-                                  //     ).productSaleRecords
-                                  //     .firstWhere(
-                                  //       (record) =>
-                                  //           record
-                                  //               .recepitId ==
-                                  //           rec.id!,
-                                  //     );
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          bottom: 5,
-                                        ),
-                                    child: Material(
-                                      color:
-                                          Colors
-                                              .transparent,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return ReceiptPage(
-                                                  receiptId:
-                                                      rec.id!,
-                                                  isMain:
-                                                      true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal:
-                                                    5,
-                                                vertical:
-                                                    13,
+                                        .produtRecordSalesMain
+                                        .firstWhere(
+                                          (record) =>
+                                              record
+                                                  .recepitId ==
+                                              rec.id!,
+                                        );
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            bottom: 2,
+                                          ),
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ReceiptPage(
+                                                    receiptId:
+                                                        rec.id!,
+                                                    isMain:
+                                                        true,
+                                                  );
+                                                },
                                               ),
-                                          child: Row(
-                                            spacing: 10,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                            children: [
-                                              Row(
-                                                spacing: 10,
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          2,
+                                            );
+                                          },
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      5,
+                                                  vertical:
+                                                      11,
+                                                ),
+                                            child: Row(
+                                              spacing: 10,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  spacing:
+                                                      10,
+                                                  children: [
+                                                    // Container(
+                                                    //   padding:
+                                                    //       EdgeInsets.all(
+                                                    //         2,
+                                                    //       ),
+                                                    //   decoration: BoxDecoration(
+                                                    //     shape:
+                                                    //         BoxShape.circle,
+                                                    //     color:
+                                                    //         Colors.grey,
+                                                    //   ),
+                                                    // ),
+                                                    SvgPicture.asset(
+                                                      salesIconSvg,
+                                                      height:
+                                                          13,
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      cutLongText(
+                                                        firstP.productName,
+                                                        13,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  spacing:
+                                                      5,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      cutLongText(
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              rec.bank +
+                                                              rec.cashAlt,
+                                                          context:
+                                                              context,
                                                         ),
-                                                    decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
+                                                        10,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      size:
+                                                          15,
                                                       color:
                                                           Colors.grey,
+                                                      Icons
+                                                          .arrow_forward_ios_rounded,
                                                     ),
-                                                  ),
-                                                  SvgPicture.asset(
-                                                    salesIconSvg,
-                                                    height:
-                                                        15,
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    cutLongText(
-                                                      'Product Name',
-                                                      12,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                spacing: 10,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    formatMoneyMid(
-                                                      amount:
-                                                          rec.bank +
-                                                          rec.cashAlt,
-                                                      context:
-                                                          context,
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    size:
-                                                        15,
-                                                    color:
-                                                        Colors.grey,
-                                                    Icons
-                                                        .arrow_forward_ios_rounded,
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
