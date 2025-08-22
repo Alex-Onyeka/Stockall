@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/platforms/product_page_desktop.dart';
 import 'package:stockall/pages/products/platforms/product_page_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -68,19 +68,7 @@ class _ProductsPageState extends State<ProductsPage> {
               if (constraints.maxWidth < 550) {
                 return ProductPageMobile(theme: theme);
               } else {
-                return UnsupportedPlatform();
-                // return Row(
-                //   mainAxisAlignment:
-                //       MainAxisAlignment.center,
-                //   children: [
-                //     SizedBox(
-                //       width: 700,
-                //       child: ProductPageMobile(
-                //         theme: theme,
-                //       ),
-                //     ),
-                //   ],
-                // );
+                return ProductPageDesktop(theme: theme);
               }
             },
           ),

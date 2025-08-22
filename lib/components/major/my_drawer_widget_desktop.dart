@@ -118,24 +118,43 @@ class _MyDrawerWidgetDesktopState
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                Visibility(
-                                  child: NavListTileDesktopAlt(
-                                    height: 20,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return ProfilePage();
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    title: 'Profile',
-                                    icon: Icons.person,
-                                  ),
+                                NavListTileDesktopAlt(
+                                  height: 20,
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(0);
+                                    returnExpensesProvider(
+                                      context,
+                                      listen: false,
+                                    ).clearExpenseDate();
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).clearReceiptDate();
+                                    returnData(
+                                      context,
+                                      listen: false,
+                                    ).clearFields();
+                                  },
+                                  title: 'Dashboard',
+                                  icon: Icons.person,
+                                ),
+                                NavListTileDesktopAlt(
+                                  height: 20,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ProfilePage();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Profile',
+                                  icon: Icons.person,
                                 ),
                                 Visibility(
                                   visible: authorization(

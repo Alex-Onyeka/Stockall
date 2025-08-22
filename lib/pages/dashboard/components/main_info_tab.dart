@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MainInfoTab extends StatelessWidget {
@@ -26,7 +27,7 @@ class MainInfoTab extends StatelessWidget {
       onTap: action,
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 10,
+          horizontal: 7,
           vertical: 10,
         ),
         decoration: BoxDecoration(
@@ -38,7 +39,7 @@ class MainInfoTab extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
-              spacing: 10,
+              spacing: 8,
               children: [
                 Visibility(
                   visible:
@@ -60,8 +61,9 @@ class MainInfoTab extends StatelessWidget {
                     color:
                         theme.lightModeColor.greyColor200,
                     fontSize:
-                        MediaQuery.of(context).size.width <
-                                335
+                        screenWidth(context) < 335
+                            ? theme.mobileTexts.b3.fontSize
+                            : screenWidth(context) > 550
                             ? theme.mobileTexts.b3.fontSize
                             : theme.mobileTexts.b2.fontSize,
                     fontWeight:

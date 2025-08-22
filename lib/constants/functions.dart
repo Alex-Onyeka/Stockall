@@ -71,6 +71,10 @@ int getDayDifference(DateTime inputDate) {
   return inputDateOnly.difference(todayDateOnly).inDays;
 }
 
+double screenWidth(BuildContext context) {
+  return MediaQuery.of(context).size.width;
+}
+
 List empSetup =
     employees
         .where((emp) => emp['position'] != 'Owner')
