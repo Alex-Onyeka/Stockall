@@ -64,6 +64,7 @@ class _TotalProductsDesktopState
       context,
       listen: false,
     ).toggleFloatingAction(context);
+
     // _productsFuture = getProductList(context);
   }
 
@@ -83,6 +84,12 @@ class _TotalProductsDesktopState
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     var products = returnData(context).productList;
@@ -90,7 +97,10 @@ class _TotalProductsDesktopState
       switch (currentSelect) {
         case 1:
           return products
-              .where((p) => p.quantity != 0)
+              .where(
+                (p) =>
+                    p.quantity != 0 && p.quantity != null,
+              )
               .toList();
         case 2:
           return products
@@ -107,7 +117,7 @@ class _TotalProductsDesktopState
               .toList();
         case 4:
           return products
-              .where((p) => p.quantity == null)
+              .where((p) => !p.isManaged)
               .toList();
         case 0:
         default:
@@ -324,103 +334,218 @@ class _TotalProductsDesktopState
                                               double
                                                   .infinity,
                                           // height: 40,
-                                          child: Row(
-                                            spacing: 5,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            children: [
-                                              ProductsFilterButton(
-                                                action: () {
-                                                  setState(
-                                                    () {
-                                                      changeSelected(
-                                                        0,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                currentSelected:
-                                                    currentSelect,
-                                                number: 0,
-                                                title:
-                                                    'All Items',
-                                                theme:
-                                                    theme,
-                                              ),
-                                              ProductsFilterButton(
-                                                action: () {
-                                                  setState(
-                                                    () {
-                                                      changeSelected(
-                                                        1,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                currentSelected:
-                                                    currentSelect,
-                                                number: 1,
-                                                title:
-                                                    'In Stock',
-                                                theme:
-                                                    theme,
-                                              ),
-                                              ProductsFilterButton(
-                                                action: () {
-                                                  setState(
-                                                    () {
-                                                      changeSelected(
-                                                        2,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                currentSelected:
-                                                    currentSelect,
-                                                number: 2,
-                                                title:
-                                                    'Low Stock',
-                                                theme:
-                                                    theme,
-                                              ),
-                                              ProductsFilterButton(
-                                                currentSelected:
-                                                    currentSelect,
-                                                action: () {
-                                                  setState(
-                                                    () {
-                                                      changeSelected(
-                                                        3,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                number: 3,
-                                                title:
-                                                    'Out of Stock',
-                                                theme:
-                                                    theme,
-                                              ),
-                                              ProductsFilterButton(
-                                                currentSelected:
-                                                    currentSelect,
-                                                action: () {
-                                                  setState(
-                                                    () {
-                                                      changeSelected(
-                                                        4,
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                number: 4,
-                                                title:
-                                                    'UnManaged',
-                                                theme:
-                                                    theme,
-                                              ),
-                                            ],
+                                          child: Builder(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              if (screenWidth(
+                                                    context,
+                                                  ) <
+                                                  900) {
+                                                return SingleChildScrollView(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  child: Row(
+                                                    spacing:
+                                                        10,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      ProductsFilterButton(
+                                                        action: () {
+                                                          setState(
+                                                            () {
+                                                              changeSelected(
+                                                                0,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        currentSelected:
+                                                            currentSelect,
+                                                        number:
+                                                            0,
+                                                        title:
+                                                            'All Items',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      ProductsFilterButton(
+                                                        action: () {
+                                                          setState(
+                                                            () {
+                                                              changeSelected(
+                                                                1,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        currentSelected:
+                                                            currentSelect,
+                                                        number:
+                                                            1,
+                                                        title:
+                                                            'In Stock',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      ProductsFilterButton(
+                                                        action: () {
+                                                          setState(
+                                                            () {
+                                                              changeSelected(
+                                                                2,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        currentSelected:
+                                                            currentSelect,
+                                                        number:
+                                                            2,
+                                                        title:
+                                                            'Low Stock',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      ProductsFilterButton(
+                                                        currentSelected:
+                                                            currentSelect,
+                                                        action: () {
+                                                          setState(
+                                                            () {
+                                                              changeSelected(
+                                                                3,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        number:
+                                                            3,
+                                                        title:
+                                                            'Out of Stock',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      ProductsFilterButton(
+                                                        currentSelected:
+                                                            currentSelect,
+                                                        action: () {
+                                                          setState(
+                                                            () {
+                                                              changeSelected(
+                                                                4,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        number:
+                                                            4,
+                                                        title:
+                                                            'UnManaged',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              } else {
+                                                return Row(
+                                                  spacing:
+                                                      10,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .center,
+                                                  children: [
+                                                    ProductsFilterButton(
+                                                      action: () {
+                                                        setState(() {
+                                                          changeSelected(
+                                                            0,
+                                                          );
+                                                        });
+                                                      },
+                                                      currentSelected:
+                                                          currentSelect,
+                                                      number:
+                                                          0,
+                                                      title:
+                                                          'All Items',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                    ProductsFilterButton(
+                                                      action: () {
+                                                        setState(() {
+                                                          changeSelected(
+                                                            1,
+                                                          );
+                                                        });
+                                                      },
+                                                      currentSelected:
+                                                          currentSelect,
+                                                      number:
+                                                          1,
+                                                      title:
+                                                          'In Stock',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                    ProductsFilterButton(
+                                                      action: () {
+                                                        setState(() {
+                                                          changeSelected(
+                                                            2,
+                                                          );
+                                                        });
+                                                      },
+                                                      currentSelected:
+                                                          currentSelect,
+                                                      number:
+                                                          2,
+                                                      title:
+                                                          'Low Stock',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                    ProductsFilterButton(
+                                                      currentSelected:
+                                                          currentSelect,
+                                                      action: () {
+                                                        setState(() {
+                                                          changeSelected(
+                                                            3,
+                                                          );
+                                                        });
+                                                      },
+                                                      number:
+                                                          3,
+                                                      title:
+                                                          'Out of Stock',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                    ProductsFilterButton(
+                                                      currentSelected:
+                                                          currentSelect,
+                                                      action: () {
+                                                        setState(() {
+                                                          changeSelected(
+                                                            4,
+                                                          );
+                                                        });
+                                                      },
+                                                      number:
+                                                          4,
+                                                      title:
+                                                          'UnManaged',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ],
+                                                );
+                                              }
+                                            },
                                           ),
                                         ),
                                       ),

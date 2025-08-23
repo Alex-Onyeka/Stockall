@@ -49,6 +49,10 @@ void phoneCall() async {
   }
 }
 
+TargetPlatform platforms(BuildContext context) {
+  return Theme.of(context).platform;
+}
+
 bool isValidEmail(String email) {
   final emailRegex = RegExp(
     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 
 class TextFieldBarcode extends StatefulWidget {
@@ -22,11 +24,32 @@ class TextFieldBarcode extends StatefulWidget {
 
 class _TextFieldBarcodeState
     extends State<TextFieldBarcode> {
+  final FocusNode _node = FocusNode();
   bool isFocus = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (screenWidth(context) > 700) {
+        _node.requestFocus();
+        setState(() {
+          isFocus = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _node.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return TextFormField(
+      focusNode: _node,
       controller: widget.searchController,
       onChanged: widget.onChanged,
       onTap: () {
@@ -48,57 +71,67 @@ class _TextFieldBarcodeState
         isCollapsed: true,
         fillColor: Colors.white,
         filled: isFocus,
-        suffixIcon: Material(
-          color: Colors.transparent,
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(30),
-              onTap: () {
-                if (widget.searchController.text.isEmpty) {
-                  widget.onPressedScan!();
-                  setState(() {
-                    isFocus = true;
-                  });
-                } else {
-                  widget.clearTextField();
-                  widget.searchController.clear();
-                  setState(() {
-                    isFocus = false;
-                  });
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.only(
-                  right: 20,
-                  left: 30,
-                  top: 10,
-                  bottom: 10,
+        suffixIcon: Visibility(
+          visible:
+              platforms(context) ==
+                  TargetPlatform.android ||
+              platforms(context) == TargetPlatform.iOS ||
+              kIsWeb,
+          child: Material(
+            color: Colors.transparent,
+            child: Ink(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {
+                  if (widget
+                      .searchController
+                      .text
+                      .isEmpty) {
+                    widget.onPressedScan!();
+                    setState(() {
+                      isFocus = true;
+                    });
+                  } else {
+                    widget.clearTextField();
+                    widget.searchController.clear();
+                    setState(() {
+                      isFocus = false;
+                    });
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.only(
+                    right: 20,
+                    left: 30,
+                    top: 10,
+                    bottom: 10,
+                  ),
+                  child:
+                      widget.searchController.text.isEmpty
+                          ? Icon(
+                            size: 20,
+                            color:
+                                isFocus
+                                    ? theme
+                                        .lightModeColor
+                                        .secColor100
+                                    : Colors.grey.shade600,
+                            Icons.qr_code_scanner,
+                          )
+                          : Icon(
+                            size: 20,
+                            color:
+                                isFocus
+                                    ? theme
+                                        .lightModeColor
+                                        .secColor100
+                                    : Colors.grey.shade600,
+                            Icons.clear,
+                          ),
                 ),
-                child:
-                    widget.searchController.text.isEmpty
-                        ? Icon(
-                          size: 20,
-                          color:
-                              isFocus
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor100
-                                  : Colors.grey.shade600,
-                          Icons.qr_code_scanner,
-                        )
-                        : Icon(
-                          size: 20,
-                          color:
-                              isFocus
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor100
-                                  : Colors.grey.shade600,
-                          Icons.clear,
-                        ),
               ),
             ),
           ),

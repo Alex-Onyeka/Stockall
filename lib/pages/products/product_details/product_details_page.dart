@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_mobile.dart';
 
 class ProductDetailsPage extends StatelessWidget {
@@ -19,11 +20,11 @@ class ProductDetailsPage extends StatelessWidget {
             theme: theme,
             productId: productId,
           );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return ProductDetailsDesktop(
+            theme: theme,
+            productId: productId,
+          );
         }
       },
     );

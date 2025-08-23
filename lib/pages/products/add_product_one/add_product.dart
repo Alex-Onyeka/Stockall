@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/add_product_desktop.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/add_product_mobile.dart';
 
 class AddProduct extends StatefulWidget {
@@ -55,7 +56,15 @@ class _AddProductState extends State<AddProduct> {
               nameController: nameController,
             );
           } else {
-            return Scaffold();
+            return AddProductDesktop(
+              product: widget.product,
+              discountController: discountController,
+              lowQttyController: lowQttyController,
+              quantityController: quantityController,
+              costController: costController,
+              sellingController: sellingController,
+              nameController: nameController,
+            );
           }
         },
       ),
