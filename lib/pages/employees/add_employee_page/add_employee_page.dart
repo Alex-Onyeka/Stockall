@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
 
 class AddEmployeePage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return AddEmployeeMobile(
               idC: idC,
               employee: widget.employee,

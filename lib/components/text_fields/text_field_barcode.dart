@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 
@@ -30,7 +31,7 @@ class _TextFieldBarcodeState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (screenWidth(context) > 700) {
+      if (screenWidth(context) > tabletScreen) {
         _node.requestFocus();
         setState(() {
           isFocus = true;

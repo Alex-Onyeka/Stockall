@@ -333,7 +333,7 @@ class RightSideBar extends StatelessWidget {
                                                   receiptId:
                                                       rec.id!,
                                                   isMain:
-                                                      true,
+                                                      false,
                                                 );
                                               },
                                             ),

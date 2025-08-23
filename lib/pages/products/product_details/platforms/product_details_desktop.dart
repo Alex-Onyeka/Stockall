@@ -86,7 +86,7 @@ class _ProductDetailsDesktopState
         spacing: 15,
         children: [
           Visibility(
-            visible: screenWidth(context) > 550,
+            visible: screenWidth(context) > mobileScreen,
             child: MyDrawerWidget(
               action: () {
                 showDialog(

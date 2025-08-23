@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/customers/customer_page/platform/customer_page_mobile.dart';
 
 class CustomerPage extends StatelessWidget {
@@ -9,7 +10,7 @@ class CustomerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return CustomerPageMobile(id: id);
         } else if (constraints.maxWidth > 550 &&
             constraints.maxWidth < 1000) {

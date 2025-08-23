@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/components/major/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/my_drawer_widget_mobile.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MyDrawerWidget extends StatelessWidget {
@@ -19,7 +20,7 @@ class MyDrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return MyDrawerWidgetMobile(
             action: action,
             notifications: notifications,

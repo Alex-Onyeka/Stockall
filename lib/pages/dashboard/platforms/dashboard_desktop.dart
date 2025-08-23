@@ -525,39 +525,46 @@ class _DashboardDesktopState
                                                 },
                                               ),
                                             ),
-                                            Expanded(
-                                              child: MainInfoTab(
-                                                theme:
-                                                    theme,
-                                                icon:
-                                                    productIconSvg,
-                                                number:
-                                                    '${returnExpensesProvider(context).returnExpensesByDayOrWeek(context, returnExpensesProvider(context).expenses).length}',
-                                                title:
-                                                    'Todays Expenses',
-                                                action: () {
-                                                  Navigator.push(
+                                            Visibility(
+                                              visible:
+                                                  screenWidth(
                                                     context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return ExpensesPage(
-                                                          isMain:
-                                                              true,
-                                                        );
-                                                      },
-                                                    ),
-                                                  ).then((
-                                                    context,
-                                                  ) {
-                                                    setState(
-                                                      () {
-                                                        clearDate();
-                                                      },
-                                                    );
-                                                  });
-                                                },
+                                                  ) >
+                                                  tabletScreen,
+                                              child: Expanded(
+                                                child: MainInfoTab(
+                                                  theme:
+                                                      theme,
+                                                  icon:
+                                                      productIconSvg,
+                                                  number:
+                                                      '${returnExpensesProvider(context).returnExpensesByDayOrWeek(context, returnExpensesProvider(context).expenses).length}',
+                                                  title:
+                                                      'Todays Expenses',
+                                                  action: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return ExpensesPage(
+                                                            isMain:
+                                                                true,
+                                                          );
+                                                        },
+                                                      ),
+                                                    ).then((
+                                                      context,
+                                                    ) {
+                                                      setState(
+                                                        () {
+                                                          clearDate();
+                                                        },
+                                                      );
+                                                    });
+                                                  },
+                                                ),
                                               ),
                                             ),
                                             Expanded(

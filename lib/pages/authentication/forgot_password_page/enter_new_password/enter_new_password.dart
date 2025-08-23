@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/platforms/enter_new_password_desktop.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/platforms/enter_new_password_mobile.dart';
 
@@ -31,7 +32,7 @@ class _EnterNewPasswordState
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return EnterNewPasswordMobile(
             passwordC: passwordC,
             confirmPasswordC: confirmPasswordC,

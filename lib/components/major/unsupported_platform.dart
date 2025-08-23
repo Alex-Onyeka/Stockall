@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 
 class UnsupportedPlatform extends StatelessWidget {
@@ -10,8 +11,8 @@ class UnsupportedPlatform extends StatelessWidget {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
+          if (constraints.maxWidth > mobileScreen &&
+              constraints.maxWidth < tabletScreen) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(

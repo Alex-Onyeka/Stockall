@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/platforms/forgot_password_desktop.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/platforms/forgot_password_mobile.dart';
 
@@ -23,7 +24,7 @@ class _ForgotPasswordPageState
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return ForgotPasswordMobile(
               emailController: emailController,
               isMain: widget.isMain,

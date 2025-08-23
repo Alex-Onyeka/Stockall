@@ -108,7 +108,7 @@ class _ProductPageDesktopState
         spacing: 15,
         children: [
           Visibility(
-            visible: screenWidth(context) > 550,
+            visible: screenWidth(context) > mobileScreen,
             child: MyDrawerWidget(
               action: () {
                 showDialog(
@@ -152,7 +152,8 @@ class _ProductPageDesktopState
                     children: [
                       SizedBox(
                         height:
-                            screenWidth(context) > 550
+                            screenWidth(context) >
+                                    mobileScreen
                                 ? 250
                                 : authorization(
                                   authorized:

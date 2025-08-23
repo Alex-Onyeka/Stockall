@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/platforms/customer_list_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -57,7 +58,7 @@ class _CustomerListState extends State<CustomerList> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return CustomerListMobile(
               searchController: searchContoller,
               isSales: widget.isSales,

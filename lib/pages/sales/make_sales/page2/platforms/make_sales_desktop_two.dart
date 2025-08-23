@@ -98,10 +98,12 @@ class _MakeSalesDesktopTwoState
                 body: Row(
                   spacing: 15,
                   children: [
-                    Expanded(
-                      flex: 4,
-                      child: Visibility(
-                        visible: screenWidth(context) > 900,
+                    Visibility(
+                      visible:
+                          screenWidth(context) >
+                          tabletScreen,
+                      child: Expanded(
+                        flex: 4,
                         child: MyCalculatorDesktop(),
                       ),
                     ),

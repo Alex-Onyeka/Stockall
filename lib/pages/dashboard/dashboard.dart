@@ -99,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return DashboardMobile(
               shopId: widget.shopId,
               // stillLoading: stillLoading,

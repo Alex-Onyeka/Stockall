@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/customers/add_customer/platforms/add_customer_mobile.dart';
 
 class AddCustomer extends StatefulWidget {
@@ -37,7 +38,7 @@ class _AddCustomerState extends State<AddCustomer> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return AddCustomerMobile(
               emailController: emailController,
               nameController: nameController,

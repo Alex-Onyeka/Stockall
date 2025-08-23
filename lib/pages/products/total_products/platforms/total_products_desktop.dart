@@ -129,7 +129,7 @@ class _TotalProductsDesktopState
       spacing: 15,
       children: [
         Visibility(
-          visible: screenWidth(context) > 550,
+          visible: screenWidth(context) > mobileScreen,
           child: MyDrawerWidget(
             action: () {
               showDialog(
@@ -341,7 +341,7 @@ class _TotalProductsDesktopState
                                               if (screenWidth(
                                                     context,
                                                   ) <
-                                                  900) {
+                                                  tabletScreen) {
                                                 return SingleChildScrollView(
                                                   scrollDirection:
                                                       Axis.horizontal,

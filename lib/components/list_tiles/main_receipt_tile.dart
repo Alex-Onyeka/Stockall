@@ -21,7 +21,7 @@ class MainReceiptTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (screenWidth(context) < 550) {
+    if (screenWidth(context) < mobileScreen) {
       return MainReceiptTileMobile(
         mainReceipt: mainReceipt,
         action: action,

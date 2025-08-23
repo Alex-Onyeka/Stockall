@@ -7,6 +7,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
@@ -325,17 +326,11 @@ class _EmpAuthState extends State<EmpAuth> {
                           ),
                           Container(
                             width:
-                                MediaQuery.of(
-                                          context,
-                                        ).size.width <
-                                        550
-                                    ? MediaQuery.of(
-                                          context,
-                                        ).size.width *
+                                screenWidth(context) <
+                                        mobileScreen
+                                    ? screenWidth(context) *
                                         0.85
-                                    : MediaQuery.of(
-                                          context,
-                                        ).size.width *
+                                    : screenWidth(context) *
                                         0.4,
                             decoration: BoxDecoration(
                               borderRadius:

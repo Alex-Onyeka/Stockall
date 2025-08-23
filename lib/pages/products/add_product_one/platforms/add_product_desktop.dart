@@ -507,7 +507,9 @@ class _AddProductDesktopState
                 width: 650,
                 padding: EdgeInsets.symmetric(
                   horizontal:
-                      screenWidth(context) < 800 ? 20 : 40,
+                      screenWidth(context) < tabletScreen
+                          ? 20
+                          : 40,
                   vertical: 20,
                 ),
                 decoration: BoxDecoration(

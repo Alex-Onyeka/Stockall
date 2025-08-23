@@ -56,7 +56,7 @@ class TopNavBar extends StatelessWidget {
         children: [
           InkWell(
             onTap: () {
-              MediaQuery.of(context).size.width < 550
+              screenWidth(context) < mobileScreen
                   ? openSideBar!()
                   : Navigator.push(
                     context,
@@ -80,10 +80,8 @@ class TopNavBar extends StatelessWidget {
                       SizedBox(width: 15),
                       Visibility(
                         visible:
-                            MediaQuery.of(
-                              context,
-                            ).size.width <
-                            550,
+                            screenWidth(context) <
+                            mobileScreen,
                         child: Icon(
                           color: Colors.grey.shade700,
                           size: 28,
@@ -181,7 +179,7 @@ class TopNavBar extends StatelessWidget {
             children: [
               Visibility(
                 visible:
-                    MediaQuery.of(context).size.width > 550,
+                    screenWidth(context) > mobileScreen,
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
