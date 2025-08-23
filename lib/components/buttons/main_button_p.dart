@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MainButtonP extends StatelessWidget {
@@ -16,8 +17,8 @@ class MainButtonP extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return Builder(
+      builder: (context) {
         return Material(
           type: MaterialType.transparency,
           child: Ink(
@@ -35,30 +36,23 @@ class MainButtonP extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical:
-                      constraints.maxWidth < 600 ? 15 : 12,
+                      screenWidth(context) < 600 ? 15 : 12,
                 ),
                 child: Center(
                   child: Text(
                     style: TextStyle(
                       color: Colors.white,
                       fontSize:
-                          constraints.maxWidth < 600
+                          screenWidth(context) < 600
                               ? themeProvider
                                   .mobileTexts
                                   .b2
                                   .fontSize
                               : themeProvider
                                   .mobileTexts
-                                  .b2
+                                  .b3
                                   .fontSize,
-                      fontWeight:
-                          themeProvider
-                              .returnPlatform(
-                                constraints,
-                                context,
-                              )
-                              .b1
-                              .fontWeightRegular,
+                      fontWeight: FontWeight.normal,
                     ),
                     text,
                   ),

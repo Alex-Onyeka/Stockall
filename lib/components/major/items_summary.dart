@@ -45,6 +45,8 @@ class ItemsSummary extends StatefulWidget {
   final Color? color00;
   final bool? isMoney00;
   final double? value00;
+  final bool? show0;
+  final bool? show00;
 
   const ItemsSummary({
     this.isDateSet,
@@ -87,6 +89,8 @@ class ItemsSummary extends StatefulWidget {
     this.title00,
     this.color00,
     this.isMoney00,
+    this.show0,
+    this.show00,
   });
 
   @override
@@ -306,8 +310,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           MainAxisAlignment.spaceBetween,
                       children: [
                         Visibility(
-                          visible:
-                              screenWidth(context) > 550,
+                          visible: widget.show0 != null,
                           child: Expanded(
                             child: ProductSummaryTab(
                               isMoney: widget.isMoney0,
@@ -342,8 +345,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           ),
                         ),
                         Visibility(
-                          visible:
-                              screenWidth(context) > 550,
+                          visible: widget.show00 != null,
                           child: Expanded(
                             child: ProductSummaryTab(
                               isMoney: widget.isMoney00,

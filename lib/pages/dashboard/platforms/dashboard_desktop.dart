@@ -10,6 +10,7 @@ import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -25,6 +26,7 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -220,76 +222,55 @@ class _DashboardDesktopState
       } else {
         // return Container();
         return Row(
-          spacing: 20,
+          spacing: 15,
           children: [
-            Visibility(
-              visible:
-                  MediaQuery.of(context).size.width > 550,
-              child: MyDrawerWidget(
-                action: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message: 'You are about to Logout',
-                        title: 'Are you Sure?',
-                        action: () async {
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AuthScreensPage();
-                                },
-                              ),
-                            );
-                            returnNavProvider(
-                              context,
-                              listen: false,
-                            ).navigate(0);
-                          }
-                          if (context.mounted) {
-                            await AuthService().signOut(
-                              context,
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: theme,
-                notifications:
-                    returnNotificationProvider(
-                          context,
-                        ).notifications.isEmpty
-                        ? []
-                        : returnNotificationProvider(
-                          context,
-                        ).notifications,
-              ),
+            MyDrawerWidget(
+              action: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message: 'You are about to Logout',
+                      title: 'Are you Sure?',
+                      action: () async {
+                        if (context.mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return AuthScreensPage();
+                              },
+                            ),
+                          );
+                          returnNavProvider(
+                            context,
+                            listen: false,
+                          ).navigate(0);
+                        }
+                        if (context.mounted) {
+                          await AuthService().signOut(
+                            context,
+                          );
+                        }
+                      },
+                    );
+                  },
+                );
+              },
+              theme: theme,
+              notifications:
+                  returnNotificationProvider(
+                        context,
+                      ).notifications.isEmpty
+                      ? []
+                      : returnNotificationProvider(
+                        context,
+                      ).notifications,
             ),
             Expanded(
-              child: Container(
-                margin: EdgeInsets.symmetric(vertical: 15),
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromARGB(
-                        39,
-                        4,
-                        1,
-                        41,
-                      ),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Stack(
+              child: DesktopPageContainer(
+                widget: Stack(
                   children: [
                     Scaffold(
                       key: _scaffoldKey,
@@ -441,8 +422,18 @@ class _DashboardDesktopState
                                                       ),
                                                 ),
                                                 child: InkWell(
-                                                  onTap:
-                                                      () {},
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return MakeSalesPage();
+                                                        },
+                                                      ),
+                                                    );
+                                                  },
                                                   child: Container(
                                                     padding: EdgeInsets.symmetric(
                                                       horizontal:

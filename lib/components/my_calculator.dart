@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -371,7 +372,8 @@ class _MyCalculatorState extends State<MyCalculator> {
                               action: () {
                                 setSign('/');
                               },
-                              icon: Icons.share,
+                              svg: divideIconSvg,
+                              height: 20,
                               itemColor:
                                   theme
                                       .lightModeColor

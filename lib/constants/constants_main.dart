@@ -73,6 +73,8 @@ const String checkIconSvg = 'assets/svgs/check_icon.svg';
 
 const String notifIconSvg = 'assets/svgs/notif_icon.svg';
 
+const String divideIconSvg = 'assets/svgs/divide_icon.svg';
+
 const String customersIconSvg =
     'assets/svgs/customers_icon.svg';
 

@@ -176,7 +176,7 @@ class AuthLandingDesktop extends StatelessWidget {
                                             constraints,
                                             context,
                                           )
-                                          .b1
+                                          .b3
                                           .fontSize,
                                   fontWeight:
                                       themeProvider
@@ -184,7 +184,7 @@ class AuthLandingDesktop extends StatelessWidget {
                                             constraints,
                                             context,
                                           )
-                                          .b1
+                                          .b3
                                           .fontWeightRegular,
                                 ),
                                 AuthLandingTexts()

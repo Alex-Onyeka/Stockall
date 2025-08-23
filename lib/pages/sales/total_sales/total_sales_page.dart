@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/pages/sales/total_sales/platforms/total_sales_desktop.dart';
 import 'package:stockall/pages/sales/total_sales/platforms/total_sales_mobile.dart';
 
 class TotalSalesPage extends StatelessWidget {
@@ -22,11 +23,12 @@ class TotalSalesPage extends StatelessWidget {
             customerId: customerId,
             isInvoice: isInvoice,
           );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return TotalSalesDesktop(
+            customerId: customerId,
+            id: id,
+            isInvoice: isInvoice,
+          );
         }
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -66,11 +67,12 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
             isMain: widget.isMain,
             searchController: searchController,
           );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return MakeSalesDesktop(
+            isInvoice: widget.isInvoice,
+            isMain: widget.isMain,
+            searchController: searchController,
+          );
         }
       },
     );

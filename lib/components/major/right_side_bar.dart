@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class RightSideBar extends StatelessWidget {
@@ -173,7 +176,16 @@ class RightSideBar extends StatelessWidget {
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return TotalSalesPage();
+                                },
+                              ),
+                            );
+                          },
                           child: Padding(
                             padding:
                                 const EdgeInsets.fromLTRB(
@@ -197,7 +209,10 @@ class RightSideBar extends StatelessWidget {
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  'Todays Sales',
+                                  returnReceiptProvider(
+                                        context,
+                                      ).dateSet ??
+                                      'Todays Sales',
                                 ),
                                 Icon(
                                   size: 15,
@@ -341,18 +356,6 @@ class RightSideBar extends StatelessWidget {
                                               Row(
                                                 spacing: 10,
                                                 children: [
-                                                  // Container(
-                                                  //   padding:
-                                                  //       EdgeInsets.all(
-                                                  //         2,
-                                                  //       ),
-                                                  //   decoration: BoxDecoration(
-                                                  //     shape:
-                                                  //         BoxShape.circle,
-                                                  //     color:
-                                                  //         Colors.grey,
-                                                  //   ),
-                                                  // ),
                                                   SvgPicture.asset(
                                                     salesIconSvg,
                                                     height:
@@ -419,6 +422,20 @@ class RightSideBar extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
+              MainButtonP(
+                themeProvider: theme,
+                action: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MakeSalesPage();
+                      },
+                    ),
+                  );
+                },
+                text: 'Make New Sale',
               ),
             ],
           ),

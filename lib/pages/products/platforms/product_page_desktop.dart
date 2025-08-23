@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/items_summary.dart';
@@ -144,25 +145,8 @@ class _ProductPageDesktopState
             ),
           ),
           Expanded(
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 15),
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(
-                      39,
-                      4,
-                      1,
-                      41,
-                    ),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-              child: Stack(
+            child: DesktopPageContainer(
+              widget: Stack(
                 children: [
                   Column(
                     children: [
@@ -192,6 +176,8 @@ class _ProductPageDesktopState
                             Align(
                               alignment: Alignment(0, 1),
                               child: ItemsSummary(
+                                show00: true,
+                                show0: true,
                                 color00: Colors.amber,
                                 title00: 'Unmanaged',
                                 value00:
