@@ -420,108 +420,116 @@ class _TotalSalesDesktopState
                                     height: 20,
                                   ),
                                 ),
-                                Visibility(
-                                  visible:
-                                      authorization(
-                                        authorized:
-                                            Authorizations()
-                                                .viewDate,
-                                        context: context,
-                                      ) &&
-                                      !returnReceiptProvider(
-                                        context,
-                                      ).returnInvoice,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        vertical: 10.0,
+                                      ),
+                                  child: Visibility(
+                                    visible:
+                                        authorization(
+                                          authorized:
+                                              Authorizations()
+                                                  .viewDate,
+                                          context: context,
+                                        ) &&
+                                        !returnReceiptProvider(
+                                          context,
+                                        ).returnInvoice,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                          ),
+                                          returnReceiptProvider(
+                                                    context,
+                                                  ).dateSet ==
+                                                  null
+                                              ? 'For Today'
+                                              : '${returnReceiptProvider(context).dateSet}',
                                         ),
-                                        returnReceiptProvider(
+                                        MaterialButton(
+                                          onPressed: () {
+                                            if (returnReceiptProvider(
                                                   context,
-                                                ).dateSet ==
-                                                null
-                                            ? 'For Today'
-                                            : '${returnReceiptProvider(context).dateSet}',
-                                      ),
-                                      MaterialButton(
-                                        onPressed: () {
-                                          if (returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).isDateSet ||
+                                                  listen:
+                                                      false,
+                                                ).isDateSet ||
+                                                returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setDate) {
                                               returnReceiptProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).setDate) {
-                                            returnReceiptProvider(
-                                              context,
-                                              listen: false,
-                                            ).clearReceiptDate();
-                                          } else {
-                                            returnReceiptProvider(
-                                              context,
-                                              listen: false,
-                                            ).openDatePicker();
-                                          }
-                                        },
-                                        child: Row(
-                                          spacing: 3,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade700,
+                                              ).clearReceiptDate();
+                                            } else {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).openDatePicker();
+                                            }
+                                          },
+                                          child: Row(
+                                            spacing: 3,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b2
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                ),
+                                                returnReceiptProvider(
+                                                          context,
+                                                        ).isDateSet ||
+                                                        returnReceiptProvider(
+                                                          context,
+                                                        ).setDate
+                                                    ? 'Clear Date'
+                                                    : 'Set Date',
                                               ),
-                                              returnReceiptProvider(
-                                                        context,
-                                                      ).isDateSet ||
-                                                      returnReceiptProvider(
-                                                        context,
-                                                      ).setDate
-                                                  ? 'Clear Date'
-                                                  : 'Set Date',
-                                            ),
-                                            Icon(
-                                              size: 20,
-                                              color:
-                                                  theme
-                                                      .lightModeColor
-                                                      .secColor100,
-                                              returnReceiptProvider(
-                                                        context,
-                                                      ).isDateSet ||
-                                                      returnReceiptProvider(
-                                                        context,
-                                                      ).setDate
-                                                  ? Icons
-                                                      .clear
-                                                  : Icons
-                                                      .date_range_outlined,
-                                            ),
-                                          ],
+                                              Icon(
+                                                size: 20,
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                returnReceiptProvider(
+                                                          context,
+                                                        ).isDateSet ||
+                                                        returnReceiptProvider(
+                                                          context,
+                                                        ).setDate
+                                                    ? Icons
+                                                        .clear
+                                                    : Icons
+                                                        .date_range_outlined,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

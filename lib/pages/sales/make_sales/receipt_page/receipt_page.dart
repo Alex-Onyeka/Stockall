@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
 
 class ReceiptPage extends StatelessWidget {
@@ -19,11 +20,11 @@ class ReceiptPage extends StatelessWidget {
             isMain: isMain,
             receiptId: receiptId,
           );
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return ReceiptPageDesktop(
+            isMain: isMain,
+            receiptId: receiptId,
+          );
         }
       },
     );

@@ -8,9 +8,9 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
+import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
-import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
@@ -1690,771 +1690,669 @@ class _MakeSalesDesktopState
                         ),
                         Expanded(
                           flex: 10,
-                          child: Stack(
-                            children: [
-                              Scaffold(
-                                appBar: appBar(
-                                  // isMain: widget.isMain,
-                                  context: context,
-                                  title:
-                                      returnSalesProvider(
-                                            context,
-                                          ).isInvoice
-                                          ? 'Credit Sale'
-                                          : 'Cart Items',
-                                  widget: Stack(
-                                    children: [
-                                      Visibility(
-                                        visible:
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .cartItems
-                                                .isNotEmpty,
-                                        child: InkWell(
-                                          onTap: () {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
+                          child: DesktopPageContainer(
+                            widget: Scaffold(
+                              appBar: appBar(
+                                // isMain: widget.isMain,
+                                context: context,
+                                title:
+                                    returnSalesProvider(
+                                          context,
+                                        ).isInvoice
+                                        ? 'Credit Sale'
+                                        : 'Cart Items',
+                                widget: Stack(
+                                  children: [
+                                    Visibility(
+                                      visible:
+                                          returnSalesProvider(
                                                 context,
-                                              ) {
-                                                return ConfirmationAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'You are about to clear the items in your cart, are you sure you want to proceed?',
-                                                  title:
-                                                      'Are you sure?',
-                                                  action: () {
-                                                    returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).clearCart();
-                                                    returnSuggestionProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).clearSuggestions();
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                  },
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            height: 35,
-                                            margin:
-                                                EdgeInsets.only(
-                                                  right: 10,
-                                                ),
-                                            padding:
-                                                EdgeInsets.only(
-                                                  // vertical: 10,
-                                                  left: 10,
-                                                  right: 5,
-                                                ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
+                                              )
+                                              .cartItems
+                                              .isNotEmpty,
+                                      child: InkWell(
+                                        onTap: () {
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ConfirmationAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'You are about to clear the items in your cart, are you sure you want to proceed?',
+                                                title:
+                                                    'Are you sure?',
+                                                action: () {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).clearCart();
+                                                  returnSuggestionProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).clearSuggestions();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          height: 35,
+                                          margin:
+                                              EdgeInsets.only(
+                                                right: 10,
                                               ),
+                                          padding:
+                                              EdgeInsets.only(
+                                                // vertical: 10,
+                                                left: 10,
+                                                right: 5,
+                                              ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade100,
                                             ),
-                                            child: Center(
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'Clear Cart',
+                                          ),
+                                          child: Center(
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
                                                   ),
-                                                  Icon(
-                                                    size:
-                                                        18,
-                                                    color:
-                                                        Colors.grey.shade600,
-                                                    Icons
-                                                        .clear,
-                                                  ),
-                                                ],
-                                              ),
+                                                  'Clear Cart',
+                                                ),
+                                                Icon(
+                                                  size: 18,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade600,
+                                                  Icons
+                                                      .clear,
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Visibility(
-                                        visible:
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .cartItems
-                                                .isEmpty,
-                                        child: InkWell(
-                                          onTap: () {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).switchInvoiceSale();
-                                          },
-                                          child: SizedBox(
-                                            height: 35,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    right:
-                                                        15.0,
-                                                    top: 3,
-                                                    bottom:
-                                                        3,
-                                                    left: 5,
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          returnSalesProvider(
+                                                context,
+                                              )
+                                              .cartItems
+                                              .isEmpty,
+                                      child: InkWell(
+                                        onTap: () {
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).switchInvoiceSale();
+                                        },
+                                        child: SizedBox(
+                                          height: 35,
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                  right:
+                                                      15.0,
+                                                  top: 3,
+                                                  bottom: 3,
+                                                  left: 5,
+                                                ),
+                                            child: Row(
+                                              spacing: 5,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
                                                   ),
-                                              child: Row(
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'Sale Credit',
-                                                  ),
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          2,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      shape:
-                                                          BoxShape.circle,
+                                                  'Sale Credit',
+                                                ),
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        2,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    shape:
+                                                        BoxShape.circle,
+                                                    color:
+                                                        returnSalesProvider(
+                                                              context,
+                                                            ).isInvoice
+                                                            ? theme.lightModeColor.prColor250
+                                                            : null,
+                                                    border: Border.all(
                                                       color:
                                                           returnSalesProvider(
                                                                 context,
                                                               ).isInvoice
                                                               ? theme.lightModeColor.prColor250
-                                                              : null,
-                                                      border: Border.all(
-                                                        color:
-                                                            returnSalesProvider(
-                                                                  context,
-                                                                ).isInvoice
-                                                                ? theme.lightModeColor.prColor250
-                                                                : Colors.grey,
-                                                      ),
-                                                    ),
-                                                    child: Icon(
-                                                      size:
-                                                          14,
-                                                      color:
-                                                          returnSalesProvider(
-                                                                context,
-                                                              ).isInvoice
-                                                              ? Colors.white
-                                                              : Colors.grey.shade400,
-                                                      Icons
-                                                          .check,
+                                                              : Colors.grey,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
+                                                  child: Icon(
+                                                    size:
+                                                        14,
+                                                    color:
+                                                        returnSalesProvider(
+                                                              context,
+                                                            ).isInvoice
+                                                            ? Colors.white
+                                                            : Colors.grey.shade400,
+                                                    Icons
+                                                        .check,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                body: Builder(
-                                  builder: (context) {
-                                    if (products.isEmpty &&
-                                        returnSalesProvider(
-                                              context,
-                                            )
-                                            .cartItems
-                                            .isEmpty) {
-                                      if (!authorization(
-                                        authorized:
-                                            Authorizations()
-                                                .addProduct,
-                                        context: context,
-                                      )) {
-                                        return EmptyWidgetDisplayOnly(
-                                          title: 'No Items',
-                                          subText:
-                                              'No Items have been added to your stock.',
-                                          theme: theme,
-                                          height: 30,
-                                          icon: Icons.clear,
-                                          altAction: () {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).toggleAddToStock(
-                                              true,
-                                            );
-                                            makeCustomSale(
-                                              closeAction: () {
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                              },
-                                              cartItem: TempCartItem(
-                                                setTotalPrice:
-                                                    returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).setTotalPrice,
-                                                item: TempProductClass(
-                                                  isManaged:
-                                                      false,
-                                                  id: 111,
-                                                  name:
-                                                      nameC
-                                                          .text,
-                                                  unit:
-                                                      'Others',
-                                                  isRefundable:
-                                                      false,
-                                                  costPrice:
-                                                      double.tryParse(
-                                                        costPriceC.text,
-                                                      ) ??
-                                                      0,
-                                                  sellingPrice: double.tryParse(
-                                                    sellingPriceC
-                                                        .text,
-                                                  ),
-                                                  quantity:
-                                                      0,
-                                                  shopId:
-                                                      returnShopProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).userShop!.shopId!,
-                                                  setCustomPrice:
-                                                      true,
-                                                ),
-                                                addToStock:
-                                                    false,
-                                                quantity: 0,
-                                                discount:
-                                                    null,
-                                                setCustomPrice:
-                                                    true,
-                                              ),
-                                            );
-                                          },
-                                          altActionText:
-                                              'Add Custom Item',
-                                          altIcon:
-                                              Icons.add,
-                                        );
-                                      } else {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10.0,
-                                              ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            children: [
-                                              EmptyWidgetDisplay(
-                                                title:
-                                                    'No items',
-                                                subText:
-                                                    'You currently do not have have any item. Add items to start making sales.',
-                                                theme:
-                                                    theme,
-                                                height: 30,
-                                                svg:
-                                                    productIconSvg,
-                                                buttonText:
-                                                    'Add Item',
-                                                action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return AddProduct();
-                                                      },
-                                                    ),
-                                                  ).then((
-                                                    _,
-                                                  ) {
-                                                    setState(
-                                                      () {},
-                                                    );
-                                                  });
-                                                },
-                                                altAction: () {
+                              ),
+                              body: Builder(
+                                builder: (context) {
+                                  if (products.isEmpty &&
+                                      returnSalesProvider(
+                                        context,
+                                      ).cartItems.isEmpty) {
+                                    if (!authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .addProduct,
+                                      context: context,
+                                    )) {
+                                      return EmptyWidgetDisplayOnly(
+                                        title: 'No Items',
+                                        subText:
+                                            'No Items have been added to your stock.',
+                                        theme: theme,
+                                        height: 30,
+                                        icon: Icons.clear,
+                                        altAction: () {
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).toggleAddToStock(
+                                            true,
+                                          );
+                                          makeCustomSale(
+                                            closeAction: () {
+                                              Navigator.of(
+                                                context,
+                                              ).pop();
+                                            },
+                                            cartItem: TempCartItem(
+                                              setTotalPrice:
                                                   returnSalesProvider(
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).toggleAddToStock(
+                                                  ).setTotalPrice,
+                                              item: TempProductClass(
+                                                isManaged:
+                                                    false,
+                                                id: 111,
+                                                name:
+                                                    nameC
+                                                        .text,
+                                                unit:
+                                                    'Others',
+                                                isRefundable:
+                                                    false,
+                                                costPrice:
+                                                    double.tryParse(
+                                                      costPriceC
+                                                          .text,
+                                                    ) ??
+                                                    0,
+                                                sellingPrice:
+                                                    double.tryParse(
+                                                      sellingPriceC
+                                                          .text,
+                                                    ),
+                                                quantity: 0,
+                                                shopId:
+                                                    returnShopProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).userShop!.shopId!,
+                                                setCustomPrice:
                                                     true,
-                                                  );
-                                                  makeCustomSale(
-                                                    closeAction: () {
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
+                                              ),
+                                              addToStock:
+                                                  false,
+                                              quantity: 0,
+                                              discount:
+                                                  null,
+                                              setCustomPrice:
+                                                  true,
+                                            ),
+                                          );
+                                        },
+                                        altActionText:
+                                            'Add Custom Item',
+                                        altIcon: Icons.add,
+                                      );
+                                    } else {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal:
+                                                  10.0,
+                                            ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            EmptyWidgetDisplay(
+                                              title:
+                                                  'No items',
+                                              subText:
+                                                  'You currently do not have have any item. Add items to start making sales.',
+                                              theme: theme,
+                                              height: 30,
+                                              svg:
+                                                  productIconSvg,
+                                              buttonText:
+                                                  'Add Item',
+                                              action: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return AddProduct();
                                                     },
-                                                    cartItem: TempCartItem(
-                                                      setTotalPrice:
-                                                          returnSalesProvider(
+                                                  ),
+                                                ).then((_) {
+                                                  setState(
+                                                    () {},
+                                                  );
+                                                });
+                                              },
+                                              altAction: () {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleAddToStock(
+                                                  true,
+                                                );
+                                                makeCustomSale(
+                                                  closeAction: () {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  },
+                                                  cartItem: TempCartItem(
+                                                    setTotalPrice:
+                                                        returnSalesProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).setTotalPrice,
+                                                    item: TempProductClass(
+                                                      isManaged:
+                                                          false,
+                                                      id: 000,
+                                                      name:
+                                                          nameC.text,
+                                                      unit:
+                                                          'Others',
+                                                      isRefundable:
+                                                          false,
+                                                      costPrice:
+                                                          double.tryParse(
+                                                            costPriceC.text,
+                                                          ) ??
+                                                          0,
+                                                      sellingPrice: double.tryParse(
+                                                        sellingPriceC.text,
+                                                      ),
+                                                      quantity:
+                                                          0,
+                                                      shopId:
+                                                          returnShopProvider(
                                                             context,
                                                             listen:
                                                                 false,
-                                                          ).setTotalPrice,
-                                                      item: TempProductClass(
-                                                        isManaged:
-                                                            false,
-                                                        id:
-                                                            000,
-                                                        name:
-                                                            nameC.text,
-                                                        unit:
-                                                            'Others',
-                                                        isRefundable:
-                                                            false,
-                                                        costPrice:
-                                                            double.tryParse(
-                                                              costPriceC.text,
-                                                            ) ??
-                                                            0,
-                                                        sellingPrice: double.tryParse(
-                                                          sellingPriceC.text,
-                                                        ),
-                                                        quantity:
-                                                            0,
-                                                        shopId:
-                                                            returnShopProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).userShop!.shopId!,
-                                                        setCustomPrice:
-                                                            true,
-                                                      ),
-                                                      addToStock:
-                                                          true,
-                                                      quantity:
-                                                          0,
-                                                      discount:
-                                                          null,
+                                                          ).userShop!.shopId!,
                                                       setCustomPrice:
                                                           true,
                                                     ),
-                                                  );
-                                                },
-                                                altActionText:
-                                                    'Add Custom Item',
-                                                altIcon:
-                                                    Icons
-                                                        .add,
+                                                    addToStock:
+                                                        true,
+                                                    quantity:
+                                                        0,
+                                                    discount:
+                                                        null,
+                                                    setCustomPrice:
+                                                        true,
+                                                  ),
+                                                );
+                                              },
+                                              altActionText:
+                                                  'Add Custom Item',
+                                              altIcon:
+                                                  Icons.add,
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    return Stack(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    0.0,
                                               ),
-                                            ],
-                                          ),
-                                        );
-                                      }
-                                    } else {
-                                      return Stack(
-                                        children: [
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      0.0,
-                                                ),
-                                            child: Column(
-                                              children: [
-                                                SizedBox(
-                                                  height:
-                                                      10,
-                                                ),
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal:
-                                                          10.0,
-                                                    ),
-                                                    child: Column(
-                                                      children: [
-                                                        SizedBox(
-                                                          height:
-                                                              10,
-                                                        ),
-                                                        Expanded(
-                                                          child: Builder(
-                                                            builder: (
-                                                              context,
-                                                            ) {
-                                                              List<
-                                                                TempCartItem
-                                                              >
-                                                              items =
-                                                                  returnSalesProvider(
-                                                                    context,
-                                                                  ).cartItems.reversed.toList();
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        10.0,
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      SizedBox(
+                                                        height:
+                                                            10,
+                                                      ),
+                                                      Expanded(
+                                                        child: Builder(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            List<
+                                                              TempCartItem
+                                                            >
+                                                            items =
+                                                                returnSalesProvider(
+                                                                  context,
+                                                                ).cartItems.reversed.toList();
 
-                                                              if (items.isEmpty) {
-                                                                return Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.center,
-                                                                  children: [
-                                                                    EmptyWidgetDisplay(
-                                                                      title:
-                                                                          'Cart List Empty',
-                                                                      subText:
-                                                                          'Start Adding Items to Cart To make Sales',
-                                                                      buttonText:
-                                                                          'Add Item',
-                                                                      svg:
-                                                                          productIconSvg,
-                                                                      theme:
-                                                                          theme,
-                                                                      height:
-                                                                          35,
-                                                                      action: () {
-                                                                        showGeneralDialog(
-                                                                          context:
-                                                                              context,
-                                                                          pageBuilder: (
+                                                            if (items.isEmpty) {
+                                                              return Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment.center,
+                                                                children: [
+                                                                  EmptyWidgetDisplay(
+                                                                    title:
+                                                                        'Cart List Empty',
+                                                                    subText:
+                                                                        'Start Adding Items to Cart To make Sales',
+                                                                    buttonText:
+                                                                        'Add Item',
+                                                                    svg:
+                                                                        productIconSvg,
+                                                                    theme:
+                                                                        theme,
+                                                                    height:
+                                                                        35,
+                                                                    action: () {
+                                                                      showGeneralDialog(
+                                                                        context:
                                                                             context,
-                                                                            animation,
-                                                                            secondaryAnimation,
-                                                                          ) {
-                                                                            return CustomBottomPanel(
-                                                                              searchController:
-                                                                                  widget.searchController,
-                                                                              close: () {
-                                                                                Navigator.of(
-                                                                                  context,
-                                                                                ).pop();
-                                                                                widget.searchController.clear();
-                                                                              },
-                                                                              // products:
-                                                                              //     products,
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      },
-                                                                      altAction: () {
-                                                                        returnSalesProvider(
+                                                                        pageBuilder: (
                                                                           context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).toggleAddToStock(
-                                                                          true,
-                                                                        );
-                                                                        makeCustomSale(
-                                                                          closeAction: () {
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
-                                                                          },
-                                                                          cartItem: TempCartItem(
+                                                                          animation,
+                                                                          secondaryAnimation,
+                                                                        ) {
+                                                                          return CustomBottomPanel(
+                                                                            searchController:
+                                                                                widget.searchController,
+                                                                            close: () {
+                                                                              Navigator.of(
+                                                                                context,
+                                                                              ).pop();
+                                                                              widget.searchController.clear();
+                                                                            },
+                                                                            // products:
+                                                                            //     products,
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    altAction: () {
+                                                                      returnSalesProvider(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      ).toggleAddToStock(
+                                                                        true,
+                                                                      );
+                                                                      makeCustomSale(
+                                                                        closeAction: () {
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop();
+                                                                        },
+                                                                        cartItem: TempCartItem(
+                                                                          setTotalPrice:
+                                                                              returnSalesProvider(
+                                                                                context,
+                                                                                listen:
+                                                                                    false,
+                                                                              ).setTotalPrice,
+                                                                          item: TempProductClass(
+                                                                            isManaged:
+                                                                                false,
+                                                                            id:
+                                                                                000,
+                                                                            name:
+                                                                                nameC.text,
+                                                                            unit:
+                                                                                'Others',
+                                                                            isRefundable:
+                                                                                false,
+                                                                            costPrice:
+                                                                                double.tryParse(
+                                                                                  costPriceC.text,
+                                                                                ) ??
+                                                                                0,
+                                                                            sellingPrice: double.tryParse(
+                                                                              sellingPriceC.text,
+                                                                            ),
+                                                                            quantity:
+                                                                                0,
+                                                                            shopId:
+                                                                                returnShopProvider(
+                                                                                  context,
+                                                                                  listen:
+                                                                                      false,
+                                                                                ).userShop!.shopId!,
+                                                                            setCustomPrice:
+                                                                                true,
+                                                                          ),
+                                                                          addToStock:
+                                                                              true,
+                                                                          quantity:
+                                                                              0,
+                                                                          discount:
+                                                                              null,
+                                                                          setCustomPrice:
+                                                                              true,
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                    altActionText:
+                                                                        'Add Custom Item',
+                                                                    altIcon:
+                                                                        Icons.add,
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            } else {
+                                                              return ListView.builder(
+                                                                itemCount:
+                                                                    returnSalesProvider(
+                                                                      context,
+                                                                    ).cartItems.length,
+                                                                itemBuilder: (
+                                                                  context,
+                                                                  index,
+                                                                ) {
+                                                                  return CartItemMain(
+                                                                    deleteCartItem: () {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (
+                                                                          context,
+                                                                        ) {
+                                                                          return ConfirmationAlert(
+                                                                            theme:
+                                                                                theme,
+                                                                            message:
+                                                                                'You want to remove an Item from the List, are you sure you want to proceed?',
+                                                                            title:
+                                                                                'Remove Item?',
+                                                                            action: () {
+                                                                              Navigator.of(
+                                                                                context,
+                                                                              ).pop();
+                                                                              returnSalesProvider(
+                                                                                context,
+                                                                                listen:
+                                                                                    false,
+                                                                              ).removeItemFromCart(
+                                                                                items[index],
+                                                                              );
+                                                                              returnSuggestionProvider(
+                                                                                context,
+                                                                                listen:
+                                                                                    false,
+                                                                              ).deleteTempSugg(
+                                                                                items[index].item.id!,
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    editAction: () {
+                                                                      var salesProvider = returnSalesProvider(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      );
+
+                                                                      editCartItem(
+                                                                        productQuantity:
+                                                                            items[index].quantity,
+                                                                        context:
+                                                                            context,
+                                                                        updateAction: () {
+                                                                          salesProvider.editCartItemQuantity(
                                                                             setTotalPrice:
                                                                                 returnSalesProvider(
                                                                                   context,
                                                                                   listen:
                                                                                       false,
                                                                                 ).setTotalPrice,
-                                                                            item: TempProductClass(
-                                                                              isManaged:
-                                                                                  false,
-                                                                              id:
-                                                                                  000,
-                                                                              name:
-                                                                                  nameC.text,
-                                                                              unit:
-                                                                                  'Others',
-                                                                              isRefundable:
-                                                                                  false,
-                                                                              costPrice:
-                                                                                  double.tryParse(
-                                                                                    costPriceC.text,
-                                                                                  ) ??
-                                                                                  0,
-                                                                              sellingPrice: double.tryParse(
-                                                                                sellingPriceC.text,
-                                                                              ),
-                                                                              quantity:
-                                                                                  0,
-                                                                              shopId:
-                                                                                  returnShopProvider(
-                                                                                    context,
-                                                                                    listen:
-                                                                                        false,
-                                                                                  ).userShop!.shopId!,
-                                                                              setCustomPrice:
-                                                                                  true,
+                                                                            cartItem:
+                                                                                items[index],
+                                                                            number: double.parse(
+                                                                              quantityController.text,
                                                                             ),
-                                                                            addToStock:
-                                                                                true,
-                                                                            quantity:
-                                                                                0,
-                                                                            discount:
-                                                                                null,
+                                                                            customPrice: double.tryParse(
+                                                                              priceController.text.replaceAll(
+                                                                                ',',
+                                                                                '',
+                                                                              ),
+                                                                            ),
                                                                             setCustomPrice:
-                                                                                true,
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                      altActionText:
-                                                                          'Add Custom Item',
-                                                                      altIcon:
-                                                                          Icons.add,
-                                                                    ),
-                                                                  ],
-                                                                );
-                                                              } else {
-                                                                return ListView.builder(
-                                                                  itemCount:
-                                                                      returnSalesProvider(
-                                                                        context,
-                                                                      ).cartItems.length,
-                                                                  itemBuilder: (
-                                                                    context,
-                                                                    index,
-                                                                  ) {
-                                                                    return CartItemMain(
-                                                                      deleteCartItem: () {
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          builder: (
+                                                                                priceController.text.isNotEmpty,
+                                                                          );
+
+                                                                          // Delay pop to avoid context issues
+
+                                                                          Navigator.of(
                                                                             context,
-                                                                          ) {
-                                                                            return ConfirmationAlert(
-                                                                              theme:
-                                                                                  theme,
-                                                                              message:
-                                                                                  'You want to remove an Item from the List, are you sure you want to proceed?',
-                                                                              title:
-                                                                                  'Remove Item?',
-                                                                              action: () {
-                                                                                Navigator.of(
-                                                                                  context,
-                                                                                ).pop();
-                                                                                returnSalesProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).removeItemFromCart(
-                                                                                  items[index],
-                                                                                );
-                                                                                returnSuggestionProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).deleteTempSugg(
-                                                                                  items[index].item.id!,
-                                                                                );
-                                                                              },
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      },
-                                                                      editAction: () {
-                                                                        var salesProvider = returnSalesProvider(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        );
-
-                                                                        editCartItem(
-                                                                          productQuantity:
-                                                                              items[index].quantity,
-                                                                          context:
-                                                                              context,
-                                                                          updateAction: () {
-                                                                            salesProvider.editCartItemQuantity(
-                                                                              setTotalPrice:
-                                                                                  returnSalesProvider(
-                                                                                    context,
-                                                                                    listen:
-                                                                                        false,
-                                                                                  ).setTotalPrice,
-                                                                              cartItem:
-                                                                                  items[index],
-                                                                              number: double.parse(
-                                                                                quantityController.text,
-                                                                              ),
-                                                                              customPrice: double.tryParse(
-                                                                                priceController.text.replaceAll(
-                                                                                  ',',
-                                                                                  '',
-                                                                                ),
-                                                                              ),
-                                                                              setCustomPrice:
-                                                                                  priceController.text.isNotEmpty,
-                                                                            );
-
-                                                                            // Delay pop to avoid context issues
-
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
-                                                                          },
-                                                                          cartItem:
-                                                                              items[index],
-                                                                        );
-                                                                      },
-                                                                      theme:
-                                                                          theme,
-                                                                      cartItem:
-                                                                          items[index],
-                                                                    );
-                                                                  },
-                                                                );
-                                                              }
-                                                            },
-                                                          ),
+                                                                          ).pop();
+                                                                        },
+                                                                        cartItem:
+                                                                            items[index],
+                                                                      );
+                                                                    },
+                                                                    theme:
+                                                                        theme,
+                                                                    cartItem:
+                                                                        items[index],
+                                                                  );
+                                                                },
+                                                              );
+                                                            }
+                                                          },
                                                         ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                showBottomPanel,
-                                            child: CustomBottomPanel(
-                                              // products: products,
-                                              searchController:
-                                                  widget
-                                                      .searchController,
-                                              close: () {
-                                                setState(() {
-                                                  showBottomPanel =
-                                                      false;
-                                                  widget
-                                                      .searchController
-                                                      .clear();
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                              Visibility(
-                                visible:
-                                    returnSalesProvider(
-                                          context,
-                                        )
-                                        .cartItems
-                                        .isNotEmpty &&
-                                    screenWidth(context) <
-                                        800,
-                                child: Align(
-                                  alignment: Alignment(
-                                    0.9,
-                                    0.1,
-                                  ),
-                                  child: Material(
-                                    color:
-                                        Colors.transparent,
-                                    child: Ink(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              15,
-                                            ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                const Color.fromARGB(
-                                                  35,
-                                                  0,
-                                                  0,
-                                                  0,
-                                                ),
-                                            blurRadius: 10,
-                                          ),
-                                        ],
-                                      ),
-                                      child: InkWell(
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              15,
-                                            ),
-                                        onTap: () {
-                                          showGeneralDialog(
-                                            context:
-                                                context,
-                                            pageBuilder: (
-                                              context,
-                                              animation,
-                                              secondaryAnimation,
-                                            ) {
-                                              return MyCalculator();
-                                            },
-                                          );
-                                        },
-                                        child: Container(
-                                          height: 60,
-                                          width: 60,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  15,
-                                                ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color:
-                                                    const Color.fromARGB(
-                                                      35,
-                                                      0,
-                                                      0,
-                                                      0,
-                                                    ),
-                                                blurRadius:
-                                                    10,
                                               ),
                                             ],
-                                            color:
-                                                Colors
-                                                    .white,
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              size: 30,
-                                              Icons
-                                                  .calculate_outlined,
-                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                        Visibility(
+                                          visible:
+                                              showBottomPanel,
+                                          child: CustomBottomPanel(
+                                            // products: products,
+                                            searchController:
+                                                widget
+                                                    .searchController,
+                                            close: () {
+                                              setState(() {
+                                                showBottomPanel =
+                                                    false;
+                                                widget
+                                                    .searchController
+                                                    .clear();
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                },
                               ),
-                            ],
+                            ),
                           ),
                         ),
                         Expanded(
@@ -2736,6 +2634,7 @@ class _MakeSalesDesktopState
                                     action: () {
                                       if (returnSalesProvider(
                                             context,
+                                            listen: false,
                                           )
                                           .cartItems
                                           .isNotEmpty) {

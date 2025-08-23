@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_desktop_two.dart';
 import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_mobile_two.dart';
 
 class MakeSalesTwo extends StatefulWidget {
@@ -38,11 +39,14 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
               cashController: cashController,
               searchController: searchController,
             );
-          } else if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
-            return Scaffold();
           } else {
-            return Scaffold();
+            return MakeSalesDesktopTwo(
+              totalAmount: widget.totalAmount,
+              customerController: customerController,
+              bankController: bankController,
+              cashController: cashController,
+              searchController: searchController,
+            );
           }
         },
       ),

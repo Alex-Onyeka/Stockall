@@ -286,6 +286,7 @@ class _SalesPageDesktopState
                                     padding:
                                         const EdgeInsets.symmetric(
                                           horizontal: 10.0,
+                                          vertical: 10,
                                         ),
                                     child: Row(
                                       mainAxisAlignment:
