@@ -164,8 +164,7 @@ class _HomeState extends State<Home> {
                       switch (navProv.currentPage) {
                         case 0:
                           return Dashboard(
-                            shopId:
-                                shopSnapshot.data!.shopId!,
+                            shopId: shop(context)?.shopId!,
                           );
                         case 1:
                           return const ProductsPage();
@@ -173,8 +172,7 @@ class _HomeState extends State<Home> {
                           return const SalesPage();
                         default:
                           return Dashboard(
-                            shopId:
-                                shopSnapshot.data!.shopId!,
+                            shopId: shop(context)?.shopId!,
                           );
                       }
                     }

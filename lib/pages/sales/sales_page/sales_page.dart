@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/components/major/unsupported_platform.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/sales_page/platforms/sales_page_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -68,13 +67,23 @@ class _SalesPageState extends State<SalesPage> {
         builder: (context, constraints) {
           if (constraints.maxWidth < 550) {
             return SalesPageMobile();
-          } else if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
-            return UnsupportedPlatform();
-            // return Scaffold();
           } else {
-            return UnsupportedPlatform();
-            // return Scaffold();
+            return Scaffold(
+              body: Center(
+                child: InkWell(
+                  onTap: () {
+                    returnNavProvider(
+                      context,
+                      listen: false,
+                    ).navigate(1);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text('Do It!!!'),
+                  ),
+                ),
+              ),
+            );
           }
         },
       ),

@@ -211,152 +211,210 @@ class RightSideBar extends StatelessWidget {
                         ),
                       ),
                       // SizedBox(height: 10),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount:
-                              returnReceiptProvider(context)
-                                  .returnOwnReceiptsByDayOrWeek(
-                                    context,
-                                    returnReceiptProvider(
-                                      context,
-                                    ).receipts,
-                                  )
-                                  .length,
-                          itemBuilder: (context, index) {
-                            TempMainReceipt rec =
+                      Builder(
+                        builder: (context) {
+                          if (returnReceiptProvider(context)
+                              .returnOwnReceiptsByDayOrWeek(
+                                context,
                                 returnReceiptProvider(
                                   context,
-                                ).returnOwnReceiptsByDayOrWeek(
-                                  context,
-                                  returnReceiptProvider(
-                                    context,
-                                  ).receipts,
-                                )[index];
-                            TempProductSaleRecord firstP =
-                                returnReceiptProvider(
-                                      context,
-                                    ).produtRecordSalesMain
-                                    .firstWhere(
-                                      (record) =>
-                                          record
-                                              .recepitId ==
-                                          rec.id!,
-                                    );
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    bottom: 2,
-                                  ),
+                                ).receipts,
+                              )
+                              .isEmpty) {
+                            return Expanded(
                               child: Material(
                                 color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ReceiptPage(
-                                            receiptId:
-                                                rec.id!,
-                                            isMain: true,
-                                          );
-                                        },
+                                child: Center(
+                                  child: Column(
+                                    spacing: 10,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        height: 18,
+                                        receiptIconSvg,
                                       ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 11,
-                                        ),
-                                    child: Row(
-                                      spacing: 10,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Row(
-                                          spacing: 10,
-                                          children: [
-                                            // Container(
-                                            //   padding:
-                                            //       EdgeInsets.all(
-                                            //         2,
-                                            //       ),
-                                            //   decoration: BoxDecoration(
-                                            //     shape:
-                                            //         BoxShape.circle,
-                                            //     color:
-                                            //         Colors.grey,
-                                            //   ),
-                                            // ),
-                                            SvgPicture.asset(
-                                              salesIconSvg,
-                                              height: 13,
-                                            ),
-                                            Text(
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
                                               style: TextStyle(
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b4
+                                                        .b3
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
                                               ),
-                                              cutLongText(
-                                                firstP
-                                                    .productName,
-                                                13,
-                                              ),
+                                              'No Sales Recorded for today',
                                             ),
-                                          ],
-                                        ),
-                                        Row(
-                                          spacing: 5,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b4
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              cutLongText(
-                                                formatMoneyMid(
-                                                  amount:
-                                                      rec.bank +
-                                                      rec.cashAlt,
-                                                  context:
-                                                      context,
-                                                ),
-                                                10,
-                                              ),
-                                            ),
-                                            Icon(
-                                              size: 15,
-                                              color:
-                                                  Colors
-                                                      .grey,
-                                              Icons
-                                                  .arrow_forward_ios_rounded,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             );
-                          },
-                        ),
+                          } else {
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount:
+                                    returnReceiptProvider(
+                                          context,
+                                        )
+                                        .returnOwnReceiptsByDayOrWeek(
+                                          context,
+                                          returnReceiptProvider(
+                                            context,
+                                          ).receipts,
+                                        )
+                                        .length,
+                                itemBuilder: (
+                                  context,
+                                  index,
+                                ) {
+                                  TempMainReceipt rec =
+                                      returnReceiptProvider(
+                                        context,
+                                      ).returnOwnReceiptsByDayOrWeek(
+                                        context,
+                                        returnReceiptProvider(
+                                          context,
+                                        ).receipts,
+                                      )[index];
+                                  TempProductSaleRecord
+                                  firstP = returnReceiptProvider(
+                                        context,
+                                      )
+                                      .produtRecordSalesMain
+                                      .firstWhere(
+                                        (record) =>
+                                            record
+                                                .recepitId ==
+                                            rec.id!,
+                                      );
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                          bottom: 2,
+                                        ),
+                                    child: Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ReceiptPage(
+                                                  receiptId:
+                                                      rec.id!,
+                                                  isMain:
+                                                      true,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    5,
+                                                vertical:
+                                                    11,
+                                              ),
+                                          child: Row(
+                                            spacing: 10,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Row(
+                                                spacing: 10,
+                                                children: [
+                                                  // Container(
+                                                  //   padding:
+                                                  //       EdgeInsets.all(
+                                                  //         2,
+                                                  //       ),
+                                                  //   decoration: BoxDecoration(
+                                                  //     shape:
+                                                  //         BoxShape.circle,
+                                                  //     color:
+                                                  //         Colors.grey,
+                                                  //   ),
+                                                  // ),
+                                                  SvgPicture.asset(
+                                                    salesIconSvg,
+                                                    height:
+                                                        13,
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b4.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    cutLongText(
+                                                      firstP
+                                                          .productName,
+                                                      13,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b4.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    cutLongText(
+                                                      formatMoneyMid(
+                                                        amount:
+                                                            rec.bank +
+                                                            rec.cashAlt,
+                                                        context:
+                                                            context,
+                                                      ),
+                                                      10,
+                                                    ),
+                                                  ),
+                                                  Icon(
+                                                    size:
+                                                        15,
+                                                    color:
+                                                        Colors.grey,
+                                                    Icons
+                                                        .arrow_forward_ios_rounded,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),

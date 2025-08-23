@@ -37,6 +37,14 @@ class ItemsSummary extends StatefulWidget {
   final bool? isDateSet;
   final bool? setDate;
   final Function()? clearTextField;
+  final String? title0;
+  final Color? color0;
+  final bool? isMoney0;
+  final double? value0;
+  final String? title00;
+  final Color? color00;
+  final bool? isMoney00;
+  final double? value00;
 
   const ItemsSummary({
     this.isDateSet,
@@ -71,6 +79,14 @@ class ItemsSummary extends StatefulWidget {
     this.isProduct,
     this.filterAction,
     this.clearTextField,
+    this.value0,
+    this.title0,
+    this.color0,
+    this.isMoney0,
+    this.value00,
+    this.title00,
+    this.color00,
+    this.isMoney00,
   });
 
   @override
@@ -289,6 +305,21 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                       mainAxisAlignment:
                           MainAxisAlignment.spaceBetween,
                       children: [
+                        Visibility(
+                          visible:
+                              screenWidth(context) > 550,
+                          child: Expanded(
+                            child: ProductSummaryTab(
+                              isMoney: widget.isMoney0,
+                              color:
+                                  widget.color0 ??
+                                  Colors.amber,
+                              title: widget.title0 ?? '',
+                              value: widget.value0 ?? 0,
+                            ),
+                          ),
+                        ),
+
                         Expanded(
                           child: ProductSummaryTab(
                             isMoney: widget.isMoney1,
@@ -299,6 +330,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                             value: widget.value1 ?? 0,
                           ),
                         ),
+
                         Expanded(
                           child: ProductSummaryTab(
                             isMoney: widget.isMoney2,
@@ -307,6 +339,20 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                 Colors.amber,
                             title: widget.title2 ?? '',
                             value: widget.value2 ?? 0,
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              screenWidth(context) > 550,
+                          child: Expanded(
+                            child: ProductSummaryTab(
+                              isMoney: widget.isMoney00,
+                              color:
+                                  widget.color00 ??
+                                  Colors.amber,
+                              title: widget.title00 ?? '',
+                              value: widget.value00 ?? 0,
+                            ),
                           ),
                         ),
                       ],

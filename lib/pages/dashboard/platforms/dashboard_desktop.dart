@@ -272,7 +272,7 @@ class _DashboardDesktopState
             ),
             Expanded(
               child: Container(
-                margin: EdgeInsets.symmetric(vertical: 30),
+                margin: EdgeInsets.symmetric(vertical: 15),
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   color: Colors.white,
