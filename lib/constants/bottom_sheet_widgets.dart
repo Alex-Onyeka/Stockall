@@ -1894,7 +1894,12 @@ class _CustomBottomPanelState
                     padding: EdgeInsets.symmetric(
                       horizontal:
                           screenWidth(context) <
-                                  tabletScreen
+                                  mobileScreen
+                              ? 0
+                              : screenWidth(context) >
+                                      mobileScreen &&
+                                  screenWidth(context) <
+                                      tabletScreen
                               ? 20
                               : 100,
                     ),

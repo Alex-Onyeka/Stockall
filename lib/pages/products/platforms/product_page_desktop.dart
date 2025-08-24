@@ -401,6 +401,9 @@ class _ProductPageDesktopState
                                             ),
                                             MaterialButton(
                                               onPressed: () {
+                                                var safeContext =
+                                                    context;
+
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -418,6 +421,13 @@ class _ProductPageDesktopState
                                                     () {},
                                                   );
                                                 });
+                                                returnNavProvider(
+                                                  safeContext,
+                                                  listen:
+                                                      false,
+                                                ).navigate(
+                                                  10,
+                                                );
                                               },
                                               child: Row(
                                                 spacing: 5,

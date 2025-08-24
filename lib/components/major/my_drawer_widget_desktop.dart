@@ -8,6 +8,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
+import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
@@ -119,12 +120,62 @@ class _MyDrawerWidgetDesktopState
                             child: Column(
                               children: [
                                 NavListTileDesktopAlt(
-                                  height: 20,
+                                  height: 16,
+                                  action: () {
+                                    var safeContext =
+                                        context;
+
+                                    if (returnNavProvider(
+                                          context,
+                                          listen: false,
+                                        ).currentPage ==
+                                        10) {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return Dashboard(
+                                              shopId:
+                                                  shop(
+                                                    context,
+                                                  )!.shopId,
+                                            );
+                                          },
+                                        ),
+                                        (route) {
+                                          return false;
+                                        },
+                                      );
+                                    }
+                                    returnNavProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).navigate(0);
+                                    returnExpensesProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).clearExpenseDate();
+                                    returnReceiptProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).clearReceiptDate();
+                                    returnData(
+                                      safeContext,
+                                      listen: false,
+                                    ).clearFields();
+                                  },
+                                  title: 'Dashboard',
+                                  icon: Icons.home_filled,
+                                ),
+                                NavListTileDesktopAlt(
+                                  height: 16,
                                   action: () {
                                     returnNavProvider(
                                       context,
                                       listen: false,
-                                    ).navigate(0);
+                                    ).navigate(1);
                                     returnExpensesProvider(
                                       context,
                                       listen: false,
@@ -138,11 +189,36 @@ class _MyDrawerWidgetDesktopState
                                       listen: false,
                                     ).clearFields();
                                   },
-                                  title: 'Dashboard',
-                                  icon: Icons.person,
+                                  title: 'Items',
+                                  icon: Icons.book,
                                 ),
                                 NavListTileDesktopAlt(
-                                  height: 20,
+                                  height: 16,
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(2);
+                                    returnExpensesProvider(
+                                      context,
+                                      listen: false,
+                                    ).clearExpenseDate();
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).clearReceiptDate();
+                                    returnData(
+                                      context,
+                                      listen: false,
+                                    ).clearFields();
+                                  },
+                                  title: 'Sales',
+                                  icon:
+                                      Icons
+                                          .menu_book_rounded,
+                                ),
+                                NavListTileDesktopAlt(
+                                  height: 18,
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -164,7 +240,7 @@ class _MyDrawerWidgetDesktopState
                                     context: context,
                                   ),
                                   child: NavListTileDesktopAlt(
-                                    height: 20,
+                                    height: 18,
                                     action: () {
                                       Navigator.push(
                                         context,
@@ -201,7 +277,7 @@ class _MyDrawerWidgetDesktopState
                                 //   height: 16,
                                 // ),
                                 NavListTileDesktopAlt(
-                                  height: 16,
+                                  height: 14,
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -223,7 +299,7 @@ class _MyDrawerWidgetDesktopState
                                     context: context,
                                   ),
                                   child: NavListTileDesktopAlt(
-                                    height: 16,
+                                    height: 14,
                                     action: () {
                                       Navigator.push(
                                         context,
@@ -246,7 +322,7 @@ class _MyDrawerWidgetDesktopState
                                   ),
                                 ),
                                 NavListTileDesktopAlt(
-                                  height: 16,
+                                  height: 14,
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -265,7 +341,7 @@ class _MyDrawerWidgetDesktopState
                                   svg: expensesIconSvg,
                                 ),
                                 NavListTileDesktopAlt(
-                                  height: 16,
+                                  height: 14,
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -286,7 +362,7 @@ class _MyDrawerWidgetDesktopState
                                           .all_inclusive_sharp,
                                 ),
                                 NavListTileDesktopAlt(
-                                  height: 16,
+                                  height: 14,
                                   action: () {
                                     Navigator.push(
                                       context,
@@ -329,7 +405,7 @@ class _MyDrawerWidgetDesktopState
                                   child: Visibility(
                                     visible: true,
                                     child: SizedBox(
-                                      height: 50,
+                                      height: 40,
                                       child: Padding(
                                         padding:
                                             const EdgeInsets.symmetric(
@@ -353,7 +429,7 @@ class _MyDrawerWidgetDesktopState
                                                       color:
                                                           Colors.grey.shade400,
                                                       size:
-                                                          22,
+                                                          20,
                                                       Icons
                                                           .notifications_on_outlined,
                                                     ),
@@ -369,7 +445,7 @@ class _MyDrawerWidgetDesktopState
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).mobileTexts.b1.fontSize,
+                                                        ).mobileTexts.b2.fontSize,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                   ),
@@ -418,9 +494,9 @@ class _MyDrawerWidgetDesktopState
                                                     ),
                                                     child: SvgPicture.asset(
                                                       height:
-                                                          25,
+                                                          23,
                                                       width:
-                                                          25,
+                                                          23,
                                                       notifIconSvg,
                                                       color:
                                                           widget.notifications
@@ -438,8 +514,8 @@ class _MyDrawerWidgetDesktopState
                                                 ),
                                                 Positioned(
                                                   bottom:
-                                                      25,
-                                                  left: 32,
+                                                      18,
+                                                  left: 26,
                                                   child: Visibility(
                                                     visible:
                                                         widget.notifications
@@ -467,7 +543,7 @@ class _MyDrawerWidgetDesktopState
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             fontSize:
-                                                                14,
+                                                                12,
                                                             color:
                                                                 Colors.white,
                                                           ),
@@ -494,7 +570,7 @@ class _MyDrawerWidgetDesktopState
                                   ),
                                   child:
                                       NavListTileDesktopAlt(
-                                        height: 20,
+                                        height: 18,
                                         action: () async {
                                           phoneCall();
                                         },
@@ -511,7 +587,7 @@ class _MyDrawerWidgetDesktopState
                                   ),
                                   child:
                                       NavListTileDesktopAlt(
-                                        height: 16,
+                                        height: 14,
                                         action: () async {
                                           openWhatsApp();
                                         },
@@ -524,7 +600,7 @@ class _MyDrawerWidgetDesktopState
                                 Visibility(
                                   visible: false,
                                   child: NavListTileDesktopAlt(
-                                    height: 20,
+                                    height: 18,
                                     action: () {},
                                     title:
                                         'Privacy P. & Terms/C.',
@@ -534,7 +610,7 @@ class _MyDrawerWidgetDesktopState
                                   ),
                                 ),
                                 NavListTileDesktopAlt(
-                                  height: 20,
+                                  height: 18,
                                   action: () {
                                     showGeneralDialog(
                                       context: context,
@@ -561,7 +637,7 @@ class _MyDrawerWidgetDesktopState
                                           TargetPlatform
                                               .android,
                                   child: NavListTileDesktopAlt(
-                                    height: 20,
+                                    height: 18,
                                     action: () {
                                       showDialog(
                                         context: context,
@@ -608,7 +684,7 @@ class _MyDrawerWidgetDesktopState
                                 //       Icons
                                 //           .card_giftcard_rounded,
                                 // ),
-                                SizedBox(height: 30),
+                                SizedBox(height: 20),
                               ],
                             ),
                           ),
@@ -633,7 +709,7 @@ class _MyDrawerWidgetDesktopState
                                     bottom: 20.0,
                                   ),
                           child: NavListTileDesktopAlt(
-                            height: 20,
+                            height: 18,
                             action: widget.action,
                             title: 'Logout',
                             // svg: reportIconSvg,
@@ -678,10 +754,9 @@ class NavListTileDesktop extends StatelessWidget {
           context,
           listen: false,
         ).navigate(thisIndex);
-        Navigator.of(context).pop();
       },
       child: SizedBox(
-        height: 50,
+        height: 40,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 20.0,
@@ -713,8 +788,8 @@ class NavListTileDesktop extends StatelessWidget {
                                         context,
                                       ).currentPage ==
                                       thisIndex
-                                  ? 22
-                                  : 18,
+                                  ? 20
+                                  : 16,
                           icon ?? Icons.home,
                         ),
                       ),
@@ -736,7 +811,7 @@ class NavListTileDesktop extends StatelessWidget {
                                         context,
                                       ).currentPage ==
                                       thisIndex
-                                  ? 20
+                                  ? 18
                                   : height,
                         ),
                       ),
@@ -759,8 +834,8 @@ class NavListTileDesktop extends StatelessWidget {
                                     context,
                                   ).currentPage ==
                                   thisIndex
-                              ? 15
-                              : 14,
+                              ? 13
+                              : 12,
                       fontWeight:
                           returnNavProvider(
                                     context,
@@ -787,8 +862,8 @@ class NavListTileDesktop extends StatelessWidget {
                               context,
                             ).currentPage ==
                             thisIndex
-                        ? 30
-                        : 18,
+                        ? 28
+                        : 16,
                 returnNavProvider(context).currentPage ==
                         thisIndex
                     ? Icons.arrow_drop_down
@@ -824,11 +899,10 @@ class NavListTileDesktopAlt extends StatelessWidget {
     var theme = returnTheme(context);
     return InkWell(
       onTap: () {
-        Navigator.of(context).pop();
         action!();
       },
       child: SizedBox(
-        height: 45,
+        height: 38,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 20.0,
@@ -877,7 +951,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
                     style: TextStyle(
                       color: color ?? Colors.grey.shade900,
                       fontSize:
-                          theme.mobileTexts.b1.fontSize,
+                          theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.w500,
                     ),
                     title,
@@ -886,7 +960,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
               ),
               Icon(
                 color: Colors.grey.shade600,
-                size: 14,
+                size: 12,
                 Icons.arrow_forward_ios_rounded,
               ),
             ],
