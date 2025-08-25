@@ -242,116 +242,165 @@ class _ShopBannerScreenDesktopState
                           MainAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              performRestart();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      10,
-                                    ),
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              color: Colors.grey.shade100,
+                              border: Border.all(
+                                color: Colors.grey.shade200,
                               ),
-                              padding: EdgeInsets.symmetric(
-                                vertical: 15,
-                              ),
-                              child: Center(
-                                child: Row(
-                                  spacing: 5,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .secColor200,
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                performRestart();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
                                       ),
-                                      'Refresh Page to Verify',
+                                  border: Border.all(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade400,
+                                    width: 0.7,
+                                  ),
+                                ),
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 12,
                                     ),
-                                    Icon(
-                                      size: 22,
-                                      color: Colors.grey,
-                                      Icons.refresh_sharp,
-                                    ),
-                                  ],
+                                child: Center(
+                                  child: Row(
+                                    spacing: 5,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .secColor200,
+                                        ),
+                                        'Refresh Page to Verify',
+                                      ),
+                                      Icon(
+                                        size: 22,
+                                        color: Colors.grey,
+                                        Icons.refresh_sharp,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
                         Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (dialogContext) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        'Are you sure you want to Log out?',
-                                    title: 'Log Out',
-                                    action: () async {
-                                      Navigator.of(
-                                        dialogContext,
-                                      ).pop();
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      await AuthService()
-                                          .signOut(context);
-                                      if (context.mounted) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return AuthLanding();
-                                            },
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 15,
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              color: Colors.grey.shade100,
+                              border: Border.all(
+                                color: Colors.grey.shade400,
+                                width: 0.7,
                               ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  spacing: 5,
-                                  children: [
-                                    Icon(
-                                      color: Colors.grey,
-                                      size: 20,
-                                      Icons.logout_rounded,
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (dialogContext) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'Are you sure you want to Log out?',
+                                      title: 'Log Out',
+                                      action: () async {
+                                        Navigator.of(
+                                          dialogContext,
+                                        ).pop();
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        await AuthService()
+                                            .signOut(
+                                              context,
+                                            );
+                                        if (context
+                                            .mounted) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return AuthLanding();
+                                              },
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 13,
                                     ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color: Colors.grey,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
                                       ),
-                                      'Log Out',
-                                    ),
-                                  ],
+                                ),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    spacing: 5,
+                                    children: [
+                                      Icon(
+                                        color:
+                                            const Color.fromARGB(
+                                              206,
+                                              244,
+                                              67,
+                                              54,
+                                            ),
+                                        size: 20,
+                                        Icons
+                                            .logout_rounded,
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                        'Log Out',
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
