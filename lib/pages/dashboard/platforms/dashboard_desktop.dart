@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/my_drawer_widget.dart';
@@ -154,6 +155,16 @@ class _DashboardDesktopState
     return tempExp;
   }
 
+  Future<List<TempUserClass>> getEmployees() {
+    var users =
+        returnUserProvider(
+          context,
+          listen: false,
+        ).fetchUsers();
+
+    return users;
+  }
+
   TextEditingController emailController =
       TextEditingController();
   TextEditingController passwordController =
@@ -186,6 +197,7 @@ class _DashboardDesktopState
     getMainReceipts();
     getProductSalesRecord();
     getExpenses();
+    getEmployees();
     returnUserProvider(
       context,
       listen: false,

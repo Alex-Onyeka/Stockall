@@ -143,6 +143,12 @@ class _EmployeeListMobileState
                         setState(() {});
                       });
                     },
+                    altAction: () {
+                      getEmployees();
+                      setState(() {});
+                    },
+                    altActionText: 'Refresh List',
+                    altIcon: Icons.refresh_rounded,
                   );
                 } else {
                   return Padding(
