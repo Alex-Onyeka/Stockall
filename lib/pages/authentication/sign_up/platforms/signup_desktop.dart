@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
+import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -231,258 +232,195 @@ class _SignupDesktopState extends State<SignupDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(backGroundImage),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Container(
-              color: const Color.fromARGB(
-                201,
-                255,
-                255,
-                255,
-              ),
-            ),
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 40,
+    return Stack(
+      children: [
+        Scaffold(
+          body: DesktopCenterContainer(
+            mainWidget: Column(
+              children: [
+                SizedBox(height: 10),
+                Row(
+                  spacing: 10,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Image.asset(mainLogoIcon, height: 20),
+                    Text(
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 25,
+                        fontWeight:
+                            widget
+                                .theme
+                                .mobileTexts
+                                .h3
+                                .fontWeightBold,
                       ),
-                      width: 550,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 30,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          20,
-                        ),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(
-                              46,
-                              0,
-                              0,
-                              0,
-                            ),
-                            blurRadius: 10,
-                            spreadRadius: 5,
-                            offset: Offset(0, 0),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10),
-                          Row(
-                            spacing: 10,
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                mainLogoIcon,
-                                height: 20,
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 25,
-                                  fontWeight:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .h3
-                                          .fontWeightBold,
-                                ),
-                                appName,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Column(
-                            spacing: 8,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      color:
-                                          widget
-                                              .theme
-                                              .lightModeColor
-                                              .shadesColorBlack,
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .h3
-                                              .fontSize,
-                                      fontWeight:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .h3
-                                              .fontWeightBold,
-                                    ),
-                                    'Get Started Now',
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    style:
-                                        Provider.of<
-                                              ThemeProvider
-                                            >(context)
-                                            .mobileTexts
-                                            .b1
-                                            .textStyleNormal,
-                                    "Let's create you Account",
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 10,
-                            children: [
-                              Expanded(
-                                child: GeneralTextField(
-                                  title: 'First Name*',
-                                  hint:
-                                      'Enter Your First Name',
-                                  controller:
-                                      widget.nameController,
-                                  lines: 1,
-                                  theme: widget.theme,
-                                ),
-                              ),
-                              Expanded(
-                                child: GeneralTextField(
-                                  title:
-                                      'Last Name (Optional)',
-                                  hint: 'Enter Last Name',
-                                  controller:
-                                      widget
-                                          .lastNameController,
-                                  lines: 1,
-                                  theme: widget.theme,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 15),
-                          EmailTextField(
-                            title: 'Set Email Address',
-                            hint: 'Enter Email',
-                            isEmail: true,
-                            controller:
-                                widget.emailController,
-                            theme: widget.theme,
-                          ),
-                          SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 10,
-                            children: [
-                              Expanded(
-                                child: EmailTextField(
-                                  title: 'Set Password',
-                                  hint: 'Enter Password',
-                                  isEmail: false,
-                                  controller:
-                                      widget
-                                          .passwordController,
-                                  theme: widget.theme,
-                                ),
-                              ),
-                              Expanded(
-                                child: EmailTextField(
-                                  title: 'Confirm Password',
-                                  hint: 'Confirm Password',
-                                  isEmail: false,
-                                  controller:
-                                      widget
-                                          .confirmPasswordController,
-                                  theme: widget.theme,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          PhoneNumberTextField(
-                            title: 'User Phone Number*',
-                            hint: 'Enter your Phone Number',
-                            controller:
+                      appName,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Column(
+                  spacing: 8,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            color:
                                 widget
-                                    .phoneNumberController,
-                            theme: widget.theme,
+                                    .theme
+                                    .lightModeColor
+                                    .shadesColorBlack,
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontSize,
+                            fontWeight:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontWeightBold,
                           ),
-                          SizedBox(height: 20),
-                          CheckAgree(
-                            onChanged: widget.onChanged,
-                            checked: widget.checked,
-                            theme: widget.theme,
-                            onTap: widget.onTap,
-                          ),
-                          SizedBox(height: 20),
-                          MainButtonP(
-                            themeProvider: widget.theme,
-                            action: () {
-                              checkInputs();
-                            },
-                            text: 'Create Account',
-                          ),
-                          SizedBox(height: 10),
-                          MainButtonTransparent(
-                            themeProvider: widget.theme,
-                            constraints: BoxConstraints(),
-                            text: 'Go Back',
-                            action: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          SizedBox(height: 10),
-                        ],
+                          'Get Started Now',
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          style:
+                              Provider.of<ThemeProvider>(
+                                    context,
+                                  )
+                                  .mobileTexts
+                                  .b1
+                                  .textStyleNormal,
+                          "Let's create you Account",
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: GeneralTextField(
+                        title: 'First Name*',
+                        hint: 'Enter Your First Name',
+                        controller: widget.nameController,
+                        lines: 1,
+                        theme: widget.theme,
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    Expanded(
+                      child: GeneralTextField(
+                        title: 'Last Name (Optional)',
+                        hint: 'Enter Last Name',
+                        controller:
+                            widget.lastNameController,
+                        lines: 1,
+                        theme: widget.theme,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
+                EmailTextField(
+                  title: 'Set Email Address',
+                  hint: 'Enter Email',
+                  isEmail: true,
+                  controller: widget.emailController,
+                  theme: widget.theme,
+                ),
+                SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: EmailTextField(
+                        title: 'Set Password',
+                        hint: 'Enter Password',
+                        isEmail: false,
+                        controller:
+                            widget.passwordController,
+                        theme: widget.theme,
+                      ),
+                    ),
+                    Expanded(
+                      child: EmailTextField(
+                        title: 'Confirm Password',
+                        hint: 'Confirm Password',
+                        isEmail: false,
+                        controller:
+                            widget
+                                .confirmPasswordController,
+                        theme: widget.theme,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                PhoneNumberTextField(
+                  title: 'User Phone Number*',
+                  hint: 'Enter your Phone Number',
+                  controller: widget.phoneNumberController,
+                  theme: widget.theme,
+                ),
+                SizedBox(height: 20),
+                CheckAgree(
+                  onChanged: widget.onChanged,
+                  checked: widget.checked,
+                  theme: widget.theme,
+                  onTap: widget.onTap,
+                ),
+                SizedBox(height: 20),
+                MainButtonP(
+                  themeProvider: widget.theme,
+                  action: () {
+                    checkInputs();
+                  },
+                  text: 'Create Account',
+                ),
+                SizedBox(height: 10),
+                MainButtonTransparent(
+                  themeProvider: widget.theme,
+                  constraints: BoxConstraints(),
+                  text: 'Go Back',
+                  action: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                SizedBox(height: 10),
+              ],
             ),
-            Visibility(
-              visible: isLoading,
-              child: Provider.of<CompProvider>(
-                context,
-                listen: false,
-              ).showLoader('Loading'),
-            ),
-            Visibility(
-              visible: showSuccess,
-              child: Provider.of<CompProvider>(
-                context,
-                listen: false,
-              ).showSuccess('Account Created Successfully'),
-            ),
-          ],
+          ),
         ),
-      ),
+        Visibility(
+          visible: isLoading,
+          child: Provider.of<CompProvider>(
+            context,
+            listen: false,
+          ).showLoader('Loading'),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: Provider.of<CompProvider>(
+            context,
+            listen: false,
+          ).showSuccess('Account Created Successfully'),
+        ),
+      ],
     );
   }
 }

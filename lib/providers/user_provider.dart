@@ -13,6 +13,11 @@ class UserProvider extends ChangeNotifier {
   List<TempUserClass> _users = [];
   List<TempUserClass> get usersMain => _users;
 
+  void clearUsers() {
+    usersMain.clear();
+    notifyListeners();
+  }
+
   bool isLoading = false;
 
   Future<List<TempUserClass>> fetchUsers() async {

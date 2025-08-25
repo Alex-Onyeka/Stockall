@@ -10,203 +10,220 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
-class NotificationsDesktop extends StatelessWidget {
+class NotificationsDesktop extends StatefulWidget {
   const NotificationsDesktop({super.key});
 
+  @override
+  State<NotificationsDesktop> createState() =>
+      _NotificationsDesktopState();
+}
+
+class _NotificationsDesktopState
+    extends State<NotificationsDesktop> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     var notificationss =
         returnNotificationProvider(context).notifications;
     var theme = returnTheme(context);
-    return Row(
-      spacing: 15,
+    return Stack(
       children: [
-        MyDrawerWidget(
-          action: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return ConfirmationAlert(
-                  theme: theme,
-                  message: 'You are about to Logout',
-                  title: 'Are you Sure?',
-                  action: () async {
-                    if (context.mounted) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return AuthScreensPage();
-                          },
-                        ),
-                      );
-                      returnNavProvider(
-                        context,
-                        listen: false,
-                      ).navigate(0);
-                    }
-                    if (context.mounted) {
-                      await AuthService().signOut(context);
-                    }
+        Row(
+          spacing: 15,
+          children: [
+            MyDrawerWidget(
+              action: () {
+                var safeContext = context;
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message: 'You are about to Logout',
+                      title: 'Are you Sure?',
+                      action: () async {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          isLoading = true;
+                        });
+                        if (safeContext.mounted) {
+                          await AuthService().signOut(
+                            safeContext,
+                          );
+                        }
+                      },
+                    );
                   },
                 );
               },
-            );
-          },
-          theme: theme,
-          notifications:
-              returnNotificationProvider(
-                    context,
-                  ).notifications.isEmpty
-                  ? []
-                  : returnNotificationProvider(
-                    context,
-                  ).notifications,
-        ),
-        Expanded(
-          child: DesktopPageContainer(
-            widget: Scaffold(
-              backgroundColor: Colors.grey.shade100,
-              body: Column(
-                children: [
-                  TopBanner(
-                    subTitle:
-                        'Manage your account Notifications',
-                    title: 'Notifications',
-                    theme: theme,
-                    bottomSpace: 40,
-                    topSpace: 30,
-                    iconData: Icons.notifications,
-                    isMain: true,
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0,
+              theme: theme,
+              notifications:
+                  returnNotificationProvider(
+                        context,
+                      ).notifications.isEmpty
+                      ? []
+                      : returnNotificationProvider(
+                        context,
+                      ).notifications,
+            ),
+            Expanded(
+              child: DesktopPageContainer(
+                widget: Scaffold(
+                  backgroundColor: Colors.grey.shade100,
+                  body: Column(
+                    children: [
+                      TopBanner(
+                        subTitle:
+                            'Manage your account Notifications',
+                        title: 'Notifications',
+                        theme: theme,
+                        bottomSpace: 40,
+                        topSpace: 30,
+                        iconData: Icons.notifications,
+                        isMain: true,
                       ),
-                      child: Builder(
-                        builder: (context) {
-                          if (notificationss.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(
-                                      bottom: 30.0,
-                                    ),
-                                child: EmptyWidgetDisplayOnly(
-                                  title:
-                                      'No New Notifications',
-                                  subText:
-                                      'Your currently don\'t have any new notification. Check back later when you do.',
-                                  theme: theme,
-                                  height: 30,
-                                  icon:
-                                      Icons
-                                          .notifications_active_outlined,
-                                ),
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 15.0,
                               ),
-                            );
-                          } else {
-                            return RefreshIndicator(
-                              onRefresh: () {
-                                return returnNotificationProvider(
-                                  context,
-                                  listen: false,
-                                ).fetchRecentNotifications(
-                                  shopId(context),
-                                );
-                              },
-                              backgroundColor: Colors.white,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .prColor300,
-                              displacement: 10,
-                              child: ListView.builder(
-                                padding: EdgeInsets.only(
-                                  top: 20,
-                                ),
-                                itemCount:
-                                    notificationss.length,
-                                itemBuilder: (
-                                  context,
-                                  index,
-                                ) {
-                                  TempNotification notif =
-                                      notificationss[index];
-                                  return Padding(
+                          child: Builder(
+                            builder: (context) {
+                              if (notificationss.isEmpty) {
+                                return Center(
+                                  child: Padding(
                                     padding:
-                                        const EdgeInsets.symmetric(
-                                          vertical: 5.0,
+                                        const EdgeInsets.only(
+                                          bottom: 30.0,
                                         ),
-                                    child: NotificatonTileMain(
-                                      notif: notif,
+                                    child: EmptyWidgetDisplayOnly(
+                                      title:
+                                          'No New Notifications',
+                                      subText:
+                                          'Your currently don\'t have any new notification. Check back later when you do.',
                                       theme: theme,
-                                      action: () {
-                                        if (authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .deleteNotification,
-                                          context: context,
-                                        )) {
-                                          showDialog(
-                                            context:
-                                                context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return ConfirmationAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Are you sure you want to proceed with delete?',
-                                                title:
-                                                    'Delete Notification?',
-                                                action: () async {
-                                                  await Provider.of<
-                                                    NotificationProvider
-                                                  >(
+                                      height: 30,
+                                      icon:
+                                          Icons
+                                              .notifications_active_outlined,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return RefreshIndicator(
+                                  onRefresh: () {
+                                    return returnNotificationProvider(
+                                      context,
+                                      listen: false,
+                                    ).fetchRecentNotifications(
+                                      shopId(context),
+                                    );
+                                  },
+                                  backgroundColor:
+                                      Colors.white,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  displacement: 10,
+                                  child: ListView.builder(
+                                    padding:
+                                        EdgeInsets.only(
+                                          top: 20,
+                                        ),
+                                    itemCount:
+                                        notificationss
+                                            .length,
+                                    itemBuilder: (
+                                      context,
+                                      index,
+                                    ) {
+                                      TempNotification
+                                      notif =
+                                          notificationss[index];
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              vertical: 5.0,
+                                            ),
+                                        child: NotificatonTileMain(
+                                          notif: notif,
+                                          theme: theme,
+                                          action: () {
+                                            if (authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .deleteNotification,
+                                              context:
+                                                  context,
+                                            )) {
+                                              showDialog(
+                                                context:
                                                     context,
-                                                    listen:
-                                                        false,
-                                                  ).deleteNotificationFromSupabase(
-                                                    notif,
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ConfirmationAlert(
+                                                    theme:
+                                                        theme,
+                                                    message:
+                                                        'Are you sure you want to proceed with delete?',
+                                                    title:
+                                                        'Delete Notification?',
+                                                    action: () async {
+                                                      await Provider.of<
+                                                        NotificationProvider
+                                                      >(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).deleteNotificationFromSupabase(
+                                                        notif,
+                                                      );
+                                                      if (context
+                                                          .mounted) {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      }
+                                                    },
                                                   );
-                                                  if (context
-                                                      .mounted) {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                  }
                                                 },
                                               );
-                                            },
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        },
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            RightSideBar(theme: theme),
+          ],
         ),
-        RightSideBar(theme: theme),
+        Visibility(
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader('Logging Out...'),
+        ),
       ],
     );
   }

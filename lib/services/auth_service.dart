@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
@@ -199,30 +200,52 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
-    returnShopProvider(context, listen: false).clearShop();
-    returnCustomers(
-      context,
-      listen: false,
-    ).clearCustomers();
-    returnData(context, listen: false).clearProducts();
-    returnExpensesProvider(
-      context,
-      listen: false,
-    ).clearExpenses();
-    returnNotificationProvider(
-      context,
-      listen: false,
-    ).clearNotifications();
-    returnSuggestionProvider(
-      context,
-      listen: false,
-    ).clearSuggestionsMain();
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).clearReceipts();
-    returnSalesProvider(context, listen: false).clearCart();
     await _client.auth.signOut();
+    if (context.mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return AuthScreensPage();
+          },
+        ),
+      );
+      returnNavProvider(context, listen: false).navigate(0);
+      returnShopProvider(
+        context,
+        listen: false,
+      ).clearShop();
+      returnCustomers(
+        context,
+        listen: false,
+      ).clearCustomers();
+      returnUserProvider(
+        context,
+        listen: false,
+      ).clearUsers();
+      returnData(context, listen: false).clearProducts();
+      returnExpensesProvider(
+        context,
+        listen: false,
+      ).clearExpenses();
+      returnNotificationProvider(
+        context,
+        listen: false,
+      ).clearNotifications();
+      returnSuggestionProvider(
+        context,
+        listen: false,
+      ).clearSuggestionsMain();
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).clearReceipts();
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).clearCart();
+    }
+
     notifyListeners();
   }
 

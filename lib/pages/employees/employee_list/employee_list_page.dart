@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/employees/employee_list/platforms/employee_list_desktop.dart';
 import 'package:stockall/pages/employees/employee_list/platforms/employee_list_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -47,11 +48,8 @@ class _EmployeeListPageState
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
           return EmployeeListMobile();
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return EmployeeListDesktop();
         }
       },
     );

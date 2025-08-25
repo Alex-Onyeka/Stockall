@@ -15,16 +15,22 @@ PreferredSizeWidget appBar({
     toolbarHeight: 60,
     leading: Opacity(
       opacity:
-          returnNavProvider(context).currentIndex != 5
-              ? 1
-              : 0,
+          returnNavProvider(
+                    context,
+                    listen: false,
+                  ).currentIndex ==
+                  5
+              ? 0
+              : 1,
       child: IconButton(
         onPressed: () {
           if (returnNavProvider(
                 context,
                 listen: false,
-              ).currentIndex !=
+              ).currentIndex ==
               5) {
+            return;
+          } else {
             if (isMain != null) {
               Navigator.pushReplacement(
                 context,

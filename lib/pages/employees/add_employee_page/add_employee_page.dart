@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_desktop.dart';
 import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
 
 class AddEmployeePage extends StatefulWidget {
@@ -34,11 +35,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               idC: idC,
               employee: widget.employee,
             );
-          } else if (constraints.maxWidth > 500 &&
-              constraints.maxWidth < 1000) {
-            return Scaffold();
           } else {
-            return Scaffold();
+            return AddEmployeeDesktop(
+              idC: idC,
+              employee: widget.employee,
+            );
           }
         },
       ),
