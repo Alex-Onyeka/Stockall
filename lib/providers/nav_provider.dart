@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class NavProvider extends ChangeNotifier {
   int currentPage = 0;
+
   bool settingNow = false;
 
   void setSettings() {

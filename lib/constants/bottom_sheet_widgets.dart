@@ -1868,12 +1868,15 @@ class _CustomBottomPanelState
             height:
                 MediaQuery.of(context).size.height * 0.9,
 
-            padding: const EdgeInsets.fromLTRB(
-              15,
-              15,
-              15,
-              45,
-            ),
+            padding:
+                screenWidth(context) < mobileScreen
+                    ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+                    : const EdgeInsets.fromLTRB(
+                      15,
+                      15,
+                      15,
+                      40,
+                    ),
             child: Column(
               children: [
                 Center(

@@ -8,9 +8,9 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
-import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
@@ -125,23 +125,16 @@ class _MyDrawerWidgetDesktopState
                                     var safeContext =
                                         context;
 
-                                    if (returnNavProvider(
-                                          context,
-                                          listen: false,
-                                        ).currentPage ==
-                                        10) {
+                                    if (Navigator.of(
+                                      context,
+                                    ).canPop()) {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
                                           builder: (
                                             context,
                                           ) {
-                                            return Dashboard(
-                                              shopId:
-                                                  shop(
-                                                    context,
-                                                  )!.shopId,
-                                            );
+                                            return Home();
                                           },
                                         ),
                                         (route) {
@@ -172,20 +165,40 @@ class _MyDrawerWidgetDesktopState
                                 NavListTileDesktopAlt(
                                   height: 16,
                                   action: () {
-                                    returnNavProvider(
+                                    var safeContext =
+                                        context;
+
+                                    if (Navigator.of(
                                       context,
+                                    ).canPop()) {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return Home();
+                                          },
+                                        ),
+                                        (route) {
+                                          return false;
+                                        },
+                                      );
+                                    }
+                                    returnNavProvider(
+                                      safeContext,
                                       listen: false,
                                     ).navigate(1);
                                     returnExpensesProvider(
-                                      context,
+                                      safeContext,
                                       listen: false,
                                     ).clearExpenseDate();
                                     returnReceiptProvider(
-                                      context,
+                                      safeContext,
                                       listen: false,
                                     ).clearReceiptDate();
                                     returnData(
-                                      context,
+                                      safeContext,
                                       listen: false,
                                     ).clearFields();
                                   },
@@ -195,20 +208,40 @@ class _MyDrawerWidgetDesktopState
                                 NavListTileDesktopAlt(
                                   height: 16,
                                   action: () {
-                                    returnNavProvider(
+                                    var safeContext =
+                                        context;
+
+                                    if (Navigator.of(
                                       context,
+                                    ).canPop()) {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return Home();
+                                          },
+                                        ),
+                                        (route) {
+                                          return false;
+                                        },
+                                      );
+                                    }
+                                    returnNavProvider(
+                                      safeContext,
                                       listen: false,
                                     ).navigate(2);
                                     returnExpensesProvider(
-                                      context,
+                                      safeContext,
                                       listen: false,
                                     ).clearExpenseDate();
                                     returnReceiptProvider(
-                                      context,
+                                      safeContext,
                                       listen: false,
                                     ).clearReceiptDate();
                                     returnData(
-                                      context,
+                                      safeContext,
                                       listen: false,
                                     ).clearFields();
                                   },

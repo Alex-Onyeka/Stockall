@@ -401,8 +401,8 @@ class _ProductPageDesktopState
                                             ),
                                             MaterialButton(
                                               onPressed: () {
-                                                var safeContext =
-                                                    context;
+                                                // var safeContext =
+                                                //     context;
 
                                                 Navigator.push(
                                                   context,
@@ -421,13 +421,13 @@ class _ProductPageDesktopState
                                                     () {},
                                                   );
                                                 });
-                                                returnNavProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).navigate(
-                                                  10,
-                                                );
+                                                // returnNavProvider(
+                                                //   safeContext,
+                                                //   listen:
+                                                //       false,
+                                                // ).navigate(
+                                                //   10,
+                                                // );
                                               },
                                               child: Row(
                                                 spacing: 5,
