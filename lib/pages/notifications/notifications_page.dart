@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/notifications/platforms/notifications_desktop.dart';
 import 'package:stockall/pages/notifications/platforms/notifications_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -53,11 +54,8 @@ class _NotificationsPageState
       builder: (context, constraints) {
         if (constraints.maxWidth < 550) {
           return NotificationsMobile();
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return NotificationsDesktop();
         }
       },
     );

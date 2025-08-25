@@ -13,38 +13,50 @@ PreferredSizeWidget appBar({
   return AppBar(
     scrolledUnderElevation: 0,
     toolbarHeight: 60,
-    leading: IconButton(
-      onPressed: () {
-        if (isMain != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return Home();
-              },
-            ),
-          );
-        } else if (main == true) {
-          return;
-        } else if (!Navigator.of(context).canPop()) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return Home();
-              },
-            ),
-          );
-        } else {
-          Navigator.of(context).pop();
-        }
-      },
-      icon: Padding(
-        padding: const EdgeInsets.only(
-          left: 10.0,
-          right: 5,
+    leading: Opacity(
+      opacity:
+          returnNavProvider(context).currentIndex != 5
+              ? 1
+              : 0,
+      child: IconButton(
+        onPressed: () {
+          if (returnNavProvider(
+                context,
+                listen: false,
+              ).currentIndex !=
+              5) {
+            if (isMain != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Home();
+                  },
+                ),
+              );
+            } else if (main == true) {
+              return;
+            } else if (!Navigator.of(context).canPop()) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Home();
+                  },
+                ),
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          }
+        },
+        icon: Padding(
+          padding: const EdgeInsets.only(
+            left: 10.0,
+            right: 5,
+          ),
+          child: Icon(Icons.arrow_back_ios_new_rounded),
         ),
-        child: Icon(Icons.arrow_back_ios_new_rounded),
       ),
     ),
     centerTitle: true,

@@ -72,8 +72,6 @@ class _DashboardDesktopState
     });
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
   late TempShopClass shop;
 
   Future<List<TempMainReceipt>> getMainReceipts() {
@@ -285,7 +283,6 @@ class _DashboardDesktopState
                 widget: Stack(
                   children: [
                     Scaffold(
-                      key: _scaffoldKey,
                       body: Stack(
                         children: [
                           Column(
@@ -300,6 +297,10 @@ class _DashboardDesktopState
                                     refreshAction:
                                         refreshAll,
                                     action: () {
+                                      returnNavProvider(
+                                        context,
+                                        listen: false,
+                                      ).navigate(8);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -311,15 +312,7 @@ class _DashboardDesktopState
                                         ),
                                       );
                                     },
-                                    openSideBar: () {
-                                      _scaffoldKey
-                                          .currentState
-                                          ?.openDrawer();
-                                      returnNavProvider(
-                                        context,
-                                        listen: false,
-                                      ).setSettings();
-                                    },
+                                    openSideBar: () {},
                                     theme: theme,
                                     notifications:
                                         snapshot.connectionState ==
@@ -770,6 +763,13 @@ class _DashboardDesktopState
                                                         title:
                                                             'Invoices',
                                                         action: () {
+                                                          returnNavProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).navigate(
+                                                            5,
+                                                          );
                                                           Navigator.push(
                                                             context,
                                                             MaterialPageRoute(

@@ -130,7 +130,12 @@ class _TotalSalesDesktopState
               widget: Scaffold(
                 appBar: appBar(
                   context: context,
-                  title: 'All Sales',
+                  title:
+                      !returnReceiptProvider(
+                            context,
+                          ).returnInvoice
+                          ? 'All Sales'
+                          : 'All Invoices',
                   widget: Padding(
                     padding: const EdgeInsets.only(
                       right: 15.0,
@@ -231,6 +236,10 @@ class _TotalSalesDesktopState
                       ).returnInvoice,
                   child: FloatingActionButtonMain(
                     action: () {
+                      returnNavProvider(
+                        context,
+                        listen: false,
+                      ).navigate(2);
                       Navigator.push(
                         context,
                         MaterialPageRoute(

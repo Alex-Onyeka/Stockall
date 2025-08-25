@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -301,17 +300,26 @@ class RightSideBar extends StatelessWidget {
                                           context,
                                         ).receipts,
                                       )[index];
-                                  TempProductSaleRecord
-                                  firstP = returnReceiptProvider(
-                                        context,
-                                      )
-                                      .produtRecordSalesMain
-                                      .firstWhere(
-                                        (record) =>
-                                            record
-                                                .recepitId ==
-                                            rec.id!,
-                                      );
+                                  String itemName =
+                                      returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .produtRecordSalesMain
+                                              .isNotEmpty
+                                          ? returnReceiptProvider(
+                                                context,
+                                              )
+                                              .produtRecordSalesMain
+                                              .firstWhere(
+                                                (record) =>
+                                                    record
+                                                        .recepitId ==
+                                                    rec.id!,
+                                              )
+                                              .productName
+                                          : 'Item name';
                                   return Padding(
                                     padding:
                                         const EdgeInsets.only(
@@ -369,8 +377,7 @@ class RightSideBar extends StatelessWidget {
                                                           FontWeight.bold,
                                                     ),
                                                     cutLongText(
-                                                      firstP
-                                                          .productName,
+                                                      itemName,
                                                       13,
                                                     ),
                                                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/sign_up/sign_up_page.dart';
@@ -136,8 +137,13 @@ class AuthLandingDesktop extends StatelessWidget {
                           themeProvider: themeProvider,
                         ),
                         SizedBox(height: 10),
-                        InkWell(
-                          onTap: () {
+                        MainButtonTransparent(
+                          themeProvider: themeProvider,
+                          constraints: constraints,
+                          text:
+                              AuthLandingTexts()
+                                  .authLandingAlreadyHaveAnAccount,
+                          action: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -147,51 +153,6 @@ class AuthLandingDesktop extends StatelessWidget {
                               ),
                             );
                           },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 14,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeProvider
-                                        .lightModeColor
-                                        .prColor300,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                style: TextStyle(
-                                  color:
-                                      themeProvider
-                                          .lightModeColor
-                                          .prColor300,
-                                  fontSize:
-                                      themeProvider
-                                          .returnPlatform(
-                                            constraints,
-                                            context,
-                                          )
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      themeProvider
-                                          .returnPlatform(
-                                            constraints,
-                                            context,
-                                          )
-                                          .b3
-                                          .fontWeightRegular,
-                                ),
-                                AuthLandingTexts()
-                                    .authLandingAlreadyHaveAnAccount,
-                              ),
-                            ),
-                          ),
                         ),
                       ],
                     ),

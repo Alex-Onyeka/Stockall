@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/calculator_page/calculator_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
@@ -457,9 +457,6 @@ class _MyDrawerWidgetDesktopState
                                       context,
                                       listen: false,
                                     ).navigate(8);
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -471,7 +468,20 @@ class _MyDrawerWidgetDesktopState
                                   },
                                   child: Visibility(
                                     visible: true,
-                                    child: SizedBox(
+                                    child: Container(
+                                      color:
+                                          returnNavProvider(
+                                                    context,
+                                                  ).currentIndex ==
+                                                  8
+                                              ? const Color.fromARGB(
+                                                36,
+                                                255,
+                                                153,
+                                                0,
+                                              )
+                                              : Colors
+                                                  .transparent,
                                       height: 40,
                                       child: Padding(
                                         padding:
@@ -514,103 +524,146 @@ class _MyDrawerWidgetDesktopState
                                                               false,
                                                         ).mobileTexts.b2.fontSize,
                                                     fontWeight:
-                                                        FontWeight.normal,
+                                                        returnNavProvider(
+                                                                  context,
+                                                                ).currentIndex ==
+                                                                8
+                                                            ? FontWeight.bold
+                                                            : FontWeight.normal,
                                                   ),
                                                   'Notifications',
                                                 ),
                                               ],
                                             ),
-                                            Stack(
-                                              clipBehavior:
-                                                  Clip.none,
+                                            Row(
+                                              spacing: 15,
                                               children: [
-                                                InkWell(
-                                                  onTap: () {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (
+                                                Stack(
+                                                  clipBehavior:
+                                                      Clip.none,
+                                                  children: [
+                                                    InkWell(
+                                                      onTap: () {
+                                                        returnNavProvider(
                                                           context,
-                                                        ) {
-                                                          return NotificationsPage();
-                                                        },
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.all(
+                                                          listen:
+                                                              false,
+                                                        ).navigate(
+                                                          8,
+                                                        );
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return NotificationsPage();
+                                                            },
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        padding: EdgeInsets.all(
                                                           10,
                                                         ),
-                                                    decoration: BoxDecoration(
-                                                      color: const Color.fromARGB(
-                                                        208,
-                                                        245,
-                                                        245,
-                                                        245,
+                                                        decoration: BoxDecoration(
+                                                          color: const Color.fromARGB(
+                                                            208,
+                                                            245,
+                                                            245,
+                                                            245,
+                                                          ),
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                        child: SvgPicture.asset(
+                                                          height:
+                                                              23,
+                                                          width:
+                                                              23,
+                                                          notifIconSvg,
+                                                          color:
+                                                              widget.notifications
+                                                                      .where(
+                                                                        (
+                                                                          notif,
+                                                                        ) =>
+                                                                            !notif.isViewed,
+                                                                      )
+                                                                      .isNotEmpty
+                                                                  ? null
+                                                                  : Colors.grey.shade500,
+                                                        ),
                                                       ),
-                                                      shape:
-                                                          BoxShape.circle,
                                                     ),
-                                                    child: SvgPicture.asset(
-                                                      height:
-                                                          23,
-                                                      width:
-                                                          23,
-                                                      notifIconSvg,
-                                                      color:
-                                                          widget.notifications
-                                                                  .where(
-                                                                    (
-                                                                      notif,
-                                                                    ) =>
-                                                                        !notif.isViewed,
-                                                                  )
-                                                                  .isNotEmpty
-                                                              ? null
-                                                              : Colors.grey.shade500,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                  bottom:
-                                                      18,
-                                                  left: 26,
-                                                  child: Visibility(
-                                                    visible:
-                                                        widget.notifications
-                                                            .where(
-                                                              (
-                                                                notif,
-                                                              ) =>
-                                                                  !notif.isViewed,
-                                                            )
-                                                            .isNotEmpty,
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(
+                                                    Positioned(
+                                                      bottom:
+                                                          18,
+                                                      left:
+                                                          26,
+                                                      child: Visibility(
+                                                        visible:
+                                                            widget.notifications
+                                                                .where(
+                                                                  (
+                                                                    notif,
+                                                                  ) =>
+                                                                      !notif.isViewed,
+                                                                )
+                                                                .isNotEmpty,
+                                                        child: Container(
+                                                          padding: EdgeInsets.all(
                                                             6,
                                                           ),
-                                                      decoration: BoxDecoration(
-                                                        shape:
-                                                            BoxShape.circle,
-                                                        gradient:
-                                                            widget.theme.lightModeColor.secGradient,
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize:
-                                                                12,
-                                                            color:
-                                                                Colors.white,
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            gradient:
+                                                                widget.theme.lightModeColor.secGradient,
                                                           ),
-                                                          '${widget.notifications.where((notif) => !notif.isViewed).length}',
+                                                          child: Center(
+                                                            child: Text(
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                fontSize:
+                                                                    12,
+                                                                color:
+                                                                    Colors.white,
+                                                              ),
+                                                              '${widget.notifications.where((notif) => !notif.isViewed).length}',
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      returnNavProvider(
+                                                        context,
+                                                      ).currentIndex ==
+                                                      8,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.fromLTRB(
+                                                          0,
+                                                          5,
+                                                          3,
+                                                          5,
+                                                        ),
+                                                    child: Container(
+                                                      width:
+                                                          4,
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            widget.theme.lightModeColor.secColor200,
+                                                        borderRadius: BorderRadius.circular(
+                                                          20,
                                                         ),
                                                       ),
                                                     ),
@@ -673,17 +726,20 @@ class _MyDrawerWidgetDesktopState
                                   ),
                                 ),
                                 NavListTileDesktopAlt(
+                                  itemIndex: 9,
                                   height: 18,
                                   action: () {
-                                    showGeneralDialog(
-                                      context: context,
-                                      pageBuilder: (
-                                        context,
-                                        animation,
-                                        secondaryAnimation,
-                                      ) {
-                                        return MyCalculator();
-                                      },
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(9);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return CalculatorPage();
+                                        },
+                                      ),
                                     );
                                   },
                                   title: 'Open Calculator',
@@ -966,7 +1022,12 @@ class NavListTileDesktopAlt extends StatelessWidget {
       onTap: () {
         action!();
       },
-      child: SizedBox(
+      child: Container(
+        color:
+            returnNavProvider(context).currentIndex ==
+                    itemIndex
+                ? const Color.fromARGB(36, 255, 153, 0)
+                : Colors.transparent,
         height: 38,
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -1017,7 +1078,13 @@ class NavListTileDesktopAlt extends StatelessWidget {
                       color: color ?? Colors.grey.shade900,
                       fontSize:
                           theme.mobileTexts.b2.fontSize,
-                      fontWeight: FontWeight.w500,
+                      fontWeight:
+                          returnNavProvider(
+                                    context,
+                                  ).currentIndex ==
+                                  itemIndex
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                     ),
                     title,
                   ),
@@ -1046,9 +1113,9 @@ class NavListTileDesktopAlt extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(
                         0,
+                        5,
                         3,
-                        3,
-                        3,
+                        5,
                       ),
                       child: Container(
                         width: 4,

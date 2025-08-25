@@ -36,7 +36,7 @@ class MainButtonP extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical:
-                      screenWidth(context) < 600 ? 15 : 12,
+                      screenWidth(context) < 600 ? 15 : 14,
                 ),
                 child: Center(
                   child: Text(

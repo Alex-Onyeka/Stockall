@@ -13,7 +13,7 @@ const String mainLogo =
 const String appMockUp = 'assets/images/logos/App_Png.png';
 
 const String backGroundImage =
-    'assets/images/main_images/sign_up_background.jpg';
+    'assets/images/main_images/back_g.jpg';
 
 const String profileIconImage =
     'assets/images/small_images/image_icon.png';

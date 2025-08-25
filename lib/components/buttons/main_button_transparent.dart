@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class MainButtonTransparent extends StatelessWidget {
@@ -35,7 +36,10 @@ class MainButtonTransparent extends StatelessWidget {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 13),
+            padding: EdgeInsets.symmetric(
+              vertical:
+                  screenWidth(context) < 600 ? 15 : 12,
+            ),
 
             child: Center(
               child: Text(
@@ -45,12 +49,16 @@ class MainButtonTransparent extends StatelessWidget {
                           .lightModeColor
                           .prColor300,
                   fontSize:
-                      themeProvider.mobileTexts.b1.fontSize,
-                  fontWeight:
-                      themeProvider
-                          .mobileTexts
-                          .b2
-                          .fontWeightRegular,
+                      screenWidth(context) < 600
+                          ? themeProvider
+                              .mobileTexts
+                              .b2
+                              .fontSize
+                          : themeProvider
+                              .mobileTexts
+                              .b2
+                              .fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
                 text,
               ),

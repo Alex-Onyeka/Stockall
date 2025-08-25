@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
@@ -354,6 +355,14 @@ class _LoginDesktopState extends State<LoginDesktop> {
                               text: General().login,
                             ),
                             SizedBox(height: 10),
+                            MainButtonTransparent(
+                              themeProvider: widget.theme,
+                              constraints: BoxConstraints(),
+                              text: 'Go Back',
+                              action: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
                           ],
                         ),
                       ),

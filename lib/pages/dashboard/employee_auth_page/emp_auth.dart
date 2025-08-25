@@ -9,13 +9,13 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
-// import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EmpAuth extends StatefulWidget {
@@ -38,12 +38,10 @@ class _EmpAuthState extends State<EmpAuth> {
     String email,
     String authId,
   ) async {
-    print('Start 2');
     var tempUser = await returnUserProvider(
       context,
       listen: false,
     ).fetchUserByEmailAndAuthId(email, authId);
-    print('Finished Function');
     return tempUser;
   }
 
@@ -900,116 +898,206 @@ class _EmpAuthState extends State<EmpAuth> {
                                 ),
                                 SizedBox(height: 15),
                                 Row(
+                                  spacing: 5,
                                   mainAxisAlignment:
                                       MainAxisAlignment
                                           .center,
                                   children: [
-                                    Material(
-                                      color:
-                                          Colors
-                                              .transparent,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          var safeContext =
-                                              context;
-                                          // var localDatabase =
-                                          //     returnLocalDatabase(
-                                          //       context,
-                                          //       listen: false,
-                                          //     );
-                                          showDialog(
-                                            context:
-                                                safeContext,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return ConfirmationAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'You are about to Logout from the shop to recover your password. Are you sure you want to Proceed?',
-                                                title:
-                                                    'Recover Password',
-                                                action: () async {
-                                                  Navigator.of(
-                                                    safeContext,
-                                                  ).pop();
-                                                  setState(() {
-                                                    isLoading =
-                                                        true;
-                                                  });
-                                                  //
-                                                  if (safeContext
-                                                      .mounted) {
-                                                    // localDatabase
-                                                    //     .deleteUser();
-                                                    Navigator.push(
+                                    Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            var safeContext =
+                                                context;
+                                            showDialog(
+                                              context:
+                                                  safeContext,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'You are about to navigate from the shop to recover your password. Are you sure you want to Proceed?',
+                                                  title:
+                                                      'Recover Password',
+                                                  action: () async {
+                                                    Navigator.of(
                                                       safeContext,
-                                                      MaterialPageRoute(
-                                                        builder: (
-                                                          context,
-                                                        ) {
-                                                          return ForgotPasswordPage(
-                                                            isMain:
-                                                                true,
-                                                          );
-                                                        },
-                                                      ),
-                                                    );
-                                                    //await AuthService()
-                                                    //     .signOut();
-                                                    returnNavProvider(
-                                                      safeContext,
-                                                      listen:
-                                                          false,
-                                                    ).navigate(
-                                                      0,
-                                                    );
-                                                  }
-                                                },
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Container(
-                                          padding:
-                                              EdgeInsets.symmetric(
-                                                horizontal:
-                                                    20,
-                                                vertical: 5,
-                                              ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            spacing: 5,
-                                            children: [
-                                              Icon(
-                                                size: 20,
-                                                color:
-                                                    Colors
-                                                        .redAccent,
-                                                Icons
-                                                    .logout,
-                                              ),
-                                              Text(
-                                                style: TextStyle(
+                                                    ).pop();
+                                                    setState(() {
+                                                      isLoading =
+                                                          true;
+                                                    });
+                                                    //
+                                                    if (safeContext
+                                                        .mounted) {
+                                                      // localDatabase
+                                                      //     .deleteUser();
+                                                      Navigator.push(
+                                                        safeContext,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            return ForgotPasswordPage(
+                                                              isMain:
+                                                                  true,
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                      //await AuthService()
+                                                      //     .signOut();
+                                                      returnNavProvider(
+                                                        safeContext,
+                                                        listen:
+                                                            false,
+                                                      ).navigate(
+                                                        0,
+                                                      );
+                                                    }
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                                  vertical:
+                                                      5,
+                                                ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              spacing: 5,
+                                              children: [
+                                                // Icon(
+                                                //   size: 18,
+                                                //   color:
+                                                //       Colors
+                                                //           .grey,
+                                                //   Icons
+                                                //       .question_mark,
+                                                // ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.grey.shade700,
+                                                    fontSize:
+                                                        12,
+                                                  ),
+                                                  'Forgot Password?',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            final safceContext =
+                                                context;
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'Are you sure you want to proceed to logout from your account?',
+                                                  title:
+                                                      'Are You Sure?',
+                                                  action: () async {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                    if (safceContext
+                                                        .mounted) {
+                                                      Navigator.pushReplacement(
+                                                        safceContext,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            safceContext,
+                                                          ) {
+                                                            return AuthScreensPage();
+                                                          },
+                                                        ),
+                                                      );
+                                                      returnNavProvider(
+                                                        safceContext,
+                                                        listen:
+                                                            false,
+                                                      ).navigate(
+                                                        0,
+                                                      );
+                                                    }
+                                                    if (safceContext
+                                                        .mounted) {
+                                                      await AuthService().signOut(
+                                                        safceContext,
+                                                      );
+                                                    }
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                                  vertical:
+                                                      8,
+                                                ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              spacing: 5,
+                                              children: [
+                                                Icon(
+                                                  size: 20,
                                                   color:
                                                       Colors
-                                                          .grey
-                                                          .shade700,
-                                                  fontSize:
-                                                      12,
+                                                          .redAccent,
+                                                  Icons
+                                                      .logout,
                                                 ),
-                                                'Forgot Password?',
-                                              ),
-                                            ],
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.grey.shade700,
+                                                    fontSize:
+                                                        12,
+                                                  ),
+                                                  'Logout',
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
+                                SizedBox(height: 10),
+                                Container(),
                                 SizedBox(height: 10),
                               ],
                             ),

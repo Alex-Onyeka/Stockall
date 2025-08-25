@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -57,19 +58,30 @@ class TopBanner extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      if (isMain != null) {
-                        returnExpensesProvider(
-                          context,
-                          listen: false,
-                        ).clearExpenseDate();
-                        Navigator.of(context).pop();
+                      if (screenWidth(context) <=
+                          mobileScreen) {
+                        if (isMain != null) {
+                          returnExpensesProvider(
+                            context,
+                            listen: false,
+                          ).clearExpenseDate();
+                          Navigator.of(context).pop();
+                        }
                       }
                     },
                     child: Row(
                       children: [
                         Visibility(
                           visible:
-                              isMain != null ? true : false,
+                              screenWidth(context) >=
+                              mobileScreen,
+                          child: SizedBox(width: 35),
+                        ),
+                        Visibility(
+                          visible:
+                              isMain != null &&
+                              screenWidth(context) <
+                                  mobileScreen,
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
