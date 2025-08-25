@@ -12,10 +12,8 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
-import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
-import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -120,6 +118,7 @@ class _MyDrawerWidgetDesktopState
                             child: Column(
                               children: [
                                 NavListTileDesktopAlt(
+                                  itemIndex: 0,
                                   height: 16,
                                   action: () {
                                     var safeContext =
@@ -163,6 +162,7 @@ class _MyDrawerWidgetDesktopState
                                   icon: Icons.home_filled,
                                 ),
                                 NavListTileDesktopAlt(
+                                  itemIndex: 1,
                                   height: 16,
                                   action: () {
                                     var safeContext =
@@ -206,6 +206,7 @@ class _MyDrawerWidgetDesktopState
                                   icon: Icons.book,
                                 ),
                                 NavListTileDesktopAlt(
+                                  itemIndex: 2,
                                   height: 16,
                                   action: () {
                                     var safeContext =
@@ -250,46 +251,50 @@ class _MyDrawerWidgetDesktopState
                                       Icons
                                           .menu_book_rounded,
                                 ),
-                                NavListTileDesktopAlt(
-                                  height: 18,
-                                  action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ProfilePage();
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  title: 'Profile',
-                                  icon: Icons.person,
-                                ),
-                                Visibility(
-                                  visible: authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .manageShop,
-                                    context: context,
-                                  ),
-                                  child: NavListTileDesktopAlt(
-                                    height: 18,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return ShopPage();
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    title: 'Manage Shop',
-                                    icon: Icons.home_filled,
-                                  ),
-                                ),
+                                // NavListTileDesktopAlt(
+                                //   height: 18,
+                                //   action: () {
+                                //     returnNavProvider(
+                                //       context,
+                                //       listen: false,
+                                //     ).navigate(3);
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) {
+                                //           return ProfilePage();
+                                //         },
+                                //       ),
+                                //     );
+                                //   },
+                                //   title: 'Profile',
+                                //   icon: Icons.person,
+                                // ),
+                                // Visibility(
+                                //   visible: authorization(
+                                //     authorized:
+                                //         Authorizations()
+                                //             .manageShop,
+                                //     context: context,
+                                //   ),
+                                //   child: NavListTileDesktopAlt(
+                                //     height: 18,
+                                //     action: () {
+                                //       Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (
+                                //             context,
+                                //           ) {
+                                //             return ShopPage();
+                                //           },
+                                //         ),
+                                //       );
+                                //     },
+                                //     title: 'Manage Shop',
+                                //     icon: Icons.home_filled,
+                                //   ),
+                                // ),
                                 // NavListTileDesktop(
                                 //   thisIndex: 0,
                                 //   title: 'Home',
@@ -310,8 +315,13 @@ class _MyDrawerWidgetDesktopState
                                 //   height: 16,
                                 // ),
                                 NavListTileDesktopAlt(
+                                  itemIndex: 3,
                                   height: 14,
                                   action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(3);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -324,6 +334,76 @@ class _MyDrawerWidgetDesktopState
                                   title: 'Customers',
                                   svg: custBookIconSvg,
                                 ),
+                                NavListTileDesktopAlt(
+                                  itemIndex: 4,
+                                  height: 14,
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(4);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ExpensesPage(
+                                            isMain: true,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {});
+                                    });
+                                  },
+                                  title: 'Expenses',
+                                  svg: expensesIconSvg,
+                                ),
+                                NavListTileDesktopAlt(
+                                  itemIndex: 5,
+                                  height: 14,
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(5);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return TotalSalesPage(
+                                            isInvoice: true,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {});
+                                    });
+                                  },
+                                  title: 'Invoices',
+                                  icon:
+                                      Icons
+                                          .all_inclusive_sharp,
+                                ),
+                                NavListTileDesktopAlt(
+                                  itemIndex: 6,
+                                  height: 14,
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(6);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ReportPage();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Report',
+                                  svg: reportIconSvg,
+                                ),
                                 Visibility(
                                   visible: authorization(
                                     authorized:
@@ -332,8 +412,13 @@ class _MyDrawerWidgetDesktopState
                                     context: context,
                                   ),
                                   child: NavListTileDesktopAlt(
+                                    itemIndex: 7,
                                     height: 14,
                                     action: () {
+                                      returnNavProvider(
+                                        context,
+                                        listen: false,
+                                      ).navigate(7);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -354,61 +439,6 @@ class _MyDrawerWidgetDesktopState
                                     svg: employeesIconSvg,
                                   ),
                                 ),
-                                NavListTileDesktopAlt(
-                                  height: 14,
-                                  action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ExpensesPage(
-                                            isMain: true,
-                                          );
-                                        },
-                                      ),
-                                    ).then((_) {
-                                      setState(() {});
-                                    });
-                                  },
-                                  title: 'Expenses',
-                                  svg: expensesIconSvg,
-                                ),
-                                NavListTileDesktopAlt(
-                                  height: 14,
-                                  action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return TotalSalesPage(
-                                            isInvoice: true,
-                                          );
-                                        },
-                                      ),
-                                    ).then((_) {
-                                      setState(() {});
-                                    });
-                                  },
-                                  title: 'Invoices',
-                                  icon:
-                                      Icons
-                                          .all_inclusive_sharp,
-                                ),
-                                NavListTileDesktopAlt(
-                                  height: 14,
-                                  action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ReportPage();
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  title: 'Report',
-                                  svg: reportIconSvg,
-                                ),
                                 SizedBox(height: 5),
                                 Divider(
                                   height:
@@ -423,6 +453,10 @@ class _MyDrawerWidgetDesktopState
                                 ),
                                 InkWell(
                                   onTap: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(8);
                                     Navigator.of(
                                       context,
                                     ).pop();
@@ -492,10 +526,6 @@ class _MyDrawerWidgetDesktopState
                                               children: [
                                                 InkWell(
                                                   onTap: () {
-                                                    // Provider.of<CompProvider>(
-                                                    //   context,
-                                                    //   listen: false,
-                                                    // ).switchNotif();
                                                     Navigator.of(
                                                       context,
                                                     ).pop();
@@ -763,155 +793,156 @@ class _MyDrawerWidgetDesktopState
   }
 }
 
-class NavListTileDesktop extends StatelessWidget {
-  final String title;
-  final int thisIndex;
-  final IconData? icon;
-  final String? svg;
-  final double? height;
-  const NavListTileDesktop({
-    super.key,
-    required this.thisIndex,
-    required this.title,
-    this.icon,
-    this.svg,
-    this.height,
-  });
+// class NavListTileDesktop extends StatelessWidget {
+//   final String title;
+//   final int thisIndex;
+//   final IconData? icon;
+//   final String? svg;
+//   final double? height;
+//   const NavListTileDesktop({
+//     super.key,
+//     required this.thisIndex,
+//     required this.title,
+//     this.icon,
+//     this.svg,
+//     this.height,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    var theme = returnTheme(context);
-    return InkWell(
-      onTap: () {
-        returnNavProvider(
-          context,
-          listen: false,
-        ).navigate(thisIndex);
-      },
-      child: SizedBox(
-        height: 40,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-          ),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      Visibility(
-                        visible: icon != null,
-                        child: Icon(
-                          color:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor200
-                                  : Colors.grey.shade600,
-                          size:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? 20
-                                  : 16,
-                          icon ?? Icons.home,
-                        ),
-                      ),
-                      Visibility(
-                        visible: svg != null,
-                        child: SvgPicture.asset(
-                          color:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor200
-                                  : Colors.grey.shade600,
-                          svg ?? '',
-                          height:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? 18
-                                  : height,
-                        ),
-                      ),
-                    ],
-                  ),
-                  // ),
-                  Text(
-                    style: TextStyle(
-                      color:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  thisIndex
-                              ? theme
-                                  .lightModeColor
-                                  .secColor200
-                              : Colors.grey.shade900,
-                      fontSize:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  thisIndex
-                              ? 13
-                              : 12,
-                      fontWeight:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  thisIndex
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                    ),
-                    title,
-                  ),
-                ],
-              ),
+//   @override
+//   Widget build(BuildContext context) {
+//     var theme = returnTheme(context);
+//     return InkWell(
+//       onTap: () {
+//         returnNavProvider(
+//           context,
+//           listen: false,
+//         ).navigate(thisIndex);
+//       },
+//       child: SizedBox(
+//         height: 40,
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(
+//             horizontal: 20.0,
+//           ),
+//           child: Row(
+//             mainAxisAlignment:
+//                 MainAxisAlignment.spaceBetween,
+//             children: [
+//               Row(
+//                 spacing: 10,
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 children: [
+//                   Stack(
+//                     children: [
+//                       Visibility(
+//                         visible: icon != null,
+//                         child: Icon(
+//                           color:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? theme
+//                                       .lightModeColor
+//                                       .secColor200
+//                                   : Colors.grey.shade600,
+//                           size:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? 20
+//                                   : 16,
+//                           icon ?? Icons.home,
+//                         ),
+//                       ),
+//                       Visibility(
+//                         visible: svg != null,
+//                         child: SvgPicture.asset(
+//                           color:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? theme
+//                                       .lightModeColor
+//                                       .secColor200
+//                                   : Colors.grey.shade600,
+//                           svg ?? '',
+//                           height:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? 18
+//                                   : height,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                   // ),
+//                   Text(
+//                     style: TextStyle(
+//                       color:
+//                           returnNavProvider(
+//                                     context,
+//                                   ).currentPage ==
+//                                   thisIndex
+//                               ? theme
+//                                   .lightModeColor
+//                                   .secColor200
+//                               : Colors.grey.shade900,
+//                       fontSize:
+//                           returnNavProvider(
+//                                     context,
+//                                   ).currentPage ==
+//                                   thisIndex
+//                               ? 13
+//                               : 12,
+//                       fontWeight:
+//                           returnNavProvider(
+//                                     context,
+//                                   ).currentPage ==
+//                                   thisIndex
+//                               ? FontWeight.bold
+//                               : FontWeight.normal,
+//                     ),
+//                     title,
+//                   ),
+//                 ],
+//               ),
 
-              Icon(
-                color:
-                    returnNavProvider(
-                              context,
-                            ).currentPage ==
-                            thisIndex
-                        ? theme.lightModeColor.secColor200
-                        : Colors.grey.shade900,
-                size:
-                    returnNavProvider(
-                              context,
-                            ).currentPage ==
-                            thisIndex
-                        ? 28
-                        : 16,
-                returnNavProvider(context).currentPage ==
-                        thisIndex
-                    ? Icons.arrow_drop_down
-                    : Icons.arrow_forward_ios_rounded,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//               Icon(
+//                 color:
+//                     returnNavProvider(
+//                               context,
+//                             ).currentPage ==
+//                             thisIndex
+//                         ? theme.lightModeColor.secColor200
+//                         : Colors.grey.shade900,
+//                 size:
+//                     returnNavProvider(
+//                               context,
+//                             ).currentPage ==
+//                             thisIndex
+//                         ? 28
+//                         : 16,
+//                 returnNavProvider(context).currentPage ==
+//                         thisIndex
+//                     ? Icons.arrow_drop_down
+//                     : Icons.arrow_forward_ios_rounded,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class NavListTileDesktopAlt extends StatelessWidget {
   final String title;
+  final int? itemIndex;
   final IconData? icon;
   final String? svg;
   final Function()? action;
@@ -925,6 +956,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
     this.svg,
     required this.height,
     this.color,
+    this.itemIndex,
   });
 
   @override
@@ -991,10 +1023,47 @@ class NavListTileDesktopAlt extends StatelessWidget {
                   ),
                 ],
               ),
-              Icon(
-                color: Colors.grey.shade600,
-                size: 12,
-                Icons.arrow_forward_ios_rounded,
+              Stack(
+                children: [
+                  Visibility(
+                    visible:
+                        returnNavProvider(
+                          context,
+                        ).currentIndex !=
+                        itemIndex,
+                    child: Icon(
+                      color: Colors.grey.shade600,
+                      size: 12,
+                      Icons.arrow_forward_ios_rounded,
+                    ),
+                  ),
+                  Visibility(
+                    visible:
+                        returnNavProvider(
+                          context,
+                        ).currentIndex ==
+                        itemIndex,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        0,
+                        3,
+                        3,
+                        3,
+                      ),
+                      child: Container(
+                        width: 4,
+                        decoration: BoxDecoration(
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .secColor200,
+                          borderRadius:
+                              BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

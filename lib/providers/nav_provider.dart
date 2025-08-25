@@ -5,6 +5,8 @@ class NavProvider extends ChangeNotifier {
 
   bool settingNow = false;
 
+  int currentIndex = 0;
+
   void setSettings() {
     settingNow = true;
     notifyListeners();
@@ -17,6 +19,7 @@ class NavProvider extends ChangeNotifier {
 
   void navigate(int index) {
     settingNow = false;
+    currentIndex = index;
     currentPage = index;
     notifyListeners();
   }
