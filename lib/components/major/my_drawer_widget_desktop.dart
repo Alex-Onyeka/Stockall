@@ -167,7 +167,10 @@ class _MyDrawerWidgetDesktopState
                                   action: () {
                                     var safeContext =
                                         context;
-
+                                    returnNavProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).navigate(1);
                                     if (Navigator.of(
                                       context,
                                     ).canPop()) {
@@ -185,10 +188,6 @@ class _MyDrawerWidgetDesktopState
                                         },
                                       );
                                     }
-                                    returnNavProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).navigate(1);
                                     returnExpensesProvider(
                                       safeContext,
                                       listen: false,
@@ -211,7 +210,10 @@ class _MyDrawerWidgetDesktopState
                                   action: () {
                                     var safeContext =
                                         context;
-
+                                    returnNavProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).navigate(2);
                                     if (Navigator.of(
                                       context,
                                     ).canPop()) {
@@ -229,10 +231,6 @@ class _MyDrawerWidgetDesktopState
                                         },
                                       );
                                     }
-                                    returnNavProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).navigate(2);
                                     returnExpensesProvider(
                                       safeContext,
                                       listen: false,
