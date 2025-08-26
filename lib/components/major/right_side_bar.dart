@@ -180,7 +180,9 @@ class RightSideBar extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return TotalSalesPage();
+                                  return TotalSalesPage(
+                                    turnOff: true,
+                                  );
                                 },
                               ),
                             );

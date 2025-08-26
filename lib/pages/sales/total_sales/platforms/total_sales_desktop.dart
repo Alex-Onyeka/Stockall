@@ -19,11 +19,13 @@ class TotalSalesDesktop extends StatefulWidget {
   final String? id;
   final int? customerId;
   final bool? isInvoice;
+  final bool? turnOff;
   const TotalSalesDesktop({
     super.key,
     this.id,
     this.customerId,
     this.isInvoice,
+    this.turnOff,
   });
 
   @override
@@ -148,6 +150,7 @@ class _TotalSalesDesktopState
                 child: DesktopPageContainer(
                   widget: Scaffold(
                     appBar: appBar(
+                      turnOff: widget.turnOff,
                       context: context,
                       title:
                           !returnReceiptProvider(

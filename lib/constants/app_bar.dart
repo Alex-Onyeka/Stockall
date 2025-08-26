@@ -6,6 +6,7 @@ PreferredSizeWidget appBar({
   required BuildContext context,
   required String title,
   bool? isMain,
+  bool? turnOff,
   Widget? widget,
   bool? main,
 }) {
@@ -14,21 +15,10 @@ PreferredSizeWidget appBar({
     scrolledUnderElevation: 0,
     toolbarHeight: 60,
     leading: Opacity(
-      opacity:
-          returnNavProvider(
-                    context,
-                    listen: false,
-                  ).currentIndex ==
-                  5
-              ? 0
-              : 1,
+      opacity: turnOff == null || turnOff == false ? 1 : 0,
       child: IconButton(
         onPressed: () {
-          if (returnNavProvider(
-                context,
-                listen: false,
-              ).currentIndex ==
-              5) {
+          if (turnOff != null && turnOff) {
             return;
           } else {
             if (isMain != null) {

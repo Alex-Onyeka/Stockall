@@ -799,6 +799,8 @@ class _DashboardDesktopState
                                                                     context,
                                                                   ) {
                                                                     return TotalSalesPage(
+                                                                      turnOff:
+                                                                          true,
                                                                       isInvoice:
                                                                           true,
                                                                     );

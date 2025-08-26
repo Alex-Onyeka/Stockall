@@ -359,6 +359,7 @@ class _MyDrawerWidgetDesktopState
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return TotalSalesPage(
+                                            turnOff: true,
                                             isInvoice: true,
                                           );
                                         },
