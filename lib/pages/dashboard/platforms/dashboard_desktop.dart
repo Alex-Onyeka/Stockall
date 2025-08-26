@@ -539,6 +539,13 @@ class _DashboardDesktopState
                                                       title:
                                                           'Todays Expenses',
                                                       action: () {
+                                                        returnNavProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).navigate(
+                                                          4,
+                                                        );
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -575,6 +582,14 @@ class _DashboardDesktopState
                                                     title:
                                                         'Total Invoice',
                                                     action: () {
+                                                      returnNavProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).navigate(
+                                                        5,
+                                                      );
+
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -672,6 +687,13 @@ class _DashboardDesktopState
                                                             title:
                                                                 'Report',
                                                             action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                6,
+                                                              );
                                                               Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
@@ -797,6 +819,13 @@ class _DashboardDesktopState
                                                             title:
                                                                 'Expenses',
                                                             action: () async {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                4,
+                                                              );
                                                               Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
