@@ -45,7 +45,7 @@ class _EmployeeListPageState
   }
 
   Future<void> navigateAction() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(milliseconds: 20));
     if (context.mounted) {
       returnNavProvider(context, listen: false).navigate(7);
     }
