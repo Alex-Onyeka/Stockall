@@ -6,7 +6,8 @@ import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart'
 import 'package:stockall/services/auth_service.dart';
 
 class NotificationsPage extends StatefulWidget {
-  const NotificationsPage({super.key});
+  final bool? turnOn;
+  const NotificationsPage({super.key, this.turnOn});
 
   @override
   State<NotificationsPage> createState() =>
@@ -56,7 +57,9 @@ class _NotificationsPageState
         if (constraints.maxWidth < 550) {
           return NotificationsMobile();
         } else {
-          return NotificationsDesktop();
+          return NotificationsDesktop(
+            turnOn: widget.turnOn,
+          );
         }
       },
     );

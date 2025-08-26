@@ -38,7 +38,7 @@ void unitsBottomSheet(
     builder: (BuildContext context) {
       return DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.5,
+        initialChildSize: 0.9,
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
@@ -939,7 +939,7 @@ void sizeTypeBottomSheet(
     builder: (BuildContext context) {
       return DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.5,
+        initialChildSize: 0.9,
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {

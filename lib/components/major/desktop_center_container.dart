@@ -35,7 +35,7 @@ class DesktopCenterContainer extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 40),
                 width: width ?? 550,
                 padding: EdgeInsets.symmetric(
-                  horizontal: 50,
+                  horizontal: 20,
                   vertical: 20,
                 ),
                 decoration: BoxDecoration(

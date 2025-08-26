@@ -17,7 +17,8 @@ import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class NotificationsDesktop extends StatefulWidget {
-  const NotificationsDesktop({super.key});
+  final bool? turnOn;
+  const NotificationsDesktop({super.key, this.turnOn});
 
   @override
   State<NotificationsDesktop> createState() =>
@@ -79,6 +80,7 @@ class _NotificationsDesktopState
                   body: Column(
                     children: [
                       TopBanner(
+                        turnOn: widget.turnOn,
                         subTitle:
                             'Manage your account Notifications',
                         title: 'Notifications',

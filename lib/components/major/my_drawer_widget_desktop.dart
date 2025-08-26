@@ -338,6 +338,7 @@ class _MyDrawerWidgetDesktopState
                                         builder: (context) {
                                           return ExpensesPage(
                                             isMain: true,
+                                            turnOn: false,
                                           );
                                         },
                                       ),
@@ -436,7 +437,9 @@ class _MyDrawerWidgetDesktopState
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return NotificationsPage();
+                                          return NotificationsPage(
+                                            turnOn: false,
+                                          );
                                         },
                                       ),
                                     );

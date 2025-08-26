@@ -173,8 +173,9 @@ class _HomeState extends State<Home> {
                           _handledNoShop = true;
                           WidgetsBinding.instance
                               .addPostFrameCallback((_) {
-                                if (mounted)
+                                if (mounted) {
                                   _handleNoShop();
+                                }
                               });
                         }
                         return ShopBannerScreen();

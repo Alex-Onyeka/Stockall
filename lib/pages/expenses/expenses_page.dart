@@ -7,8 +7,13 @@ import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart'
 import 'package:stockall/services/auth_service.dart';
 
 class ExpensesPage extends StatefulWidget {
+  final bool? turnOn;
   final bool? isMain;
-  const ExpensesPage({super.key, required this.isMain});
+  const ExpensesPage({
+    super.key,
+    required this.isMain,
+    this.turnOn,
+  });
 
   @override
   State<ExpensesPage> createState() => _ExpensesPageState();
@@ -58,7 +63,10 @@ class _ExpensesPageState extends State<ExpensesPage> {
         if (constraints.maxWidth < mobileScreen) {
           return ExpensesMoblie(isMain: widget.isMain);
         } else {
-          return ExpensesDesktop(isMain: widget.isMain);
+          return ExpensesDesktop(
+            isMain: widget.isMain,
+            turnOn: widget.turnOn,
+          );
         }
       },
     );
