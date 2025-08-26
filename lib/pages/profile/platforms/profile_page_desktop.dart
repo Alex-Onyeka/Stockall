@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_user_class.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
+import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -36,130 +37,16 @@ class ProfilePageDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Scaffold(
-      appBar: appBar(context: context, title: 'Profile'),
-      body: FutureBuilder(
-        future: userFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-                  ConnectionState.waiting ||
-              snapshot.hasError) {
-            return Center(
-              child: Column(
-                children: [
-                  SizedBox(height: 30),
-                  Image.asset(
-                    profileIconImage,
-                    height: 120,
-                  ),
-                  SizedBox(height: 10),
-                  Column(
-                    spacing: 2,
-                    children: [
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            'Loading',
-                          ),
-                        ),
-                      ),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            '000 0 00 000 0',
-                          ),
-                        ),
-                      ),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                            ),
-                            'alexonyekasm@gmail.com',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0,
-                    ),
-                    child: Column(
-                      spacing: 10,
-                      children: [
-                        MainButtonTransparent(
-                          themeProvider: theme,
-                          action: () {},
-                          text: 'Edit Profile Info',
-                          constraints: BoxConstraints(),
-                        ),
-                        // MainButtonTransparent(
-                        //   themeProvider: theme,
-                        //   action: () {},
-                        //   text: 'Change Email',
-                        //   constraints: BoxConstraints(),
-                        // ),
-                        MainButtonTransparent(
-                          themeProvider: theme,
-                          action: () {},
-                          text: 'Change Password',
-                          constraints: BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            var user = snapshot.data!;
-            return SingleChildScrollView(
-              child: Center(
+    return DesktopCenterContainer(
+      mainWidget: Scaffold(
+        appBar: appBar(context: context, title: 'Profile'),
+        body: FutureBuilder(
+          future: userFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState ==
+                    ConnectionState.waiting ||
+                snapshot.hasError) {
+              return Center(
                 child: Column(
                   children: [
                     SizedBox(height: 30),
@@ -171,44 +58,71 @@ class ProfilePageDesktopState
                     Column(
                       spacing: 2,
                       children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
+                        Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.white,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              'Loading',
+                            ),
                           ),
-                          user.name,
                         ),
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
+                        Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.white,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              '000 0 00 000 0',
+                            ),
                           ),
-                          user.phone ?? 'Phone Number',
                         ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
+                        Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.white,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              'alexonyekasm@gmail.com',
+                            ),
                           ),
-                          user.email,
                         ),
                       ],
                     ),
@@ -222,90 +136,14 @@ class ProfilePageDesktopState
                         children: [
                           MainButtonTransparent(
                             themeProvider: theme,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return Edit(
-                                      user: user,
-                                      action: 'normal',
-                                    );
-                                  },
-                                ),
-                              ).then((context) {
-                                setState(() {
-                                  userFuture = getUser();
-                                });
-                              });
-                            },
+                            action: () {},
                             text: 'Edit Profile Info',
                             constraints: BoxConstraints(),
                           ),
-                          // MainButtonTransparent(
-                          //   themeProvider: theme,
-                          //   action: () {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //         builder: (context) {
-                          //           return Edit(
-                          //             user: user,
-                          //             action: 'email',
-                          //           );
-                          //         },
-                          //       ),
-                          //     ).then((context) {
-                          //       setState(() {
-                          //         userFuture = getUser();
-                          //       });
-                          //     });
-                          //   },
-                          //   text: 'Change Email',
-                          //   constraints: BoxConstraints(),
-                          // ),
                           MainButtonTransparent(
                             themeProvider: theme,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return Edit(
-                                      user: user,
-                                      action: 'password',
-                                    );
-                                  },
-                                ),
-                              ).then((context) {
-                                setState(() {
-                                  userFuture = getUser();
-                                });
-                              });
-                            },
+                            action: () {},
                             text: 'Change Password',
-                            constraints: BoxConstraints(),
-                          ),
-                          MainButtonTransparent(
-                            themeProvider: theme,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return Edit(
-                                      user: user,
-                                      action: 'PIN',
-                                    );
-                                  },
-                                ),
-                              ).then((context) {
-                                setState(() {
-                                  userFuture = getUser();
-                                });
-                              });
-                            },
-                            text: 'Change PIN',
                             constraints: BoxConstraints(),
                           ),
                         ],
@@ -313,10 +151,147 @@ class ProfilePageDesktopState
                     ),
                   ],
                 ),
-              ),
-            );
-          }
-        },
+              );
+            } else {
+              var user = snapshot.data!;
+              return SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 30),
+                      Image.asset(
+                        profileIconImage,
+                        height: 120,
+                      ),
+                      SizedBox(height: 10),
+                      Column(
+                        spacing: 2,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            user.name,
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            user.phone ?? 'Phone Number',
+                          ),
+                          Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                            user.email,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                        ),
+                        child: Column(
+                          spacing: 10,
+                          children: [
+                            MainButtonTransparent(
+                              themeProvider: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return Edit(
+                                        user: user,
+                                        action: 'normal',
+                                      );
+                                    },
+                                  ),
+                                ).then((context) {
+                                  setState(() {
+                                    userFuture = getUser();
+                                  });
+                                });
+                              },
+                              text: 'Edit Profile Info',
+                              constraints: BoxConstraints(),
+                            ),
+                            MainButtonTransparent(
+                              themeProvider: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return Edit(
+                                        user: user,
+                                        action: 'password',
+                                      );
+                                    },
+                                  ),
+                                ).then((context) {
+                                  setState(() {
+                                    userFuture = getUser();
+                                  });
+                                });
+                              },
+                              text: 'Change Password',
+                              constraints: BoxConstraints(),
+                            ),
+                            MainButtonTransparent(
+                              themeProvider: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return Edit(
+                                        user: user,
+                                        action: 'PIN',
+                                      );
+                                    },
+                                  ),
+                                ).then((context) {
+                                  setState(() {
+                                    userFuture = getUser();
+                                  });
+                                });
+                              },
+                              text: 'Change PIN',
+                              constraints: BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }

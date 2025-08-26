@@ -716,11 +716,13 @@ class _MyDrawerWidgetDesktopState
                                 Visibility(
                                   visible:
                                       kIsWeb &&
-                                      Theme.of(
-                                            context,
-                                          ).platform ==
-                                          TargetPlatform
-                                              .android,
+                                          Theme.of(
+                                                context,
+                                              ).platform ==
+                                              TargetPlatform
+                                                  .android ||
+                                      screenWidth(context) >
+                                          tabletScreen,
                                   child: NavListTileDesktopAlt(
                                     height: 18,
                                     action: () {
