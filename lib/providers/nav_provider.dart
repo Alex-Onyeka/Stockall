@@ -17,12 +17,18 @@ class NavProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void navigate(int index) {
+  Future<void> navigate(int index) async {
+    await Future.delayed(Duration(milliseconds: 5));
     settingNow = false;
     currentIndex = index;
     currentPage = index;
     notifyListeners();
   }
+
+  // Future<void> navigateAction({required int index}) async {
+  //   await Future.delayed(Duration(milliseconds: 10));
+  //   navigate(index);
+  // }
 
   int currentAuth = 0;
 
