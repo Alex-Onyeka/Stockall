@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/report/sales_and_revenue/platforms/sales_and_revenue_report_desktop.dart';
 import 'package:stockall/pages/report/sales_and_revenue/platforms/sales_and_revenue_report_mobile.dart';
 
 class SalesAndRevenueReport extends StatelessWidget {
@@ -8,13 +10,10 @@ class SalesAndRevenueReport extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return SalesAndRevenueReportMobile();
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return SalesAndRevenueReportDesktop();
         }
       },
     );

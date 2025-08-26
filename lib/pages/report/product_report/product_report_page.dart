@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/report/product_report/platforms/product_report_desktop.dart';
 import 'package:stockall/pages/report/product_report/platforms/product_report_mobile.dart';
 
 class ProductReportPage extends StatelessWidget {
@@ -8,13 +10,10 @@ class ProductReportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return ProductReportMobile();
-        } else if (constraints.maxWidth >= 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return ProductReportDesktop();
         }
       },
     );
