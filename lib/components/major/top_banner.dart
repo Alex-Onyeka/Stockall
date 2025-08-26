@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -15,6 +14,7 @@ class TopBanner extends StatelessWidget {
   final String? iconSvg;
   final IconData? iconData;
   final Color? svgColor;
+  final bool? turnOn;
   const TopBanner({
     super.key,
     required this.subTitle,
@@ -26,6 +26,7 @@ class TopBanner extends StatelessWidget {
     this.iconData,
     this.isMain,
     this.svgColor,
+    this.turnOn,
   });
 
   @override
@@ -58,8 +59,9 @@ class TopBanner extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      if (screenWidth(context) <=
-                          mobileScreen) {
+                      if (turnOn == null ||
+                          (turnOn != null &&
+                              turnOn == true)) {
                         if (isMain != null) {
                           returnExpensesProvider(
                             context,
@@ -72,16 +74,15 @@ class TopBanner extends StatelessWidget {
                     child: Row(
                       children: [
                         Visibility(
-                          visible:
-                              screenWidth(context) >=
-                              mobileScreen,
+                          visible: turnOn != null,
                           child: SizedBox(width: 35),
                         ),
                         Visibility(
                           visible:
                               isMain != null &&
-                              screenWidth(context) <
-                                  mobileScreen,
+                              (turnOn == null ||
+                                  (turnOn != null &&
+                                      turnOn == true)),
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(

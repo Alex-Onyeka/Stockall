@@ -70,6 +70,7 @@ class _AddEmployeeDesktopState
     return Stack(
       children: [
         DesktopCenterContainer(
+          width: screenWidth(context) - 200,
           mainWidget: Scaffold(
             backgroundColor: Colors.grey.shade100,
             appBar: appBar(
@@ -79,396 +80,283 @@ class _AddEmployeeDesktopState
                       ? 'Edit Employee'
                       : 'Add New Employee',
             ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
-                            child: Column(
-                              children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal:
-                                                20.0,
-                                          ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .h4
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                widget
-                                                        .employee
-                                                        ?.name ??
-                                                    '',
+            body: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
+                          child: Column(
+                            children: [
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 20.0,
+                                        ),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .h4
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
                                               ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                            ],
-                                          ),
-                                          Visibility(
-                                            visible:
+                                              widget
+                                                      .employee
+                                                      ?.name ??
+                                                  '',
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                          ],
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              widget
+                                                  .employee ==
+                                              null,
+                                          child: GeneralTextField(
+                                            isEnabled:
                                                 widget
                                                     .employee ==
                                                 null,
-                                            child: GeneralTextField(
-                                              isEnabled:
-                                                  widget
-                                                      .employee ==
-                                                  null,
-                                              title:
-                                                  'Enter Staff Id',
-                                              hint:
-                                                  'Enter Staff\'s Id',
-                                              controller:
-                                                  widget
-                                                      .idC,
-                                              lines: 1,
-                                              theme: theme,
-                                            ),
+                                            title:
+                                                'Enter Staff Id',
+                                            hint:
+                                                'Enter Staff\'s Id',
+                                            controller:
+                                                widget.idC,
+                                            lines: 1,
+                                            theme: theme,
                                           ),
-                                          SizedBox(
-                                            height: 25,
+                                        ),
+                                        SizedBox(
+                                          height: 25,
+                                        ),
+                                        Visibility(
+                                          visible: authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .addEmployee,
+                                            context:
+                                                context,
                                           ),
-                                          Visibility(
-                                            visible: authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .addEmployee,
-                                              context:
-                                                  context,
-                                            ),
-                                            child: Row(
-                                              spacing: 5,
-                                              children: [
-                                                Icon(
-                                                  size: 20,
-                                                  color:
-                                                      theme
-                                                          .lightModeColor
-                                                          .secColor100,
-                                                  Icons
-                                                      .warning_rounded,
-                                                ),
-                                                Flexible(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              14,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        'Select Staff Role.',
+                                          child: Row(
+                                            spacing: 5,
+                                            children: [
+                                              Icon(
+                                                size: 20,
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                Icons
+                                                    .warning_rounded,
+                                              ),
+                                              Flexible(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              12,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        'Note, Staff Role Determines their Authorization level.',
+                                                      'Select Staff Role.',
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            12,
+                                                        fontWeight:
+                                                            FontWeight.normal,
                                                       ),
-                                                    ],
-                                                  ),
+                                                      'Note, Staff Role Determines their Authorization level.',
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 0),
-                                    Visibility(
-                                      visible: authorization(
-                                        authorized:
-                                            Authorizations()
-                                                .addEmployee,
-                                        context: context,
-                                      ),
+                                  ),
+                                  SizedBox(height: 0),
+                                  Visibility(
+                                    visible: authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .addEmployee,
+                                      context: context,
+                                    ),
 
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            NeverScrollableScrollPhysics(),
-                                        itemCount:
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          empSetup
+                                              .where(
+                                                (emp) =>
+                                                    emp['position'] !=
+                                                    'Owner',
+                                              )
+                                              .toList()
+                                              .length,
+                                      itemBuilder: (
+                                        context,
+                                        index,
+                                      ) {
+                                        var employee =
                                             empSetup
                                                 .where(
                                                   (emp) =>
                                                       emp['position'] !=
                                                       'Owner',
                                                 )
-                                                .toList()
-                                                .length,
-                                        itemBuilder: (
-                                          context,
-                                          index,
-                                        ) {
-                                          var employee =
-                                              empSetup
-                                                  .where(
-                                                    (emp) =>
-                                                        emp['position'] !=
-                                                        'Owner',
-                                                  )
-                                                  .toList()[index];
-                                          return EmployeeListTile(
-                                            currentSelected:
-                                                currentSelected ??
-                                                5,
-                                            index: index,
-                                            action: () {
-                                              setState(() {
-                                                currentSelected =
-                                                    index;
-                                              });
-                                            },
-                                            authorizations:
-                                                employee['auths'],
-                                            position:
-                                                employee['position'],
-                                            theme: theme,
-                                          );
-                                        },
-                                      ),
+                                                .toList()[index];
+                                        return EmployeeListTile(
+                                          currentSelected:
+                                              currentSelected ??
+                                              5,
+                                          index: index,
+                                          action: () {
+                                            setState(() {
+                                              currentSelected =
+                                                  index;
+                                            });
+                                          },
+                                          authorizations:
+                                              employee['auths'],
+                                          position:
+                                              employee['position'],
+                                          theme: theme,
+                                        );
+                                      },
                                     ),
-                                  ],
-                                ),
-                                SizedBox(height: 20),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.only(top: 20),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
-                      ),
-                      child: FutureBuilder(
-                        future: usersFuture,
-                        builder: (context, snapshot) {
-                          return MainButtonP(
-                            themeProvider: theme,
-                            action: () {
-                              if (widget.employee == null) {
-                                if (widget
-                                    .idC
-                                    .text
-                                    .isEmpty) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Staff Id field cannot be empty.',
-                                        title:
-                                            'Empty Field',
-                                      );
-                                    },
-                                  );
-                                } else if (currentSelected ==
-                                    null) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Staff Role cannot be empty.',
-                                        title:
-                                            'Empty Field',
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  var userProvider =
-                                      returnUserProvider(
-                                        context,
-                                        listen: false,
-                                      );
-                                  // var safeContext = context;
-                                  var shopProvider =
-                                      returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      );
-                                  showDialog(
-                                    context: context,
-                                    builder: (
-                                      dialogContext,
-                                    ) {
-                                      return ConfirmationAlert(
-                                        theme: theme,
-                                        message:
-                                            'You are about to add a new Staff, are you sure you want to proceed?',
-                                        title:
-                                            'Are you Sure?',
-                                        action: () async {
-                                          setState(() {
-                                            isLoading =
-                                                true;
-                                          });
+                ),
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.only(top: 20),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                    ),
+                    child: FutureBuilder(
+                      future: usersFuture,
+                      builder: (context, snapshot) {
+                        return MainButtonP(
+                          themeProvider: theme,
+                          action: () {
+                            if (widget.employee == null) {
+                              if (widget.idC.text.isEmpty) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          'Staff Id field cannot be empty.',
+                                      title: 'Empty Field',
+                                    );
+                                  },
+                                );
+                              } else if (currentSelected ==
+                                  null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          'Staff Role cannot be empty.',
+                                      title: 'Empty Field',
+                                    );
+                                  },
+                                );
+                              } else {
+                                var userProvider =
+                                    returnUserProvider(
+                                      context,
+                                      listen: false,
+                                    );
+                                // var safeContext = context;
+                                var shopProvider =
+                                    returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    );
+                                showDialog(
+                                  context: context,
+                                  builder: (dialogContext) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to add a new Staff, are you sure you want to proceed?',
+                                      title:
+                                          'Are you Sure?',
+                                      action: () async {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
 
-                                          try {
-                                            // Validate UUID
-                                            final uuid =
-                                                Uuid.parse(
-                                                  widget
-                                                      .idC
-                                                      .text
-                                                      .trim(),
-                                                );
-                                            if (uuid
-                                                .toString()
-                                                .isEmpty) {
-                                              throw Exception();
-                                            }
-                                          } catch (_) {
-                                            setState(
-                                              () =>
-                                                  isLoading =
-                                                      false,
-                                            );
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder:
-                                                  (
-                                                    _,
-                                                  ) => InfoAlert(
-                                                    theme:
-                                                        theme,
-                                                    message:
-                                                        'Employee Id is invalid.',
-                                                    title:
-                                                        'Invalid Employee Id.',
-                                                    action: () {
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    },
-                                                  ),
-                                            );
-                                            return;
-                                          }
-
-                                          final res = await userProvider.updateEmployeeRole(
-                                            userId:
+                                        try {
+                                          // Validate UUID
+                                          final uuid =
+                                              Uuid.parse(
                                                 widget
                                                     .idC
                                                     .text
                                                     .trim(),
-                                            newRole:
-                                                empSetup[currentSelected!]['position'],
-                                            authUserId:
-                                                AuthService()
-                                                    .currentUser!
-                                                    .id,
-                                          );
-
-                                          if (res != null &&
-                                              context
-                                                  .mounted) {
-                                            setState(
-                                              () =>
-                                                  isLoading =
-                                                      false,
-                                            );
-
-                                            if (res ==
-                                                    '121' ||
-                                                res ==
-                                                    '131') {
-                                              showDialog(
-                                                context:
-                                                    context,
-                                                builder:
-                                                    (
-                                                      _,
-                                                    ) => InfoAlert(
-                                                      theme:
-                                                          theme,
-                                                      message:
-                                                          res ==
-                                                                  '121'
-                                                              ? 'Employee Id is invalid.'
-                                                              : 'User is not found in the database.',
-                                                      title:
-                                                          res ==
-                                                                  '121'
-                                                              ? 'Invalid Employee Id.'
-                                                              : 'User not Found.',
-                                                      action: () {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                      },
-                                                    ),
                                               );
-                                              return;
-                                            }
+                                          if (uuid
+                                              .toString()
+                                              .isEmpty) {
+                                            throw Exception();
                                           }
-
-                                          await shopProvider.addEmployeeToShop(
-                                            shopId:
-                                                shopProvider
-                                                    .userShop!
-                                                    .shopId!,
-                                            newEmployeeId:
-                                                widget
-                                                    .idC
-                                                    .text
-                                                    .trim(),
+                                        } catch (_) {
+                                          setState(
+                                            () =>
+                                                isLoading =
+                                                    false,
                                           );
-
-                                          setState(() {
-                                            isLoading =
-                                                false;
-                                            showSuccess =
-                                                true;
-                                          });
-
-                                          Navigator.of(
-                                            context,
-                                          ).pop(); // close confirmation dialog immediately
-
                                           showDialog(
                                             context:
                                                 context,
@@ -479,9 +367,9 @@ class _AddEmployeeDesktopState
                                                   theme:
                                                       theme,
                                                   message:
-                                                      'Staff added successfully.',
+                                                      'Employee Id is invalid.',
                                                   title:
-                                                      'Success',
+                                                      'Invalid Employee Id.',
                                                   action: () {
                                                     Navigator.of(
                                                       context,
@@ -489,53 +377,79 @@ class _AddEmployeeDesktopState
                                                   },
                                                 ),
                                           );
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              } else {
-                                final safeContext = context;
-                                showDialog(
-                                  context: safeContext,
-                                  builder: (context) {
-                                    return ConfirmationAlert(
-                                      theme: theme,
-                                      message:
-                                          'You are about to update details, do you want to proceed?',
-                                      title: 'Procced?',
-                                      action: () async {
-                                        if (safeContext
-                                            .mounted) {
-                                          Navigator.of(
-                                            safeContext,
-                                          ).pop();
+                                          return;
                                         }
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-                                        await returnUserProvider(
-                                          context,
-                                          listen: false,
-                                        ).updateEmployeeRole(
-                                          newRole:
-                                              empSetup[currentSelected!]['position'],
-                                          userId:
-                                              widget.employee !=
-                                                      null
-                                                  ? widget
-                                                      .employee!
-                                                      .userId!
-                                                  : '',
-                                          authUserId:
-                                              AuthService()
-                                                  .currentUser!
-                                                  .id,
-                                        );
-                                        // await returnUserProvider(
-                                        //   context,
-                                        //   listen: false,
-                                        // ).fetchUsers();
+
+                                        final res = await userProvider
+                                            .updateEmployeeRole(
+                                              userId:
+                                                  widget
+                                                      .idC
+                                                      .text
+                                                      .trim(),
+                                              newRole:
+                                                  empSetup[currentSelected!]['position'],
+                                              authUserId:
+                                                  AuthService()
+                                                      .currentUser!
+                                                      .id,
+                                            );
+
+                                        if (res != null &&
+                                            context
+                                                .mounted) {
+                                          setState(
+                                            () =>
+                                                isLoading =
+                                                    false,
+                                          );
+
+                                          if (res ==
+                                                  '121' ||
+                                              res ==
+                                                  '131') {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder:
+                                                  (
+                                                    _,
+                                                  ) => InfoAlert(
+                                                    theme:
+                                                        theme,
+                                                    message:
+                                                        res ==
+                                                                '121'
+                                                            ? 'Employee Id is invalid.'
+                                                            : 'User is not found in the database.',
+                                                    title:
+                                                        res ==
+                                                                '121'
+                                                            ? 'Invalid Employee Id.'
+                                                            : 'User not Found.',
+                                                    action: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
+                                                  ),
+                                            );
+                                            return;
+                                          }
+                                        }
+
+                                        await shopProvider
+                                            .addEmployeeToShop(
+                                              shopId:
+                                                  shopProvider
+                                                      .userShop!
+                                                      .shopId!,
+                                              newEmployeeId:
+                                                  widget
+                                                      .idC
+                                                      .text
+                                                      .trim(),
+                                            );
 
                                         setState(() {
                                           isLoading = false;
@@ -543,36 +457,111 @@ class _AddEmployeeDesktopState
                                               true;
                                         });
 
-                                        await Future.delayed(
-                                          Duration(
-                                            seconds: 2,
-                                          ),
-                                        );
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // close confirmation dialog immediately
 
-                                        if (safeContext
-                                            .mounted) {
-                                          Navigator.of(
-                                            safeContext,
-                                          ).pop();
-                                        }
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (
+                                                _,
+                                              ) => InfoAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'Staff added successfully.',
+                                                title:
+                                                    'Success',
+                                                action: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                              ),
+                                        );
                                       },
                                     );
                                   },
                                 );
                               }
-                            },
-                            text:
-                                widget.employee != null
-                                    ? 'Update Details'
-                                    : 'Add Employee',
-                          );
-                        },
-                      ),
+                            } else {
+                              final safeContext = context;
+                              showDialog(
+                                context: safeContext,
+                                builder: (context) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to update details, do you want to proceed?',
+                                    title: 'Procced?',
+                                    action: () async {
+                                      if (safeContext
+                                          .mounted) {
+                                        Navigator.of(
+                                          safeContext,
+                                        ).pop();
+                                      }
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      await returnUserProvider(
+                                        context,
+                                        listen: false,
+                                      ).updateEmployeeRole(
+                                        newRole:
+                                            empSetup[currentSelected!]['position'],
+                                        userId:
+                                            widget.employee !=
+                                                    null
+                                                ? widget
+                                                    .employee!
+                                                    .userId!
+                                                : '',
+                                        authUserId:
+                                            AuthService()
+                                                .currentUser!
+                                                .id,
+                                      );
+                                      // await returnUserProvider(
+                                      //   context,
+                                      //   listen: false,
+                                      // ).fetchUsers();
+
+                                      setState(() {
+                                        isLoading = false;
+                                        showSuccess = true;
+                                      });
+
+                                      await Future.delayed(
+                                        Duration(
+                                          seconds: 2,
+                                        ),
+                                      );
+
+                                      if (safeContext
+                                          .mounted) {
+                                        Navigator.of(
+                                          safeContext,
+                                        ).pop();
+                                      }
+                                    },
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          text:
+                              widget.employee != null
+                                  ? 'Update Details'
+                                  : 'Add Employee',
+                        );
+                      },
                     ),
                   ),
-                  SizedBox(height: 20),
-                ],
-              ),
+                ),
+                SizedBox(height: 20),
+              ],
             ),
           ),
         ),

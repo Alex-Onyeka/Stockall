@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/customers/customers_list/platforms/customer_list_desktop.dart';
 import 'package:stockall/pages/customers/customers_list/platforms/customer_list_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -63,11 +64,11 @@ class _CustomerListState extends State<CustomerList> {
               searchController: searchContoller,
               isSales: widget.isSales,
             );
-          } else if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
-            return Scaffold();
           } else {
-            return Scaffold();
+            return CustomerListDesktop(
+              searchController: searchContoller,
+              isSales: widget.isSales,
+            );
           }
         },
       ),

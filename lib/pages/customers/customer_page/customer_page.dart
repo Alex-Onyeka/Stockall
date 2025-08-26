@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/customers/customer_page/platform/customer_page_desktop.dart';
 import 'package:stockall/pages/customers/customer_page/platform/customer_page_mobile.dart';
 
 class CustomerPage extends StatelessWidget {
@@ -12,11 +13,8 @@ class CustomerPage extends StatelessWidget {
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
           return CustomerPageMobile(id: id);
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return CustomerPageDesktop(id: id);
         }
       },
     );

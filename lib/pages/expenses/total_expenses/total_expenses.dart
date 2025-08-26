@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/expenses/total_expenses/platforms/total_expenses_desktop.dart';
 import 'package:stockall/pages/expenses/total_expenses/platforms/total_expenses_mobile.dart';
 
 class TotalExpenses extends StatelessWidget {
@@ -8,13 +10,10 @@ class TotalExpenses extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return TotalExpensesMobile();
-        } else if (constraints.maxWidth > 550 &&
-            constraints.maxWidth < 1000) {
-          return Scaffold();
         } else {
-          return Scaffold();
+          return TotalExpensesDesktop();
         }
       },
     );

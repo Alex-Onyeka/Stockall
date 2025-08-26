@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_desktop.dart';
 import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_mobile.dart';
 
 class AddExpenses extends StatefulWidget {
@@ -35,11 +36,14 @@ class _AddExpensesState extends State<AddExpenses> {
               nameController: nameController,
               quantityController: quantityController,
             );
-          } else if (constraints.maxWidth > 550 &&
-              constraints.maxWidth < 1000) {
-            return Scaffold();
           } else {
-            return Scaffold();
+            return AddExpensesDesktop(
+              expenses: widget.expense,
+              amountController: amountController,
+              descController: descController,
+              nameController: nameController,
+              quantityController: quantityController,
+            );
           }
         },
       ),

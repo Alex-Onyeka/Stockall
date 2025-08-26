@@ -94,40 +94,46 @@ class _TotalSalesDesktopState
           Row(
             spacing: 15,
             children: [
-              MyDrawerWidget(
-                action: () {
-                  var safeContext = context;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message: 'You are about to Logout',
-                        title: 'Are you Sure?',
-                        action: () async {
-                          Navigator.of(context).pop();
-                          setState(() {
-                            isLoading = true;
-                          });
-                          if (safeContext.mounted) {
-                            await AuthService().signOut(
-                              safeContext,
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: theme,
-                notifications:
-                    returnNotificationProvider(
-                          context,
-                        ).notifications.isEmpty
-                        ? []
-                        : returnNotificationProvider(
-                          context,
-                        ).notifications,
+              Visibility(
+                visible:
+                    widget.id == null &&
+                    widget.customerId == null,
+                child: MyDrawerWidget(
+                  action: () {
+                    var safeContext = context;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to Logout',
+                          title: 'Are you Sure?',
+                          action: () async {
+                            Navigator.of(context).pop();
+                            setState(() {
+                              isLoading = true;
+                            });
+                            if (safeContext.mounted) {
+                              await AuthService().signOut(
+                                safeContext,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
+                  theme: theme,
+                  notifications:
+                      returnNotificationProvider(
+                            context,
+                          ).notifications.isEmpty
+                          ? []
+                          : returnNotificationProvider(
+                            context,
+                          ).notifications,
+                ),
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -848,7 +854,12 @@ class _TotalSalesDesktopState
                   ),
                 ),
               ),
-              RightSideBar(theme: theme),
+              Visibility(
+                visible:
+                    widget.id == null &&
+                    widget.customerId == null,
+                child: RightSideBar(theme: theme),
+              ),
             ],
           ),
           Visibility(

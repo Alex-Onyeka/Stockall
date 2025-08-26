@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 
 class DesktopCenterContainer extends StatelessWidget {
+  final double? width;
   final Widget mainWidget;
   const DesktopCenterContainer({
     super.key,
     required this.mainWidget,
+    this.width,
   });
 
   @override
@@ -31,10 +33,10 @@ class DesktopCenterContainer extends StatelessWidget {
             Center(
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 40),
-                width: 550,
+                width: width ?? 550,
                 padding: EdgeInsets.symmetric(
                   horizontal: 50,
-                  vertical: 30,
+                  vertical: 20,
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
