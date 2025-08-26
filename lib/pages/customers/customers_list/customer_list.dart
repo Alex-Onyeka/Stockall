@@ -21,6 +21,7 @@ class _CustomerListState extends State<CustomerList> {
   @override
   void initState() {
     super.initState();
+    returnNavProvider(context, listen: false).navigate(3);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userShop = await returnShopProvider(
         context,

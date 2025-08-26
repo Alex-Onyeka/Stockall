@@ -318,10 +318,6 @@ class _MyDrawerWidgetDesktopState
                                   itemIndex: 3,
                                   height: 14,
                                   action: () {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(3);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -338,10 +334,6 @@ class _MyDrawerWidgetDesktopState
                                   itemIndex: 4,
                                   height: 14,
                                   action: () {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(4);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -362,10 +354,6 @@ class _MyDrawerWidgetDesktopState
                                   itemIndex: 5,
                                   height: 14,
                                   action: () {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(5);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -388,10 +376,6 @@ class _MyDrawerWidgetDesktopState
                                   itemIndex: 6,
                                   height: 14,
                                   action: () {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(6);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -415,10 +399,6 @@ class _MyDrawerWidgetDesktopState
                                     itemIndex: 7,
                                     height: 14,
                                     action: () {
-                                      returnNavProvider(
-                                        context,
-                                        listen: false,
-                                      ).navigate(7);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -453,10 +433,6 @@ class _MyDrawerWidgetDesktopState
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(8);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -544,13 +520,6 @@ class _MyDrawerWidgetDesktopState
                                                   children: [
                                                     InkWell(
                                                       onTap: () {
-                                                        returnNavProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).navigate(
-                                                          8,
-                                                        );
                                                         Navigator.of(
                                                           context,
                                                         ).pop();
@@ -729,10 +698,6 @@ class _MyDrawerWidgetDesktopState
                                   itemIndex: 9,
                                   height: 18,
                                   action: () {
-                                    returnNavProvider(
-                                      context,
-                                      listen: false,
-                                    ).navigate(9);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(

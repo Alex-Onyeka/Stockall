@@ -18,6 +18,12 @@ class CalculatorPage extends StatefulWidget {
 class _CalculatorPageState extends State<CalculatorPage> {
   bool isLoading = false;
   @override
+  void initState() {
+    super.initState();
+    returnNavProvider(context, listen: false).navigate(9);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Stack(

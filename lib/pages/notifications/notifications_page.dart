@@ -18,6 +18,7 @@ class _NotificationsPageState
   @override
   void initState() {
     super.initState();
+    returnNavProvider(context, listen: false).navigate(8);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userShop = await returnShopProvider(
         context,

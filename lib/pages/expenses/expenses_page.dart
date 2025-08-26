@@ -18,6 +18,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   @override
   void initState() {
     super.initState();
+    returnNavProvider(context, listen: false).navigate(4);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userShop = await returnShopProvider(
         context,

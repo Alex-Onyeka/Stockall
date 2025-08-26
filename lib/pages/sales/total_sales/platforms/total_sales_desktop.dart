@@ -50,6 +50,7 @@ class _TotalSalesDesktopState
   @override
   void initState() {
     super.initState();
+    returnNavProvider(context, listen: false).navigate(5);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
       if (widget.isInvoice != null) {

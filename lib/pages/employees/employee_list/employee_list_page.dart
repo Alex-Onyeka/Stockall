@@ -20,6 +20,7 @@ class _EmployeeListPageState
   @override
   void initState() {
     super.initState();
+    returnNavProvider(context, listen: false).navigate(7);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userShop = await returnShopProvider(
         context,
