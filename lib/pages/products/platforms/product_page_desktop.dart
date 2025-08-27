@@ -5,10 +5,11 @@ import 'package:stockall/classes/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
+import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/items_summary.dart';
-import 'package:stockall/components/major/my_drawer_widget.dart';
+import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -99,18 +100,59 @@ class _ProductPageDesktopState
     // getProductList(context);
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     final products =
         context.watch<DataProvider>().productList;
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: MyDrawerWidgetDesktopMain(
+        action: () {
+          var safeContext = context;
+          showDialog(
+            context: context,
+            builder: (context) {
+              return ConfirmationAlert(
+                theme: theme,
+                message: 'You are about to Logout',
+                title: 'Are you Sure?',
+                action: () async {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    isLoading = true;
+                  });
+                  if (safeContext.mounted) {
+                    await AuthService().signOut(
+                      safeContext,
+                    );
+                  }
+                },
+              );
+            },
+          );
+        },
+        theme: theme,
+        notifications:
+            returnNotificationProvider(
+                  context,
+                ).notifications.isEmpty
+                ? []
+                : returnNotificationProvider(
+                  context,
+                ).notifications,
+        globalKey: _scaffoldKey,
+      ),
       body: Stack(
         children: [
           Row(
             spacing: 15,
             children: [
               MyDrawerWidget(
+                globalKey: _scaffoldKey,
                 action: () {
                   var safeContext = context;
                   showDialog(

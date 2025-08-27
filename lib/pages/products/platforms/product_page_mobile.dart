@@ -7,7 +7,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/items_summary.dart';
-import 'package:stockall/components/major/my_drawer_widget.dart';
+import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -203,8 +203,8 @@ class _ProductPageMobileState
                               Authorizations().addProduct,
                           context: context,
                         )
-                        ? 280
-                        : 260,
+                        ? 270
+                        : 250,
                 child: Stack(
                   children: [
                     TopBanner(
@@ -260,6 +260,10 @@ class _ProductPageMobileState
                         },
                         color1: Colors.green,
                         title1: 'In Stock',
+                        color0: Colors.green,
+                        show0: true,
+                        title0: 'Total Stock',
+                        value0: products.length.toDouble(),
                         value1:
                             products
                                 .where(

@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_main_receipt.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -23,68 +24,86 @@ class RightSideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: MediaQuery.of(context).size.width > 950,
-      child: Material(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.2,
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              topLeft: Radius.circular(10),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color.fromARGB(39, 4, 1, 41),
-                blurRadius: 10,
-              ),
-            ],
+    return Material(
+      child: Container(
+        width:
+            screenWidth(context) > tabletScreenSmall
+                ? 240
+                : 90,
+        padding: EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10),
+            topLeft: Radius.circular(10),
           ),
-          child: Column(
-            children: [
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return ProfilePage();
-                        },
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(39, 4, 1, 41),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return ProfilePage();
+                      },
+                    ),
+                  );
+                },
+                child: SizedBox(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 60),
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                        child: Image.asset(
+                          profileIconImage,
+                          height:
+                              screenWidth(context) >
+                                      tabletScreenSmall
+                                  ? 70
+                                  : 50,
+                        ),
                       ),
-                    );
-                  },
-                  child: SizedBox(
-                    child: Column(
-                      children: [
-                        SizedBox(height: 60),
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          child: Image.asset(
-                            profileIconImage,
-                            height: 70,
-                          ),
+                      SizedBox(height: 10),
+                      Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize:
+                              screenWidth(context) >
+                                      tabletScreenSmall
+                                  ? theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize
+                                  : theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                          ),
-                          userGeneral(context).name,
-                        ),
-                        Text(
+                        userGeneral(context).name,
+                      ),
+                      Visibility(
+                        visible:
+                            screenWidth(context) >
+                            tabletScreenSmall,
+                        child: Text(
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color:
@@ -99,52 +118,62 @@ class RightSideBar extends StatelessWidget {
                           ),
                           userGeneral(context).email,
                         ),
-                        SizedBox(height: 5),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 2,
+                      ),
+                      SizedBox(height: 5),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(
+                            32,
+                            255,
+                            193,
+                            7,
                           ),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(
-                              32,
-                              255,
-                              193,
-                              7,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(5),
-                            border: Border.all(
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                            ),
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              // color:
-                              //     theme
-                              //         .lightModeColor
-                              //         .secColor200,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                            ),
-                            userGeneral(context).role,
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          border: Border.all(
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .secColor200,
                           ),
                         ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(
-                                0,
-                                0,
-                                20,
-                                20,
-                              ),
+                        child: Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            // color:
+                            //     theme
+                            //         .lightModeColor
+                            //         .secColor200,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                          ),
+                          userGeneral(context).role,
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            screenWidth(context) <=
+                            tabletScreenSmall,
+                        child: SizedBox(height: 30),
+                      ),
+                      Visibility(
+                        visible:
+                            screenWidth(context) >
+                            tabletScreenSmall,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            0,
+                            5,
+                            20,
+                            20,
+                          ),
                           child: Row(
                             mainAxisAlignment:
                                 MainAxisAlignment.end,
@@ -158,76 +187,94 @@ class RightSideBar extends StatelessWidget {
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              Divider(
-                color: Colors.grey.shade300,
-                height: 50,
-              ),
-              Expanded(
-                child: SizedBox(
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return TotalSalesPage(
-                                    turnOff: true,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(
-                                  0,
-                                  10,
-                                  0,
-                                  10,
-                                ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  returnReceiptProvider(
-                                        context,
-                                      ).dateSet ??
-                                      'Todays Sales',
-                                ),
-                                Icon(
-                                  size: 15,
-                                  color: Colors.grey,
-                                  Icons
-                                      .arrow_forward_ios_rounded,
-                                ),
-                              ],
+            ),
+            Divider(
+              color: Colors.grey.shade300,
+              height: 50,
+            ),
+            Expanded(
+              child: SizedBox(
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return TotalSalesPage(
+                                  turnOff: true,
+                                );
+                              },
                             ),
+                          );
+                        },
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(
+                                0,
+                                10,
+                                0,
+                                10,
+                              ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      screenWidth(context) >
+                                              tabletScreenSmall
+                                          ? theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize
+                                          : theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                screenWidth(context) <=
+                                        tabletScreenSmall
+                                    ? 'View Sales'
+                                    : returnReceiptProvider(
+                                          context,
+                                        ).dateSet ??
+                                        'Todays Sales',
+                              ),
+                              Icon(
+                                size:
+                                    screenWidth(context) <=
+                                            tabletScreenSmall
+                                        ? 13
+                                        : 15,
+                                color: Colors.grey,
+                                Icons
+                                    .arrow_forward_ios_rounded,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      // SizedBox(height: 10),
-                      Builder(
+                    ),
+                    // SizedBox(height: 10),
+                    Visibility(
+                      visible:
+                          screenWidth(context) >
+                          tabletScreenSmall,
+                      child: Builder(
                         builder: (context) {
                           if (returnReceiptProvider(context)
                               .returnOwnReceiptsByDayOrWeek(
@@ -428,11 +475,15 @@ class RightSideBar extends StatelessWidget {
                           }
                         },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              MainButtonP(
+            ),
+            Visibility(
+              visible:
+                  screenWidth(context) > tabletScreenSmall,
+              child: MainButtonP(
                 themeProvider: theme,
                 action: () {
                   Navigator.push(
@@ -446,8 +497,67 @@ class RightSideBar extends StatelessWidget {
                 },
                 text: 'Make New Sale',
               ),
-            ],
-          ),
+            ),
+            Visibility(
+              visible:
+                  screenWidth(context) <= tabletScreenSmall,
+              child: Material(
+                color: Colors.transparent,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return MakeSalesPage();
+                          },
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 5,
+                      ),
+                      child: Column(
+                        spacing: 4,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(
+                            height: 50,
+                            makeSalesIconSvg,
+                          ),
+                          Text(
+                            style: TextStyle(
+                              color: const Color.fromARGB(
+                                255,
+                                4,
+                                49,
+                                199,
+                              ),
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Make Sale',
+                          ),
+                          SizedBox(height: 5),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

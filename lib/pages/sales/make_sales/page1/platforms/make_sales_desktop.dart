@@ -2384,16 +2384,24 @@ class _MakeSalesDesktopState
                                   Material(
                                     color:
                                         Colors.transparent,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
+                                    child: Column(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
                                       spacing: 10,
                                       children: [
-                                        Expanded(
-                                          child: SmallButtonMain(
-                                            theme: theme,
-                                            action: () {
+                                        Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
                                               showGeneralDialog(
                                                 context:
                                                     context,
@@ -2416,100 +2424,115 @@ class _MakeSalesDesktopState
                                                 },
                                               );
                                             },
-                                            buttonText:
-                                                'Add Item',
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Ink(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    5,
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        11,
                                                   ),
-                                              border: Border.all(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .prColor300,
+                                              child: Center(
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b3.fontSize,
+                                                    color:
+                                                        Colors.white,
+                                                  ),
+                                                  'Add Item',
+                                                ),
                                               ),
                                             ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).toggleAddToStock(
-                                                  true,
-                                                );
-                                                makeCustomSale(
-                                                  closeAction: () {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                  },
-                                                  cartItem: TempCartItem(
-                                                    setTotalPrice:
-                                                        returnSalesProvider(
+                                          ),
+                                        ),
+                                        Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            border: Border.all(
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .prColor300,
+                                            ),
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).toggleAddToStock(
+                                                true,
+                                              );
+                                              makeCustomSale(
+                                                closeAction: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                                cartItem: TempCartItem(
+                                                  setTotalPrice:
+                                                      returnSalesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).setTotalPrice,
+                                                  item: TempProductClass(
+                                                    isManaged:
+                                                        false,
+                                                    id: 000,
+                                                    name:
+                                                        nameC.text,
+                                                    unit:
+                                                        'Others',
+                                                    isRefundable:
+                                                        false,
+                                                    costPrice:
+                                                        double.tryParse(
+                                                          costPriceC.text,
+                                                        ) ??
+                                                        0,
+                                                    sellingPrice: double.tryParse(
+                                                      sellingPriceC
+                                                          .text,
+                                                    ),
+                                                    quantity:
+                                                        0,
+                                                    shopId:
+                                                        returnShopProvider(
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).setTotalPrice,
-                                                    item: TempProductClass(
-                                                      isManaged:
-                                                          false,
-                                                      id: 000,
-                                                      name:
-                                                          nameC.text,
-                                                      unit:
-                                                          'Others',
-                                                      isRefundable:
-                                                          false,
-                                                      costPrice:
-                                                          double.tryParse(
-                                                            costPriceC.text,
-                                                          ) ??
-                                                          0,
-                                                      sellingPrice: double.tryParse(
-                                                        sellingPriceC.text,
-                                                      ),
-                                                      quantity:
-                                                          0,
-                                                      shopId:
-                                                          returnShopProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).userShop!.shopId!,
-                                                      setCustomPrice:
-                                                          true,
-                                                    ),
-                                                    addToStock:
-                                                        true,
-                                                    quantity:
-                                                        0,
-                                                    discount:
-                                                        null,
+                                                        ).userShop!.shopId!,
                                                     setCustomPrice:
                                                         true,
                                                   ),
-                                                );
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          9,
-                                                    ),
-                                                child: Center(
-                                                  child: Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b2.fontSize,
-                                                    ),
-                                                    'Add Custom Item',
+                                                  addToStock:
+                                                      true,
+                                                  quantity:
+                                                      0,
+                                                  discount:
+                                                      null,
+                                                  setCustomPrice:
+                                                      true,
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        9,
                                                   ),
+                                              child: Center(
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b3.fontSize,
+                                                  ),
+                                                  'Add Custom Item',
                                                 ),
                                               ),
                                             ),
@@ -2673,6 +2696,79 @@ class _MakeSalesDesktopState
                   ),
                 ),
               ),
+              // Visibility(
+              //   visible:
+              //       returnSalesProvider(
+              //         context,
+              //       ).cartItems.isNotEmpty,
+              //   child: Align(
+              //     alignment: Alignment(0.9, 0.1),
+              //     child: Material(
+              //       color: Colors.transparent,
+              //       child: Ink(
+              //         decoration: BoxDecoration(
+              //           borderRadius: BorderRadius.circular(
+              //             15,
+              //           ),
+              //           boxShadow: [
+              //             BoxShadow(
+              //               color: const Color.fromARGB(
+              //                 35,
+              //                 0,
+              //                 0,
+              //                 0,
+              //               ),
+              //               blurRadius: 10,
+              //             ),
+              //           ],
+              //         ),
+              //         child: InkWell(
+              //           borderRadius: BorderRadius.circular(
+              //             15,
+              //           ),
+              //           onTap: () {
+              //             showGeneralDialog(
+              //               context: context,
+              //               pageBuilder: (
+              //                 context,
+              //                 animation,
+              //                 secondaryAnimation,
+              //               ) {
+              //                 return MyCalculatorDesktop();
+              //               },
+              //             );
+              //           },
+              //           child: Container(
+              //             height: 60,
+              //             width: 60,
+              //             decoration: BoxDecoration(
+              //               borderRadius:
+              //                   BorderRadius.circular(15),
+              //               boxShadow: [
+              //                 BoxShadow(
+              //                   color: const Color.fromARGB(
+              //                     35,
+              //                     0,
+              //                     0,
+              //                     0,
+              //                   ),
+              //                   blurRadius: 10,
+              //                 ),
+              //               ],
+              //               color: Colors.white,
+              //             ),
+              //             child: Center(
+              //               child: Icon(
+              //                 size: 30,
+              //                 Icons.calculate_outlined,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

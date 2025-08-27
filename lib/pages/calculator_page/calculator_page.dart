@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
-import 'package:stockall/components/major/my_drawer_widget.dart';
+import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/main.dart';
@@ -23,6 +23,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
     returnNavProvider(context, listen: false).navigate(9);
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -32,6 +35,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
           spacing: 15,
           children: [
             MyDrawerWidget(
+              globalKey: _scaffoldKey,
               action: () {
                 var safeContext = context;
                 showDialog(

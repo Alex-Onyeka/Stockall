@@ -10,7 +10,7 @@ import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/major/my_drawer_widget.dart';
+import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/helpers/clean_up_url.dart';
@@ -422,6 +422,44 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                             listen: false,
                                           ).navigate(2);
                                         },
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          screenWidth(
+                                            context,
+                                          ) >
+                                          mobileScreenSmall,
+                                      child: Expanded(
+                                        child: MainInfoTab(
+                                          theme: theme,
+                                          icon:
+                                              productIconSvg,
+                                          number:
+                                              '${returnReceiptProvider(context).receipts.where((rec) => rec.isInvoice).length}',
+                                          title:
+                                              'Total Invoice',
+                                          action: () {
+                                            returnNavProvider(
+                                              context,
+                                              listen: false,
+                                            ).navigate(5);
+
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return TotalSalesPage(
+                                                    isInvoice:
+                                                        true,
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ],
