@@ -391,7 +391,7 @@ class _TotalProductsDesktopState
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                     horizontal:
-                                                        20.0,
+                                                        5.0,
                                                   ),
                                               child: SizedBox(
                                                 width:
@@ -411,7 +411,7 @@ class _TotalProductsDesktopState
                                                             Axis.horizontal,
                                                         child: Row(
                                                           spacing:
-                                                              10,
+                                                              6,
                                                           mainAxisAlignment:
                                                               MainAxisAlignment.center,
                                                           children: [
@@ -516,7 +516,7 @@ class _TotalProductsDesktopState
                                                     } else {
                                                       return Row(
                                                         spacing:
-                                                            10,
+                                                            5,
                                                         mainAxisAlignment:
                                                             MainAxisAlignment.center,
                                                         children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
 
@@ -15,7 +16,7 @@ class ReceiptPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return ReceiptPageMobile(
             isMain: isMain,
             receiptId: receiptId,

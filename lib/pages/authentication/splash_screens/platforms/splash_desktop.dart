@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/authentication/splash_screens/platforms/components/indicator.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -85,16 +86,22 @@ class _SplashDesktopState extends State<SplashDesktop> {
                   children: [
                     Center(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 80.0,
-                        ),
+                        padding:
+                            screenWidth(context) <
+                                    tabletScreen
+                                ? EdgeInsets.symmetric(
+                                  horizontal: 40,
+                                )
+                                : EdgeInsets.symmetric(
+                                  horizontal: 80,
+                                ),
                         child: Column(
                           mainAxisAlignment:
                               MainAxisAlignment.center,
                           children: [
                             Image.asset(
                               mainLogoIcon,
-                              width: 90,
+                              width: 60,
                             ),
                             SizedBox(height: 40),
                             Row(
@@ -142,14 +149,18 @@ class _SplashDesktopState extends State<SplashDesktop> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize:
-                                    widget.themeProvider
-                                        .returnPlatform(
-                                          widget
-                                              .constraints,
-                                          context,
-                                        )
-                                        .h1
-                                        .fontSize,
+                                    screenWidth(context) <
+                                            tabletScreen
+                                        ? widget
+                                            .themeProvider
+                                            .mobileTexts
+                                            .h2
+                                            .fontSize
+                                        : widget
+                                            .themeProvider
+                                            .mobileTexts
+                                            .h1
+                                            .fontSize,
                                 fontWeight:
                                     widget.themeProvider
                                         .returnPlatform(

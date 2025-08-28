@@ -300,8 +300,7 @@ class _EmpAuthState extends State<EmpAuth> {
                           FocusManager.instance.primaryFocus
                               ?.unfocus(),
                   child: Container(
-                    width:
-                        MediaQuery.of(context).size.width,
+                    width: screenWidth(context),
                     height:
                         MediaQuery.of(context).size.height,
                     color: const Color.fromARGB(
@@ -328,8 +327,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                         mobileScreen
                                     ? screenWidth(context) *
                                         0.85
-                                    : screenWidth(context) *
-                                        0.4,
+                                    : mobileScreen - 100,
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.circular(5),
@@ -349,7 +347,7 @@ class _EmpAuthState extends State<EmpAuth> {
                             ),
                             padding:
                                 EdgeInsetsDirectional.symmetric(
-                                  horizontal: 30,
+                                  horizontal: 20,
                                   vertical: 20,
                                 ),
                             child: Column(

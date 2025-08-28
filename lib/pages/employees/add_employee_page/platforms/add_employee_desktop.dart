@@ -6,6 +6,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -70,7 +71,10 @@ class _AddEmployeeDesktopState
     return Stack(
       children: [
         DesktopCenterContainer(
-          width: screenWidth(context) - 200,
+          width:
+              screenWidth(context) > tabletScreen
+                  ? screenWidth(context) - 200
+                  : screenWidth(context) - 40,
           mainWidget: Scaffold(
             backgroundColor: Colors.grey.shade100,
             appBar: appBar(

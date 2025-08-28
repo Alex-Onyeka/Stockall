@@ -224,7 +224,13 @@ class _ProductPageDesktopState
                                   ),
                                   child: ItemsSummary(
                                     show00: true,
-                                    show0: true,
+                                    show0:
+                                        screenWidth(
+                                                  context,
+                                                ) <
+                                                tabletScreenSmall
+                                            ? null
+                                            : true,
                                     color00: Colors.amber,
                                     title00: 'Unmanaged',
                                     value00:

@@ -70,12 +70,12 @@ class _MakeSalesDesktopTwoState
           Center(
             child: Container(
               margin: EdgeInsets.symmetric(
-                vertical: 25,
-                horizontal: 20,
+                vertical: 15,
+                horizontal: 10,
               ),
               padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
+                horizontal: 15,
+                vertical: 15,
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
@@ -96,7 +96,6 @@ class _MakeSalesDesktopTwoState
               ),
               child: Scaffold(
                 body: Row(
-                  spacing: 15,
                   children: [
                     Visibility(
                       visible:
@@ -106,6 +105,12 @@ class _MakeSalesDesktopTwoState
                         flex: 4,
                         child: MyCalculatorDesktop(),
                       ),
+                    ),
+                    Visibility(
+                      visible:
+                          screenWidth(context) >
+                          tabletScreen,
+                      child: SizedBox(width: 15),
                     ),
                     Expanded(
                       flex: 10,
@@ -118,7 +123,7 @@ class _MakeSalesDesktopTwoState
                           body: Padding(
                             padding:
                                 const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
+                                  horizontal: 10.0,
                                 ),
                             child: Column(
                               mainAxisAlignment:
@@ -634,8 +639,13 @@ class _MakeSalesDesktopTwoState
                         ),
                       ),
                     ),
+                    SizedBox(width: 15),
                     Expanded(
-                      flex: 5,
+                      flex:
+                          screenWidth(context) <
+                                  tabletScreen
+                              ? 6
+                              : 5,
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey.shade100,
@@ -667,7 +677,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b3
                                               .fontSize,
                                     ),
                                     'Subtotal',
@@ -677,7 +687,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b3
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
@@ -705,7 +715,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b3
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
@@ -716,7 +726,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b3
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
@@ -735,7 +745,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .h4
+                                              .b1
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -747,7 +757,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .h4
+                                              .b1
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,

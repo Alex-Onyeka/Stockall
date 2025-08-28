@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/sign_up/platforms/signup_desktop.dart';
 import 'package:stockall/pages/authentication/sign_up/platforms/signup_mobile.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -47,7 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 500) {
+          if (constraints.maxWidth < mobileScreen) {
             return SignupMobile(
               checked: checked,
               onTap: () {

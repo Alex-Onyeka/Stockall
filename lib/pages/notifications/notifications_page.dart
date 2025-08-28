@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/notifications/platforms/notifications_desktop.dart';
 import 'package:stockall/pages/notifications/platforms/notifications_mobile.dart';
@@ -54,7 +55,7 @@ class _NotificationsPageState
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return NotificationsMobile();
         } else {
           return NotificationsDesktop(

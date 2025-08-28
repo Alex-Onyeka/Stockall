@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_desktop.dart';
 import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_mobile.dart';
 
@@ -28,7 +29,7 @@ class _AddExpensesState extends State<AddExpenses> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return AddExpensesMobile(
               expenses: widget.expense,
               amountController: amountController,

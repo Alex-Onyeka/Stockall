@@ -94,7 +94,7 @@ class _EditDesktopState extends State<EditDesktop> {
                       ),
                       width: 550,
                       padding: EdgeInsets.symmetric(
-                        horizontal: 50,
+                        horizontal: 40,
                         vertical: 30,
                       ),
                       decoration: BoxDecoration(

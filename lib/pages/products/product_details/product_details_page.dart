@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_mobile.dart';
@@ -15,7 +16,7 @@ class ProductDetailsPage extends StatelessWidget {
     var theme = returnTheme(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 550) {
+        if (constraints.maxWidth < mobileScreen) {
           return ProductDetailsMobile(
             theme: theme,
             productId: productId,

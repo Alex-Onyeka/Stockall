@@ -158,164 +158,168 @@ class _ShopSetupDesktopState
       children: [
         Scaffold(
           body: DesktopCenterContainer(
-            mainWidget: Column(
-              children: [
-                SizedBox(height: 10),
-                Column(
-                  spacing: 8,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .shadesColorBlack,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontSize,
-                            fontWeight:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontWeightBold,
-                          ),
-                          widget.shop != null
-                              ? 'Edit Shop'
-                              : 'Shop Setup',
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          style:
-                              Provider.of<ThemeProvider>(
-                                    context,
-                                  )
-                                  .mobileTexts
-                                  .b1
-                                  .textStyleNormal,
-                          widget.shop != null
-                              ? 'Edit your shop information.'
-                              : 'Create a Shop to get Started.',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0,
-                  ),
-                  child: ProgressBar(
-                    position: -1,
-                    calcValue: 0.08,
-                    theme: theme,
-                    percent: '0%',
-                    title: 'Your Progress',
-                  ),
-                ),
-                SizedBox(height: 10),
-                Column(
-                  spacing: 10,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
-                      ),
-                      child: Column(
-                        spacing: 20,
+            mainWidget: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Column(
+                    spacing: 8,
+                    children: [
+                      Row(
                         children: [
-                          FormFieldShop(
-                            isPhone: false,
-                            isOptional: false,
-                            theme: theme,
-                            hintText:
-                                'Enter your shop Name',
-                            title: 'Shop Name',
-                            isEmail: false,
-                            controller: nameController,
-                          ),
-                          FormFieldShop(
-                            isPhone: false,
-                            isOptional: true,
-                            theme: theme,
-                            hintText: 'Shop Email',
-                            title: 'Enter Email',
-                            message:
-                                'Uses your Personal Email if you don\'t set',
-                            isEmail: true,
-                            controller: emailController,
-                          ),
-                          Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              PhoneNumberTextField(
-                                theme: theme,
-                                hint: 'Shop Phone Number',
-                                title:
-                                    'Enter Phone (Optional)',
-
-                                controller:
-                                    numberController,
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  color:
-                                      Colors.grey.shade600,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Uses your Personal Number if you don\'t set',
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              SizedBox(height: 5),
-                              MainButtonP(
-                                themeProvider: theme,
-                                action: () {
-                                  checkInput();
-                                },
-                                text:
-                                    widget.shop == null
-                                        ? 'Save and Proceed'
-                                        : 'Update Shop',
-                              ),
-                              SizedBox(height: 5),
-                              MainButtonTransparent(
-                                themeProvider: theme,
-                                action: () {
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                },
-                                text: 'Cancel',
-                                constraints:
-                                    BoxConstraints(),
-                              ),
-                              SizedBox(height: 10),
-                            ],
+                          Text(
+                            style: TextStyle(
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .shadesColorBlack,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontSize,
+                              fontWeight:
+                                  theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontWeightBold,
+                            ),
+                            widget.shop != null
+                                ? 'Edit Shop'
+                                : 'Shop Setup',
                           ),
                         ],
                       ),
+                      Row(
+                        children: [
+                          Text(
+                            style:
+                                Provider.of<ThemeProvider>(
+                                      context,
+                                    )
+                                    .mobileTexts
+                                    .b1
+                                    .textStyleNormal,
+                            widget.shop != null
+                                ? 'Edit your shop information.'
+                                : 'Create a Shop to get Started.',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
                     ),
-                  ],
-                ),
-                SizedBox(height: 10),
-              ],
+                    child: ProgressBar(
+                      position: -1,
+                      calcValue: 0.08,
+                      theme: theme,
+                      percent: '0%',
+                      title: 'Your Progress',
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Column(
+                    spacing: 10,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                        ),
+                        child: Column(
+                          spacing: 20,
+                          children: [
+                            FormFieldShop(
+                              isPhone: false,
+                              isOptional: false,
+                              theme: theme,
+                              hintText:
+                                  'Enter your shop Name',
+                              title: 'Shop Name',
+                              isEmail: false,
+                              controller: nameController,
+                            ),
+                            FormFieldShop(
+                              isPhone: false,
+                              isOptional: true,
+                              theme: theme,
+                              hintText: 'Shop Email',
+                              title: 'Enter Email',
+                              message:
+                                  'Uses your Personal Email if you don\'t set',
+                              isEmail: true,
+                              controller: emailController,
+                            ),
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                PhoneNumberTextField(
+                                  theme: theme,
+                                  hint: 'Shop Phone Number',
+                                  title:
+                                      'Enter Phone (Optional)',
+
+                                  controller:
+                                      numberController,
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade600,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Uses your Personal Number if you don\'t set',
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(height: 5),
+                                MainButtonP(
+                                  themeProvider: theme,
+                                  action: () {
+                                    checkInput();
+                                  },
+                                  text:
+                                      widget.shop == null
+                                          ? 'Save and Proceed'
+                                          : 'Update Shop',
+                                ),
+                                SizedBox(height: 5),
+                                MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  },
+                                  text: 'Cancel',
+                                  constraints:
+                                      BoxConstraints(),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),

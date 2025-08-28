@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/auth_landing/platforms/auth_landing_desktop.dart';
 import 'package:stockall/pages/authentication/auth_landing/platforms/auth_landing_mobile.dart';
 import 'package:stockall/pages/authentication/auth_landing/platforms/auth_landing_tablet.dart';
@@ -14,13 +15,13 @@ class AuthLanding extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 600) {
+        if (constraints.maxWidth <= mobileScreen) {
           return AuthLandingMobile(
             themeProvider: themeProvider,
             constraints: constraints,
           );
-        } else if (constraints.maxWidth > 600 &&
-            constraints.maxWidth < 900) {
+        } else if (constraints.maxWidth > mobileScreen &&
+            constraints.maxWidth < tabletScreenSmall) {
           return AuthLandingTablet(
             themeProvider: themeProvider,
             constraints: constraints,

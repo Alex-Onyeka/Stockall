@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_desktop_two.dart';
 import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_mobile_two.dart';
 
@@ -31,7 +32,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return MakeSalesMobileTwo(
               totalAmount: widget.totalAmount,
               customerController: customerController,

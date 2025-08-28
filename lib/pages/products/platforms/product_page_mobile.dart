@@ -261,7 +261,11 @@ class _ProductPageMobileState
                         color1: Colors.green,
                         title1: 'In Stock',
                         color0: Colors.green,
-                        show0: true,
+                        show0:
+                            screenWidth(context) >
+                                    mobileScreenSmall
+                                ? true
+                                : null,
                         title0: 'Total Stock',
                         value0: products.length.toDouble(),
                         value1:

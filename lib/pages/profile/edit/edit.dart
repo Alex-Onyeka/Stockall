@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/profile/edit/platforms/edit_desktop.dart';
 import 'package:stockall/pages/profile/edit/platforms/edit_mobile.dart';
 
@@ -41,7 +42,7 @@ class _EditState extends State<Edit> {
               FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return EditMobile(
               user: widget.user,
               nameController: nameController,

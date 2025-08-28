@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/sales_page/platforms/sales_page_desktop.dart';
 import 'package:stockall/pages/sales/sales_page/platforms/sales_page_mobile.dart';
@@ -66,7 +67,7 @@ class _SalesPageState extends State<SalesPage> {
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 550) {
+          if (constraints.maxWidth < mobileScreen) {
             return SalesPageMobile();
           } else {
             return SalesPageDesktop();

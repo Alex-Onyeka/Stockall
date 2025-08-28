@@ -118,41 +118,45 @@ class _CustomerListDesktopState
           Row(
             spacing: 15,
             children: [
-              MyDrawerWidget(
-                globalKey: _scaffoldKey,
-                action: () {
-                  var safeContext = context;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message: 'You are about to Logout',
-                        title: 'Are you Sure?',
-                        action: () async {
-                          Navigator.of(context).pop();
-                          setState(() {
-                            isLoading = true;
-                          });
-                          if (safeContext.mounted) {
-                            await AuthService().signOut(
-                              safeContext,
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: theme,
-                notifications:
-                    returnNotificationProvider(
-                          context,
-                        ).notifications.isEmpty
-                        ? []
-                        : returnNotificationProvider(
-                          context,
-                        ).notifications,
+              Visibility(
+                visible: widget.isSales == null,
+                child: MyDrawerWidget(
+                  globalKey: _scaffoldKey,
+                  action: () {
+                    var safeContext = context;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are about to Logout',
+                          title: 'Are you Sure?',
+                          action: () async {
+                            Navigator.of(context).pop();
+                            setState(() {
+                              isLoading = true;
+                            });
+                            if (safeContext.mounted) {
+                              await AuthService().signOut(
+                                safeContext,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
+                  theme: theme,
+                  notifications:
+                      returnNotificationProvider(
+                            context,
+                          ).notifications.isEmpty
+                          ? []
+                          : returnNotificationProvider(
+                            context,
+                          ).notifications,
+                ),
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -181,10 +185,15 @@ class _CustomerListDesktopState
                     appBar: AppBar(
                       toolbarHeight: 60,
                       leading: Opacity(
-                        opacity: 0,
+                        opacity:
+                            widget.isSales == null ? 0 : 1,
                         child: IconButton(
                           onPressed: () {
-                            // Navigator.of(context).pop();
+                            widget.isSales == null
+                                ? {}
+                                : Navigator.of(
+                                  context,
+                                ).pop();
                           },
                           icon: Padding(
                             padding: const EdgeInsets.only(
@@ -478,7 +487,10 @@ class _CustomerListDesktopState
                   ),
                 ),
               ),
-              RightSideBar(theme: theme),
+              Visibility(
+                visible: widget.isSales == null,
+                child: RightSideBar(theme: theme),
+              ),
             ],
           ),
           Visibility(

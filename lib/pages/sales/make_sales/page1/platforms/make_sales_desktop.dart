@@ -11,6 +11,7 @@ import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
@@ -1652,12 +1653,12 @@ class _MakeSalesDesktopState
               Center(
                 child: Container(
                   margin: EdgeInsets.symmetric(
-                    vertical: 25,
-                    horizontal: 20,
+                    vertical: 15,
+                    horizontal: 10,
                   ),
                   padding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
+                    horizontal: 15,
+                    vertical: 15,
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -1678,7 +1679,7 @@ class _MakeSalesDesktopState
                   ),
                   child: Scaffold(
                     body: Row(
-                      spacing: 15,
+                      // spacing: 15,
                       children: [
                         Visibility(
                           visible:
@@ -1688,6 +1689,12 @@ class _MakeSalesDesktopState
                             flex: 4,
                             child: MyCalculatorDesktop(),
                           ),
+                        ),
+                        Visibility(
+                          visible:
+                              screenWidth(context) >
+                              tabletScreen,
+                          child: SizedBox(width: 15),
                         ),
                         Expanded(
                           flex: 10,
@@ -2348,6 +2355,101 @@ class _MakeSalesDesktopState
                                             },
                                           ),
                                         ),
+                                        Visibility(
+                                          visible:
+                                              returnSalesProvider(
+                                                    context,
+                                                  )
+                                                  .cartItems
+                                                  .isNotEmpty &&
+                                              screenWidth(
+                                                    context,
+                                                  ) <
+                                                  tabletScreen,
+                                          child: Align(
+                                            alignment:
+                                                Alignment(
+                                                  0.9,
+                                                  0.1,
+                                                ),
+                                            child: Material(
+                                              color:
+                                                  Colors
+                                                      .transparent,
+                                              child: Ink(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        15,
+                                                      ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color.fromARGB(
+                                                        35,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                      ),
+                                                      blurRadius:
+                                                          10,
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: InkWell(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        15,
+                                                      ),
+                                                  onTap: () {
+                                                    showGeneralDialog(
+                                                      context:
+                                                          context,
+                                                      pageBuilder: (
+                                                        context,
+                                                        animation,
+                                                        secondaryAnimation,
+                                                      ) {
+                                                        return MyCalculator();
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height:
+                                                        60,
+                                                    width:
+                                                        60,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(
+                                                        15,
+                                                      ),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: const Color.fromARGB(
+                                                            35,
+                                                            0,
+                                                            0,
+                                                            0,
+                                                          ),
+                                                          blurRadius:
+                                                              10,
+                                                        ),
+                                                      ],
+                                                      color:
+                                                          Colors.white,
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                        size:
+                                                            30,
+                                                        Icons.calculate_outlined,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     );
                                   }
@@ -2356,8 +2458,13 @@ class _MakeSalesDesktopState
                             ),
                           ),
                         ),
+                        SizedBox(width: 15),
                         Expanded(
-                          flex: 5,
+                          flex:
+                              screenWidth(context) <
+                                      tabletScreen
+                                  ? 6
+                                  : 5,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
@@ -2552,7 +2659,7 @@ class _MakeSalesDesktopState
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'Subtotal',
@@ -2562,7 +2669,7 @@ class _MakeSalesDesktopState
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                           // fontWeight: FontWeight.bold,
                                         ),
@@ -2590,7 +2697,7 @@ class _MakeSalesDesktopState
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                           // fontWeight: FontWeight.bold,
                                         ),
@@ -2601,7 +2708,7 @@ class _MakeSalesDesktopState
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                           // fontWeight: FontWeight.bold,
                                         ),
@@ -2620,7 +2727,7 @@ class _MakeSalesDesktopState
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .h4
+                                                  .b1
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
@@ -2633,7 +2740,7 @@ class _MakeSalesDesktopState
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .h4
+                                                  .b1
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
@@ -2682,8 +2789,7 @@ class _MakeSalesDesktopState
                                         );
                                       }
                                     },
-                                    text:
-                                        'Proceed to Check Out',
+                                    text: 'Proceed',
                                   ),
                                   SizedBox(height: 20),
                                 ],
@@ -2696,79 +2802,6 @@ class _MakeSalesDesktopState
                   ),
                 ),
               ),
-              // Visibility(
-              //   visible:
-              //       returnSalesProvider(
-              //         context,
-              //       ).cartItems.isNotEmpty,
-              //   child: Align(
-              //     alignment: Alignment(0.9, 0.1),
-              //     child: Material(
-              //       color: Colors.transparent,
-              //       child: Ink(
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(
-              //             15,
-              //           ),
-              //           boxShadow: [
-              //             BoxShadow(
-              //               color: const Color.fromARGB(
-              //                 35,
-              //                 0,
-              //                 0,
-              //                 0,
-              //               ),
-              //               blurRadius: 10,
-              //             ),
-              //           ],
-              //         ),
-              //         child: InkWell(
-              //           borderRadius: BorderRadius.circular(
-              //             15,
-              //           ),
-              //           onTap: () {
-              //             showGeneralDialog(
-              //               context: context,
-              //               pageBuilder: (
-              //                 context,
-              //                 animation,
-              //                 secondaryAnimation,
-              //               ) {
-              //                 return MyCalculatorDesktop();
-              //               },
-              //             );
-              //           },
-              //           child: Container(
-              //             height: 60,
-              //             width: 60,
-              //             decoration: BoxDecoration(
-              //               borderRadius:
-              //                   BorderRadius.circular(15),
-              //               boxShadow: [
-              //                 BoxShadow(
-              //                   color: const Color.fromARGB(
-              //                     35,
-              //                     0,
-              //                     0,
-              //                     0,
-              //                   ),
-              //                   blurRadius: 10,
-              //                 ),
-              //               ],
-              //               color: Colors.white,
-              //             ),
-              //             child: Center(
-              //               child: Icon(
-              //                 size: 30,
-              //                 Icons.calculate_outlined,
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),

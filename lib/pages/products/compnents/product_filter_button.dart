@@ -40,8 +40,8 @@ class ProductsFilterButton extends StatelessWidget {
           onTap: action,
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 10,
+              horizontal: 12,
+              vertical: 8,
             ),
 
             child: Center(
@@ -54,8 +54,8 @@ class ProductsFilterButton extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize:
                       currentSelected == number
-                          ? theme.mobileTexts.b1.fontSize
-                          : theme.mobileTexts.b2.fontSize,
+                          ? theme.mobileTexts.b2.fontSize
+                          : theme.mobileTexts.b3.fontSize,
                 ),
                 title,
               ),

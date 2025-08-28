@@ -146,7 +146,7 @@ const String appDesc =
 
 const int currentUpdate = 16;
 
-const double mobileScreenSmall = 500;
+const double mobileScreenSmall = 520;
 
 const double mobileScreen = 650;
 

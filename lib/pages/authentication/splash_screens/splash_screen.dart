@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/splash_screens/platforms/splash_desktop.dart';
 import 'package:stockall/pages/authentication/splash_screens/platforms/splash_mobile.dart';
@@ -58,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var themeProvider = Provider.of<ThemeProvider>(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 900) {
+        if (constraints.maxWidth < tabletScreenSmall) {
           return SplashMobile(
             constraints: constraints,
             themeProvider: themeProvider,

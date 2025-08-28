@@ -114,7 +114,7 @@ class _MyDrawerWidgetDesktopMainState
                         ),
                         child: Row(
                           mainAxisAlignment:
-                              screenWidth(context) <
+                              screenWidth(context) <=
                                       tabletScreen
                                   ? MainAxisAlignment
                                       .spaceBetween
@@ -146,7 +146,7 @@ class _MyDrawerWidgetDesktopMainState
                             ),
                             Visibility(
                               visible:
-                                  screenWidth(context) <
+                                  screenWidth(context) <=
                                   tabletScreen,
                               child: InkWell(
                                 onTap: () {
