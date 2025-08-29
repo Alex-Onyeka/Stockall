@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
@@ -3486,16 +3487,38 @@ class _ShopSetupTwoDesktopState
                               ),
                             ),
 
-                            MainButtonP(
-                              themeProvider: theme,
-                              action: () {
-                                checkInputs();
-                                // loading();
-                              },
-                              text:
-                                  widget.shop != null
-                                      ? 'Update Details'
-                                      : 'Create Shop',
+                            Column(
+                              children: [
+                                MainButtonP(
+                                  themeProvider: theme,
+                                  action: () {
+                                    checkInputs();
+                                    // loading();
+                                  },
+                                  text:
+                                      widget.shop != null
+                                          ? 'Update Details'
+                                          : 'Create Shop',
+                                ),
+                                SizedBox(height: 5),
+                                Visibility(
+                                  visible:
+                                      widget.shop != null,
+                                  child:
+                                      MainButtonTransparent(
+                                        themeProvider:
+                                            theme,
+                                        action: () {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                        },
+                                        text: 'Cancel',
+                                        constraints:
+                                            BoxConstraints(),
+                                      ),
+                                ),
+                              ],
                             ),
                             SizedBox(height: 40),
                           ],

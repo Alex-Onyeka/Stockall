@@ -9,7 +9,6 @@ import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/app_bar.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
@@ -791,9 +790,9 @@ class _TotalProductsDesktopState
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize:
-                                                          theme.mobileTexts.h4.fontSize,
+                                                          theme.mobileTexts.b1.fontSize,
                                                     ),
-                                                    'Found ${productsResult.isEmpty ? products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase())).length : productsResult.length} Item(s)',
+                                                    'Found ${productsResult.isEmpty ? products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length : productsResult.length} Item(s)',
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets.only(
@@ -855,9 +854,15 @@ class _TotalProductsDesktopState
                                                                 .where(
                                                                   (
                                                                     product,
-                                                                  ) => product.name.toLowerCase().contains(
-                                                                    searchController.text.toLowerCase(),
-                                                                  ),
+                                                                  ) =>
+                                                                      product.name.toLowerCase().contains(
+                                                                        searchController.text.toLowerCase(),
+                                                                      ) ||
+                                                                      (product.barcode !=
+                                                                              null &&
+                                                                          product.barcode!.toLowerCase().contains(
+                                                                            searchController.text.toLowerCase(),
+                                                                          )),
                                                                 )
                                                                 .length,
                                                         itemBuilder: (
@@ -870,9 +875,15 @@ class _TotalProductsDesktopState
                                                                   .where(
                                                                     (
                                                                       product,
-                                                                    ) => product.name.toLowerCase().contains(
-                                                                      searchController.text.toLowerCase(),
-                                                                    ),
+                                                                    ) =>
+                                                                        product.name.toLowerCase().contains(
+                                                                          searchController.text.toLowerCase(),
+                                                                        ) ||
+                                                                        (product.barcode !=
+                                                                                null &&
+                                                                            product.barcode!.toLowerCase().contains(
+                                                                              searchController.text.toLowerCase(),
+                                                                            )),
                                                                   )
                                                                   .toList()[index];
                                                           return SearchProductTile(
@@ -922,38 +933,10 @@ class _TotalProductsDesktopState
                                                           TempProductClass
                                                           product =
                                                               productsResult[index];
-                                                          return ListTile(
-                                                            title: Row(
-                                                              spacing:
-                                                                  10,
-                                                              children: [
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                  ),
-                                                                  product.name,
-                                                                ),
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                  ),
-                                                                  formatMoneyMid(
-                                                                    amount:
-                                                                        product.sellingPrice ??
-                                                                        0,
-                                                                    context:
-                                                                        context,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            onTap: () {
+                                                          return SearchProductTile(
+                                                            product:
+                                                                product,
+                                                            action: () {
                                                               Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
@@ -983,38 +966,6 @@ class _TotalProductsDesktopState
                                                                 },
                                                               );
                                                             },
-                                                            subtitle: Text(
-                                                              [
-                                                                if (product.color !=
-                                                                    null)
-                                                                  product.color,
-                                                                if (product.sizeType !=
-                                                                    null)
-                                                                  product.sizeType,
-                                                                if (product.size !=
-                                                                    null)
-                                                                  product.size,
-                                                              ].join(
-                                                                '  |  ',
-                                                              ),
-                                                              style: TextStyle(
-                                                                color:
-                                                                    theme.lightModeColor.secColor200,
-                                                                fontSize:
-                                                                    12,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                              ),
-
-                                                              // 'N${formatLargeNumberDouble(product.sellingPrice)}',
-                                                            ),
-                                                            trailing: Icon(
-                                                              size:
-                                                                  20,
-                                                              color:
-                                                                  Colors.grey.shade400,
-                                                              Icons.arrow_forward_ios_rounded,
-                                                            ),
                                                           );
                                                         },
                                                       ),

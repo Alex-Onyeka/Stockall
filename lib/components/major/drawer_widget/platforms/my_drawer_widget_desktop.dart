@@ -15,6 +15,7 @@ import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
+import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -538,7 +539,12 @@ class _MyDrawerWidgetDesktopMainState
                                                 children: [
                                                   Icon(
                                                     color:
-                                                        Colors.grey.shade400,
+                                                        returnNavProvider(
+                                                                  context,
+                                                                ).currentIndex ==
+                                                                8
+                                                            ? Colors.grey.shade900
+                                                            : Colors.grey.shade400,
                                                     size:
                                                         20,
                                                     Icons
@@ -704,40 +710,7 @@ class _MyDrawerWidgetDesktopMainState
                                   ),
                                 ),
                               ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .contactStockall,
-                                  context: context,
-                                ),
-                                child:
-                                    NavListTileDesktopAlt(
-                                      height: 18,
-                                      action: () async {
-                                        phoneCall();
-                                      },
-                                      title: 'Contact Us',
-                                      icon: Icons.phone,
-                                    ),
-                              ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .contactStockall,
-                                  context: context,
-                                ),
-                                child:
-                                    NavListTileDesktopAlt(
-                                      height: 14,
-                                      action: () async {
-                                        openWhatsApp();
-                                      },
-                                      title: 'Chat With Us',
-                                      svg: whatsappIconSvg,
-                                    ),
-                              ),
+
                               Visibility(
                                 visible: false,
                                 child: NavListTileDesktopAlt(
@@ -767,6 +740,21 @@ class _MyDrawerWidgetDesktopMainState
                                 icon:
                                     Icons
                                         .calculate_outlined,
+                              ),
+                              NavListTileDesktopAlt(
+                                height: 18,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SettingsPage();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'General Settings',
+                                icon: Icons.settings,
                               ),
                               Visibility(
                                 visible:
@@ -924,8 +912,15 @@ class NavListTileDesktopAlt extends StatelessWidget {
                             visible: icon != null,
                             child: Icon(
                               color:
-                                  color ??
-                                  Colors.grey.shade600,
+                                  returnNavProvider(
+                                            context,
+                                          ).currentIndex ==
+                                          itemIndex
+                                      ? Colors.grey.shade900
+                                      : color ??
+                                          Colors
+                                              .grey
+                                              .shade600,
                               size: height,
                               icon ??
                                   Icons
@@ -936,8 +931,15 @@ class NavListTileDesktopAlt extends StatelessWidget {
                             visible: svg != null,
                             child: SvgPicture.asset(
                               color:
-                                  color ??
-                                  Colors.grey.shade600,
+                                  returnNavProvider(
+                                            context,
+                                          ).currentIndex ==
+                                          itemIndex
+                                      ? Colors.grey.shade900
+                                      : color ??
+                                          Colors
+                                              .grey
+                                              .shade600,
                               svg ?? '',
                               height: height,
                             ),

@@ -821,8 +821,15 @@ class NavListTileDesktopAlt extends StatelessWidget {
                             visible: icon != null,
                             child: Icon(
                               color:
-                                  color ??
-                                  Colors.grey.shade600,
+                                  returnNavProvider(
+                                            context,
+                                          ).currentIndex ==
+                                          itemIndex
+                                      ? Colors.grey.shade900
+                                      : color ??
+                                          Colors
+                                              .grey
+                                              .shade600,
                               size: height,
                               icon ??
                                   Icons
@@ -833,8 +840,15 @@ class NavListTileDesktopAlt extends StatelessWidget {
                             visible: svg != null,
                             child: SvgPicture.asset(
                               color:
-                                  color ??
-                                  Colors.grey.shade600,
+                                  returnNavProvider(
+                                            context,
+                                          ).currentIndex ==
+                                          itemIndex
+                                      ? Colors.grey.shade900
+                                      : color ??
+                                          Colors
+                                              .grey
+                                              .shade600,
                               svg ?? '',
                               height: height,
                             ),

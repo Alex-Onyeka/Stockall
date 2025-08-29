@@ -16,19 +16,24 @@ class SearchProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return ListTile(
+      minVerticalPadding: 0,
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 0,
+        horizontal: 10,
+      ),
       title: Row(
         spacing: 10,
         children: [
           Text(
             style: TextStyle(
-              fontSize: 14,
+              fontSize: theme.mobileTexts.b1.fontSize,
               fontWeight: FontWeight.bold,
             ),
             product.name,
           ),
           Text(
             style: TextStyle(
-              fontSize: 14,
+              fontSize: theme.mobileTexts.b2.fontSize,
               fontWeight: FontWeight.bold,
             ),
             formatMoneyMid(
@@ -54,7 +59,7 @@ class SearchProductTile extends StatelessWidget {
         // 'N${formatLargeNumberDouble(product.sellingPrice)}',
       ),
       trailing: Icon(
-        size: 20,
+        size: 16,
         color: Colors.grey.shade400,
         Icons.arrow_forward_ios_rounded,
       ),

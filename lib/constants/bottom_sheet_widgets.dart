@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_cart_item.dart';
+import 'package:stockall/classes/temp_product_class.dart';
 // import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -1811,7 +1812,7 @@ class _CustomBottomPanelState
   TextEditingController priceController =
       TextEditingController();
   double qqty = 0;
-  List productResults = [];
+  List<TempProductClass> productResults = [];
   String? scanResult;
   String? searchResult;
   void clear() {
@@ -2101,16 +2102,23 @@ class _CustomBottomPanelState
                                           context,
                                         ).productList
                                         .where(
-                                          (
-                                            product,
-                                          ) => product.name
-                                              .toLowerCase()
-                                              .contains(
-                                                widget
-                                                    .searchController
-                                                    .text
-                                                    .toLowerCase(),
-                                              ),
+                                          (product) =>
+                                              product.name
+                                                  .toLowerCase()
+                                                  .contains(
+                                                    widget
+                                                        .searchController
+                                                        .text
+                                                        .toLowerCase(),
+                                                  ) ||
+                                              (product.barcode !=
+                                                      null &&
+                                                  product
+                                                      .barcode!
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        widget.searchController.text.toLowerCase(),
+                                                      )),
                                         )
                                         .isEmpty &&
                                     searchResult != null) {
@@ -2427,12 +2435,15 @@ class _CustomBottomPanelState
                                                 .where(
                                                   (
                                                     product,
-                                                  ) => product
-                                                      .name
-                                                      .toLowerCase()
-                                                      .contains(
+                                                  ) =>
+                                                      product.name.toLowerCase().contains(
                                                         widget.searchController.text.toLowerCase(),
-                                                      ),
+                                                      ) ||
+                                                      (product.barcode !=
+                                                              null &&
+                                                          product.barcode!.toLowerCase().contains(
+                                                            widget.searchController.text.toLowerCase(),
+                                                          )),
                                                 )
                                                 .length,
                                         itemBuilder: (
@@ -2447,12 +2458,15 @@ class _CustomBottomPanelState
                                                   .where(
                                                     (
                                                       product,
-                                                    ) => product
-                                                        .name
-                                                        .toLowerCase()
-                                                        .contains(
+                                                    ) =>
+                                                        product.name.toLowerCase().contains(
                                                           widget.searchController.text.toLowerCase(),
-                                                        ),
+                                                        ) ||
+                                                        (product.barcode !=
+                                                                null &&
+                                                            product.barcode!.toLowerCase().contains(
+                                                              widget.searchController.text.toLowerCase(),
+                                                            )),
                                                   )
                                                   .toList()[index];
                                           return ProductTileCartSearch(

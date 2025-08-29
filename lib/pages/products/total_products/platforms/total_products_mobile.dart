@@ -495,7 +495,7 @@ class _TotalProductsMobileState
                                                 .h4
                                                 .fontSize,
                                       ),
-                                      'Found ${productsResult.isEmpty ? products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase())).length : productsResult.length} Item(s)',
+                                      'Found ${productsResult.isEmpty ? products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length : productsResult.length} Item(s)',
                                     ),
                                     Padding(
                                       padding:
@@ -550,12 +550,15 @@ class _TotalProductsMobileState
                                                   .where(
                                                     (
                                                       product,
-                                                    ) => product
-                                                        .name
-                                                        .toLowerCase()
-                                                        .contains(
+                                                    ) =>
+                                                        product.name.toLowerCase().contains(
                                                           searchController.text.toLowerCase(),
-                                                        ),
+                                                        ) ||
+                                                        (product.barcode !=
+                                                                null &&
+                                                            product.barcode!.toLowerCase().contains(
+                                                              searchController.text.toLowerCase(),
+                                                            )),
                                                   )
                                                   .length,
                                           itemBuilder: (
@@ -568,12 +571,15 @@ class _TotalProductsMobileState
                                                     .where(
                                                       (
                                                         product,
-                                                      ) => product
-                                                          .name
-                                                          .toLowerCase()
-                                                          .contains(
+                                                      ) =>
+                                                          product.name.toLowerCase().contains(
                                                             searchController.text.toLowerCase(),
-                                                          ),
+                                                          ) ||
+                                                          (product.barcode !=
+                                                                  null &&
+                                                              product.barcode!.toLowerCase().contains(
+                                                                searchController.text.toLowerCase(),
+                                                              )),
                                                     )
                                                     .toList()[index];
                                             return SearchProductTile(

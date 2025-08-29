@@ -294,7 +294,7 @@ class _EmpAuthState extends State<EmpAuth> {
             filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
             child: Stack(
               children: [
-                InkWell(
+                GestureDetector(
                   onTap:
                       () =>
                           FocusManager.instance.primaryFocus

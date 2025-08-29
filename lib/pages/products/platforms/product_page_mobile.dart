@@ -555,11 +555,11 @@ class _ProductPageMobileState
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                'Search Result ${products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase())).isEmpty && productsResult.isEmpty
+                                'Search Result ${products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).isEmpty && productsResult.isEmpty
                                     ? '(0)'
                                     : productsResult.isNotEmpty
                                     ? '(${productsResult.length})'
-                                    : '(${(products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase())).length)})'}',
+                                    : '(${(products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length)})'}',
                               ),
                               IconButton(
                                 onPressed: () {
@@ -614,12 +614,15 @@ class _ProductPageMobileState
                                                 .where(
                                                   (
                                                     product,
-                                                  ) => product
-                                                      .name
-                                                      .toLowerCase()
-                                                      .contains(
+                                                  ) =>
+                                                      product.name.toLowerCase().contains(
                                                         searchController.text.toLowerCase(),
-                                                      ),
+                                                      ) ||
+                                                      (product.barcode !=
+                                                              null &&
+                                                          product.barcode!.toLowerCase().contains(
+                                                            searchController.text.toLowerCase(),
+                                                          )),
                                                 )
                                                 .length,
                                         itemBuilder: (
@@ -632,12 +635,15 @@ class _ProductPageMobileState
                                                   .where(
                                                     (
                                                       product,
-                                                    ) => product
-                                                        .name
-                                                        .toLowerCase()
-                                                        .contains(
+                                                    ) =>
+                                                        product.name.toLowerCase().contains(
                                                           searchController.text.toLowerCase(),
-                                                        ),
+                                                        ) ||
+                                                        (product.barcode !=
+                                                                null &&
+                                                            product.barcode!.toLowerCase().contains(
+                                                              searchController.text.toLowerCase(),
+                                                            )),
                                                   )
                                                   .toList()[index];
                                           return SearchProductTile(
