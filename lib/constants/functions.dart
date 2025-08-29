@@ -1493,7 +1493,6 @@ void downloadPdfWeb({
   required String filename,
 }) async {
   try {
-    print('Begin Download');
     final pdfBytes = await _buildPdf(
       receipt,
       records,
@@ -1542,30 +1541,48 @@ void downloadPdfWebRoll({
       context,
       printType,
     );
-    final blob = html.Blob([pdfBytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
 
-    final anchor =
-        html.AnchorElement(href: url)
-          ..download = filename
-          ..target = 'blank'
-          ..style.display = 'none';
+    // ✅ Ensure Uint8List
+    final pdfUint8 = Uint8List.fromList(pdfBytes);
 
-    html.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
+    // // Step 1: Download
+    // final blob = html.Blob([pdfUint8], 'application/pdf');
+    // final url = html.Url.createObjectUrlFromBlob(blob);
 
-    html.Url.revokeObjectUrl(url);
+    // final anchor =
+    //     html.AnchorElement(href: url)
+    //       ..download = filename
+    //       ..style.display = 'none';
+
+    // html.document.body?.append(anchor);
+    // anchor.click();
+    // anchor.remove();
+    // html.Url.revokeObjectUrl(url);
+
+    // Step 2: Print (make sure this runs in same click event if possible)
+    await Printing.layoutPdf(
+      onLayout: (format) async => pdfUint8,
+    );
+
     if (context.mounted) {
       returnReceiptProvider(
         context,
         listen: false,
       ).toggleIsLoading(false);
     }
+    // return pdfUint8;
   } catch (e, stackTrace) {
-    print('❌ Error downloading PDF: $e\n$stackTrace');
+    print(
+      '❌ Error downloading/printing PDF: $e\n$stackTrace',
+    );
   }
 }
+
+// Future<void> printPdfWebRoll(Uint8List pdfUint8) async {
+//   await Printing.layoutPdf(
+//     onLayout: (format) async => pdfUint8,
+//   );
+// }
 
 //
 //

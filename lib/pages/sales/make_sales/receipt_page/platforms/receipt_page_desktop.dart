@@ -1340,11 +1340,10 @@ class _ReceiptDetailsContainerState
                     action: () {
                       var safeContext = context;
                       if (returnShopProvider(
-                                context,
-                                listen: false,
-                              ).userShop!.printType ==
-                              null &&
-                          !kIsWeb) {
+                            context,
+                            listen: false,
+                          ).userShop!.printType ==
+                          null) {
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -1575,7 +1574,7 @@ class _ReceiptDetailsContainerState
                                 ).toggleIsLoading(true);
                                 Navigator.of(context).pop();
                                 if (kIsWeb) {
-                                  downloadPdfWeb(
+                                  downloadPdfWebRoll(
                                     filename:
                                         'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
                                     context: safeContext,
@@ -1587,6 +1586,10 @@ class _ReceiptDetailsContainerState
                                           safeContext,
                                           listen: false,
                                         ).userShop!,
+                                    printType:
+                                        shop(
+                                          context,
+                                        )!.printType!,
                                   );
                                 }
                                 if (!kIsWeb) {
