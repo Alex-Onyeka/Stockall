@@ -18,6 +18,7 @@ class SettingsPageDesktop extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: Column(
+            mainAxisSize: MainAxisSize.max,
             children: [
               SizedBox(height: 5),
               Row(
@@ -164,7 +165,7 @@ class SettingsPageDesktop extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 30),
+              SizedBox(height: screenHeight(context) * 0.2),
             ],
           ),
         ),
