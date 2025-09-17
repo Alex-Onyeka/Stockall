@@ -18,13 +18,14 @@ class LoggedInUserFunc {
     print('Logged In User Box Initialized');
   }
 
-  LoggedInUser? getUsers() {
+  LoggedInUser? getLoggedInUser() {
     return loggedInUserBox.values.isNotEmpty
         ? loggedInUserBox.values.first
         : null;
   }
 
-  Future<int> insertCurrentUser(LoggedInUser user) async {
+  Future<int> insertLoggedInUser(LoggedInUser user) async {
+    await logOut();
     try {
       await loggedInUserBox.put(
         user.loggedInUser!.userId,
@@ -34,6 +35,17 @@ class LoggedInUserFunc {
       return 1;
     } catch (e) {
       print('Error: ${e.toString()}');
+      return 0;
+    }
+  }
+
+  Future<int> logOut() async {
+    try {
+      await loggedInUserBox.clear();
+      print('Offline Logout Success');
+      return 1;
+    } catch (e) {
+      print('Offline Logout Error: ${e.toString()}');
       return 0;
     }
   }

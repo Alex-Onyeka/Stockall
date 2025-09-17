@@ -31,6 +31,7 @@ class UserFunc {
     String email,
   ) {
     if (userBox.values.isNotEmpty) {
+      print(userBox.values.length);
       if (userBox.values
           .where(
             (user) =>
@@ -53,14 +54,43 @@ class UserFunc {
     }
   }
 
+  TempUserClass? offlineLoginByEmailandPassword(
+    String password,
+    String email,
+  ) {
+    print(userBox.values.length);
+    if (userBox.values.isNotEmpty) {
+      if (userBox.values
+          .where(
+            (user) =>
+                user.password == password &&
+                user.email == email,
+          )
+          .isNotEmpty) {
+        return userBox.values
+            .where(
+              (user) =>
+                  user.password == password &&
+                  user.email == email,
+            )
+            .first;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   Future<int> insertAllUsers(
     List<TempUserClass> users,
   ) async {
+    await clearUsers();
     try {
       for (var user in users) {
         await userBox.put(user.userId, user);
       }
-      print('User Insert Success');
+      print('All Users Insert Success');
       return 1;
     } catch (e) {
       print('Failed: ${e.toString()}');
@@ -68,7 +98,7 @@ class UserFunc {
     }
   }
 
-  Future<int> insertCurrentUser(TempUserClass user) async {
+  Future<int> insertUser(TempUserClass user) async {
     try {
       await userBox.put(user.userId, user);
       print('User inserted Success');
@@ -77,5 +107,10 @@ class UserFunc {
       print('Error: ${e.toString()}');
       return 0;
     }
+  }
+
+  Future clearUsers() async {
+    await userBox.clear();
+    print('Offline Users Cleared');
   }
 }

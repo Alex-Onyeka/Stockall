@@ -38,6 +38,8 @@ class ConnectivityProvider extends ChangeNotifier {
       print(
         'Length of Connected Networks: ${value.length}',
       );
+      checkConnection(value.length);
+      print(isConnected.toString());
       notifyListeners();
     });
   }

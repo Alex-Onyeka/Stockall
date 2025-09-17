@@ -133,7 +133,8 @@ class TopNavBar extends StatelessWidget {
                             title ??
                                 returnShopProvider(
                                   context,
-                                ).userShop!.name,
+                                ).userShop?.name ??
+                                '',
                             17,
                           ),
                         ),
@@ -158,7 +159,8 @@ class TopNavBar extends StatelessWidget {
                         subText ??
                             returnShopProvider(
                               context,
-                            ).userShop!.email,
+                            ).userShop?.email ??
+                            '',
                         22,
                       ),
                     ),

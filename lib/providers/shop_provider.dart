@@ -30,6 +30,7 @@ class ShopProvider extends ChangeNotifier {
           ).maybeSingle();
 
       if (response == null) {
+        await ShopFunc().clearShop();
         return null;
       }
       userShop = TempShopClass.fromJson(response);

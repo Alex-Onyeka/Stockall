@@ -21,12 +21,24 @@ class ShopFunc {
   }
 
   Future<int> insertShop(TempShopClass shop) async {
+    await clearShop();
     try {
       await shopBox.put(shop.shopId, shop);
       print('Shop Insert Success');
       return 1;
     } catch (e) {
       print('Shop Insert Failed: ${e.toString()}');
+      return 0;
+    }
+  }
+
+  Future<int> clearShop() async {
+    try {
+      await shopBox.clear();
+      print('Offline Shop Cleared');
+      return 1;
+    } catch (e) {
+      print('Offline Shop Clear Failed: ${e.toString()}');
       return 0;
     }
   }

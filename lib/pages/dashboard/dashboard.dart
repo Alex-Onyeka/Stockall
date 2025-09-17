@@ -35,13 +35,13 @@ class _DashboardState extends State<Dashboard> {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.name,
+        ).userShop?.name,
       );
       print('$currentUpdate');
       if (returnShopProvider(
             context,
             listen: false,
-          ).userShop!.updateNumber !=
+          ).userShop?.updateNumber !=
           currentUpdate) {
         returnShopProvider(
           context,
@@ -70,7 +70,7 @@ class _DashboardState extends State<Dashboard> {
     );
 
     final userShop = await shopProvider.getUserShop(
-      AuthService().currentUser!.id,
+      AuthService().currentUserId!,
     );
 
     if (!mounted) return;
@@ -84,10 +84,10 @@ class _DashboardState extends State<Dashboard> {
         ),
         (route) => false,
       );
-      return; // 🔁 Make sure nothing else runs
+      return;
     }
 
-    clearDate(); // ✅ safe to run only if not navigating
+    clearDate();
 
     if (!mounted) return;
 

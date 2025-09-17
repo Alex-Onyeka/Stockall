@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -59,15 +60,13 @@ class UserProvider extends ChangeNotifier {
   Future<TempUserClass?> fetchCurrentUser(
     BuildContext context,
   ) async {
-    final authUser = _supabase.auth.currentUser;
-
-    if (authUser == null) {
-      _currentUser = null;
-      return null;
-    }
-
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) {
+        _currentUser = null;
+        return null;
+      }
       final data =
           await _supabase
               .from('users')
@@ -76,9 +75,12 @@ class UserProvider extends ChangeNotifier {
               .single();
 
       _currentUser = TempUserClass.fromJson(data);
-      await UserFunc().insertCurrentUser(_currentUser!);
+      await UserFunc().insertUser(_currentUser!);
     } else {
-      _currentUser = UserFunc().getUser(authUser.id);
+      _currentUser =
+          LoggedInUserFunc()
+              .getLoggedInUser()
+              ?.loggedInUser;
     }
 
     notifyListeners();

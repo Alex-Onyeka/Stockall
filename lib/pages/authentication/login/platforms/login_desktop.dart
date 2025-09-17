@@ -79,7 +79,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
           widget.passwordController.text,
           context,
         );
-        if (res.user != null && context.mounted) {
+        if (res == 1 && context.mounted) {
           setState(() {
             issLoading = false;
             showwSuccess = true;
@@ -95,8 +95,27 @@ class _LoginDesktopState extends State<LoginDesktop> {
               showwSuccess = false;
             });
           });
+        } else {
+          setState(() {
+            issLoading = false;
+          });
+          showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (context) {
+              return InfoAlert(
+                theme: widget.theme,
+                message:
+                    'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
+                title: General().authenticationError,
+              );
+            },
+          );
         }
       } on SocketException catch (_) {
+        setState(() {
+          issLoading = false;
+        });
         // No internet
         showDialog(
           // ignore: use_build_context_synchronously
@@ -132,7 +151,6 @@ class _LoginDesktopState extends State<LoginDesktop> {
                       : e.statusCode == null
                       ? General().noInternetConnection
                       : General().anErrorOccured,
-              // 'An Error occured while tryin to create your account, please check you internet and try again.',
               title: General().authenticationError,
             );
           },

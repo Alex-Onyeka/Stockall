@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
+import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
+  ConnectivityProvider connectivity =
+      ConnectivityProvider();
   bool isLoading = false;
   bool isSuccessLoading = false;
   void toggleIsLoading(bool value) {
@@ -17,6 +22,8 @@ class AuthService extends ChangeNotifier {
 
   Stream<AuthState> get authStateChanges =>
       _client.auth.onAuthStateChange;
+
+  SupabaseClient get client => _client;
 
   Future<AuthResponse> signUpAndCreateUser({
     required BuildContext context,
@@ -78,57 +85,91 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<AuthResponse> signIn(
+  Future<int> signIn(
     String email,
     String password,
     BuildContext context,
   ) async {
-    try {
-      // 1. Sign in via Supabase Auth
-      final authResponse = await _client.auth
-          .signInWithPassword(
-            email: email,
-            password: password,
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        final authResponse = await _client.auth
+            .signInWithPassword(
+              email: email,
+              password: password,
+            );
+
+        final user = authResponse.user;
+        if (user == null) {
+          throw Exception("No user returned from sign-in.");
+        }
+
+        final userId = user.id;
+
+        final response =
+            await _client
+                .from('users')
+                .select()
+                .eq('user_id', userId)
+                .single();
+
+        final tempUser = TempUserClass.fromJson({
+          ...response,
+          'password': password,
+        });
+
+        await LoggedInUserFunc().insertLoggedInUser(
+          LoggedInUser(loggedInUser: tempUser),
+        );
+        print('Offline User Logged In');
+
+        await UserFunc().insertUser(tempUser);
+        print('Offline User Insertted');
+
+        if (context.mounted) {
+          returnNavProvider(
+            context,
+            listen: false,
+          ).verify();
+          returnNavProvider(
+            context,
+            listen: false,
+          ).offLoading();
+        }
+
+        print(
+          "✅ User signed in and saved locally: ${tempUser.email}",
+        );
+        return 1;
+      } catch (e) {
+        print("❌ Sign-in failed: ${e.toString()}");
+        return 0;
+      }
+    } else {
+      try {
+        TempUserClass? user = UserFunc()
+            .offlineLoginByEmailandPassword(
+              password,
+              email,
+            );
+        print(user?.name);
+
+        if (user != null) {
+          print('Offline User Found');
+          LoggedInUserFunc().insertLoggedInUser(
+            LoggedInUser(loggedInUser: user),
           );
-
-      final user = authResponse.user;
-      if (user == null) {
-        throw Exception("No user returned from sign-in.");
+          print('Offline User Logged In');
+          return 1;
+        } else {
+          print('Offline User Not Found');
+          return 0;
+        }
+      } catch (e) {
+        print('Offline Login Error: ${e.toString()}');
+        return 0;
       }
-
-      final userId = user.id;
-
-      // 2. Query the 'users' table using the auth_user_id
-      final response =
-          await _client
-              .from('users')
-              .select()
-              .eq('user_id', userId)
-              .single();
-
-      // 3. Convert Supabase response into TempUserClass
-      final tempUser = TempUserClass.fromJson({
-        ...response,
-        'password':
-            password, // Optional: if you're keeping it
-      });
-
-      if (context.mounted) {
-        returnNavProvider(context, listen: false).verify();
-        returnNavProvider(
-          context,
-          listen: false,
-        ).offLoading();
-      }
-
-      print(
-        "✅ User signed in and saved locally: ${tempUser.email}",
-      );
-      return authResponse;
-    } catch (e) {
-      print("❌ Sign-in failed: $e");
-      rethrow;
-    } finally {}
+    }
   }
 
   Future<String> changePasswordAndUpdateLocal({
@@ -192,7 +233,14 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
-    await _client.auth.signOut();
+    bool isOnline = await connectivity.isOnline();
+
+    if (isOnline) {
+      await _client.auth.signOut();
+      await LoggedInUserFunc().logOut();
+    } else {
+      await LoggedInUserFunc().logOut();
+    }
     if (context.mounted) {
       Navigator.pushReplacement(
         context,
@@ -255,8 +303,27 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  TempUserClass? get currentUser =>
-      LoggedInUserFunc().getUser()?.loggedInUser;
+  User? get currentUser => _client.auth.currentUser;
 
-  User? get currentUserAuth => _client.auth.currentUser;
+  String? get currentUserId =>
+      connectivity.isConnected
+          ? _client.auth.currentUser?.id
+          : LoggedInUserFunc()
+              .getLoggedInUser()
+              ?.loggedInUser
+              ?.userId;
+
+  Future<String?> checkAuth() async {
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      print('Online Auth Validated');
+      return currentUser?.id;
+    } else {
+      print('Offline Auth Validated');
+      return LoggedInUserFunc()
+          .getLoggedInUser()
+          ?.loggedInUser
+          ?.userId;
+    }
+  }
 }

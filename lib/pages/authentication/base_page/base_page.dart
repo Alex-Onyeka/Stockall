@@ -3,7 +3,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
 import 'package:stockall/pages/home/home.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({super.key});
@@ -25,34 +25,39 @@ class _BasePageState extends State<BasePage> {
     });
   }
 
+  String? userAuthId;
+
+  Future<void> getUserAuthId() async {
+    String? temp = await AuthService().checkAuth();
+    setState(() {
+      userAuthId = temp;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       switchLoading();
       returnCompProvider(
         context,
         listen: false,
       ).setVisible();
-      setState(() {});
+      await getUserAuthId();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final session =
-        Supabase.instance.client.auth.currentSession;
-    // return LaunchScreen();
-    if (session != null) {
-      // User is logged in
-      if (returnNavProvider(context).isLoadingMain) {
-        return const LaunchScreen();
-      } else {
-        return const Home();
-      }
+    // final userId = AuthService().checkAuth();
+    if (returnNavProvider(context).isLoadingMain) {
+      return const LaunchScreen();
     } else {
-      // Not logged in
-      return const AuthScreensPage();
+      if (userAuthId != null) {
+        return const Home();
+      } else {
+        return const AuthScreensPage();
+      }
     }
   }
 }
