@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_desktop.dart';
 import 'package:stockall/pages/expenses/add_expenses/platforms/add_expenses_mobile.dart';

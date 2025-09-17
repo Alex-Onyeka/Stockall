@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_customers_class.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/local_database/customers/customer_func.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
@@ -22,19 +24,24 @@ class CustomersProvider extends ChangeNotifier {
   Future<List<TempCustomersClass>> fetchCustomers(
     int shopId,
   ) async {
-    final data = await supabase
-        .from('customers')
-        .select()
-        .eq('shop_id', shopId)
-        .order('name', ascending: true);
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final data = await supabase
+          .from('customers')
+          .select()
+          .eq('shop_id', shopId)
+          .order('name', ascending: true);
 
-    _customers =
-        (data as List)
-            .map(
-              (json) => TempCustomersClass.fromJson(json),
-            )
-            .toList();
-
+      _customers =
+          (data as List)
+              .map(
+                (json) => TempCustomersClass.fromJson(json),
+              )
+              .toList();
+      await CustomerFunc().insertAllCustomers(_customers);
+    } else {
+      _customers = CustomerFunc().getCustomers();
+    }
     notifyListeners();
     return _customers;
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/local_database/local_user/local_user_database.dart';
+import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class CompProvider extends ChangeNotifier {
@@ -184,7 +184,7 @@ class CompProvider extends ChangeNotifier {
   bool isVisible = false;
   void setVisible() async {
     final visible =
-        await LocalUserDatabase().getDataVisibility();
+        await VisibilityBox().getDataVisibility();
     if (visible) {
       isVisible = true;
     } else {
@@ -203,7 +203,7 @@ class CompProvider extends ChangeNotifier {
   }
 
   void toggleVisible() async {
-    await LocalUserDatabase().toggleDataVisibility();
+    await VisibilityBox().toggleDataVisibility();
     isVisible = !isVisible;
     notifyListeners();
   }

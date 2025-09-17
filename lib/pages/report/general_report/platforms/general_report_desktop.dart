@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/product_summary_class.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/classes/product_summary/product_summary_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';

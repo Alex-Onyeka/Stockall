@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
+import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReceiptsProvider extends ChangeNotifier {
@@ -68,42 +71,52 @@ class ReceiptsProvider extends ChangeNotifier {
     int shopId,
     BuildContext context,
   ) async {
-    try {
-      final data = await supabase
-          .from('receipts')
-          .select()
-          .eq('shop_id', shopId)
-          .order('created_at', ascending: false);
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      try {
+        final data = await supabase
+            .from('receipts')
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_at', ascending: false);
 
-      _receipts =
-          (data as List)
-              .map((json) => TempMainReceipt.fromJson(json))
-              .toList();
-      if (context.mounted) {
-        print('Loaded');
-        await returnData(
-          context,
-          listen: false,
-        ).getProducts(
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop!.shopId!,
+        _receipts =
+            (data as List)
+                .map(
+                  (json) => TempMainReceipt.fromJson(json),
+                )
+                .toList();
+        await MainReceiptFunc().insertAllReceipts(
+          _receipts,
         );
         if (context.mounted) {
-          await loadProductSalesRecord(
+          print('Loaded');
+          await returnData(
+            context,
+            listen: false,
+          ).getProducts(
             returnShopProvider(
               context,
               listen: false,
             ).userShop!.shopId!,
           );
+          if (context.mounted) {
+            await loadProductSalesRecord(
+              returnShopProvider(
+                context,
+                listen: false,
+              ).userShop!.shopId!,
+            );
+          }
         }
+      } catch (e) {
+        return [];
       }
-      notifyListeners();
-      return _receipts;
-    } catch (e) {
-      return [];
+    } else {
+      _receipts = MainReceiptFunc().getReceipts();
     }
+    notifyListeners();
+    return _receipts;
   }
 
   Future<List<TempMainReceipt>> loadReceiptsByUserId({
@@ -334,21 +347,28 @@ class ReceiptsProvider extends ChangeNotifier {
   // READ sales for a shop
   Future<List<TempProductSaleRecord>>
   loadProductSalesRecord(int shopId) async {
-    final data = await supabase
-        .from('product_sales')
-        .select()
-        .eq('shop_id', shopId)
-        .order('created_at', ascending: false);
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final data = await supabase
+          .from('product_sales')
+          .select()
+          .eq('shop_id', shopId)
+          .order('created_at', ascending: false);
 
-    _sales =
-        (data as List)
-            .map(
-              (json) =>
-                  TempProductSaleRecord.fromJson(json),
-            )
-            .toList();
-
-    print('Items Records gotten');
+      print('Items Records gotten');
+      _sales =
+          (data as List)
+              .map(
+                (json) =>
+                    TempProductSaleRecord.fromJson(json),
+              )
+              .toList();
+      await ProductRecordFunc().insertAllProductRecords(
+        _sales,
+      );
+    } else {
+      _sales = ProductRecordFunc().getProductRecords();
+    }
 
     notifyListeners();
     return _sales;

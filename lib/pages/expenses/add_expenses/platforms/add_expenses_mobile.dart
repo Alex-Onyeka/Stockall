@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';

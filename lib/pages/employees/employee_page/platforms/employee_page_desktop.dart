@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';

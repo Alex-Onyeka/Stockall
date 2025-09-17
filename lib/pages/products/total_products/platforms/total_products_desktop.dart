@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';

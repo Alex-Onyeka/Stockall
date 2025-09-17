@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';

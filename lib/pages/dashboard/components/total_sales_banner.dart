@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';

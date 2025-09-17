@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/local_database/shop/shop_func.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -19,19 +21,26 @@ class ShopProvider extends ChangeNotifier {
   }
 
   Future<TempShopClass?> getUserShop(String userId) async {
-    final response =
-        await supabase.from('shops').select().contains(
-          'employees',
-          [userId],
-        ).maybeSingle();
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final response =
+          await supabase.from('shops').select().contains(
+            'employees',
+            [userId],
+          ).maybeSingle();
 
-    if (response == null) {
-      return null;
+      if (response == null) {
+        return null;
+      }
+      userShop = TempShopClass.fromJson(response);
+      notifyListeners();
+      await ShopFunc().insertShop(userShop!);
+    } else {
+      userShop = ShopFunc().getShop();
     }
-    final shop = TempShopClass.fromJson(response);
-    setShop(shop);
+    notifyListeners();
 
-    return TempShopClass.fromJson(response);
+    return userShop;
   }
 
   Future<void> updatePrintType({

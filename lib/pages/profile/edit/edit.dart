@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/profile/edit/platforms/edit_desktop.dart';
 import 'package:stockall/pages/profile/edit/platforms/edit_mobile.dart';

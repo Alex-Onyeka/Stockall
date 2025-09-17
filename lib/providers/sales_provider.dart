@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_cart_item.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
+import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
+import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
+import 'package:stockall/local_database/products/products_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
   bool isLoading = false;
+
   void toggleIsLoading(bool value) {
     isLoading = value;
     print('Loading: ${value.toString()}');
@@ -18,13 +27,26 @@ class DataProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     // var data =
-    await supabase
-        .from('products')
-        .insert(product.toJson())
-        .select()
-        .single();
-    print('Item added successfully');
-    // final newProduct = TempProductClass.fromJson(data);
+    bool isOnline = await ConnectivityProvider().isOnline();
+
+    if (isOnline) {
+      var data =
+          await supabase
+              .from('products')
+              .insert(product.toJson())
+              .select()
+              .single();
+      print('Item added successfully');
+      final newProduct = TempProductClass.fromJson(data);
+      await ProductsFunc().createProduct(newProduct);
+      print('Total Success');
+    } else {
+      await ProductsFunc().createProduct(product);
+      await CreatedProductFunc().createProduct(
+        CreatedProducts(product: product),
+      );
+      print('Offline Success');
+    }
 
     // productList.add(newProduct);
     if (context.mounted) {
@@ -38,6 +60,214 @@ class DataProvider extends ChangeNotifier {
     }
 
     clearFields();
+  }
+
+  Future<void> createProductsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
+      // Prepare batch payload
+      if (CreatedProductFunc().getProducts().isNotEmpty &&
+          isOnline) {
+        final tempProducts =
+            CreatedProductFunc().getProducts().map((cp) {
+              cp.product.id = null;
+              return cp.product;
+            }).toList();
+        final payload =
+            tempProducts.map((p) => p.toJson()).toList();
+
+        // Insert all at once
+        final data =
+            await supabase
+                .from('products')
+                .insert(payload)
+                .select();
+
+        print('${data.length} items added successfully ✅');
+        await CreatedProductFunc().clearProducts();
+        print('Unsynced Products Cleared');
+      }
+    } catch (e) {
+      print('Batch insert failed ❌: $e');
+    }
+
+    if (context.mounted) {
+      print('Mounted, refreshing products ✅');
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+
+    clearFields();
+  }
+
+  Future<void> deleteProductsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
+
+      if (DeletedProductsFunc()
+              .getProductIds()
+              .isNotEmpty &&
+          isOnline) {
+        final ids =
+            DeletedProductsFunc()
+                .getProductIds()
+                .map((p) => p.productid)
+                .toList();
+
+        final data =
+            await supabase
+                .from('products')
+                .delete()
+                .inFilter(
+                  'id',
+                  ids,
+                ) // delete where id is in the list
+                .select();
+
+        print(
+          '${data.length} items deleted successfully ✅',
+        );
+
+        await DeletedProductsFunc().clearDeletedProducts();
+        print('Unsynced deleted products cleared');
+      }
+    } catch (e) {
+      print('Batch delete failed ❌: $e');
+    }
+
+    if (context.mounted) {
+      print('Mounted, refreshing products ✅');
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+
+    clearFields();
+  }
+
+  Future<void> updateProductsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
+
+      if (UpdatedProductsFunc().getProducts().isNotEmpty &&
+          isOnline) {
+        final updatedProducts =
+            UpdatedProductsFunc().getProducts();
+
+        for (final updated in updatedProducts) {
+          final localProduct = updated.product;
+
+          localProduct.updatedAt ??=
+              DateTime.now().toLocal();
+
+          if (localProduct.uuid == null) {
+            print('Local Product Uuid is Null');
+          }
+          final remoteData =
+              await supabase
+                  .from('products')
+                  .select('uuid, updated_at')
+                  .eq('uuid', localProduct.uuid!)
+                  .maybeSingle();
+
+          if (remoteData == null) {
+            await supabase
+                .from('products')
+                .insert(localProduct.toJson());
+            print(
+              'Inserted product with uuid ${localProduct.uuid}',
+            );
+          } else {
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
+            final remoteUpdatedAt =
+                remoteUpdatedAtRaw == null
+                    ? null
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
+            print(
+              "Local updatedAt: ${localProduct.updatedAt}",
+            );
+            print("Remote updatedAt: $remoteUpdatedAt");
+
+            localProduct.updatedAt =
+                (localProduct.updatedAt ?? DateTime.now())
+                    .toLocal();
+
+            if (remoteUpdatedAt == null ||
+                localProduct.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
+              await supabase
+                  .from('products')
+                  .update(localProduct.toJson())
+                  .eq('uuid', localProduct.uuid!);
+              print(
+                'Updated product with uuid ${localProduct.uuid}',
+              );
+            } else {
+              print(
+                'Skipped product ${localProduct.uuid}, remote is newer ✅',
+              );
+            }
+          }
+        }
+
+        await UpdatedProductsFunc().clearupdatedProducts();
+        print('Unsynced updated products cleared');
+      }
+    } catch (e) {
+      print('Batch update failed ❌: $e');
+    }
+
+    if (context.mounted) {
+      print('Mounted, refreshing products ✅');
+      await getProducts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+      );
+    }
+
+    clearFields();
+  }
+
+  Future<void> syncData(BuildContext context) async {
+    await createProductsSync(context);
+    if (context.mounted) {
+      await deleteProductsSync(context);
+    }
+    if (context.mounted) {
+      await updateProductsSync(context);
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedProductFunc().getProducts().isEmpty &&
+        DeletedProductsFunc().getProductIds().isEmpty &&
+        UpdatedProductsFunc().getProducts().isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   DateTime? expiryDate;
@@ -106,16 +336,24 @@ class DataProvider extends ChangeNotifier {
   Future<List<TempProductClass>> getProducts(
     int shopId,
   ) async {
-    final data = await supabase
-        .from('products')
-        .select()
-        .eq('shop_id', shopId)
-        .order('name', ascending: true);
-    print('Items gotten');
-    productList =
-        (data as List)
-            .map((json) => TempProductClass.fromJson(json))
-            .toList();
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final data = await supabase
+          .from('products')
+          .select()
+          .eq('shop_id', shopId)
+          .order('name', ascending: true);
+      print('Items gotten');
+      productList =
+          (data as List)
+              .map(
+                (json) => TempProductClass.fromJson(json),
+              )
+              .toList();
+      await ProductsFunc().insertAllProducts(productList);
+    } else {
+      productList = ProductsFunc().getProducts();
+    }
     notifyListeners();
     return productList;
   }
@@ -151,17 +389,22 @@ class DataProvider extends ChangeNotifier {
     required TempProductClass product,
     required BuildContext context,
   }) async {
-    final supabase = Supabase.instance.client;
-
-    await supabase
-        .from('products')
-        .update(
-          product.toJson(),
-        ) // use the toJson() method of the class
-        .eq(
-          'id',
-          product.id!,
-        ); // use the id from the object
+    bool isOnline = await ConnectivityProvider().isOnline();
+    product.updatedAt = DateTime.now().toLocal();
+    if (isOnline) {
+      await supabase
+          .from('products')
+          .update(product.toJson())
+          .eq('id', product.id!);
+      print('${product.uuid}');
+    } else {
+      await ProductsFunc().updateProduct(product);
+      await UpdatedProductsFunc().createUpdatedProduct(
+        UpdatedProducts(product: product),
+      );
+      print(product.updatedAt.toString());
+      print('${product.uuid}');
+    }
     if (context.mounted) {
       await getProducts(
         returnShopProvider(
@@ -171,33 +414,6 @@ class DataProvider extends ChangeNotifier {
       );
     }
     notifyListeners();
-  }
-
-  Future<bool> updatePrices({
-    required int productId,
-    required double newCostPrice,
-    required double? newSellingPrice,
-    required BuildContext context,
-  }) async {
-    final response =
-        await supabase
-            .from('products')
-            .update({
-              'cost_price': newCostPrice,
-              'selling_price': newSellingPrice,
-            })
-            .eq('id', productId)
-            .maybeSingle();
-    if (context.mounted) {
-      await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
-      );
-    }
-    notifyListeners();
-    return response != null;
   }
 
   Future<bool> updateQuantity({
@@ -208,7 +424,10 @@ class DataProvider extends ChangeNotifier {
     final response =
         await supabase
             .from('products')
-            .update({'quantity': newQuantity})
+            .update({
+              'quantity': newQuantity,
+              'updated_at': DateTime.now(),
+            })
             .eq('id', productId)
             .maybeSingle();
     if (context.mounted) {
@@ -245,6 +464,7 @@ class DataProvider extends ChangeNotifier {
                       ?.toIso8601String()
                       .split('T')
                       .first,
+              'updated_at': DateTime.now(),
             })
             .eq('id', productId)
             .maybeSingle();
@@ -270,7 +490,11 @@ class DataProvider extends ChangeNotifier {
     final response =
         await supabase
             .from('products')
-            .update({'is_managed': value, 'quantity': qtty})
+            .update({
+              'is_managed': value,
+              'quantity': qtty,
+              'updated_at': DateTime.now(),
+            })
             .eq('id', productId)
             .maybeSingle();
     print(response?['is_managed']);
@@ -290,11 +514,21 @@ class DataProvider extends ChangeNotifier {
     int productId,
     BuildContext context,
   ) async {
-    await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId);
-
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      await supabase
+          .from('products')
+          .delete()
+          .eq('id', productId);
+    } else {
+      await ProductsFunc().deleteProduct(productId);
+      await DeletedProductsFunc().createDeletedProduct(
+        DeletedProducts(
+          productid: productId,
+          date: DateTime.now(),
+        ),
+      );
+    }
     if (context.mounted) {
       await getProducts(
         returnShopProvider(

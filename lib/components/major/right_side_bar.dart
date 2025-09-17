@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';

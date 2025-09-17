@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
@@ -39,22 +41,26 @@ class ExpensesProvider extends ChangeNotifier {
   Future<List<TempExpensesClass>> getExpenses(
     int shopId,
   ) async {
-    final supabase = Supabase.instance.client;
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final response = await supabase
+          .from('expenses')
+          .select()
+          .eq('shop_id', shopId)
+          .order('created_date', ascending: false);
+      print('Expenses Gotten: Get Expenses');
 
-    final response = await supabase
-        .from('expenses')
-        .select()
-        .eq('shop_id', shopId)
-        .order('created_date', ascending: false);
-    print('Expenses Gotten: Get Expenses');
+      expenses =
+          (response as List)
+              .map((e) => TempExpensesClass.fromJson(e))
+              .toList();
 
-    var exp =
-        (response as List)
-            .map((e) => TempExpensesClass.fromJson(e))
-            .toList();
-    expenses = exp;
+      await ExpensesFunc().insertAllExpenses(expenses);
+    } else {
+      expenses = ExpensesFunc().getExpenses();
+    }
     notifyListeners();
-    return exp;
+    return expenses;
   }
 
   //

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/product_suggestions_class.dart';
+import 'package:stockall/classes/product_suggestions/product_suggestion.dart';
+import 'package:stockall/local_database/product_suggestion/product_suggestion_func.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductSuggestionProvider extends ChangeNotifier {
@@ -48,17 +50,30 @@ class ProductSuggestionProvider extends ChangeNotifier {
   /// Load all suggestions for a specific shop
   Future<void> loadSuggestions(int shopId) async {
     // print('Start Loading Provider');
-    final res = await supabase
-        .from('product_suggestions')
-        .select()
-        .eq('shop_id', shopId)
-        .order('name', ascending: false);
-    // print('Loaded Provider $res');
+    bool isOnline = await ConnectivityProvider().isOnline();
 
-    _suggestions =
-        (res as List)
-            .map((item) => ProductSuggestion.fromJson(item))
-            .toList();
+    if (isOnline) {
+      final res = await supabase
+          .from('product_suggestions')
+          .select()
+          .eq('shop_id', shopId)
+          .order('name', ascending: false);
+      // print('Loaded Provider $res');
+
+      _suggestions =
+          (res as List)
+              .map(
+                (item) => ProductSuggestion.fromJson(item),
+              )
+              .toList();
+
+      await ProductSuggestionFunc().insertAllSuggestions(
+        _suggestions,
+      );
+    } else {
+      _suggestions =
+          ProductSuggestionFunc().getSuggestions();
+    }
 
     notifyListeners();
   }
@@ -135,36 +150,6 @@ class ProductSuggestionProvider extends ChangeNotifier {
     tempSuggestions.clear();
     notifyListeners();
   }
-
-  // Future<void> createSuggestions() async {
-  //   if (tempSuggestions.isEmpty) {
-  //     print('No suggestions to insert.');
-  //     return;
-  //   }
-
-  //   final now = DateTime.now();
-
-  //   final dataList =
-  //       tempSuggestions.map((suggestion) {
-  //         return {
-  //           'created_at': now.toIso8601String(),
-  //           'name': suggestion.name,
-  //           'cost_price': suggestion.costPrice,
-  //           'shop_id': suggestion.shopId,
-  //         };
-  //       }).toList();
-
-  //   await supabase
-  //       .from('product_suggestions')
-  //       .insert(dataList)
-  //       .select();
-  //   print('Inserted ${tempSuggestions.length} suggestions');
-
-  //   // Safely reload only if at least one was added
-  //   await loadSuggestions(tempSuggestions[0].shopId);
-  //   tempSuggestions.clear(); // Clear after inserting
-  //   notifyListeners();
-  // }
 
   /// Update a suggestion by ID
   Future<void> updateSuggestion({

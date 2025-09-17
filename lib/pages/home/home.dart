@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';

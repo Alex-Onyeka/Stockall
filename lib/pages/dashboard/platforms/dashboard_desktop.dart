@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/classes/temp_expenses_class.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_notification.dart';
-import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_notification/temp_notification.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
@@ -29,6 +29,7 @@ import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardDesktop extends StatefulWidget {
@@ -192,17 +193,54 @@ class _DashboardDesktopState
   }
 
   Future<void> refreshAll() async {
-    getMainReceipts();
-    getProductSalesRecord();
-    getExpenses();
-    getEmployees();
-    returnUserProvider(
-      context,
-      listen: false,
-    ).fetchCurrentUser(context);
-    getProducts();
-    clearDate();
-    fetchNotifications();
+    var safeContext = context;
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (!returnData(context, listen: false).isSynced() &&
+        isOnline &&
+        context.mounted) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ConfirmationAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You have unsynced Records, are you sure you want to proceed?',
+            title: 'Unsynced Records Detected',
+            action: () async {
+              Navigator.of(context).pop();
+              await returnData(
+                context,
+                listen: false,
+              ).syncData(safeContext);
+
+              getMainReceipts();
+              getProductSalesRecord();
+              getExpenses();
+              getEmployees();
+              returnUserProvider(
+                context,
+                listen: false,
+              ).fetchCurrentUser(safeContext);
+              getProducts();
+              clearDate();
+              fetchNotifications();
+            },
+          );
+        },
+      );
+    } else {
+      getMainReceipts();
+      getProductSalesRecord();
+      getExpenses();
+      getEmployees();
+      returnUserProvider(
+        context,
+        listen: false,
+      ).fetchCurrentUser(safeContext);
+      getProducts();
+      clearDate();
+      fetchNotifications();
+    }
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =

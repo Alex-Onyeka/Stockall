@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/temp_customers_class.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';

@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/local_database/users/user_func.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -23,24 +25,24 @@ class UserProvider extends ChangeNotifier {
   Future<List<TempUserClass>> fetchUsers() async {
     final authUser = _supabase.auth.currentUser;
     isLoading = true;
+    bool isOnline = await ConnectivityProvider().isOnline();
 
-    // if (authUser == null) {
-    //   _currentUser = null;
-    //   return null;
-    // }
+    if (isOnline) {
+      final data = await _supabase
+          .from('users')
+          .select()
+          .eq('auth_user_id', authUser!.id);
 
-    final data = await _supabase
-        .from('users')
-        .select()
-        .eq('auth_user_id', authUser!.id);
-
-    _users =
-        data
-            .map<TempUserClass>(
-              (json) => TempUserClass.fromJson(json),
-            )
-            .toList();
-
+      _users =
+          data
+              .map<TempUserClass>(
+                (json) => TempUserClass.fromJson(json),
+              )
+              .toList();
+      await UserFunc().insertAllUsers(_users);
+    } else {
+      _users = UserFunc().getUsers();
+    }
     _users.sort(
       (a, b) => a.name.toLowerCase().compareTo(
         b.name.toLowerCase(),
@@ -64,36 +66,41 @@ class UserProvider extends ChangeNotifier {
       return null;
     }
 
-    final data =
-        await _supabase
-            .from('users')
-            .select()
-            .eq('user_id', authUser.id)
-            .single();
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final data =
+          await _supabase
+              .from('users')
+              .select()
+              .eq('user_id', authUser.id)
+              .single();
 
-    _currentUser = TempUserClass.fromJson(data);
+      _currentUser = TempUserClass.fromJson(data);
+      await UserFunc().insertCurrentUser(_currentUser!);
+    } else {
+      _currentUser = UserFunc().getUser(authUser.id);
+    }
 
-    // if (context.mounted) {
-    //   await returnLocalDatabase(
-    //     context,
-    //     listen: false,
-    //   ).insertUser(_currentUser!);
-    // }
     notifyListeners();
     return _currentUser;
   }
 
   Future<TempUserClass> fetchUserById(String userId) async {
-    final data =
-        await _supabase
-            .from('users')
-            .select()
-            .eq('user_id', userId)
-            .single();
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final data =
+          await _supabase
+              .from('users')
+              .select()
+              .eq('user_id', userId)
+              .single();
 
-    var user = TempUserClass.fromJson(data);
-    notifyListeners();
-    return user;
+      var user = TempUserClass.fromJson(data);
+      notifyListeners();
+      return user;
+    } else {
+      return UserFunc().getUser(userId)!;
+    }
   }
 
   Future<void> updatePasswordInSupabase({
@@ -132,26 +139,34 @@ class UserProvider extends ChangeNotifier {
     String email,
     String userId,
   ) async {
-    try {
-      final data =
-          await _supabase
-              .from('users')
-              .select()
-              .eq('email', email.toLowerCase())
-              .eq('user_id', userId)
-              .maybeSingle();
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      try {
+        final data =
+            await _supabase
+                .from('users')
+                .select()
+                .eq('email', email.toLowerCase())
+                .eq('user_id', userId)
+                .maybeSingle();
 
-      if (data == null) {
-        print('User not found');
+        if (data == null) {
+          print('User not found');
+          return null;
+        }
+
+        var user = TempUserClass.fromJson(data);
+        notifyListeners();
+        print('User found');
+        return user;
+      } catch (e) {
         return null;
       }
-
-      var user = TempUserClass.fromJson(data);
-      notifyListeners();
-      print('User found');
-      return user;
-    } catch (e) {
-      return null;
+    } else {
+      return UserFunc().getUserByEmailandPassword(
+        userId,
+        email,
+      );
     }
   }
 

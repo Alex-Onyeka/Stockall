@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_notification.dart';
+import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_mobile.dart';
 import 'package:stockall/constants/constants_main.dart';

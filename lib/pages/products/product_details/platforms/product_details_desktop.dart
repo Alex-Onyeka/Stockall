@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'package:path/path.dart';
-import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -16,7 +16,6 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
-// import 'package:stockall/pages/products/product_details/platforms/components/edit_discount_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -647,27 +646,66 @@ class _ProductDetailsDesktopState
                                                                                                 true;
                                                                                           },
                                                                                         );
-                                                                                        await dataProvider.updatePrices(
+                                                                                        await dataProvider.updateProduct(
                                                                                           context:
                                                                                               context,
-                                                                                          productId:
-                                                                                              product.id!,
-                                                                                          newCostPrice: double.parse(
-                                                                                            costController.text.replaceAll(
-                                                                                              ',',
-                                                                                              '',
+                                                                                          product: TempProductClass(
+                                                                                            updatedAt:
+                                                                                                DateTime.now(),
+                                                                                            setCustomPrice:
+                                                                                                product.setCustomPrice,
+                                                                                            isManaged:
+                                                                                                product.isManaged,
+                                                                                            id:
+                                                                                                product.id,
+                                                                                            name:
+                                                                                                product.name,
+                                                                                            unit:
+                                                                                                product.unit,
+                                                                                            isRefundable:
+                                                                                                product.isRefundable,
+                                                                                            costPrice: double.parse(
+                                                                                              costController.text.replaceAll(
+                                                                                                ',',
+                                                                                                '',
+                                                                                              ),
                                                                                             ),
+                                                                                            sellingPrice:
+                                                                                                sellingController.text.isNotEmpty
+                                                                                                    ? double.tryParse(
+                                                                                                      sellingController.text.replaceAll(
+                                                                                                        ',',
+                                                                                                        '',
+                                                                                                      ),
+                                                                                                    )
+                                                                                                    : null,
+                                                                                            quantity:
+                                                                                                product.quantity,
+                                                                                            shopId:
+                                                                                                product.shopId,
+                                                                                            barcode:
+                                                                                                product.barcode,
+                                                                                            category:
+                                                                                                product.category,
+                                                                                            createdAt:
+                                                                                                product.createdAt,
+                                                                                            discount:
+                                                                                                product.discount,
+                                                                                            endDate:
+                                                                                                product.endDate,
+                                                                                            expiryDate:
+                                                                                                product.expiryDate,
+                                                                                            lowQtty:
+                                                                                                product.lowQtty,
+                                                                                            sizeType:
+                                                                                                product.sizeType,
+                                                                                            startDate:
+                                                                                                product.startDate,
+                                                                                            uuid:
+                                                                                                product.uuid,
                                                                                           ),
-                                                                                          newSellingPrice:
-                                                                                              sellingController.text.isNotEmpty
-                                                                                                  ? double.tryParse(
-                                                                                                    sellingController.text.replaceAll(
-                                                                                                      ',',
-                                                                                                      '',
-                                                                                                    ),
-                                                                                                  )
-                                                                                                  : null,
                                                                                         );
+
                                                                                         if (safeContext.mounted) {
                                                                                           await dataProvider.getProducts(
                                                                                             shopI,
@@ -1713,6 +1751,19 @@ class _ProductDetailsDesktopState
         ),
       );
     }
+    // return Scaffold(
+    //   body: Center(
+    //     child: InkWell(
+    //       onTap: () {
+    //         Navigator.of(context).pop();
+    //       },
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(20.0),
+    //         child: Text(productList.first.name),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }
 

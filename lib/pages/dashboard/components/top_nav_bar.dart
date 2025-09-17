@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/temp_notification.dart';
+import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -177,6 +177,61 @@ class TopNavBar extends StatelessWidget {
           Row(
             spacing: 10,
             children: [
+              Visibility(
+                visible:
+                    screenWidth(context) > mobileScreen,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () async {
+                      await returnData(
+                        context,
+                        listen: false,
+                      ).syncData(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            returnData(context).isSynced()
+                                ? 'Synced'
+                                : 'Unsynced',
+                          ),
+                          Icon(
+                            color:
+                                returnData(
+                                      context,
+                                    ).isSynced()
+                                    ? const Color.fromARGB(
+                                      255,
+                                      87,
+                                      160,
+                                      89,
+                                    )
+                                    : Colors.grey,
+                            size: 18,
+                            returnData(context).isSynced()
+                                ? Icons.cloud_done_outlined
+                                : Icons.cloud_sync_outlined,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
               Visibility(
                 visible:
                     screenWidth(context) > mobileScreen,

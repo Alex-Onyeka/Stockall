@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:stockall/classes/product_quantity_summary.dart';
-import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
+import 'package:stockall/classes/product_quantity_summary/product_quantity_summary.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 

@@ -8,6 +8,7 @@
 
 #include <app_links/app_links_plugin_c_api.h>
 #include <audioplayers_windows/audioplayers_windows_plugin.h>
+#include <connectivity_plus/connectivity_plus_windows_plugin.h>
 #include <flutter_thermal_printer/flutter_thermal_printer_plugin_c_api.h>
 #include <flutter_usb_thermal_plugin/flutter_usb_thermal_plugin_c_api.h>
 #include <printing/printing_plugin.h>
@@ -18,6 +19,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("AppLinksPluginCApi"));
   AudioplayersWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("AudioplayersWindowsPlugin"));
+  ConnectivityPlusWindowsPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("ConnectivityPlusWindowsPlugin"));
   FlutterThermalPrinterPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterThermalPrinterPluginCApi"));
   FlutterUsbThermalPluginCApiRegisterWithRegistrar(

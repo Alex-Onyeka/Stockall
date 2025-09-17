@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -162,11 +163,6 @@ class AuthService extends ChangeNotifier {
               .select()
               .maybeSingle();
 
-      // 3. Convert Supabase response into TempUserClass
-      // final tempUser = TempUserClass.fromJson({
-      //   ...updateResponse!,
-      // });
-
       // 4. Store the user in local DB
       print("context.mounted = ${context.mounted}");
       if (context.mounted) {
@@ -175,10 +171,6 @@ class AuthService extends ChangeNotifier {
           context,
           listen: false,
         ).fetchCurrentUser(context);
-        // await returnLocalDatabase(
-        //   context,
-        //   listen: false,
-        // ).insertUser(tempUser);
         return 'Success';
       } else {
         print(
@@ -263,5 +255,8 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  User? get currentUser => _client.auth.currentUser;
+  TempUserClass? get currentUser =>
+      LoggedInUserFunc().getUser()?.loggedInUser;
+
+  User? get currentUserAuth => _client.auth.currentUser;
 }

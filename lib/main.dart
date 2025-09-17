@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
-import 'package:stockall/classes/temp_user_class.dart';
-import 'package:stockall/local_database/local_user/local_user_database.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/local_database/main_database.dart';
+import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/enter_new_password.dart';
 import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
@@ -11,6 +12,7 @@ import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockall/pages/authentication/translations/translation_provider.dart';
 import 'package:stockall/providers/comp_provider.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
@@ -38,20 +40,18 @@ void main() async {
       statusBarBrightness: Brightness.light, // for iOS
     ),
   );
-  // // Lock to portrait only
-  // await SystemChrome.setPreferredOrientations([
-  //   DeviceOrientation.portraitUp,
-  //   DeviceOrientation.portraitDown,
-  // ]);
-
-  // Hive.registerAdapter(TempUserClassAdapter());
+  // Lock to portrait only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
   );
-  await LocalUserDatabase().init();
+  await MainDatabase().initHive();
   runApp(MyApp());
 }
 
@@ -398,7 +398,7 @@ class MyApp extends StatelessWidget {
           create: (_) => ReceiptsProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => LocalUserDatabase(),
+          create: (_) => VisibilityBox(),
         ),
         ChangeNotifierProvider(
           create: (_) => AuthService(),
@@ -414,6 +414,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => TranslationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ConnectivityProvider(),
         ),
       ],
       child: MaterialApp(

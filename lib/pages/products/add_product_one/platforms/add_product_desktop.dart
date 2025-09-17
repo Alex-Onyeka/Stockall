@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -310,6 +310,7 @@ class _AddProductDesktopState
                         ),
                 sizeType: provider.selectedSize,
                 startDate: provider.startDate,
+                uuid: widget.product?.uuid,
               ),
             );
             await provider.getProducts(

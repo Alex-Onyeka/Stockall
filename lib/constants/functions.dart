@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
-import 'package:stockall/classes/currency_class.dart';
-import 'package:stockall/classes/product_report_summary.dart';
-import 'package:stockall/classes/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_sale_record.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/currency_class/currency_class.dart';
+import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';

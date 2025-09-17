@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_user_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/constants/constants_main.dart';

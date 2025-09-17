@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/temp_notification.dart';
+import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_tablet.dart';
 import 'package:stockall/constants/constants_main.dart';

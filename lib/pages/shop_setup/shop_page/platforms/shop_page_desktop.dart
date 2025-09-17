@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:stockall/classes/temp_shop_class.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';

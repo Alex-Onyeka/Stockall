@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/add_product_desktop.dart';
 import 'package:stockall/pages/products/add_product_one/platforms/add_product_mobile.dart';

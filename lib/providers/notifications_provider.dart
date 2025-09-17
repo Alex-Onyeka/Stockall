@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_notification.dart';
+import 'package:stockall/classes/temp_notification/temp_notification.dart';
+import 'package:stockall/local_database/notification/notification_func.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationProvider with ChangeNotifier {
@@ -55,19 +57,30 @@ class NotificationProvider with ChangeNotifier {
   Future<List<TempNotification>> fetchRecentNotifications(
     int shopId,
   ) async {
-    final response = await supabase
-        .from('notifications')
-        .select()
-        .eq('shop_id', shopId)
-        .order('is_viewed', ascending: true)
-        .order('date', ascending: false)
-        .limit(10);
+    bool isOnline = await ConnectivityProvider().isOnline();
+    if (isOnline) {
+      final response = await supabase
+          .from('notifications')
+          .select()
+          .eq('shop_id', shopId)
+          .order('is_viewed', ascending: true)
+          .order('date', ascending: false)
+          .limit(10);
 
-    _notifications =
-        (response as List)
-            .map((item) => TempNotification.fromJson(item))
-            .toList();
+      _notifications =
+          (response as List)
+              .map(
+                (item) => TempNotification.fromJson(item),
+              )
+              .toList();
 
+      await NotificationFunc().insertAllNotifications(
+        _notifications,
+      );
+    } else {
+      _notifications =
+          NotificationFunc().getNotifications();
+    }
     notifyListeners();
     return _notifications;
   }
