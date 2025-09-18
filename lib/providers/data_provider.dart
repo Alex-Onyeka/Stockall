@@ -53,7 +53,7 @@ class DataProvider extends ChangeNotifier {
       // Ensure createdAt is always set
       product.createdAt ??= DateTime.now();
 
-      if (product.id != null) {
+      if (product.uuid != null) {
         await ProductsFunc().createProduct(product);
         await CreatedProductFunc().createProduct(
           CreatedProducts(product: product),
@@ -61,16 +61,16 @@ class DataProvider extends ChangeNotifier {
         print('Offline Success');
         print('Offline Product inserted Successfully');
       } else {
-        final products = ProductsFunc().getProducts();
-        int newId = 1;
+        // final products = ProductsFunc().getProducts();
+        // int newId = 1;
 
-        if (products.isNotEmpty) {
-          final maxId = products
-              .map((p) => p.id ?? 0)
-              .reduce((a, b) => a > b ? a : b);
-          newId = maxId + 1;
-        }
-        product.id = newId;
+        // if (products.isNotEmpty) {
+        //   final maxId = products
+        //       .map((p) => p.uuid ?? 0)
+        //       .reduce((a, b) => a > b ? a : b);
+        //   newId = maxId + 1;
+        // }
+        // product.id = newId;
         product.createdAt = DateTime.now();
         await ProductsFunc().createProduct(product);
         await CreatedProductFunc().createProduct(
@@ -105,7 +105,7 @@ class DataProvider extends ChangeNotifier {
           isOnline) {
         final tempProducts =
             CreatedProductFunc().getProducts().map((cp) {
-              cp.product.id = null;
+              cp.product.uuid = null;
               return cp.product;
             }).toList();
         final payload =
@@ -149,7 +149,7 @@ class DataProvider extends ChangeNotifier {
               .getProductIds()
               .isNotEmpty &&
           isOnline) {
-        final ids =
+        final uuids =
             DeletedProductsFunc()
                 .getProductIds()
                 .map((p) => p.productid)
@@ -160,8 +160,8 @@ class DataProvider extends ChangeNotifier {
                 .from('products')
                 .delete()
                 .inFilter(
-                  'id',
-                  ids,
+                  'uuid',
+                  uuids,
                 ) // delete where id is in the list
                 .select();
 
@@ -499,7 +499,7 @@ class DataProvider extends ChangeNotifier {
       await supabase
           .from('products')
           .update(product.toJson())
-          .eq('id', product.id!);
+          .eq('uuid', product.uuid!);
       print('${product.uuid}');
     } else {
       await ProductsFunc().updateProduct(product);
