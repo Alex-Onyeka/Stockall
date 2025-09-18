@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
@@ -14,6 +15,7 @@ import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -61,6 +63,9 @@ class _AddProductDesktopState
   bool isSizedTypeOpen = false;
 
   TextEditingController expiryDateC =
+      TextEditingController();
+
+  TextEditingController barcodeController =
       TextEditingController();
   //
   //
@@ -235,7 +240,6 @@ class _AddProductDesktopState
               'Are you sure you want to proceed with update?',
           title: 'Proceed?',
           action: () async {
-            // ✅ GET THE PROVIDER INSTANCE EARLY
             final provider = returnData(
               context,
               listen: false,
@@ -357,6 +361,10 @@ class _AddProductDesktopState
     });
     if (widget.product != null && context.mounted) {
       barcode = widget.product!.barcode;
+      // barcodeController.text =
+      //     widget.product!.barcode == null
+      //         ? ''
+      //         : widget.product!.barcode!;
       barCodeSet =
           widget.product!.barcode != null ? true : false;
 
@@ -447,7 +455,7 @@ class _AddProductDesktopState
     var shop = await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!.id);
+    ).getUserShop(AuthService().currentUser!);
 
     setState(() {
       userShop = shop;
@@ -878,29 +886,158 @@ class _AddProductDesktopState
                                     visible: expand,
                                     child: Column(
                                       children: [
-                                        BarcodeScanner(
-                                          valueSet:
-                                              barCodeSet,
-                                          onTap: () async {
-                                            String? info =
-                                                await scanCode(
-                                                  context,
-                                                  'Not Saved',
-                                                );
+                                        Stack(
+                                          children: [
+                                            Visibility(
+                                              visible:
+                                                  kIsWeb ||
+                                                  platforms(
+                                                        context,
+                                                      ) ==
+                                                      TargetPlatform
+                                                          .android ||
+                                                  platforms(
+                                                        context,
+                                                      ) ==
+                                                      TargetPlatform
+                                                          .iOS,
+                                              child: BarcodeScanner(
+                                                valueSet:
+                                                    barCodeSet,
+                                                onTap: () async {
+                                                  String?
+                                                  info = await scanCode(
+                                                    context,
+                                                    'Not Saved',
+                                                  );
 
-                                            setState(() {
-                                              barcode =
-                                                  info;
-                                              barCodeSet =
-                                                  true;
-                                            });
-                                          },
-                                          title:
-                                              'Item Barcode (Optional)',
-                                          hint:
-                                              barcode ??
-                                              'Click to Scan Item Barcode',
-                                          theme: theme,
+                                                  setState(() {
+                                                    barcode =
+                                                        info;
+                                                    barCodeSet =
+                                                        true;
+                                                  });
+                                                },
+                                                title:
+                                                    'Item Barcode (Optional)',
+                                                hint:
+                                                    barcode ??
+                                                    'Click to Scan Item Barcode',
+                                                theme:
+                                                    theme,
+                                              ),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  platforms(
+                                                        context,
+                                                      ) ==
+                                                      TargetPlatform
+                                                          .windows ||
+                                                  platforms(
+                                                        context,
+                                                      ) ==
+                                                      TargetPlatform
+                                                          .linux ||
+                                                  platforms(
+                                                        context,
+                                                      ) ==
+                                                      TargetPlatform
+                                                          .macOS,
+                                              child: Column(
+                                                spacing: 5,
+                                                children: [
+                                                  Text(
+                                                    style:
+                                                        theme.mobileTexts.b3.textStyleBold,
+                                                    'Item Barcode (Optional)',
+                                                  ),
+                                                  TextFormField(
+                                                    controller:
+                                                        barcodeController,
+                                                    onChanged: (
+                                                      value,
+                                                    ) {
+                                                      setState(() {
+                                                        barcode =
+                                                            value;
+                                                        if (value.isEmpty) {
+                                                          barCodeSet =
+                                                              false;
+                                                        } else {
+                                                          barCodeSet =
+                                                              true;
+                                                        }
+                                                      });
+                                                      print(
+                                                        barcode,
+                                                      );
+                                                      print(
+                                                        barCodeSet.toString(),
+                                                      );
+                                                    },
+                                                    enabled:
+                                                        true,
+                                                    decoration: InputDecoration(
+                                                      isCollapsed:
+                                                          true,
+                                                      suffixIcon: Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          right:
+                                                              50.0,
+                                                        ),
+                                                        child: Icon(
+                                                          size:
+                                                              20,
+                                                          color:
+                                                              Colors.grey,
+                                                          Icons.qr_code_scanner_sharp,
+                                                        ),
+                                                      ),
+                                                      suffixIconConstraints: BoxConstraints(
+                                                        maxHeight:
+                                                            20,
+                                                        maxWidth:
+                                                            35,
+                                                      ),
+                                                      contentPadding: EdgeInsets.symmetric(
+                                                        horizontal:
+                                                            20,
+                                                        vertical:
+                                                            8,
+                                                      ),
+                                                      hintText:
+                                                          barcode ??
+                                                          'Click to Scan Item Barcode',
+                                                      hintStyle: TextStyle(
+                                                        color:
+                                                            barCodeSet
+                                                                ? Colors.grey.shade700
+                                                                : Colors.grey.shade500,
+                                                        fontSize:
+                                                            theme.mobileTexts.b2.fontSize,
+                                                        fontWeight:
+                                                            barCodeSet
+                                                                ? FontWeight.bold
+                                                                : FontWeight.normal,
+                                                      ),
+                                                      border: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color:
+                                                              Colors.grey,
+                                                          width:
+                                                              1,
+                                                        ),
+                                                        borderRadius: BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         SizedBox(
                                           height: 10,

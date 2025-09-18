@@ -5,9 +5,11 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -186,7 +188,78 @@ class TopNavBar extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
+                    onTap: refreshAction,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: StreamBuilder(
+                        stream:
+                            ConnectivityProvider()
+                                .connectivityStream,
+                        builder: (context, snapshot) {
+                          return Row(
+                            spacing: 5,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                snapshot.connectionState ==
+                                        ConnectionState
+                                            .waiting
+                                    ? 'Checking'
+                                    : snapshot.hasError
+                                    ? 'Error'
+                                    : snapshot.data!.isEmpty
+                                    ? 'Not Connected'
+                                    : 'Connected',
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:
+                                      snapshot.connectionState ==
+                                              ConnectionState
+                                                  .waiting
+                                          ? Colors.amber
+                                          : snapshot
+                                              .hasError
+                                          ? Colors.grey
+                                          : snapshot
+                                              .data!
+                                              .isEmpty
+                                          ? Colors.grey
+                                          : Colors.green,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible:
+                    screenWidth(context) > mobileScreen,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
                     onTap: () async {
+                      print(
+                        UpdatedProductsFunc()
+                            .getProducts()
+                            .length
+                            .toString(),
+                      );
                       await returnData(
                         context,
                         listen: false,
@@ -206,26 +279,111 @@ class TopNavBar extends StatelessWidget {
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            returnData(context).isSynced()
-                                ? 'Synced'
-                                : 'Unsynced',
-                          ),
-                          Icon(
-                            color:
-                                returnData(
+                            returnData(
                                       context,
-                                    ).isSynced()
-                                    ? const Color.fromARGB(
-                                      255,
-                                      87,
-                                      160,
-                                      89,
-                                    )
-                                    : Colors.grey,
-                            size: 18,
-                            returnData(context).isSynced()
-                                ? Icons.cloud_done_outlined
-                                : Icons.cloud_sync_outlined,
+                                    ).isSynced() ==
+                                    1
+                                ? 'Synced'
+                                : returnData(
+                                      context,
+                                    ).isSynced() ==
+                                    0
+                                ? 'Unsynced'
+                                : 'Syncing',
+                          ),
+                          Stack(
+                            children: [
+                              Visibility(
+                                visible:
+                                    returnData(
+                                      context,
+                                    ).isSynced() !=
+                                    2,
+                                child: Icon(
+                                  color:
+                                      returnData(
+                                                context,
+                                              ).isSynced() ==
+                                              1
+                                          ? const Color.fromARGB(
+                                            255,
+                                            87,
+                                            160,
+                                            89,
+                                          )
+                                          : Colors.grey,
+                                  size: 18,
+                                  returnData(
+                                            context,
+                                          ).isSynced() ==
+                                          1
+                                      ? Icons
+                                          .cloud_done_outlined
+                                      : Icons
+                                          .cloud_sync_outlined,
+                                ),
+                              ),
+                              Visibility(
+                                visible:
+                                    returnData(
+                                      context,
+                                    ).isSynced() ==
+                                    2,
+                                child: Stack(
+                                  alignment: Alignment(
+                                    0,
+                                    0,
+                                  ),
+                                  children: [
+                                    SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child:
+                                          CircularProgressIndicator(
+                                            color:
+                                                Colors
+                                                    .amber,
+                                            strokeWidth:
+                                                1.5,
+                                          ),
+                                    ),
+                                    Center(
+                                      child: Row(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize: 8,
+                                            ),
+                                            returnData(
+                                                  context,
+                                                )
+                                                .syncProgress
+                                                .toStringAsFixed(
+                                                  0,
+                                                ),
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize: 7,
+                                            ),
+                                            '%',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -233,7 +391,7 @@ class TopNavBar extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              // SizedBox(height: 20),
               Visibility(
                 visible:
                     screenWidth(context) > mobileScreen,
@@ -268,7 +426,7 @@ class TopNavBar extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              // SizedBox(height: 20),
               Stack(
                 children: [
                   Visibility(

@@ -22,6 +22,10 @@ class ProductRecordFunc {
     return productRecordBox.values.toList();
   }
 
+  // List<TempProductSaleRecord> getProductRecords() {
+  //   return productRecordBox.values.toList();
+  // }
+
   Future<int> insertAllProductRecords(
     List<TempProductSaleRecord> records,
   ) async {

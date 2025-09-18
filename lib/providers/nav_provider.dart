@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/local_database/shop/shop_func.dart';
+import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 
 class NavProvider extends ChangeNotifier {
   int currentPage = 0;
@@ -49,5 +51,19 @@ class NavProvider extends ChangeNotifier {
   void offLoading() {
     isLoadingMain = false;
     notifyListeners();
+  }
+
+  void nullShop(BuildContext context) async {
+    await ShopFunc().clearShop();
+    await navigate(0);
+    if (context.mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShopBannerScreen(),
+        ),
+        (route) => false,
+      );
+    }
   }
 }

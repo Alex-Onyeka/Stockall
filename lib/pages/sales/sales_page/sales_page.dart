@@ -3,7 +3,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/sales_page/platforms/sales_page_desktop.dart';
 import 'package:stockall/pages/sales/sales_page/platforms/sales_page_mobile.dart';
-import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class SalesPage extends StatefulWidget {
@@ -28,15 +28,10 @@ class _SalesPageState extends State<SalesPage> {
       final userShop = await returnShopProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!.id);
+      ).getUserShop(AuthService().currentUser!);
       if (context.mounted && userShop == null) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ShopBannerScreen(),
-          ),
-          (route) => false,
-        );
+        // ignore: use_build_context_synchronously
+        NavProvider().nullShop(context);
       } else {
         clearDate();
         if (context.mounted) {

@@ -303,9 +303,9 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  User? get currentUser => _client.auth.currentUser;
+  User? get currentUserAuth => _client.auth.currentUser;
 
-  String? get currentUserId =>
+  String? get currentUser =>
       connectivity.isConnected
           ? _client.auth.currentUser?.id
           : LoggedInUserFunc()
@@ -313,11 +313,19 @@ class AuthService extends ChangeNotifier {
               ?.loggedInUser
               ?.userId;
 
+  String? get currentUserEmail =>
+      connectivity.isConnected
+          ? _client.auth.currentUser?.email
+          : LoggedInUserFunc()
+              .getLoggedInUser()
+              ?.loggedInUser
+              ?.email;
+
   Future<String?> checkAuth() async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       print('Online Auth Validated');
-      return currentUser?.id;
+      return currentUserAuth?.id;
     } else {
       print('Offline Auth Validated');
       return LoggedInUserFunc()

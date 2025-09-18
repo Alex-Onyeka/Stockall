@@ -26,7 +26,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
     var tempShp = await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!.id);
+    ).getUserShop(AuthService().currentUser!);
 
     return tempShp!;
   }

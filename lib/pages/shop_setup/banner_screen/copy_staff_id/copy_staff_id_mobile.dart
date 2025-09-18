@@ -102,9 +102,7 @@ class _CopyStaffIdMobileState
                                 .lightModeColor
                                 .secColor200,
                       ),
-                      hideText(
-                        AuthService().currentUser!.id,
-                      ),
+                      hideText(AuthService().currentUser!),
                     ),
                     Row(
                       spacing: 10,
@@ -151,8 +149,7 @@ class _CopyStaffIdMobileState
                               ClipboardData(
                                 text:
                                     AuthService()
-                                        .currentUser!
-                                        .id,
+                                        .currentUser!,
                               ),
                             );
                             if (context.mounted) {
@@ -281,8 +278,7 @@ class _CopyStaffIdMobileState
                                 action: () async {
                                   final userId =
                                       AuthService()
-                                          .currentUser!
-                                          .id; // or wherever your user ID is
+                                          .currentUser!; // or wherever your user ID is
                                   final email = Uri.encodeFull(
                                     'mailto:${emailC.text.trim()}?subject=My ID&body=Hello Sir/Ma. My Name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: $userId',
                                   );
@@ -363,8 +359,7 @@ class _CopyStaffIdMobileState
                                   final messagee =
                                       Uri.encodeComponent(
                                         AuthService()
-                                            .currentUser!
-                                            .id,
+                                            .currentUser!,
                                       );
                                   final uri = Uri.parse(
                                     "https://wa.me/?text=$messagee",

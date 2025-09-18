@@ -50,30 +50,34 @@ class UpdatedProductsFunc {
     return updatedProductsBox.values.toList();
   }
 
-  Future<int> insertAllUpdatedProducts(
-    List<UpdatedProducts> updatedProducts,
-  ) async {
-    try {
-      for (var product in updatedProducts) {
-        await updatedProductsBox.add(product);
-      }
-      print("Offline Updated Products inserted ✅");
-      return 1;
-    } catch (e) {
-      print(
-        'Offline Updated Products insertion failed ❌: $e',
-      );
-      return 0;
-    }
-  }
+  // Future<int> insertAllUpdatedProducts(
+  //   List<UpdatedProducts> updatedProducts,
+  // ) async {
+  //   try {
+  //     for (var product in updatedProducts) {
+  //       await updatedProductsBox.add(product);
+  //     }
+  //     print("Offline Updated Products inserted ✅");
+  //     return 1;
+  //   } catch (e) {
+  //     print(
+  //       'Offline Updated Products insertion failed ❌: $e',
+  //     );
+  //     return 0;
+  //   }
+  // }
 
   Future<int> createUpdatedProduct(
     UpdatedProducts updatedProduct,
   ) async {
     try {
-      updatedProduct.product.updatedAt =
-          DateTime.now().toLocal();
-      await updatedProductsBox.add(updatedProduct);
+      updatedProduct.product.updatedAt = DateTime.now()
+          .toUtc()
+          .add(const Duration(hours: 1));
+      await updatedProductsBox.put(
+        updatedProduct.product.uuid,
+        updatedProduct,
+      );
       print(
         'Offline updated Product inserted successfully ✅',
       );
@@ -82,6 +86,20 @@ class UpdatedProductsFunc {
       print(
         'Offline updated Product insertion failed ❌: $e',
       );
+      return 0;
+    }
+  }
+
+  Future<int> deleteUpdatedProduct(String uuid) async {
+    try {
+      print(
+        updatedProductsBox.containsKey(uuid).toString(),
+      );
+      await updatedProductsBox.delete(uuid);
+      print('Updated Product Deleted');
+      return 1;
+    } catch (e) {
+      print('Product Delete Failed: ${e.toString()}');
       return 0;
     }
   }

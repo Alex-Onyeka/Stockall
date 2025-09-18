@@ -192,11 +192,9 @@ class _ShopSetupTwoDesktopState
                     updateNumber: currentUpdate,
                     isVerified: false,
                     currency: selectedCurrency!,
-                    employees: [
-                      AuthService().currentUser!.id,
-                    ],
+                    employees: [AuthService().currentUser!],
                     createdAt: DateTime.now(),
-                    userId: AuthService().currentUser!.id,
+                    userId: AuthService().currentUser!,
                     email: shopProvider.email!,
                     name: shopProvider.name,
                     state: selectedStateName,

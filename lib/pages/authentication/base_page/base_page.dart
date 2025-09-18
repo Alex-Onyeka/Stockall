@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
-import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
+import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -51,7 +51,12 @@ class _BasePageState extends State<BasePage> {
   Widget build(BuildContext context) {
     // final userId = AuthService().checkAuth();
     if (returnNavProvider(context).isLoadingMain) {
-      return const LaunchScreen();
+      return Scaffold(
+        body: returnCompProvider(
+          context,
+          listen: false,
+        ).showLoader(General().loadingText),
+      );
     } else {
       if (userAuthId != null) {
         return const Home();

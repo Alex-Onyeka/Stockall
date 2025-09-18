@@ -194,10 +194,10 @@ class _DashboardDesktopState
 
   Future<void> refreshAll() async {
     var safeContext = context;
+    int isSynced =
+        returnData(context, listen: false).isSynced();
     bool isOnline = await ConnectivityProvider().isOnline();
-    if (!returnData(context, listen: false).isSynced() &&
-        isOnline &&
-        context.mounted) {
+    if (isSynced == 0 && context.mounted && isOnline) {
       showDialog(
         context: context,
         builder: (context) {

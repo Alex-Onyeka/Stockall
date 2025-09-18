@@ -194,7 +194,7 @@ class TempProductClass {
       'low_qtty': lowQtty,
       'is_managed': isManaged,
       'updated_at': updatedAt?.toIso8601String(),
-      // 'uuid': uuid,
+      'uuid': uuid,
     };
   }
 }

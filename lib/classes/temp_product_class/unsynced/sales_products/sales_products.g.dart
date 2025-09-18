@@ -17,19 +17,16 @@ class SalesProductsAdapter extends TypeAdapter<SalesProducts> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SalesProducts(
-      product: fields[0] as TempProductClass,
-      date: fields[1] as DateTime,
+      productUuid: fields[0] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, SalesProducts obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.product)
       ..writeByte(1)
-      ..write(obj.date);
+      ..writeByte(0)
+      ..write(obj.productUuid);
   }
 
   @override

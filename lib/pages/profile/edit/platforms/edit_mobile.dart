@@ -467,8 +467,7 @@ class _EditMobileState extends State<EditMobile> {
                                         newPin: value2,
                                         userId:
                                             AuthService()
-                                                .currentUser!
-                                                .id,
+                                                .currentUser!,
                                       );
 
                                   setState(() {

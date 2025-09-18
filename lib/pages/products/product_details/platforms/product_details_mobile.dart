@@ -983,34 +983,73 @@ class _ProductDetailsMobileState
                                                                                       true;
                                                                                 },
                                                                               );
-                                                                              await dataProvider.updateQuantity(
+                                                                              await dataProvider.updateProduct(
                                                                                 context:
                                                                                     context,
-                                                                                productId:
-                                                                                    product.id!,
-
-                                                                                newQuantity:
-                                                                                    quantityController.text.isEmpty &&
-                                                                                            !isAddToQuantity &&
-                                                                                            product.isManaged
-                                                                                        ? 0
-                                                                                        : quantityController.text.isEmpty &&
-                                                                                            !isAddToQuantity &&
-                                                                                            !product.isManaged
-                                                                                        ? null
-                                                                                        : quantityController.text.isNotEmpty &&
-                                                                                            !isAddToQuantity
-                                                                                        ? double.parse(
-                                                                                          quantityController.text,
-                                                                                        )
-                                                                                        : quantityController.text.isNotEmpty &&
-                                                                                            isAddToQuantity
-                                                                                        ? double.parse(
-                                                                                              quantityController.text,
-                                                                                            ) +
-                                                                                            (product.quantity ??
-                                                                                                0)
-                                                                                        : product.quantity,
+                                                                                product: TempProductClass(
+                                                                                  updatedAt:
+                                                                                      DateTime.now(),
+                                                                                  setCustomPrice:
+                                                                                      product.setCustomPrice,
+                                                                                  isManaged:
+                                                                                      product.isManaged,
+                                                                                  id:
+                                                                                      product.id,
+                                                                                  name:
+                                                                                      product.name,
+                                                                                  unit:
+                                                                                      product.unit,
+                                                                                  isRefundable:
+                                                                                      product.isRefundable,
+                                                                                  costPrice:
+                                                                                      product.costPrice,
+                                                                                  sellingPrice:
+                                                                                      product.sellingPrice,
+                                                                                  quantity:
+                                                                                      quantityController.text.isEmpty &&
+                                                                                              !isAddToQuantity &&
+                                                                                              product.isManaged
+                                                                                          ? 0
+                                                                                          : quantityController.text.isEmpty &&
+                                                                                              !isAddToQuantity &&
+                                                                                              !product.isManaged
+                                                                                          ? null
+                                                                                          : quantityController.text.isNotEmpty &&
+                                                                                              !isAddToQuantity
+                                                                                          ? double.parse(
+                                                                                            quantityController.text,
+                                                                                          )
+                                                                                          : quantityController.text.isNotEmpty &&
+                                                                                              isAddToQuantity
+                                                                                          ? double.parse(
+                                                                                                quantityController.text,
+                                                                                              ) +
+                                                                                              (product.quantity ??
+                                                                                                  0)
+                                                                                          : product.quantity,
+                                                                                  shopId:
+                                                                                      product.shopId,
+                                                                                  barcode:
+                                                                                      product.barcode,
+                                                                                  category:
+                                                                                      product.category,
+                                                                                  createdAt:
+                                                                                      product.createdAt,
+                                                                                  discount:
+                                                                                      product.discount,
+                                                                                  endDate:
+                                                                                      product.endDate,
+                                                                                  expiryDate:
+                                                                                      product.expiryDate,
+                                                                                  lowQtty:
+                                                                                      product.lowQtty,
+                                                                                  sizeType:
+                                                                                      product.sizeType,
+                                                                                  startDate:
+                                                                                      product.startDate,
+                                                                                  uuid:
+                                                                                      product.uuid,
+                                                                                ),
                                                                               );
 
                                                                               setState(
@@ -1254,6 +1293,11 @@ class _ProductDetailsMobileState
                                       onTap: () {
                                         var safeContext =
                                             context;
+                                        var dataProvider =
+                                            returnData(
+                                              safeContext,
+                                              listen: false,
+                                            );
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -1277,26 +1321,59 @@ class _ProductDetailsMobileState
                                                   isLoading =
                                                       true;
                                                 });
-                                                await returnData(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).updateIsManaged(
-                                                  productId:
-                                                      product
-                                                          .id!,
+                                                await dataProvider.updateProduct(
                                                   context:
                                                       safeContext,
-                                                  value:
-                                                      product.isManaged
-                                                          ? false
-                                                          : true,
-                                                  qtty:
-                                                      !product.isManaged &&
-                                                              product.quantity ==
-                                                                  null
-                                                          ? 0
-                                                          : product.quantity?.toInt(),
+                                                  product: TempProductClass(
+                                                    updatedAt:
+                                                        DateTime.now(),
+                                                    setCustomPrice:
+                                                        product.setCustomPrice,
+                                                    isManaged:
+                                                        product.isManaged
+                                                            ? false
+                                                            : true,
+                                                    id:
+                                                        product.id,
+                                                    name:
+                                                        product.name,
+                                                    unit:
+                                                        product.unit,
+                                                    isRefundable:
+                                                        product.isRefundable,
+                                                    costPrice:
+                                                        product.costPrice,
+                                                    sellingPrice:
+                                                        product.sellingPrice,
+                                                    quantity:
+                                                        !product.isManaged &&
+                                                                product.quantity ==
+                                                                    null
+                                                            ? 0
+                                                            : product.quantity,
+                                                    shopId:
+                                                        product.shopId,
+                                                    barcode:
+                                                        product.barcode,
+                                                    category:
+                                                        product.category,
+                                                    createdAt:
+                                                        product.createdAt,
+                                                    discount:
+                                                        product.discount,
+                                                    endDate:
+                                                        product.endDate,
+                                                    expiryDate:
+                                                        product.expiryDate,
+                                                    lowQtty:
+                                                        product.lowQtty,
+                                                    sizeType:
+                                                        product.sizeType,
+                                                    startDate:
+                                                        product.startDate,
+                                                    uuid:
+                                                        product.uuid,
+                                                  ),
                                                 );
                                                 setState(() {
                                                   isLoading =

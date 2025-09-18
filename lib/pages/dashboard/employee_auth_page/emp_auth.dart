@@ -573,11 +573,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 TempUserClass?
                                                 user = await fetchUserFromDatabase(
                                                   AuthService()
-                                                      .currentUser!
-                                                      .email!,
+                                                      .currentUserEmail!,
                                                   AuthService()
-                                                      .currentUser!
-                                                      .id,
+                                                      .currentUser!,
                                                 );
 
                                                 setState(() {
@@ -727,11 +725,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 TempUserClass?
                                                 user = await fetchUserFromDatabase(
                                                   AuthService()
-                                                      .currentUser!
-                                                      .email!,
+                                                      .currentUserEmail!,
                                                   AuthService()
-                                                      .currentUser!
-                                                      .id,
+                                                      .currentUser!,
                                                 );
                                                 if (user !=
                                                         null &&

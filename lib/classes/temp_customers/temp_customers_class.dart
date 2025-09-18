@@ -40,6 +40,9 @@ class TempCustomersClass extends HiveObject {
   @HiveField(11)
   int? departmentId;
 
+  @HiveField(12)
+  String? uuid;
+
   TempCustomersClass({
     this.country,
     this.id,
@@ -53,6 +56,7 @@ class TempCustomersClass extends HiveObject {
     required this.shopId,
     this.departmentName,
     this.departmentId,
+    this.uuid,
   });
 
   factory TempCustomersClass.fromJson(
@@ -60,6 +64,7 @@ class TempCustomersClass extends HiveObject {
   ) {
     return TempCustomersClass(
       id: json['id'] as int?,
+      uuid: json['uuid'] as String?,
       dateAdded: DateTime.parse(json['date_added']),
       shopId: json['shop_id'] as int,
       country: json['country'] as String,
@@ -88,6 +93,7 @@ class TempCustomersClass extends HiveObject {
       'state': state,
       'department_id': departmentId,
       'department_name': departmentName,
+      'uuid': uuid,
     };
   }
 }

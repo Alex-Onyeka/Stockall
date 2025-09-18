@@ -728,8 +728,7 @@ class _MakeSalesMobileTwoState
                                           ).cartItems,
                                       staffId:
                                           AuthService()
-                                              .currentUser!
-                                              .id,
+                                              .currentUser!,
                                       staffName:
                                           returnUserProvider(
                                                 context,

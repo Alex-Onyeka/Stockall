@@ -3,7 +3,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_desktop.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
-import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class Dashboard extends StatefulWidget {
@@ -70,20 +70,15 @@ class _DashboardState extends State<Dashboard> {
     );
 
     final userShop = await shopProvider.getUserShop(
-      AuthService().currentUserId!,
+      AuthService().currentUser!,
     );
 
     if (!mounted) return;
 
     if (userShop == null) {
       // Navigate and return immediately
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ShopBannerScreen(),
-        ),
-        (route) => false,
-      );
+      // ignore: use_build_context_synchronously
+      NavProvider().nullShop(context);
       return;
     }
 

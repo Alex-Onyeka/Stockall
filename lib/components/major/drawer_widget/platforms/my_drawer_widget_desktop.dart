@@ -466,8 +466,7 @@ class _MyDrawerWidgetDesktopMainState
                                           return EmployeeListPage(
                                             empId:
                                                 AuthService()
-                                                    .currentUser!
-                                                    .id,
+                                                    .currentUser!,
                                           );
                                         },
                                       ),

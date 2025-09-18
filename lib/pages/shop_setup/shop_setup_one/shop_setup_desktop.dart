@@ -52,7 +52,7 @@ class _ShopSetupDesktopState
             nameController.text.trim();
         returnShopProvider(context, listen: false).email =
             emailController.text.isEmpty
-                ? AuthService().currentUser!.email!
+                ? AuthService().currentUserAuth!.email!
                 : emailController.text;
         returnShopProvider(context, listen: false).phone =
             numberController.text.isEmpty
@@ -108,7 +108,7 @@ class _ShopSetupDesktopState
                       emailController.text.isNotEmpty
                           ? emailController.text
                           : AuthService()
-                              .currentUser!
+                              .currentUserAuth!
                               .email!,
                   phoneNumber:
                       numberController.text.isEmpty

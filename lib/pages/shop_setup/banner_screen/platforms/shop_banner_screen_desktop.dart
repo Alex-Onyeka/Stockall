@@ -253,7 +253,30 @@ class _ShopBannerScreenDesktopState
                             ),
                             child: InkWell(
                               onTap: () {
-                                performRestart();
+                                if (Theme.of(
+                                          context,
+                                        ).platform ==
+                                        TargetPlatform
+                                            .windows ||
+                                    Theme.of(
+                                          context,
+                                        ).platform ==
+                                        TargetPlatform
+                                            .macOS ||
+                                    Theme.of(
+                                          context,
+                                        ).platform ==
+                                        TargetPlatform
+                                            .linux) {
+                                  Navigator.of(
+                                    context,
+                                  ).pushNamedAndRemoveUntil(
+                                    '/',
+                                    (route) => false,
+                                  );
+                                } else {
+                                  performRestart();
+                                }
                               },
                               child: Container(
                                 decoration: BoxDecoration(

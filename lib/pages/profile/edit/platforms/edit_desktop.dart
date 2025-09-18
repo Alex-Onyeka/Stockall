@@ -635,8 +635,7 @@ class _EditDesktopState extends State<EditDesktop> {
                                                     value2,
                                                 userId:
                                                     AuthService()
-                                                        .currentUser!
-                                                        .id,
+                                                        .currentUser!,
                                               );
 
                                           setState(() {

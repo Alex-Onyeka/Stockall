@@ -15,7 +15,10 @@ class UserFunc {
   }
 
   List<TempUserClass> getUsers() {
-    return userBox.values.toList();
+    List<TempUserClass> users = userBox.values.toList();
+    print(users.first.name);
+    print(users.last.name);
+    return users;
   }
 
   TempUserClass? getUser(String userId) {

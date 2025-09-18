@@ -25,7 +25,7 @@ class _EmployeeListPageState
       final userShop = await returnShopProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!.id);
+      ).getUserShop(AuthService().currentUser!);
       if (context.mounted && userShop == null) {
         Navigator.pushAndRemoveUntil(
           // ignore: use_build_context_synchronously

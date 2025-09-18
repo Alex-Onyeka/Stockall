@@ -43,6 +43,15 @@ class TempNotification {
   @HiveField(12)
   int? departmentId;
 
+  @HiveField(13)
+  String? uuid;
+
+  @HiveField(14)
+  String? productUuid;
+
+  @HiveField(15)
+  String? expensesUuid;
+
   TempNotification({
     this.id,
     required this.shopId,
@@ -57,6 +66,8 @@ class TempNotification {
     this.itemName,
     this.departmentName,
     this.departmentId,
+    this.productUuid,
+    this.expensesUuid,
   });
 
   factory TempNotification.fromJson(
@@ -76,6 +87,8 @@ class TempNotification {
       itemName: json['item_name'],
       departmentId: json['department_id'],
       departmentName: json['department_name'],
+      productUuid: json['product_uuid'] as String?,
+      expensesUuid: json['expenses_uuid'] as String?,
     );
   }
 
@@ -94,6 +107,8 @@ class TempNotification {
       'item_name': itemName,
       'department_id': departmentId,
       'department_name': departmentName,
+      'product_uuid': productUuid,
+      'expenses_uuid': expensesUuid,
     };
   }
 }

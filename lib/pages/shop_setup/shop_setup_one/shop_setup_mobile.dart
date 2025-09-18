@@ -51,7 +51,7 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
             nameController.text.trim();
         returnShopProvider(context, listen: false).email =
             emailController.text.isEmpty
-                ? AuthService().currentUser!.email!
+                ? AuthService().currentUserAuth!.email!
                 : emailController.text;
         returnShopProvider(context, listen: false).phone =
             numberController.text.isEmpty
@@ -107,7 +107,7 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
                       emailController.text.isNotEmpty
                           ? emailController.text
                           : AuthService()
-                              .currentUser!
+                              .currentUserAuth!
                               .email!,
                   phoneNumber:
                       numberController.text.isEmpty

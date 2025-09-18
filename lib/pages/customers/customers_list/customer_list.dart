@@ -26,7 +26,7 @@ class _CustomerListState extends State<CustomerList> {
       final userShop = await returnShopProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!.id);
+      ).getUserShop(AuthService().currentUser!);
       if (context.mounted && userShop == null) {
         Navigator.pushAndRemoveUntil(
           context,

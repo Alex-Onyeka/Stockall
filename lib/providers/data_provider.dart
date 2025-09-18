@@ -3,16 +3,23 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
+import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class DataProvider extends ChangeNotifier {
   bool isLoading = false;
+  ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   void toggleIsLoading(bool value) {
     isLoading = value;
@@ -27,7 +34,7 @@ class DataProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     // var data =
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
       var data =
@@ -41,11 +48,37 @@ class DataProvider extends ChangeNotifier {
       await ProductsFunc().createProduct(newProduct);
       print('Total Success');
     } else {
-      await ProductsFunc().createProduct(product);
-      await CreatedProductFunc().createProduct(
-        CreatedProducts(product: product),
-      );
-      print('Offline Success');
+      final uuid = Uuid();
+      product.uuid ??= uuid.v4();
+      // Ensure createdAt is always set
+      product.createdAt ??= DateTime.now();
+
+      if (product.id != null) {
+        await ProductsFunc().createProduct(product);
+        await CreatedProductFunc().createProduct(
+          CreatedProducts(product: product),
+        );
+        print('Offline Success');
+        print('Offline Product inserted Successfully');
+      } else {
+        final products = ProductsFunc().getProducts();
+        int newId = 1;
+
+        if (products.isNotEmpty) {
+          final maxId = products
+              .map((p) => p.id ?? 0)
+              .reduce((a, b) => a > b ? a : b);
+          newId = maxId + 1;
+        }
+        product.id = newId;
+        product.createdAt = DateTime.now();
+        await ProductsFunc().createProduct(product);
+        await CreatedProductFunc().createProduct(
+          CreatedProducts(product: product),
+        );
+        print('Offline Success');
+        print('Offline Product inserted Successfully');
+      }
     }
 
     // productList.add(newProduct);
@@ -66,8 +99,7 @@ class DataProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
       if (CreatedProductFunc().getProducts().isNotEmpty &&
           isOnline) {
@@ -111,8 +143,7 @@ class DataProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await connectivity.isOnline();
 
       if (DeletedProductsFunc()
               .getProductIds()
@@ -162,8 +193,13 @@ class DataProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await connectivity.isOnline();
+      print(
+        UpdatedProductsFunc()
+            .getProducts()
+            .length
+            .toString(),
+      );
 
       if (UpdatedProductsFunc().getProducts().isNotEmpty &&
           isOnline) {
@@ -193,6 +229,10 @@ class DataProvider extends ChangeNotifier {
             print(
               'Inserted product with uuid ${localProduct.uuid}',
             );
+            await UpdatedProductsFunc()
+                .deleteUpdatedProduct(
+                  localProduct.uuid ?? '',
+                );
           } else {
             final remoteUpdatedAtRaw =
                 remoteData['updated_at'];
@@ -202,14 +242,14 @@ class DataProvider extends ChangeNotifier {
                     : DateTime.parse(
                       remoteUpdatedAtRaw,
                     ).toUtc();
+
+            localProduct.updatedAt =
+                (localProduct.updatedAt ?? DateTime.now())
+                    .toUtc(); // ✅ keep both UTC
             print(
               "Local updatedAt: ${localProduct.updatedAt}",
             );
             print("Remote updatedAt: $remoteUpdatedAt");
-
-            localProduct.updatedAt =
-                (localProduct.updatedAt ?? DateTime.now())
-                    .toLocal();
 
             if (remoteUpdatedAt == null ||
                 localProduct.updatedAt!.isAfter(
@@ -222,6 +262,10 @@ class DataProvider extends ChangeNotifier {
               print(
                 'Updated product with uuid ${localProduct.uuid}',
               );
+              await UpdatedProductsFunc()
+                  .deleteUpdatedProduct(
+                    localProduct.uuid ?? '',
+                  );
             } else {
               print(
                 'Skipped product ${localProduct.uuid}, remote is newer ✅',
@@ -251,22 +295,81 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<void> syncData(BuildContext context) async {
-    await createProductsSync(context);
-    if (context.mounted) {
-      await deleteProductsSync(context);
-    }
-    if (context.mounted) {
-      await updateProductsSync(context);
+    int isSynced =
+        returnData(context, listen: false).isSynced();
+    TempShopClass? shop = await returnShopProvider(
+      context,
+      listen: false,
+    ).getUserShop(AuthService().currentUser!);
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      if (shop != null && context.mounted) {
+        if (isSynced == 0) {
+          toggleSyncing(true);
+          await createProductsSync(context);
+          print('Finished Syncing Created Products');
+          setSyncProgress(1);
+          if (context.mounted) {
+            await deleteProductsSync(context);
+            print('Finished Syncing Deleted Products');
+            setSyncProgress(2);
+          }
+          if (context.mounted) {
+            await updateProductsSync(context);
+            print('Finished Syncing Updated Products');
+            setSyncProgress(3);
+          }
+          toggleSyncing(false);
+        }
+      } else {
+        await ShopFunc().clearShop();
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/');
+        }
+      }
+    } else {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              title: 'Syncing Error',
+              message:
+                  'You have to turn on your data to sync.',
+              theme: returnTheme(context, listen: false),
+              action: () {
+                // Navigator.of(context).pop();
+              },
+            );
+          },
+        );
+      }
     }
   }
 
-  bool isSynced() {
-    if (CreatedProductFunc().getProducts().isEmpty &&
-        DeletedProductsFunc().getProductIds().isEmpty &&
-        UpdatedProductsFunc().getProducts().isEmpty) {
-      return true;
+  bool isSyncing = false;
+  double syncProgress = 0;
+  void setSyncProgress(int value) {
+    syncProgress = (value / 3) * 100;
+    notifyListeners();
+  }
+
+  void toggleSyncing(bool value) {
+    isSyncing = value;
+    notifyListeners();
+  }
+
+  int isSynced() {
+    if (isSyncing) {
+      return 2;
     } else {
-      return false;
+      if (CreatedProductFunc().getProducts().isEmpty &&
+          DeletedProductsFunc().getProductIds().isEmpty &&
+          UpdatedProductsFunc().getProducts().isEmpty) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
   }
 
@@ -336,7 +439,7 @@ class DataProvider extends ChangeNotifier {
   Future<List<TempProductClass>> getProducts(
     int shopId,
   ) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       final data = await supabase
           .from('products')
@@ -389,8 +492,9 @@ class DataProvider extends ChangeNotifier {
     required TempProductClass product,
     required BuildContext context,
   }) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now().toLocal();
+    print(product.isManaged.toString());
     if (isOnline) {
       await supabase
           .from('products')
@@ -406,41 +510,44 @@ class DataProvider extends ChangeNotifier {
       print('${product.uuid}');
     }
     if (context.mounted) {
+      print('Context Mounted');
       await getProducts(
         returnShopProvider(
           context,
           listen: false,
         ).userShop!.shopId!,
       );
+    } else {
+      print('Context Not Mounted');
     }
     notifyListeners();
   }
 
-  Future<bool> updateQuantity({
-    required int productId,
-    required double? newQuantity,
-    required BuildContext context,
-  }) async {
-    final response =
-        await supabase
-            .from('products')
-            .update({
-              'quantity': newQuantity,
-              'updated_at': DateTime.now(),
-            })
-            .eq('id', productId)
-            .maybeSingle();
-    if (context.mounted) {
-      await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
-      );
-    }
-    notifyListeners();
-    return response != null;
-  }
+  // Future<bool> updateQuantity({
+  //   required int productId,
+  //   required double? newQuantity,
+  //   required BuildContext context,
+  // }) async {
+  //   final response =
+  //       await supabase
+  //           .from('products')
+  //           .update({
+  //             'quantity': newQuantity,
+  //             'updated_at': DateTime.now(),
+  //           })
+  //           .eq('id', productId)
+  //           .maybeSingle();
+  //   if (context.mounted) {
+  //     await getProducts(
+  //       returnShopProvider(
+  //         context,
+  //         listen: false,
+  //       ).userShop!.shopId!,
+  //     );
+  //   }
+  //   notifyListeners();
+  //   return response != null;
+  // }
 
   Future<bool> updateDiscount({
     required int productId,
@@ -481,40 +588,40 @@ class DataProvider extends ChangeNotifier {
     return response != null;
   }
 
-  Future<bool> updateIsManaged({
-    required int productId,
-    required BuildContext context,
-    required bool value,
-    required int? qtty,
-  }) async {
-    final response =
-        await supabase
-            .from('products')
-            .update({
-              'is_managed': value,
-              'quantity': qtty,
-              'updated_at': DateTime.now(),
-            })
-            .eq('id', productId)
-            .maybeSingle();
-    print(response?['is_managed']);
-    if (context.mounted) {
-      await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
-      );
-    }
-    notifyListeners();
-    return response != null;
-  }
+  // Future<bool> updateIsManaged({
+  //   required int productId,
+  //   required BuildContext context,
+  //   required bool value,
+  //   required int? qtty,
+  // }) async {
+  //   final response =
+  //       await supabase
+  //           .from('products')
+  //           .update({
+  //             'is_managed': value,
+  //             'quantity': qtty,
+  //             'updated_at': DateTime.now(),
+  //           })
+  //           .eq('id', productId)
+  //           .maybeSingle();
+  //   print(response?['is_managed']);
+  //   if (context.mounted) {
+  //     await getProducts(
+  //       returnShopProvider(
+  //         context,
+  //         listen: false,
+  //       ).userShop!.shopId!,
+  //     );
+  //   }
+  //   notifyListeners();
+  //   return response != null;
+  // }
 
   Future<void> deleteProductMain(
     int productId,
     BuildContext context,
   ) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       await supabase
           .from('products')
@@ -522,12 +629,46 @@ class DataProvider extends ChangeNotifier {
           .eq('id', productId);
     } else {
       await ProductsFunc().deleteProduct(productId);
-      await DeletedProductsFunc().createDeletedProduct(
-        DeletedProducts(
-          productid: productId,
-          date: DateTime.now(),
-        ),
+      var containsCreated =
+          CreatedProductFunc()
+              .getProducts()
+              .where(
+                (product) =>
+                    product.product.id == productId,
+              )
+              .toList();
+
+      var containsUpdated =
+          UpdatedProductsFunc()
+              .getProducts()
+              .where(
+                (product) =>
+                    product.product.id == productId,
+              )
+              .toList();
+      print(
+        'Updated: ${containsCreated.length.toString()}',
       );
+      print(
+        'Updated: ${containsUpdated.length.toString()}',
+      );
+      if (containsCreated.isNotEmpty) {
+        await CreatedProductFunc().createdProductsBox
+            .delete(productId);
+      } else {
+        await DeletedProductsFunc().createDeletedProduct(
+          DeletedProducts(
+            productid: productId,
+            date: DateTime.now(),
+          ),
+        );
+      }
+      if (containsUpdated.isNotEmpty) {
+        await UpdatedProductsFunc().deleteUpdatedProduct(
+          containsUpdated.first.product.uuid!,
+        );
+        print('Deleted Update Log');
+      }
     }
     if (context.mounted) {
       await getProducts(

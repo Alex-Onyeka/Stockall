@@ -196,8 +196,7 @@ class _MyDrawerWidgetMobileState
                                         return EmployeeListPage(
                                           empId:
                                               AuthService()
-                                                  .currentUser!
-                                                  .id,
+                                                  .currentUser!,
                                         );
                                       },
                                     ),

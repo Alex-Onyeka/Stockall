@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
     var shop = await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUserId!);
+    ).getUserShop(AuthService().currentUser!);
     return shop;
   }
 

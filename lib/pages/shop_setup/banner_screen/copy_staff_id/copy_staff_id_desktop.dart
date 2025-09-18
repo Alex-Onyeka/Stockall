@@ -192,8 +192,7 @@ class _CopyStaffIdDesktopState
                                   ),
                                   hideText(
                                     AuthService()
-                                        .currentUser!
-                                        .id,
+                                        .currentUser!,
                                   ),
                                 ),
                                 Row(
@@ -246,8 +245,7 @@ class _CopyStaffIdDesktopState
                                           ClipboardData(
                                             text:
                                                 AuthService()
-                                                    .currentUser!
-                                                    .id,
+                                                    .currentUser!,
                                           ),
                                         );
                                         if (context
@@ -398,8 +396,7 @@ class _CopyStaffIdDesktopState
                                             action: () async {
                                               final userId =
                                                   AuthService()
-                                                      .currentUser!
-                                                      .id; // or wherever your user ID is
+                                                      .currentUser!; // or wherever your user ID is
                                               final email =
                                                   Uri.encodeFull(
                                                     'mailto:${emailC.text.trim()}?subject=My ID&body=Hello Sir/Ma. My Name is ${snapshot.connectionState == ConnectionState.waiting || snapshot.hasError ? "'No Name'" : snapshot.data!.name}. Here is my ID: $userId',
@@ -501,8 +498,7 @@ class _CopyStaffIdDesktopState
                                               final messagee =
                                                   Uri.encodeComponent(
                                                     AuthService()
-                                                        .currentUser!
-                                                        .id,
+                                                        .currentUser!,
                                                   );
                                               final uri =
                                                   Uri.parse(

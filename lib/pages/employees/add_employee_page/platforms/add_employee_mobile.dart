@@ -389,8 +389,7 @@ class _AddEmployeeMobileState
                                                   empSetup[currentSelected!]['position'],
                                               authUserId:
                                                   AuthService()
-                                                      .currentUser!
-                                                      .id,
+                                                      .currentUser!,
                                             );
 
                                         if (res != null &&
@@ -518,8 +517,7 @@ class _AddEmployeeMobileState
                                                 : '',
                                         authUserId:
                                             AuthService()
-                                                .currentUser!
-                                                .id,
+                                                .currentUser!,
                                       );
                                       // await returnUserProvider(
                                       //   context,

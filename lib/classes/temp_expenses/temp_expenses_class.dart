@@ -40,6 +40,9 @@ class TempExpensesClass extends HiveObject {
   @HiveField(11)
   int? departmentId;
 
+  @HiveField(12)
+  String? uuid;
+
   TempExpensesClass({
     required this.name,
     this.description,
@@ -53,6 +56,7 @@ class TempExpensesClass extends HiveObject {
     required this.userId,
     this.departmentName,
     this.departmentId,
+    this.uuid,
   });
 
   factory TempExpensesClass.fromJson(
@@ -77,6 +81,7 @@ class TempExpensesClass extends HiveObject {
       creator: json['creator'],
       departmentId: json['department_id'],
       departmentName: json['department_name'],
+      uuid: json['uuid'] as String?,
     );
   }
 
@@ -94,6 +99,7 @@ class TempExpensesClass extends HiveObject {
       'creator': creator,
       'department_id': departmentId,
       'department_name': departmentName,
+      'uuid': uuid,
     };
   }
 }

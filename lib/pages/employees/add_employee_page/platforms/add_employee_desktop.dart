@@ -395,8 +395,7 @@ class _AddEmployeeDesktopState
                                                   empSetup[currentSelected!]['position'],
                                               authUserId:
                                                   AuthService()
-                                                      .currentUser!
-                                                      .id,
+                                                      .currentUser!,
                                             );
 
                                         if (res != null &&
@@ -524,8 +523,7 @@ class _AddEmployeeDesktopState
                                                 : '',
                                         authUserId:
                                             AuthService()
-                                                .currentUser!
-                                                .id,
+                                                .currentUser!,
                                       );
                                       // await returnUserProvider(
                                       //   context,

@@ -56,7 +56,7 @@ class ShopProvider extends ChangeNotifier {
           .maybeSingle();
 
       final response = await getUserShop(
-        AuthService().currentUser!.id,
+        AuthService().currentUser!,
       );
 
       if (response != null) {
@@ -86,7 +86,7 @@ class ShopProvider extends ChangeNotifier {
           .maybeSingle();
 
       final response = await getUserShop(
-        AuthService().currentUser!.id,
+        AuthService().currentUser!,
       );
 
       if (response != null) {
@@ -110,7 +110,7 @@ class ShopProvider extends ChangeNotifier {
           .maybeSingle();
 
       final response = await getUserShop(
-        AuthService().currentUser!.id,
+        AuthService().currentUser!,
       );
 
       if (response != null) {
@@ -142,7 +142,7 @@ class ShopProvider extends ChangeNotifier {
               .eq('shop_id', shopId)
               .maybeSingle();
       final shop = await getUserShop(
-        AuthService().currentUser!.id,
+        AuthService().currentUser!,
       );
 
       if (response != null) {
@@ -203,7 +203,7 @@ class ShopProvider extends ChangeNotifier {
           .eq('shop_id', shopId)
           .select();
 
-      await getUserShop(AuthService().currentUser!.id);
+      await getUserShop(AuthService().currentUser!);
       notifyListeners();
 
       // print('Updated categories: $updateResult');

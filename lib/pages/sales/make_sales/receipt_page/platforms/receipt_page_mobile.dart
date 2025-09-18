@@ -70,7 +70,7 @@ class _ReceiptPageMobileState
             createdAt: DateTime.now(),
             id: 1,
             shopId: shopId(context),
-            staffId: AuthService().currentUser!.id,
+            staffId: AuthService().currentUser!,
             staffName: 'Staff Name',
             paymentMethod: 'Cash',
             bank: 0,

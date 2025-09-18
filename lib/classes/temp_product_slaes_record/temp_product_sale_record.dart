@@ -64,6 +64,18 @@ class TempProductSaleRecord {
   @HiveField(19)
   bool? addToStock;
 
+  @HiveField(20)
+  String? uuid;
+
+  @HiveField(21)
+  String? productUuid;
+
+  @HiveField(22)
+  String? customerUuid;
+
+  @HiveField(23)
+  String? receiptUuid;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -85,6 +97,10 @@ class TempProductSaleRecord {
     this.departmentName,
     this.departmentId,
     this.addToStock,
+    this.uuid,
+    this.productUuid,
+    this.customerUuid,
+    this.receiptUuid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -114,6 +130,10 @@ class TempProductSaleRecord {
       customPriceSet: json['custom_price_set'] as bool,
       departmentId: json['department_id'] as int?,
       departmentName: json['department_name'] as String?,
+      uuid: json['uuid'] as String?,
+      productUuid: json['product_uuid'] as String?,
+      customerUuid: json['customer_uuid'] as String?,
+      receiptUuid: json['receipt_uuid'] as String?,
     );
   }
 
@@ -137,6 +157,10 @@ class TempProductSaleRecord {
       'custom_price_set': customPriceSet,
       'department_id': departmentId,
       'department_name': departmentName,
+      'uuid': uuid,
+      'product_uuid': productUuid,
+      'receipt_uuid': receiptUuid,
+      'customer_uuid': customerUuid,
     };
   }
 }

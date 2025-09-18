@@ -27,7 +27,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
     var tempShp = await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!.id);
+    ).getUserShop(AuthService().currentUser!);
 
     return tempShp!;
   }
