@@ -4,13 +4,13 @@ part 'deleted_products.g.dart';
 @HiveType(typeId: 10)
 class DeletedProducts extends HiveObject {
   @HiveField(0)
-  final int productid;
+  final String productUuid;
 
   @HiveField(1)
   final DateTime date;
 
   DeletedProducts({
-    required this.productid,
+    required this.productUuid,
     required this.date,
   });
 }

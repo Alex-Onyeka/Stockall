@@ -4,17 +4,17 @@ import 'package:stockall/pages/customers/customer_page/platform/customer_page_de
 import 'package:stockall/pages/customers/customer_page/platform/customer_page_mobile.dart';
 
 class CustomerPage extends StatelessWidget {
-  final int id;
-  const CustomerPage({super.key, required this.id});
+  final String uuid;
+  const CustomerPage({super.key, required this.uuid});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
-          return CustomerPageMobile(id: id);
+          return CustomerPageMobile(uuid: uuid);
         } else {
-          return CustomerPageDesktop(id: id);
+          return CustomerPageDesktop(uuid: uuid);
         }
       },
     );

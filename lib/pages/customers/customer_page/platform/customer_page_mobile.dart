@@ -11,15 +11,14 @@ import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class CustomerPageMobile extends StatelessWidget {
-  final int id;
-  const CustomerPageMobile({super.key, required this.id});
+  final String uuid;
+  const CustomerPageMobile({super.key, required this.uuid});
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var customer = returnCustomers(
-      context,
-    ).customersMain.firstWhere((cust) => cust.id! == id);
+    var customer = returnCustomers(context).customersMain
+        .firstWhere((cust) => cust.uuid! == uuid);
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -199,7 +198,8 @@ class DetailsPageContainer extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) {
                                 return TotalSalesPage(
-                                  customerId: customer.id!,
+                                  customerUuid:
+                                      customer.uuid!,
                                 );
                               },
                             ),
@@ -245,7 +245,8 @@ class DetailsPageContainer extends StatelessWidget {
                             context,
                             listen: false,
                           ).deleteCustomerMain(
-                            customer.id!,
+                            customer.uuid!,
+                            context,
                           );
                           await Future.delayed(
                             Duration(microseconds: 500),

@@ -32,7 +32,7 @@ class UserProvider extends ChangeNotifier {
       final data = await _supabase
           .from('users')
           .select()
-          .eq('auth_user_id', authUser!.id);
+          .eq('auth_user_id', authUser?.id ?? '');
 
       _users =
           data

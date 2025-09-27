@@ -262,7 +262,8 @@ class _AddProductMobileState
                     widget.quantityController.text.isEmpty
                         ? false
                         : provider.isManaged,
-                id: widget.product!.id,
+                // id: widget.product!.id,
+                uuid: widget.product!.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
                 isRefundable: provider.isProductRefundable,

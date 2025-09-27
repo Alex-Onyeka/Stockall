@@ -187,14 +187,15 @@ class _NotificatonTileMainState
           returnNotificationProvider(
             context,
             listen: false,
-          ).updateNotification(widget.notif.id!);
-          if (widget.notif.productId != null) {
+          ).updateNotification(widget.notif.uuid!);
+          if (widget.notif.productUuid != null) {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
                   return ProductDetailsPage(
-                    productId: widget.notif.productId ?? 0,
+                    productUuid:
+                        widget.notif.productUuid ?? '0',
                   );
                 },
               ),
@@ -205,7 +206,8 @@ class _NotificatonTileMainState
               MaterialPageRoute(
                 builder: (context) {
                   return ExpenseDetails(
-                    expenseId: widget.notif.expenseId ?? 0,
+                    expenseUuid:
+                        widget.notif.expensesUuid ?? '0',
                   );
                 },
               ),

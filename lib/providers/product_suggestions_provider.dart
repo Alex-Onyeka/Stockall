@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductSuggestionProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   List<ProductSuggestion> _suggestions = [];
   List<ProductSuggestion> get suggestions => _suggestions;
@@ -13,6 +15,7 @@ class ProductSuggestionProvider extends ChangeNotifier {
   void clearSuggestionsMain() {
     _suggestions.clear();
     tempSuggestions.clear();
+    print('Suggestions Cleared');
     notifyListeners();
   }
 
@@ -36,14 +39,14 @@ class ProductSuggestionProvider extends ChangeNotifier {
     }
   }
 
-  void deleteTempSugg(int sugId) {
-    tempSuggestions.removeWhere((sug) => sug.id! == sugId);
+  void deleteTempSugg(String uuid) {
+    tempSuggestions.removeWhere((sug) => sug.uuid! == uuid);
     notifyListeners();
   }
 
   void clearSuggestions() {
     tempSuggestions.clear();
-    print('Cleared');
+    print('Suugestions Cleared');
     notifyListeners();
   }
 
@@ -88,62 +91,64 @@ class ProductSuggestionProvider extends ChangeNotifier {
 
     // Step 1: Get all existing suggestion names from Supabase for this shop
     final shopId = tempSuggestions.first.shopId;
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      final existingRes = await supabase
+          .from('product_suggestions')
+          .select('id, name')
+          .eq('shop_id', shopId);
 
-    final existingRes = await supabase
-        .from('product_suggestions')
-        .select('id, name')
-        .eq('shop_id', shopId);
+      final existingMap = {
+        for (var item in existingRes)
+          (item['name'] as String).toLowerCase():
+              item['id'] as int,
+      };
 
-    final existingMap = {
-      for (var item in existingRes)
-        (item['name'] as String).toLowerCase():
-            item['id'] as int,
-    };
+      // Step 2: Separate new inserts and updates
+      List<Map<String, dynamic>> toInsert = [];
+      List<Map<String, dynamic>> toUpdate = [];
 
-    // Step 2: Separate new inserts and updates
-    List<Map<String, dynamic>> toInsert = [];
-    List<Map<String, dynamic>> toUpdate = [];
+      for (final suggestion in tempSuggestions) {
+        final nameKey = suggestion.name!.toLowerCase();
 
-    for (final suggestion in tempSuggestions) {
-      final nameKey = suggestion.name!.toLowerCase();
-
-      if (existingMap.containsKey(nameKey)) {
-        toUpdate.add({
-          'id': existingMap[nameKey],
-          'cost_price': suggestion.costPrice,
-          'created_at': now.toIso8601String(),
-        });
-      } else {
-        toInsert.add({
-          'created_at': now.toIso8601String(),
-          'name': suggestion.name,
-          'cost_price': suggestion.costPrice,
-          'shop_id': suggestion.shopId,
-        });
+        if (existingMap.containsKey(nameKey)) {
+          toUpdate.add({
+            'id': existingMap[nameKey],
+            'cost_price': suggestion.costPrice,
+            'created_at': now.toIso8601String(),
+          });
+        } else {
+          toInsert.add({
+            'created_at': now.toIso8601String(),
+            'name': suggestion.name,
+            'cost_price': suggestion.costPrice,
+            'shop_id': suggestion.shopId,
+          });
+        }
       }
-    }
 
-    // Step 3: Perform updates
-    for (final item in toUpdate) {
-      await supabase
-          .from('product_suggestions')
-          .update({
-            'cost_price': item['cost_price'],
-            'created_at': item['created_at'],
-          })
-          .eq('id', item['id']);
-    }
+      // Step 3: Perform updates
+      for (final item in toUpdate) {
+        await supabase
+            .from('product_suggestions')
+            .update({
+              'cost_price': item['cost_price'],
+              'created_at': item['created_at'],
+            })
+            .eq('id', item['id']);
+      }
 
-    // Step 4: Perform inserts
-    if (toInsert.isNotEmpty) {
-      await supabase
-          .from('product_suggestions')
-          .insert(toInsert);
-    }
+      // Step 4: Perform inserts
+      if (toInsert.isNotEmpty) {
+        await supabase
+            .from('product_suggestions')
+            .insert(toInsert);
+      }
 
-    print(
-      'Inserted ${toInsert.length}, Updated ${toUpdate.length}',
-    );
+      print(
+        'Inserted ${toInsert.length}, Updated ${toUpdate.length}',
+      );
+    } else {}
 
     // Refresh local list
     await loadSuggestions(shopId);
@@ -153,46 +158,52 @@ class ProductSuggestionProvider extends ChangeNotifier {
 
   /// Update a suggestion by ID
   Future<void> updateSuggestion({
-    required int id,
+    required String uuid,
     String? name,
     double? costPrice,
   }) async {
+    bool isOnline = await connectivity.isOnline();
     final updateData = <String, dynamic>{};
-    if (name != null) updateData['name'] = name;
-    if (costPrice != null) {
-      updateData['cost_price'] = costPrice;
-    }
+    if (isOnline) {
+      if (name != null) updateData['name'] = name;
+      if (costPrice != null) {
+        updateData['cost_price'] = costPrice;
+      }
 
-    await supabase
-        .from('product_suggestions')
-        .update(updateData)
-        .eq('id', id);
+      await supabase
+          .from('product_suggestions')
+          .update(updateData)
+          .eq('uuid', uuid);
 
-    // Refresh the local list after update
-    final index = _suggestions.indexWhere(
-      (s) => s.id == id,
-    );
-    if (index != -1) {
-      final updated =
-          await supabase
-              .from('product_suggestions')
-              .select()
-              .eq('id', id)
-              .single();
-      _suggestions[index] = ProductSuggestion.fromJson(
-        updated,
+      // Refresh the local list after update
+      final index = _suggestions.indexWhere(
+        (s) => s.uuid == uuid,
       );
-      notifyListeners();
+      if (index != -1) {
+        final updated =
+            await supabase
+                .from('product_suggestions')
+                .select()
+                .eq('uuid', uuid)
+                .single();
+        _suggestions[index] = ProductSuggestion.fromJson(
+          updated,
+        );
+        notifyListeners();
+      }
     }
   }
 
   /// Delete a suggestion
-  Future<void> deleteSuggestion(int id) async {
-    await supabase
-        .from('product_suggestions')
-        .delete()
-        .eq('id', id);
-    _suggestions.removeWhere((s) => s.id == id);
-    notifyListeners();
+  Future<void> deleteSuggestion(String uuid) async {
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      await supabase
+          .from('product_suggestions')
+          .delete()
+          .eq('uuid', uuid);
+      _suggestions.removeWhere((s) => s.uuid == uuid);
+      notifyListeners();
+    }
   }
 }

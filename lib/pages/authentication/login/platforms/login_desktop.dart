@@ -77,7 +77,6 @@ class _LoginDesktopState extends State<LoginDesktop> {
         var res = await AuthService().signIn(
           widget.emailController.text,
           widget.passwordController.text,
-          context,
         );
         if (res == 1 && context.mounted) {
           setState(() {

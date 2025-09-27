@@ -21,11 +21,11 @@ import 'package:stockall/services/auth_service.dart';
 
 class ProductDetailsDesktop extends StatefulWidget {
   final ThemeProvider theme;
-  final int productId;
+  final String productUuid;
   const ProductDetailsDesktop({
     super.key,
     required this.theme,
-    required this.productId,
+    required this.productUuid,
   });
 
   @override
@@ -73,7 +73,8 @@ class _ProductDetailsDesktopState
     List<TempProductClass>? productList =
         returnData(context).productList
             .where(
-              (product) => product.id! == widget.productId,
+              (product) =>
+                  product.uuid! == widget.productUuid,
             )
             .toList();
     if (productList.isEmpty) {
@@ -656,8 +657,8 @@ class _ProductDetailsDesktopState
                                                                                                 product.setCustomPrice,
                                                                                             isManaged:
                                                                                                 product.isManaged,
-                                                                                            id:
-                                                                                                product.id,
+                                                                                            // id:
+                                                                                            //     product.id,
                                                                                             name:
                                                                                                 product.name,
                                                                                             unit:
@@ -1163,8 +1164,8 @@ class _ProductDetailsDesktopState
                                                                                                     product.setCustomPrice,
                                                                                                 isManaged:
                                                                                                     product.isManaged,
-                                                                                                id:
-                                                                                                    product.id,
+                                                                                                // id:
+                                                                                                //     product.id,
                                                                                                 name:
                                                                                                     product.name,
                                                                                                 unit:
@@ -1427,8 +1428,8 @@ class _ProductDetailsDesktopState
                                                                   product.isManaged
                                                                       ? false
                                                                       : true,
-                                                              id:
-                                                                  product.id,
+                                                              // id:
+                                                              //     product.id,
                                                               name:
                                                                   product.name,
                                                               unit:
@@ -1730,7 +1731,7 @@ class _ProductDetailsDesktopState
                                                 await provider
                                                     .deleteProductMain(
                                                       widget
-                                                          .productId,
+                                                          .productUuid,
                                                       context,
                                                     );
                                                 await provider

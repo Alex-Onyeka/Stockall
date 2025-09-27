@@ -177,11 +177,8 @@ class _MakeSalesDesktopState
                                 double.tryParse(value) ?? 0;
                             if (cartItem.item.isManaged) {
                               if (parsedValue >
-                                      (cartItem
-                                              .item
-                                              .quantity ??
-                                          0) &&
-                                  cartItem.item.id! > 80) {
+                                  (cartItem.item.quantity ??
+                                      0)) {
                                 showDialog(
                                   context: context,
                                   builder: (context) {
@@ -461,12 +458,10 @@ class _MakeSalesDesktopState
                                       .item
                                       .isManaged) {
                                     if (qqty >=
-                                            (cartItem
-                                                    .item
-                                                    .quantity ??
-                                                0) &&
-                                        cartItem.item.id! >
-                                            80) {
+                                        (cartItem
+                                                .item
+                                                .quantity ??
+                                            0)) {
                                       showDialog(
                                         context: context,
                                         builder:
@@ -1202,47 +1197,48 @@ class _MakeSalesDesktopState
                                                     ),
                                               ) ??
                                               0);
-                                      cartItem.item.id =
-                                          returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .cartItems
-                                                  .isNotEmpty
-                                              ? returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      )
-                                                      .cartItems
-                                                      .where(
-                                                        (
-                                                          item,
-                                                        ) =>
-                                                            item.item.id! <
-                                                            100,
-                                                      )
-                                                      .isNotEmpty
-                                                  ? returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          )
-                                                          .cartItems
-                                                          .where(
-                                                            (
-                                                              item,
-                                                            ) =>
-                                                                item.item.id! <
-                                                                100,
-                                                          )
-                                                          .last
-                                                          .item
-                                                          .id! +
-                                                      1
-                                                  : 1
-                                              : 1;
+                                      cartItem.item.uuid =
+                                          uuidGen();
+                                      // returnSalesProvider(
+                                      //           context,
+                                      //           listen:
+                                      //               false,
+                                      //         )
+                                      //         .cartItems
+                                      //         .isNotEmpty
+                                      //     ? returnSalesProvider(
+                                      //               context,
+                                      //               listen:
+                                      //                   false,
+                                      //             )
+                                      //             .cartItems
+                                      //             .where(
+                                      //               (
+                                      //                 item,
+                                      //               ) =>
+                                      //                   item.item.id! <
+                                      //                   100,
+                                      //             )
+                                      //             .isNotEmpty
+                                      //         ? returnSalesProvider(
+                                      //                   context,
+                                      //                   listen:
+                                      //                       false,
+                                      //                 )
+                                      //                 .cartItems
+                                      //                 .where(
+                                      //                   (
+                                      //                     item,
+                                      //                   ) =>
+                                      //                       item.item.id! <
+                                      //                       100,
+                                      //                 )
+                                      //                 .last
+                                      //                 .item
+                                      //                 .id! +
+                                      //             1
+                                      //         : 1
+                                      //     : 1;
                                       cartItem.addToStock =
                                           returnSalesProvider(
                                             context,
@@ -1272,10 +1268,10 @@ class _MakeSalesDesktopState
                                                     ),
                                               ),
                                           name: nameC.text,
-                                          id:
+                                          uuid:
                                               cartItem
                                                   .item
-                                                  .id,
+                                                  .uuid,
                                         ),
                                       );
                                       closeAction();
@@ -1295,11 +1291,8 @@ class _MakeSalesDesktopState
                           child: Material(
                             color: Colors.transparent,
                             child: Container(
-                              width:
-                                  MediaQuery.of(
-                                    context,
-                                  ).size.width -
-                                  60,
+                              // width: double.infinity,
+                              width: 450,
                               padding: EdgeInsets.fromLTRB(
                                 20,
                                 5,
@@ -1453,8 +1446,8 @@ class _MakeSalesDesktopState
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
-                                                      suggestion
-                                                          .name!,
+                                                      suggestion.name ??
+                                                          '',
                                                     ),
                                                     Row(
                                                       spacing:
@@ -1511,7 +1504,7 @@ class _MakeSalesDesktopState
                                                                       },
                                                                     );
                                                                     await sugP.deleteSuggestion(
-                                                                      suggestion.id!,
+                                                                      suggestion.uuid!,
                                                                     );
                                                                     setState(
                                                                       () {
@@ -1923,7 +1916,8 @@ class _MakeSalesDesktopState
                                               item: TempProductClass(
                                                 isManaged:
                                                     false,
-                                                id: 111,
+                                                uuid:
+                                                    uuidGen(),
                                                 name:
                                                     nameC
                                                         .text,
@@ -2029,7 +2023,8 @@ class _MakeSalesDesktopState
                                                     item: TempProductClass(
                                                       isManaged:
                                                           false,
-                                                      id: 000,
+                                                      uuid:
+                                                          uuidGen(),
                                                       name:
                                                           nameC.text,
                                                       unit:
@@ -2180,8 +2175,8 @@ class _MakeSalesDesktopState
                                                                           item: TempProductClass(
                                                                             isManaged:
                                                                                 false,
-                                                                            id:
-                                                                                000,
+                                                                            uuid:
+                                                                                uuidGen(),
                                                                             name:
                                                                                 nameC.text,
                                                                             unit:
@@ -2266,7 +2261,7 @@ class _MakeSalesDesktopState
                                                                                 listen:
                                                                                     false,
                                                                               ).deleteTempSugg(
-                                                                                items[index].item.id!,
+                                                                                items[index].item.uuid!,
                                                                               );
                                                                             },
                                                                           );
@@ -2589,7 +2584,8 @@ class _MakeSalesDesktopState
                                                   item: TempProductClass(
                                                     isManaged:
                                                         false,
-                                                    id: 000,
+                                                    uuid:
+                                                        uuidGen(),
                                                     name:
                                                         nameC.text,
                                                     unit:

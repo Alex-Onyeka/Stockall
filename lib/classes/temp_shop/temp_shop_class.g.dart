@@ -37,13 +37,16 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       isVerified: fields[17] as bool,
       printType: fields[18] as int?,
       language: fields[19] as String?,
+      updatedAt: fields[20] as DateTime?,
+      plan: fields[21] as int?,
+      nextPayment: fields[22] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -83,7 +86,13 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(18)
       ..write(obj.printType)
       ..writeByte(19)
-      ..write(obj.language);
+      ..write(obj.language)
+      ..writeByte(20)
+      ..write(obj.updatedAt)
+      ..writeByte(21)
+      ..write(obj.plan)
+      ..writeByte(22)
+      ..write(obj.nextPayment);
   }
 
   @override

@@ -504,8 +504,8 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                                     context,
                                                                   ) {
                                                                     return ExpenseDetails(
-                                                                      expenseId:
-                                                                          expense.id!,
+                                                                      expenseUuid:
+                                                                          expense.uuid!,
                                                                     );
                                                                   },
                                                                 ),
@@ -525,7 +525,7 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                             expense:
                                                                 expense,
                                                             key: ValueKey(
-                                                              expense.id!,
+                                                              expense.uuid!,
                                                             ),
                                                           );
                                                         },

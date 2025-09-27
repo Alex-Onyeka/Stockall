@@ -23,8 +23,6 @@ class ExpensesMoblie extends StatefulWidget {
 }
 
 class _ExpensesMoblieState extends State<ExpensesMoblie> {
-  late Future<List<TempExpensesClass>> expensesFuture;
-
   @override
   void initState() {
     super.initState();
@@ -346,8 +344,8 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                                       context,
                                                     ) {
                                                       return ExpenseDetails(
-                                                        expenseId:
-                                                            expense.id!,
+                                                        expenseUuid:
+                                                            expense.uuid!,
                                                       );
                                                     },
                                                   ),
@@ -363,7 +361,8 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                               expense:
                                                   expense,
                                               key: ValueKey(
-                                                expense.id!,
+                                                expense
+                                                    .uuid!,
                                               ),
                                             );
                                           },

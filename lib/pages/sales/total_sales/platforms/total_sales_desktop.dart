@@ -18,13 +18,13 @@ import 'package:stockall/services/auth_service.dart';
 
 class TotalSalesDesktop extends StatefulWidget {
   final String? id;
-  final int? customerId;
+  final String? customerUuid;
   final bool? isInvoice;
   final bool? turnOff;
   const TotalSalesDesktop({
     super.key,
     this.id,
-    this.customerId,
+    this.customerUuid,
     this.isInvoice,
     this.turnOff,
   });
@@ -150,7 +150,7 @@ class _TotalSalesDesktopState
                 Visibility(
                   visible:
                       widget.id == null &&
-                      widget.customerId == null,
+                      widget.customerUuid == null,
                   child: MyDrawerWidget(
                     globalKey: _scaffoldKey,
                     action: () {
@@ -396,7 +396,7 @@ class _TotalSalesDesktopState
                                                           )
                                                           .toList(),
                                                     )
-                                                    : widget.customerId !=
+                                                    : widget.customerUuid !=
                                                         null
                                                     ? returnReceiptProvider(
                                                       context,
@@ -421,8 +421,8 @@ class _TotalSalesDesktopState
                                                             (
                                                               empId,
                                                             ) =>
-                                                                empId.customerId ==
-                                                                widget.customerId!,
+                                                                empId.customerUuid ==
+                                                                widget.customerUuid!,
                                                           )
                                                           .toList(),
                                                     )
@@ -466,7 +466,7 @@ class _TotalSalesDesktopState
                                                         .toList()
                                                         .length
                                                         .toDouble()
-                                                    : widget.customerId !=
+                                                    : widget.customerUuid !=
                                                         null
                                                     ? returnReceiptProvider(
                                                           context,
@@ -478,8 +478,8 @@ class _TotalSalesDesktopState
                                                           (
                                                             receipt,
                                                           ) =>
-                                                              receipt.customerId ==
-                                                              widget.customerId,
+                                                              receipt.customerUuid ==
+                                                              widget.customerUuid,
                                                         )
                                                         .toList()
                                                         .length
@@ -646,7 +646,7 @@ class _TotalSalesDesktopState
                                               )
                                               .toList()
                                               .isEmpty
-                                          : widget.customerId !=
+                                          : widget.customerUuid !=
                                               null
                                           ? returnReceiptProvider(
                                                 context,
@@ -661,8 +661,8 @@ class _TotalSalesDesktopState
                                                       (
                                                         rec,
                                                       ) =>
-                                                          rec.customerId ==
-                                                          widget.customerId,
+                                                          rec.customerUuid ==
+                                                          widget.customerUuid,
                                                     )
                                                     .toList(),
                                               )
@@ -723,7 +723,7 @@ class _TotalSalesDesktopState
                                                         )
                                                         .toList()
                                                         .length
-                                                    : widget.customerId !=
+                                                    : widget.customerUuid !=
                                                         null
                                                     ? returnReceiptProvider(
                                                           context,
@@ -735,8 +735,8 @@ class _TotalSalesDesktopState
                                                           (
                                                             rec,
                                                           ) =>
-                                                              rec.customerId ==
-                                                              widget.customerId,
+                                                              rec.customerUuid ==
+                                                              widget.customerUuid,
                                                         )
                                                         .toList()
                                                         .length
@@ -769,7 +769,7 @@ class _TotalSalesDesktopState
                                                                 widget.id,
                                                           )
                                                           .toList()[index]
-                                                      : widget.customerId !=
+                                                      : widget.customerUuid !=
                                                           null
                                                       ? returnReceiptProvider(
                                                             context,
@@ -781,8 +781,8 @@ class _TotalSalesDesktopState
                                                             (
                                                               rec,
                                                             ) =>
-                                                                rec.customerId ==
-                                                                widget.customerId,
+                                                                rec.customerUuid ==
+                                                                widget.customerUuid,
                                                           )
                                                           .toList()[index]
                                                       : returnReceiptProvider(
@@ -797,8 +797,8 @@ class _TotalSalesDesktopState
                                                         context,
                                                       ) {
                                                         return ReceiptPage(
-                                                          receiptId:
-                                                              receipt.id!,
+                                                          receiptUuid:
+                                                              receipt.uuid!,
                                                           isMain:
                                                               false,
                                                         );
@@ -813,7 +813,7 @@ class _TotalSalesDesktopState
                                                 },
                                                 key: ValueKey(
                                                   receipt
-                                                      .id,
+                                                      .uuid,
                                                 ),
                                                 mainReceipt:
                                                     receipt,
@@ -933,7 +933,7 @@ class _TotalSalesDesktopState
                 Visibility(
                   visible:
                       widget.id == null &&
-                      widget.customerId == null,
+                      widget.customerUuid == null,
                   child: RightSideBar(theme: theme),
                 ),
               ],

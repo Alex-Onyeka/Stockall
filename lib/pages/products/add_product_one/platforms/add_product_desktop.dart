@@ -265,7 +265,7 @@ class _AddProductDesktopState
                     widget.quantityController.text.isEmpty
                         ? false
                         : provider.isManaged,
-                id: widget.product!.id,
+                uuid: widget.product?.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
                 isRefundable: provider.isProductRefundable,
@@ -314,7 +314,7 @@ class _AddProductDesktopState
                         ),
                 sizeType: provider.selectedSize,
                 startDate: provider.startDate,
-                uuid: widget.product?.uuid,
+                // uuid: widget.product?.uuid,
               ),
             );
             await provider.getProducts(

@@ -15,11 +15,11 @@ import 'package:stockall/providers/theme_provider.dart';
 
 class ProductDetailsMobile extends StatefulWidget {
   final ThemeProvider theme;
-  final int productId;
+  final String productUuid;
   const ProductDetailsMobile({
     super.key,
     required this.theme,
-    required this.productId,
+    required this.productUuid,
   });
 
   @override
@@ -69,7 +69,8 @@ class _ProductDetailsMobileState
     List<TempProductClass>? productList =
         returnData(context).productList
             .where(
-              (product) => product.id! == widget.productId,
+              (product) =>
+                  product.uuid! == widget.productUuid,
             )
             .toList();
     if (productList.isEmpty) {
@@ -437,8 +438,8 @@ class _ProductDetailsMobileState
                                                                           product.setCustomPrice,
                                                                       isManaged:
                                                                           product.isManaged,
-                                                                      id:
-                                                                          product.id,
+                                                                      uuid:
+                                                                          product.uuid,
                                                                       name:
                                                                           product.name,
                                                                       unit:
@@ -482,8 +483,8 @@ class _ProductDetailsMobileState
                                                                           product.sizeType,
                                                                       startDate:
                                                                           product.startDate,
-                                                                      uuid:
-                                                                          product.uuid,
+                                                                      // uuid:
+                                                                      //     product.uuid,
                                                                     ),
                                                                   );
                                                                   if (safeContext.mounted) {
@@ -993,8 +994,8 @@ class _ProductDetailsMobileState
                                                                                       product.setCustomPrice,
                                                                                   isManaged:
                                                                                       product.isManaged,
-                                                                                  id:
-                                                                                      product.id,
+                                                                                  // id:
+                                                                                  //     product.id,
                                                                                   name:
                                                                                       product.name,
                                                                                   unit:
@@ -1333,8 +1334,8 @@ class _ProductDetailsMobileState
                                                         product.isManaged
                                                             ? false
                                                             : true,
-                                                    id:
-                                                        product.id,
+                                                    // id:
+                                                    //     product.id,
                                                     name:
                                                         product.name,
                                                     unit:
@@ -1614,7 +1615,7 @@ class _ProductDetailsMobileState
                                       await provider
                                           .deleteProductMain(
                                             widget
-                                                .productId,
+                                                .productUuid,
                                             context,
                                           );
                                       await provider

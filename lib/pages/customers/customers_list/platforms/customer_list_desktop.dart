@@ -9,6 +9,7 @@ import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/add_customer/add_customer.dart';
 import 'package:stockall/pages/customers/components/customer_main_tile.dart';
@@ -228,6 +229,50 @@ class _CustomerListDesktopState
                           ),
                         ],
                       ),
+                      actions: [
+                        Visibility(
+                          visible:
+                              screenWidth(context) >
+                              mobileScreen,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              onTap: () async {
+                                getCustomerList(context);
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(
+                                      10,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Refresh',
+                                    ),
+                                    Icon(
+                                      size: 18,
+                                      Icons.refresh_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     body: Padding(
                       padding: const EdgeInsets.only(
@@ -344,7 +389,7 @@ class _CustomerListDesktopState
                                                             listen:
                                                                 false,
                                                           ).selectCustomer(
-                                                            customer.id!,
+                                                            customer.uuid!,
                                                             customer.name,
                                                           );
                                                           Navigator.of(
@@ -360,8 +405,8 @@ class _CustomerListDesktopState
                                                                 context,
                                                               ) {
                                                                 return CustomerPage(
-                                                                  id:
-                                                                      customer.id!,
+                                                                  uuid:
+                                                                      customer.uuid!,
                                                                 );
                                                               },
                                                             ),
@@ -425,7 +470,7 @@ class _CustomerListDesktopState
                                                           false,
                                                     ).selectCustomer(
                                                       customer
-                                                          .id!,
+                                                          .uuid!,
                                                       customer
                                                           .name,
                                                     );
@@ -449,8 +494,8 @@ class _CustomerListDesktopState
                                                           context,
                                                         ) {
                                                           return CustomerPage(
-                                                            id:
-                                                                customer.id!,
+                                                            uuid:
+                                                                customer.uuid!,
                                                           );
                                                         },
                                                       ),

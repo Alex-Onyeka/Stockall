@@ -56,7 +56,7 @@ class CreatedProductFunc {
     try {
       for (var product in createdProducts) {
         await createdProductsBox.put(
-          product.product.id,
+          product.product.uuid,
           product,
         );
       }
@@ -75,7 +75,7 @@ class CreatedProductFunc {
   ) async {
     try {
       await createdProductsBox.put(
-        createdProduct.product.id,
+        createdProduct.product.uuid,
         createdProduct,
       );
       print(
@@ -86,6 +86,27 @@ class CreatedProductFunc {
       print(
         'Offline Created Product insertion failed ❌: $e',
       );
+      return 0;
+    }
+  }
+
+  Future<int> updateProduct(
+    CreatedProducts createdProduct,
+  ) async {
+    try {
+      print(
+        createdProductsBox
+            .containsKey(createdProduct.product.uuid)
+            .toString(),
+      );
+      await createdProductsBox.put(
+        createdProduct.product.uuid,
+        createdProduct,
+      );
+      print('Product Deleted');
+      return 1;
+    } catch (e) {
+      print('Product Delete Failed: ${e.toString()}');
       return 0;
     }
   }

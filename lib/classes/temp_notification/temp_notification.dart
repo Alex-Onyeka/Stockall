@@ -4,8 +4,8 @@ part 'temp_notification.g.dart';
 
 @HiveType(typeId: 4)
 class TempNotification {
-  @HiveField(0)
-  final int? id;
+  // @HiveField(0)
+  // final int? id;
 
   @HiveField(1)
   final String notifId;
@@ -53,7 +53,7 @@ class TempNotification {
   String? expensesUuid;
 
   TempNotification({
-    this.id,
+    // this.id,
     required this.shopId,
     required this.notifId,
     this.productId,
@@ -64,6 +64,7 @@ class TempNotification {
     required this.isViewed,
     required this.category,
     this.itemName,
+    this.uuid,
     this.departmentName,
     this.departmentId,
     this.productUuid,
@@ -74,7 +75,7 @@ class TempNotification {
     Map<String, dynamic> json,
   ) {
     return TempNotification(
-      id: json['id'],
+      // id: json['id'],
       notifId: json['notif_id'],
       shopId: json['shop_id'],
       productId: json['product_id'],
@@ -89,12 +90,13 @@ class TempNotification {
       departmentName: json['department_name'],
       productUuid: json['product_uuid'] as String?,
       expensesUuid: json['expenses_uuid'] as String?,
+      uuid: json['uuid'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'notif_id': notifId,
       'shop_id': shopId,
       'product_id': productId,
@@ -109,6 +111,7 @@ class TempNotification {
       'department_name': departmentName,
       'product_uuid': productUuid,
       'expenses_uuid': expensesUuid,
+      'uuid': uuid,
     };
   }
 }

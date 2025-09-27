@@ -47,6 +47,7 @@ class ItemsSummary extends StatefulWidget {
   final double? value00;
   final bool? show0;
   final bool? show00;
+  final Function()? refreshAction;
 
   const ItemsSummary({
     this.isDateSet,
@@ -91,6 +92,7 @@ class ItemsSummary extends StatefulWidget {
     this.isMoney00,
     this.show0,
     this.show00,
+    this.refreshAction,
   });
 
   @override
@@ -222,56 +224,170 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           ),
                         ),
                       ),
-                      Visibility(
-                        visible:
-                            widget.isProduct != null &&
-                                    authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .addProduct,
-                                      context: context,
-                                    )
-                                ? true
-                                : false,
-                        child: MaterialButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AddProduct();
-                                },
-                              ),
-                            );
-                          },
-                          child: Row(
-                            spacing: 3,
-                            children: [
-                              Icon(
-                                size: 20,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor100,
-                                Icons.add,
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color:
-                                      Colors.grey.shade700,
+                      Row(
+                        spacing: 10,
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Visibility(
+                            visible:
+                                widget.refreshAction !=
+                                null,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                                onTap: widget.refreshAction,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(
+                                        10,
+                                      ),
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Refresh',
+                                      ),
+                                      Icon(
+                                        size: 18,
+                                        Icons
+                                            .refresh_rounded,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                'Add Item',
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          Visibility(
+                            visible:
+                                widget.isProduct != null &&
+                                        authorization(
+                                          authorized:
+                                              Authorizations()
+                                                  .addProduct,
+                                          context: context,
+                                        )
+                                    ? true
+                                    : false,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return AddProduct();
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(
+                                        10,
+                                      ),
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Add Item',
+                                      ),
+                                      Icon(
+                                        size: 18,
+                                        Icons.add,
+                                        color: Colors.amber,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Visibility(
+                          //   visible:
+                          //       widget.isProduct != null &&
+                          //               authorization(
+                          //                 authorized:
+                          //                     Authorizations()
+                          //                         .addProduct,
+                          //                 context: context,
+                          //               )
+                          //           ? true
+                          //           : false,
+                          //   child: MaterialButton(
+                          //     onPressed: () {
+                          //       Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (context) {
+                          //             return AddProduct();
+                          //           },
+                          //         ),
+                          //       );
+                          //     },
+                          //     child: Row(
+                          //       spacing: 3,
+                          //       children: [
+                          //         Text(
+                          //           style: TextStyle(
+                          //             fontSize:
+                          //                 theme
+                          //                     .mobileTexts
+                          //                     .b2
+                          //                     .fontSize,
+                          //             fontWeight:
+                          //                 FontWeight.normal,
+                          //             color:
+                          //                 Colors
+                          //                     .grey
+                          //                     .shade700,
+                          //           ),
+                          //           'Add Item',
+                          //         ),
+                          //         Icon(
+                          //           size: 20,
+                          //           color:
+                          //               theme
+                          //                   .lightModeColor
+                          //                   .secColor100,
+                          //           Icons.add,
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
                       ),
                     ],
                   ),

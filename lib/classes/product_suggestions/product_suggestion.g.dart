@@ -22,13 +22,14 @@ class ProductSuggestionAdapter extends TypeAdapter<ProductSuggestion> {
       name: fields[2] as String?,
       costPrice: fields[3] as double?,
       shopId: fields[4] as int,
+      uuid: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductSuggestion obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ProductSuggestionAdapter extends TypeAdapter<ProductSuggestion> {
       ..writeByte(3)
       ..write(obj.costPrice)
       ..writeByte(4)
-      ..write(obj.shopId);
+      ..write(obj.shopId)
+      ..writeByte(5)
+      ..write(obj.uuid);
   }
 
   @override

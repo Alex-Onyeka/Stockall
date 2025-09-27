@@ -3,8 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/platforms/customer_list_desktop.dart';
 import 'package:stockall/pages/customers/customers_list/platforms/customer_list_mobile.dart';
-import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class CustomerList extends StatefulWidget {
   final bool? isSales;
@@ -23,29 +21,10 @@ class _CustomerListState extends State<CustomerList> {
     super.initState();
     returnNavProvider(context, listen: false).navigate(3);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final userShop = await returnShopProvider(
+      await returnNavProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!);
-      if (context.mounted && userShop == null) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ShopBannerScreen(),
-          ),
-          (route) => false,
-        );
-      } else {
-        if (context.mounted) {
-          final provider = returnUserProvider(
-            context,
-            listen: false,
-          );
-
-          await provider.fetchCurrentUser(context);
-        }
-      }
-
+      ).validate(context);
       setState(() {
         // stillLoading = false;
       });

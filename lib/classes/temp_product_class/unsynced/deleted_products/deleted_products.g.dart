@@ -17,7 +17,7 @@ class DeletedProductsAdapter extends TypeAdapter<DeletedProducts> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return DeletedProducts(
-      productid: fields[0] as int,
+      productUuid: fields[0] as String,
       date: fields[1] as DateTime,
     );
   }
@@ -27,7 +27,7 @@ class DeletedProductsAdapter extends TypeAdapter<DeletedProducts> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.productid)
+      ..write(obj.productUuid)
       ..writeByte(1)
       ..write(obj.date);
   }

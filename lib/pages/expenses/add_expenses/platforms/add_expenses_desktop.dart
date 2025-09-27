@@ -8,6 +8,7 @@ import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/number_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 
@@ -134,23 +135,17 @@ class _AddExpensesDesktopState
                     ),
                     shopId: shopId,
                     description: widget.descController.text,
+                    uuid: uuidGen(),
+                    createdDate: DateTime.now(),
                   ),
                   safeContext,
                 );
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(
-                    creator:
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).currentUserMain!.name,
+                    creator: widget.expenses!.name,
                     // localProvider.currentEmployee!.name,
-                    userId:
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).currentUserMain!.userId!,
+                    userId: widget.expenses!.userId,
                     // localProvider
                     //     .currentEmployee!
                     //     .userId!,
@@ -170,7 +165,10 @@ class _AddExpensesDesktopState
                     ),
                     shopId: shopId,
                     description: widget.descController.text,
-                    id: widget.expenses!.id!,
+                    id: widget.expenses!.id,
+                    uuid: widget.expenses!.uuid!,
+                    createdDate:
+                        widget.expenses!.createdDate,
                   ),
                   safeContext,
                 );

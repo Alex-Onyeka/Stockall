@@ -1963,6 +1963,7 @@ class _AddCustomerDesktopState
                                         ? null
                                         : selectedStateName,
                               ),
+                              context,
                             );
                           } else {
                             returnCustomers(
@@ -1970,6 +1971,7 @@ class _AddCustomerDesktopState
                               listen: false,
                             ).updateCustomerMain(
                               TempCustomersClass(
+                                uuid: widget.customer!.uuid,
                                 id: widget.customer!.id,
                                 shopId:
                                     returnShopProvider(
@@ -2012,6 +2014,7 @@ class _AddCustomerDesktopState
                                         .customer!
                                         .dateAdded,
                               ),
+                              context,
                             );
                           }
                           returnCompProvider(

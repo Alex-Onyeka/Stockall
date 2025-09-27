@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:stockall/helpers/clean_up_url.dart';
+import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';

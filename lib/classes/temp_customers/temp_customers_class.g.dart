@@ -29,13 +29,15 @@ class TempCustomersClassAdapter extends TypeAdapter<TempCustomersClass> {
       shopId: fields[2] as int,
       departmentName: fields[10] as String?,
       departmentId: fields[11] as int?,
+      uuid: fields[12] as String?,
+      updatedAt: fields[13] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCustomersClass obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +61,11 @@ class TempCustomersClassAdapter extends TypeAdapter<TempCustomersClass> {
       ..writeByte(10)
       ..write(obj.departmentName)
       ..writeByte(11)
-      ..write(obj.departmentId);
+      ..write(obj.departmentId)
+      ..writeByte(12)
+      ..write(obj.uuid)
+      ..writeByte(13)
+      ..write(obj.updatedAt);
   }
 
   @override

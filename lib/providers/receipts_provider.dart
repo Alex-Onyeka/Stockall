@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/created_receipts.dart';
+import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
+import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,48 +29,62 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
+  // final ShopProvider shopProvider = ShopProvider();
 
   List<TempMainReceipt> _receipts = [];
   List<TempMainReceipt> get receipts => _receipts;
 
   void clearReceipts() {
     _receipts.clear();
+    print('Receipts Cleared');
+    notifyListeners();
+  }
+
+  void clearRecords() {
+    produtRecordSalesMain.clear();
     notifyListeners();
   }
 
   bool isLoaded = false;
-  void load() {
-    isLoaded = true;
+  void load(bool value) {
+    isLoaded = value;
+    print(
+      value == true
+          ? 'Receipts Loaded is now true'
+          : 'Receipts Loaded is now false',
+    );
     notifyListeners();
   }
 
   // CREATE a new receipt
-  Future<int> createReceipt(
+  Future<TempMainReceipt> createReceipt(
     TempMainReceipt receipt,
     BuildContext context,
   ) async {
-    final res =
-        await supabase
-            .from('receipts')
-            .insert(receipt.toJson())
-            .select()
-            .single();
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      final res =
+          await supabase
+              .from('receipts')
+              .insert(receipt.toJson())
+              .select()
+              .single();
 
-    final newReceipt = TempMainReceipt.fromJson(res);
+      final newReceipt = TempMainReceipt.fromJson(res);
 
-    // _receipts.add(newReceipt);
-    if (context.mounted) {
-      await loadReceipts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
-        context,
+      // _receipts.add(newReceipt);
+      notifyListeners();
+      return newReceipt;
+    } else {
+      await MainReceiptFunc().createReceipt(receipt);
+      await CreatedReceiptsFunc().createReceipts(
+        CreatedReceipts(receipt: receipt),
       );
+      notifyListeners();
+      return receipt;
     }
-
-    notifyListeners();
-    return newReceipt.id!;
   }
 
   // READ all receipts for a shop
@@ -71,8 +92,9 @@ class ReceiptsProvider extends ChangeNotifier {
     int shopId,
     BuildContext context,
   ) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
     if (isOnline) {
+      await MainReceiptFunc().clearReceipts();
       try {
         final data = await supabase
             .from('receipts')
@@ -86,6 +108,7 @@ class ReceiptsProvider extends ChangeNotifier {
                   (json) => TempMainReceipt.fromJson(json),
                 )
                 .toList();
+        notifyListeners();
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
         );
@@ -114,65 +137,31 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     } else {
       _receipts = MainReceiptFunc().getReceipts();
-    }
-    notifyListeners();
-    return _receipts;
-  }
-
-  Future<List<TempMainReceipt>> loadReceiptsByUserId({
-    required int shopId,
-    required BuildContext context,
-    required String userId,
-  }) async {
-    try {
-      final now = DateTime.now();
-      final startOfDay =
-          DateTime(
-            now.year,
-            now.month,
-            now.day,
-          ).toIso8601String();
-      final endOfDay =
-          DateTime(
-            now.year,
-            now.month,
-            now.day,
-            23,
-            59,
-            59,
-          ).toIso8601String();
-
-      final data = await supabase
-          .from('receipts')
-          .select('*') // select only needed fields
-          .eq('shop_id', shopId)
-          .eq('staff_id', userId)
-          .gte('created_at', startOfDay)
-          .lte('created_at', endOfDay)
-          .order('created_at', ascending: false);
-
+      notifyListeners();
       if (context.mounted) {
-        await loadReceipts(
+        print('Offline Receipts Gotten');
+        await returnData(
+          context,
+          listen: false,
+        ).getProducts(
           returnShopProvider(
             context,
             listen: false,
           ).userShop!.shopId!,
-          context,
         );
+        if (context.mounted) {
+          await loadProductSalesRecord(
+            returnShopProvider(
+              context,
+              listen: false,
+            ).userShop!.shopId!,
+          );
+        }
       }
-      notifyListeners();
-      return (data as List)
-          .map((json) => TempMainReceipt.fromJson(json))
-          .toList();
-    } catch (e) {
-      print("❌ Failed to load today's receipts: $e");
-      return [];
     }
+    notifyListeners();
+    return _receipts;
   }
-
-  //
-  //
-  //
 
   DateTime? singleDay;
   DateTime? weekStartDate;
@@ -228,15 +217,16 @@ class ReceiptsProvider extends ChangeNotifier {
       'cash_alt': updated.cashAlt,
       'bank': updated.bank,
       'customer_id': updated.customerId,
+      'customer_uuid': updated.customerUuid,
     };
 
     await supabase
         .from('receipts')
         .update(updateData)
-        .eq('id', updated.id!);
+        .eq('uuid', updated.uuid!);
 
     final index = _receipts.indexWhere(
-      (r) => r.id == updated.id,
+      (r) => r.uuid == updated.uuid,
     );
     if (index != -1) {
       _receipts[index] = updated;
@@ -246,62 +236,242 @@ class ReceiptsProvider extends ChangeNotifier {
 
   // DELETE a receipt
   Future<void> deleteReceipt(
-    int id,
+    String uuid,
     BuildContext context,
   ) async {
-    // final response =
-    await supabase.rpc(
-      'delete_receipt_and_update_inventory',
-      params: {'target_receipt_id': id},
-    );
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      await supabase.rpc(
+        'delete_receipt_and_update_inventory_new',
+        params: {'target_receipt_uuid': uuid},
+      );
+    } else {
+      await MainReceiptFunc().deleteReceipt(uuid);
+      var containsCreated =
+          CreatedReceiptsFunc()
+              .getReceipts()
+              .where((rec) => rec.receipt.uuid == uuid)
+              .toList();
+      var containsUpdate = UpdatedReceiptsFunc()
+          .getReceiptIds()
+          .where((rec) => rec.receiptUuid == uuid);
+      if (containsCreated.isNotEmpty) {
+        await CreatedReceiptsFunc().deleteReceipt(uuid);
+      } else {
+        await DeletedReceiptsFunc().createDeletedReceipt(
+          DeletedReceipts(receiptUuid: uuid),
+        );
+      }
+      if (containsUpdate.isNotEmpty) {
+        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+          uuid,
+        );
+      }
+      await ProductRecordFunc().deleteRecordsInReceipt(
+        uuid,
+      );
+    }
 
     print('✅ Receipt and inventory successfully updated.');
 
     if (context.mounted) {
       await loadReceipts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
+        returnShopProvider(context).userShop!.shopId!,
         context,
       );
-      notifyListeners();
     }
     notifyListeners();
   }
 
   // UPDATE a receipt
-  Future<void> payCredit(int id) async {
+  Future<void> payCredit(String uuid) async {
     try {
-      final updateData = {
-        'is_invoice': false,
-        'created_at':
-            DateTime.now().toLocal().toIso8601String(),
-      };
+      bool isOnline = await connectivity.isOnline();
+      if (isOnline) {
+        final updateData = {
+          'is_invoice': false,
+          'created_at':
+              DateTime.now().toLocal().toIso8601String(),
+        };
 
-      final response =
-          await supabase
-              .from('receipts')
-              .update(updateData)
-              .eq('id', id)
-              .select();
+        final response =
+            await supabase
+                .from('receipts')
+                .update(updateData)
+                .eq('uuid', uuid)
+                .select();
 
-      if (response.isEmpty) {
-        print('❌ No matching receipt to update.');
-        return;
+        if (response.isEmpty) {
+          print('❌ No matching receipt to update.');
+          return;
+        }
+        await MainReceiptFunc().payCredit(uuid);
+      } else {
+        await MainReceiptFunc().payCredit(uuid);
+        await UpdatedReceiptsFunc().createUpdatedReceipt(
+          uuid,
+        );
       }
-
       final rec = receipts.firstWhere(
-        (recc) => recc.id! == id,
+        (recc) => recc.uuid! == uuid,
       );
       rec.isInvoice = false;
-      notifyListeners();
-
       print('✅ Receipt updated successfully.');
+      notifyListeners();
     } catch (e) {
       print('❌ Error updating receipt: $e');
     }
   }
+
+  //
+  //
+  //
+  //
+  //
+
+  Future<void> createReceiptsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      // Prepare batch payload
+      if (CreatedReceiptsFunc().getReceipts().isNotEmpty &&
+          isOnline) {
+        final tempReceipts =
+            CreatedReceiptsFunc().getReceipts().toList();
+        final payload =
+            tempReceipts
+                .map((p) => p.receipt.toJson())
+                .toList();
+
+        // Insert all at once
+        final data =
+            await supabase
+                .from('receipts')
+                .insert(payload)
+                .select();
+
+        print('${data.length} items added successfully ✅');
+        await CreatedReceiptsFunc().clearReceipts();
+        print('Unsynced Receipts Cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Receipts ✅');
+          await loadReceipts(
+            returnShopProvider(context).userShop!.shopId!,
+            context,
+          );
+        }
+      }
+    } catch (e) {
+      print('Batch Receipts insert failed ❌: $e');
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+
+  //
+  //
+  //
+  //
+  //
+
+  Future<void> deleteReceiptsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      // Prepare batch payload
+      if (DeletedReceiptsFunc()
+              .getReceiptIds()
+              .isNotEmpty &&
+          isOnline) {
+        final tempReceipts =
+            DeletedReceiptsFunc().getReceiptIds().toList();
+
+        for (var rec in tempReceipts) {
+          await supabase.rpc(
+            'delete_receipt_and_update_inventory_new',
+            params: {
+              'target_receipt_uuid': rec.receiptUuid,
+            },
+          );
+          await DeletedReceiptsFunc()
+              .deletedDeletedReceipts(rec.receiptUuid);
+        }
+
+        print(
+          '${tempReceipts.length} Receipts Created successfully ✅',
+        );
+        await DeletedReceiptsFunc().clearDeletedReceipts();
+        print('Unsynced Deleted Receipts Cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Receipts ✅');
+          await loadReceipts(
+            returnShopProvider(context).userShop!.shopId!,
+            context,
+          );
+        }
+      }
+    } catch (e) {
+      print('Batch Receipts Deleted failed ❌: $e');
+    }
+  }
+  //
+  //
+  //
+  //
+  //
+
+  Future<void> updateReceiptsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      // Prepare batch payload
+      if (UpdatedReceiptsFunc()
+              .getReceiptIds()
+              .isNotEmpty &&
+          isOnline) {
+        final tempReceipts =
+            UpdatedReceiptsFunc().getReceiptIds().toList();
+        for (var rec in tempReceipts) {
+          final updateData = {'is_invoice': false};
+          await supabase
+              .from('receipts')
+              .update(updateData)
+              .eq('uuid', rec.receiptUuid);
+          await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+            rec.receiptUuid,
+          );
+        }
+
+        print(
+          '${tempReceipts.length} items added successfully ✅',
+        );
+        await UpdatedReceiptsFunc().clearUpdatedReceipts();
+        print('Unsynced Receipts Cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Receipts ✅');
+          await loadReceipts(
+            returnShopProvider(context).userShop!.shopId!,
+            context,
+          );
+        }
+      }
+    } catch (e) {
+      print('Batch Receipts insert failed ❌: $e');
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
 
   //
   //
@@ -318,27 +488,26 @@ class ReceiptsProvider extends ChangeNotifier {
     List<TempProductSaleRecord> records,
     BuildContext context,
   ) async {
+    bool isOnline = await connectivity.isOnline();
     final dataToInsert =
         records.map((e) => e.toJson()).toList();
 
-    await supabase
-        .from('product_sales')
-        .insert(dataToInsert);
-    if (context.mounted) {
-      await returnData(context, listen: false).getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop!.shopId!,
+    if (isOnline) {
+      await supabase
+          .from('product_sales')
+          .insert(dataToInsert);
+      await ProductRecordFunc().insertSalesProductRecords(
+        records,
       );
-      if (context.mounted) {
-        await loadProductSalesRecord(
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop!.shopId!,
-        );
-      }
+    } else {
+      await ProductRecordFunc().insertSalesProductRecords(
+        records,
+      );
+      List<CreatedRecords> cRecords =
+          records.map((r) {
+            return CreatedRecords(record: r);
+          }).toList();
+      await CreatedRecordsFunc().insertAllRecords(cRecords);
     }
 
     notifyListeners();
@@ -347,7 +516,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // READ sales for a shop
   Future<List<TempProductSaleRecord>>
   loadProductSalesRecord(int shopId) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       final data = await supabase
           .from('product_sales')
@@ -380,13 +549,12 @@ class ReceiptsProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     // Use toJson but remove the ID because you don't update the primary key
-    final updateData =
-        record.toJson()..remove('product_record_id');
+    final updateData = record.toJson()..remove('uuid');
 
     await supabase
         .from('product_sales')
         .update(updateData)
-        .eq('product_record_id', record.productRecordId!);
+        .eq('uuid', record.uuid!);
 
     // final index = _sales.indexWhere(
     //   (r) => r.productRecordId == record.productRecordId,
@@ -407,13 +575,13 @@ class ReceiptsProvider extends ChangeNotifier {
 
   // DELETE a sale record
   Future<void> deleteProductSaleRecord(
-    int recordId,
+    String recordUuid,
     BuildContext context,
   ) async {
     await supabase
         .from('product_sales')
         .delete()
-        .eq('product_record_id', recordId);
+        .eq('uuid', recordUuid);
     // _sales.removeWhere(
     //   (r) => r.productRecordId == recordId,
     // );
@@ -429,6 +597,49 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   //
+  //
+  //
+  //
+  //
+  //
+
+  //
+  //
+  //
+  //
+  //
+
+  Future<void> createRecordsSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      // Prepare batch payload
+      if (CreatedRecordsFunc().getRecords().isNotEmpty &&
+          isOnline) {
+        final tempRecords =
+            CreatedRecordsFunc().getRecords().toList();
+        final payload =
+            tempRecords
+                .map((p) => p.record.toJson())
+                .toList();
+
+        // Insert all at once
+        final data =
+            await supabase
+                .from('product_sales')
+                .insert(payload)
+                .select();
+
+        print('${data.length} items added successfully ✅');
+        await CreatedRecordsFunc().clearRecords();
+        print('Unsynced Records Cleared');
+      }
+    } catch (e) {
+      print('Batch Records insert failed ❌: $e');
+    }
+  }
+
   //
   //
   //
@@ -525,7 +736,8 @@ class ReceiptsProvider extends ChangeNotifier {
   void createProductSalesRecord(
     BuildContext context,
     int newReceiptId,
-    int? customerId,
+    String newReceiptUuid,
+    String? customerUuid,
   ) {
     for (var item
         in returnSalesProvider(
@@ -538,11 +750,13 @@ class ReceiptsProvider extends ChangeNotifier {
           productName: '',
           discount: item.discount,
           originalCost: item.totalCost(),
-          customerId: customerId,
+          customerUuid: customerUuid,
           discountedAmount: item.discountCost(),
           productRecordId: productSaleRecords.length + 1,
           createdAt: DateTime.now(),
           productId: item.item.id!,
+          productUuid: item.item.uuid!,
+          receiptUuid: newReceiptUuid,
           shopId: item.item.shopId,
           staffId: 'staffId',
           staffName: 'staffName',
@@ -738,7 +952,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
       try {
         receipt = receipts.firstWhere(
-          (recx) => recx.id == rec.recepitId,
+          (recx) => recx.uuid == rec.receiptUuid,
         );
       } catch (e) {
         receipt = null; // receipt not found
@@ -799,7 +1013,8 @@ class ReceiptsProvider extends ChangeNotifier {
       var productRecords =
           productSalesRecords
               .where(
-                (record) => record.recepitId == receipt.id,
+                (record) =>
+                    record.receiptUuid == receipt.uuid,
               )
               .toList();
 
@@ -822,7 +1037,8 @@ class ReceiptsProvider extends ChangeNotifier {
       var productRecords =
           productSalesRecords
               .where(
-                (record) => record.recepitId == receipt.id,
+                (record) =>
+                    record.receiptUuid == receipt.uuid,
               )
               .toList();
 
@@ -852,7 +1068,8 @@ class ReceiptsProvider extends ChangeNotifier {
       var productRecords =
           productSalesRecords
               .where(
-                (record) => record.recepitId == receipt.id,
+                (record) =>
+                    record.receiptUuid == receipt.uuid,
               )
               .toList();
 
@@ -878,7 +1095,8 @@ class ReceiptsProvider extends ChangeNotifier {
       var productRecords =
           productSalesRecords
               .where(
-                (record) => record.recepitId == receipt.id,
+                (record) =>
+                    record.receiptUuid == receipt.uuid,
               )
               .toList();
 

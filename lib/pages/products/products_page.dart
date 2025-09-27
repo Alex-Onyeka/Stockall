@@ -3,8 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/platforms/product_page_desktop.dart';
 import 'package:stockall/pages/products/platforms/product_page_mobile.dart';
-import 'package:stockall/providers/nav_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -18,23 +16,10 @@ class _ProductsPageState extends State<ProductsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final userShop = await returnShopProvider(
+      await returnNavProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!);
-      if (context.mounted && userShop == null) {
-        // ignore: use_build_context_synchronously
-        NavProvider().nullShop(context);
-      } else {
-        if (context.mounted) {
-          final provider = returnUserProvider(
-            context,
-            listen: false,
-          );
-
-          await provider.fetchCurrentUser(context);
-        }
-      }
+      ).validate(context);
 
       setState(() {
         // stillLoading = false;

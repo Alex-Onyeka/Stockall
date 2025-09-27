@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
@@ -17,7 +18,8 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/helpers/clean_up_url.dart';
+import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/main_info_tab.dart';
@@ -28,8 +30,8 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/pdf_preview_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
-import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardDesktop extends StatefulWidget {
@@ -75,8 +77,8 @@ class _DashboardDesktopState
 
   late TempShopClass shop;
 
-  Future<List<TempMainReceipt>> getMainReceipts() {
-    var tempReceipts = returnReceiptProvider(
+  Future<List<TempMainReceipt>> getMainReceipts() async {
+    var tempReceipts = await returnReceiptProvider(
       context,
       listen: false,
     ).loadReceipts(widget.shopId!, context);
@@ -145,8 +147,8 @@ class _DashboardDesktopState
 
   late Future<List<TempExpensesClass>> expensesFuture;
 
-  Future<List<TempExpensesClass>> getExpenses() {
-    var tempExp = returnExpensesProvider(
+  Future<List<TempExpensesClass>> getExpenses() async {
+    var tempExp = await returnExpensesProvider(
       context,
       listen: false,
     ).getExpenses(widget.shopId ?? 0);
@@ -154,14 +156,31 @@ class _DashboardDesktopState
     return tempExp;
   }
 
-  Future<List<TempUserClass>> getEmployees() {
+  late Future<List<TempUserClass>> employeesFuture;
+
+  Future<List<TempUserClass>> getEmployees() async {
     var users =
-        returnUserProvider(
+        await returnUserProvider(
           context,
           listen: false,
         ).fetchUsers();
 
     return users;
+  }
+
+  late Future<List<TempCustomersClass>> customerFuture;
+  Future<List<TempCustomersClass>> getCustomers() async {
+    var customers = await returnCustomers(
+      context,
+      listen: false,
+    ).fetchCustomers(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return customers;
   }
 
   TextEditingController emailController =
@@ -180,11 +199,13 @@ class _DashboardDesktopState
       getProdutRecordsFuture = getProductSalesRecord();
       expensesFuture = getExpenses();
       productsFuture = getProducts();
+      employeesFuture = getEmployees();
+      customerFuture = getCustomers();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         returnReceiptProvider(
           context,
           listen: false,
-        ).load();
+        ).load(true);
         print('Data Loaded');
       });
     }
@@ -192,59 +213,100 @@ class _DashboardDesktopState
     notificationsFuture = fetchNotifications();
   }
 
-  Future<void> refreshAll() async {
-    var safeContext = context;
-    int isSynced =
-        returnData(context, listen: false).isSynced();
-    bool isOnline = await ConnectivityProvider().isOnline();
-    if (isSynced == 0 && context.mounted && isOnline) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return ConfirmationAlert(
-            theme: returnTheme(context, listen: false),
-            message:
-                'You have unsynced Records, are you sure you want to proceed?',
-            title: 'Unsynced Records Detected',
-            action: () async {
-              Navigator.of(context).pop();
-              await returnData(
-                context,
-                listen: false,
-              ).syncData(safeContext);
-
-              getMainReceipts();
-              getProductSalesRecord();
-              getExpenses();
-              getEmployees();
-              returnUserProvider(
-                context,
-                listen: false,
-              ).fetchCurrentUser(safeContext);
-              getProducts();
-              clearDate();
-              fetchNotifications();
-            },
-          );
-        },
-      );
-    } else {
-      getMainReceipts();
-      getProductSalesRecord();
-      getExpenses();
-      getEmployees();
-      returnUserProvider(
-        context,
-        listen: false,
-      ).fetchCurrentUser(safeContext);
-      getProducts();
-      clearDate();
-      fetchNotifications();
-    }
-  }
-
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
+
+  //
+  //
+  //
+  //
+
+  // ShopProvider shopProvider = ShopProvider();
+  //   ProductSuggestionProvider suggestionProvider =
+  //       ProductSuggestionProvider();
+  //   ReceiptsProvider receiptsProvider = ReceiptsProvider();
+  //   DataProvider dataProvider = DataProvider();
+  //   NotificationProvider notificationProvider =
+  //       NotificationProvider();
+  //   ExpensesProvider expensesProvider = ExpensesProvider();
+  //   UserProvider userProvider = UserProvider();
+
+  // Future<List<TempMainReceipt>> getMainReceipts(
+  //   BuildContext context,
+  // ) async {
+  //   var tempReceipts = await receiptsProvider.loadReceipts(
+  //     shopProvider.userShop!.shopId!,
+  //     context,
+  //   );
+  //   return tempReceipts;
+  // }
+
+  // Future getUserShop() async {
+  //   return await shopProvider.getUserShop(
+  //     AuthService().currentUser!,
+  //   );
+  // }
+
+  Future<void> refreshAll(BuildContext context) async {
+    // int isSynced =
+    //     returnData(context, listen: false).isSynced();
+    // bool isOnline = await ConnectivityProvider().isOnline();
+    // if (isSynced == 0 && context.mounted && isOnline) {
+    //   showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return ConfirmationAlert(
+    //         theme: returnTheme(context, listen: false),
+    //         message:
+    //             'You have unsynced Records, are you sure you want to proceed?',
+    //         title: 'Unsynced Records Detected',
+    //         action: () async {
+    //           Navigator.of(context).pop();
+    //           await returnData(
+    //             context,
+    //             listen: false,
+    //           ).syncData(safeContext);
+    //           await getUserShop();
+    //           await getMainReceipts(safeContext);
+    //           // await getProductSalesRecord();
+    //           await getExpenses();
+    //           await getEmployees();
+    //           await returnUserProvider(
+    //             context,
+    //             listen: false,
+    //           ).fetchCurrentUser(safeContext);
+    //           // await getProducts();
+    //           await fetchNotifications();
+    //         },
+    //       );
+    //     },
+    //   );
+    // } else {
+    // await getUserShop();
+    // await getMainReceipts(safeContext);
+    print(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop?.name,
+    );
+    // await getProductSalesRecord();
+    // await getExpenses();
+    // await getEmployees();
+    // await returnUserProvider(
+    //   context,
+    //   listen: false,
+    // ).fetchCurrentUser(safeContext);
+    // await getProducts();
+    // await fetchNotifications();
+    // }
+  }
+
+  //
+  //
+  //
+  //
+  //
 
   @override
   Widget build(BuildContext context) {
@@ -369,8 +431,14 @@ class _DashboardDesktopState
                                         snapshot,
                                       ) {
                                         return TopNavBar(
-                                          refreshAction:
-                                              refreshAll,
+                                          refreshAction: () async {
+                                            await RefreshFunctions(
+                                              context,
+                                            ).refreshAll(
+                                              context,
+                                            );
+                                            // setState(() {});
+                                          },
                                           action: () {
                                             returnNavProvider(
                                               context,
@@ -403,8 +471,12 @@ class _DashboardDesktopState
                                     ),
                                     Expanded(
                                       child: RefreshIndicator(
-                                        onRefresh: () {
-                                          return refreshAll();
+                                        onRefresh: () async {
+                                          return await RefreshFunctions(
+                                            context,
+                                          ).refreshAll(
+                                            context,
+                                          );
                                         },
                                         backgroundColor:
                                             Colors.white,
@@ -697,14 +769,29 @@ class _DashboardDesktopState
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              theme.mobileTexts.b1.fontWeightBold,
+                                                      InkWell(
+                                                        onTap: () async {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).push(
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (
+                                                                    _,
+                                                                  ) =>
+                                                                      const PdfPreviewPag(),
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                theme.mobileTexts.b1.fontWeightBold,
+                                                          ),
+                                                          'Quick Actions',
                                                         ),
-                                                        'Quick Actions',
                                                       ),
                                                     ],
                                                   ),

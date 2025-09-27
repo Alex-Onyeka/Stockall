@@ -4,10 +4,10 @@ import 'package:stockall/pages/expenses/single_expense/platform/expense_details_
 import 'package:stockall/pages/expenses/single_expense/platform/expense_details_mobile.dart';
 
 class ExpenseDetails extends StatelessWidget {
-  final int expenseId;
+  final String expenseUuid;
   const ExpenseDetails({
     super.key,
-    required this.expenseId,
+    required this.expenseUuid,
   });
 
   @override
@@ -15,10 +15,12 @@ class ExpenseDetails extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
-          return ExpenseDetailsMobile(expenseId: expenseId);
+          return ExpenseDetailsMobile(
+            expenseUuid: expenseUuid,
+          );
         } else {
           return ExpenseDetailsDesktop(
-            expenseId: expenseId,
+            expenseUuid: expenseUuid,
           );
         }
       },

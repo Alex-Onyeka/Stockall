@@ -1956,6 +1956,7 @@ class _AddCustomerMobileState
                                       ? null
                                       : selectedStateName,
                             ),
+                            context,
                           );
                         } else {
                           returnCustomers(
@@ -1963,6 +1964,7 @@ class _AddCustomerMobileState
                             listen: false,
                           ).updateCustomerMain(
                             TempCustomersClass(
+                              uuid: widget.customer!.uuid,
                               id: widget.customer!.id,
                               shopId:
                                   returnShopProvider(
@@ -2005,6 +2007,7 @@ class _AddCustomerMobileState
                                       .customer!
                                       .dateAdded,
                             ),
+                            context,
                           );
                         }
                         returnCompProvider(

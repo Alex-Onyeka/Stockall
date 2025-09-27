@@ -76,7 +76,7 @@ class _MakeSalesMobileTwoState
                             if (returnCustomers(
                                   context,
                                 ).selectedCustomerId ==
-                                '') {
+                                null) {
                               return Material(
                                 color: Colors.transparent,
                                 child: Ink(
@@ -209,11 +209,10 @@ class _MakeSalesMobileTwoState
                                                         false,
                                                   )
                                                   .getCustomerByIdMain(
-                                                    int.parse(
-                                                      returnCustomers(
-                                                        context,
-                                                      ).selectedCustomerId,
-                                                    ),
+                                                    returnCustomers(
+                                                          context,
+                                                        ).selectedCustomerId ??
+                                                        '',
                                                   )!
                                                   .name,
                                             ),
@@ -812,12 +811,18 @@ class _MakeSalesMobileTwoState
                                             context,
                                             listen: false,
                                           ).returnPaymentMethod(),
-                                      customerId: int.tryParse(
-                                        returnCustomers(
-                                          context,
-                                          listen: false,
-                                        ).selectedCustomerId,
-                                      ),
+                                      // customerId: int.tryParse(
+                                      //   returnCustomers(
+                                      //     context,
+                                      //     listen: false,
+                                      //   ).selectedCustomerId,
+                                      // ),
+                                      customerUuid:
+                                          returnCustomers(
+                                            context,
+                                            listen: false,
+                                          ).selectedCustomerId,
+
                                       customerName:
                                           returnCustomers(
                                             context,
@@ -846,9 +851,9 @@ class _MakeSalesMobileTwoState
                                             context,
                                           ) {
                                             return ReceiptPage(
-                                              receiptId:
+                                              receiptUuid:
                                                   receipt
-                                                      .id!,
+                                                      .uuid!,
                                               isMain: true,
                                             );
                                           },

@@ -346,10 +346,10 @@ class _EditDiscountPageState
                                       statDate:
                                           dataProvider
                                               .startDate,
-                                      productId:
+                                      productUuid:
                                           widget
                                               .product
-                                              .id!,
+                                              .uuid!,
 
                                       newDiscount:
                                           widget
@@ -448,10 +448,10 @@ class _EditDiscountPageState
                                             .updateDiscount(
                                               context:
                                                   context,
-                                              productId:
+                                              productUuid:
                                                   widget
                                                       .product
-                                                      .id!,
+                                                      .uuid!,
                                               newDiscount:
                                                   null,
                                               endDate: null,

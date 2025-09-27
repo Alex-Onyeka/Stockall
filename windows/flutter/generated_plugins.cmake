@@ -6,9 +6,12 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   audioplayers_windows
   connectivity_plus
+  file_saver
   flutter_thermal_printer
   flutter_usb_thermal_plugin
+  permission_handler_windows
   printing
+  universal_ble
   url_launcher_windows
 )
 

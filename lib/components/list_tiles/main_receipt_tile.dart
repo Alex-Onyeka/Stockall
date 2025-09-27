@@ -70,7 +70,7 @@ class _MainReceiptTileMobileState
   late Future<TempCustomersClass?> customerFuture;
 
   Future<TempCustomersClass?> getCustomer() async {
-    if (widget.mainReceipt.customerId != null) {
+    if (widget.mainReceipt.customerUuid != null) {
       var tempCustomer = await returnCustomers(
         context,
         listen: false,
@@ -82,8 +82,9 @@ class _MainReceiptTileMobileState
       );
       return tempCustomer.firstWhere(
         (customer) =>
-            customer.id != null &&
-            customer.id == widget.mainReceipt.customerId!,
+            customer.uuid != null &&
+            customer.uuid ==
+                widget.mainReceipt.customerUuid!,
       );
     } else {
       return null;
@@ -100,7 +101,8 @@ class _MainReceiptTileMobileState
     return tempRecords
         .where(
           (record) =>
-              record.recepitId == widget.mainReceipt.id!,
+              record.receiptUuid ==
+              widget.mainReceipt.uuid!,
         )
         .toList();
   }
@@ -122,7 +124,8 @@ class _MainReceiptTileMobileState
           in getProductRecord()
               .where(
                 (test) =>
-                    test.recepitId == widget.mainReceipt.id,
+                    test.receiptUuid ==
+                    widget.mainReceipt.uuid,
               )
               .toList()) {
         totalAmount += element.revenue;
@@ -420,7 +423,7 @@ class _MainReceiptTileDesktopState
   late Future<TempCustomersClass?> customerFuture;
 
   Future<TempCustomersClass?> getCustomer() async {
-    if (widget.mainReceipt.customerId != null) {
+    if (widget.mainReceipt.customerUuid != null) {
       var tempCustomer = await returnCustomers(
         context,
         listen: false,
@@ -432,8 +435,9 @@ class _MainReceiptTileDesktopState
       );
       return tempCustomer.firstWhere(
         (customer) =>
-            customer.id != null &&
-            customer.id == widget.mainReceipt.customerId!,
+            customer.uuid != null &&
+            customer.uuid ==
+                widget.mainReceipt.customerUuid!,
       );
     } else {
       return null;
@@ -450,7 +454,8 @@ class _MainReceiptTileDesktopState
     return tempRecords
         .where(
           (record) =>
-              record.recepitId == widget.mainReceipt.id!,
+              record.receiptUuid ==
+              widget.mainReceipt.uuid!,
         )
         .toList();
   }
@@ -472,7 +477,8 @@ class _MainReceiptTileDesktopState
           in getProductRecord()
               .where(
                 (test) =>
-                    test.recepitId == widget.mainReceipt.id,
+                    test.receiptUuid ==
+                    widget.mainReceipt.uuid,
               )
               .toList()) {
         totalAmount += element.revenue;

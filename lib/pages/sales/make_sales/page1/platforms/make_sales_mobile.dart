@@ -174,11 +174,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 double.tryParse(value) ?? 0;
                             if (cartItem.item.isManaged) {
                               if (parsedValue >
-                                      (cartItem
-                                              .item
-                                              .quantity ??
-                                          0) &&
-                                  cartItem.item.id! > 80) {
+                                  (cartItem.item.quantity ??
+                                      0)) {
                                 showDialog(
                                   context: context,
                                   builder: (context) {
@@ -458,12 +455,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       .item
                                       .isManaged) {
                                     if (qqty >=
-                                            (cartItem
-                                                    .item
-                                                    .quantity ??
-                                                0) &&
-                                        cartItem.item.id! >
-                                            80) {
+                                        (cartItem
+                                                .item
+                                                .quantity ??
+                                            0)) {
                                       showDialog(
                                         context: context,
                                         builder:
@@ -1199,47 +1194,48 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     ),
                                               ) ??
                                               0);
-                                      cartItem.item.id =
-                                          returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .cartItems
-                                                  .isNotEmpty
-                                              ? returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      )
-                                                      .cartItems
-                                                      .where(
-                                                        (
-                                                          item,
-                                                        ) =>
-                                                            item.item.id! <
-                                                            100,
-                                                      )
-                                                      .isNotEmpty
-                                                  ? returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          )
-                                                          .cartItems
-                                                          .where(
-                                                            (
-                                                              item,
-                                                            ) =>
-                                                                item.item.id! <
-                                                                100,
-                                                          )
-                                                          .last
-                                                          .item
-                                                          .id! +
-                                                      1
-                                                  : 1
-                                              : 1;
+                                      cartItem.item.uuid =
+                                          uuidGen();
+                                      // returnSalesProvider(
+                                      //           context,
+                                      //           listen:
+                                      //               false,
+                                      //         )
+                                      //         .cartItems
+                                      //         .isNotEmpty
+                                      //     ? returnSalesProvider(
+                                      //               context,
+                                      //               listen:
+                                      //                   false,
+                                      //             )
+                                      //             .cartItems
+                                      //             .where(
+                                      //               (
+                                      //                 item,
+                                      //               ) =>
+                                      //                   item.item.id! <
+                                      //                   100,
+                                      //             )
+                                      //             .isNotEmpty
+                                      //         ? returnSalesProvider(
+                                      //                   context,
+                                      //                   listen:
+                                      //                       false,
+                                      //                 )
+                                      //                 .cartItems
+                                      //                 .where(
+                                      //                   (
+                                      //                     item,
+                                      //                   ) =>
+                                      //                       item.item.id! <
+                                      //                       100,
+                                      //                 )
+                                      //                 .last
+                                      //                 .item
+                                      //                 .id! +
+                                      //             1
+                                      //         : 1
+                                      //     : 1;
                                       cartItem.addToStock =
                                           returnSalesProvider(
                                             context,
@@ -1269,10 +1265,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     ),
                                               ),
                                           name: nameC.text,
-                                          id:
+                                          uuid:
                                               cartItem
                                                   .item
-                                                  .id,
+                                                  .uuid,
                                         ),
                                       );
                                       closeAction();
@@ -1508,7 +1504,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                       },
                                                                     );
                                                                     await sugP.deleteSuggestion(
-                                                                      suggestion.id!,
+                                                                      suggestion.uuid!,
                                                                     );
                                                                     setState(
                                                                       () {
@@ -1825,7 +1821,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).setTotalPrice,
                               item: TempProductClass(
                                 isManaged: false,
-                                id: 111,
+                                uuid: uuidGen(),
                                 name: nameC.text,
                                 unit: 'Others',
                                 isRefundable: false,
@@ -1904,7 +1900,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).setTotalPrice,
                                     item: TempProductClass(
                                       isManaged: false,
-                                      id: 000,
+                                      uuid: uuidGen(),
                                       name: nameC.text,
                                       unit: 'Others',
                                       isRefundable: false,
@@ -2048,8 +2044,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           item: TempProductClass(
                                                             isManaged:
                                                                 false,
-                                                            id:
-                                                                000,
+                                                            uuid:
+                                                                uuidGen(),
                                                             name:
                                                                 nameC.text,
                                                             unit:
@@ -2134,7 +2130,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 listen:
                                                                     false,
                                                               ).deleteTempSugg(
-                                                                items[index].item.id!,
+                                                                items[index].item.uuid!,
                                                               );
                                                             },
                                                           );
@@ -2317,8 +2313,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             item: TempProductClass(
                                                               isManaged:
                                                                   false,
-                                                              id:
-                                                                  000,
+                                                              uuid:
+                                                                  uuidGen(),
                                                               name:
                                                                   nameC.text,
                                                               unit:

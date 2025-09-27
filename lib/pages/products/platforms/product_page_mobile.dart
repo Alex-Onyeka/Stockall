@@ -143,12 +143,6 @@ class _ProductPageMobileState
           } else {
             List<TempNotification> notifications =
                 snapshot.data!;
-
-            // returnLocalDatabase(
-            //   context,
-            //   listen: false,
-            // ).currentEmployee;
-
             return MyDrawerWidget(
               action: () {
                 showDialog(
@@ -483,9 +477,9 @@ class _ProductPageMobileState
                                                 context,
                                               ) {
                                                 return ProductDetailsPage(
-                                                  productId:
+                                                  productUuid:
                                                       product
-                                                          .id!,
+                                                          .uuid!,
                                                 );
                                               },
                                             ),
@@ -655,8 +649,8 @@ class _ProductPageMobileState
                                                     context,
                                                   ) {
                                                     return ProductDetailsPage(
-                                                      productId:
-                                                          product.id!,
+                                                      productUuid:
+                                                          product.uuid!,
                                                     );
                                                   },
                                                 ),
@@ -695,8 +689,8 @@ class _ProductPageMobileState
                                                     context,
                                                   ) {
                                                     return ProductDetailsPage(
-                                                      productId:
-                                                          product.id!,
+                                                      productUuid:
+                                                          product.uuid!,
                                                     );
                                                   },
                                                 ),

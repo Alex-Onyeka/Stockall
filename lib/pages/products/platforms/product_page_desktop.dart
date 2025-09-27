@@ -223,6 +223,9 @@ class _ProductPageDesktopState
                                     1,
                                   ),
                                   child: ItemsSummary(
+                                    refreshAction: () async {
+                                      await getProductList();
+                                    },
                                     show00: true,
                                     show0:
                                         screenWidth(
@@ -553,8 +556,8 @@ class _ProductPageDesktopState
                                                             context,
                                                           ) {
                                                             return ProductDetailsPage(
-                                                              productId:
-                                                                  product.id!,
+                                                              productUuid:
+                                                                  product.uuid!,
                                                             );
                                                           },
                                                         ),
@@ -745,8 +748,8 @@ class _ProductPageDesktopState
                                                                 context,
                                                               ) {
                                                                 return ProductDetailsPage(
-                                                                  productId:
-                                                                      product.id!,
+                                                                  productUuid:
+                                                                      product.uuid!,
                                                                 );
                                                               },
                                                             ),
@@ -787,8 +790,8 @@ class _ProductPageDesktopState
                                                                 context,
                                                               ) {
                                                                 return ProductDetailsPage(
-                                                                  productId:
-                                                                      product.id!,
+                                                                  productUuid:
+                                                                      product.uuid!,
                                                                 );
                                                               },
                                                             ),

@@ -1,10 +1,10 @@
 class ProductQuantitySummary {
-  final int productId;
+  final String productUuid;
   final String productName;
   final double totalQuantity;
 
   ProductQuantitySummary({
-    required this.productId,
+    required this.productUuid,
     required this.productName,
     required this.totalQuantity,
   });

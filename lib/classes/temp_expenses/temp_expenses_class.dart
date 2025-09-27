@@ -43,6 +43,9 @@ class TempExpensesClass extends HiveObject {
   @HiveField(12)
   String? uuid;
 
+  @HiveField(13)
+  DateTime? updatedAt;
+
   TempExpensesClass({
     required this.name,
     this.description,
@@ -57,6 +60,7 @@ class TempExpensesClass extends HiveObject {
     this.departmentName,
     this.departmentId,
     this.uuid,
+    this.updatedAt,
   });
 
   factory TempExpensesClass.fromJson(
@@ -82,12 +86,16 @@ class TempExpensesClass extends HiveObject {
       departmentId: json['department_id'],
       departmentName: json['department_name'],
       uuid: json['uuid'] as String?,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'created_date': createdDate?.toIso8601String(),
       'shop_id': shopId,
       'name': name,
@@ -100,6 +108,7 @@ class TempExpensesClass extends HiveObject {
       'department_id': departmentId,
       'department_name': departmentName,
       'uuid': uuid,
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 }

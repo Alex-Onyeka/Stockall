@@ -12,12 +12,12 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
 class TotalSalesMobile extends StatefulWidget {
   final String? id;
-  final int? customerId;
+  final String? customerUuid;
   final bool? isInvoice;
   const TotalSalesMobile({
     super.key,
     this.id,
-    this.customerId,
+    this.customerUuid,
     this.isInvoice,
   });
 
@@ -237,7 +237,7 @@ class _TotalSalesMobileState
                                             )
                                             .toList(),
                                       )
-                                      : widget.customerId !=
+                                      : widget.customerUuid !=
                                           null
                                       ? returnReceiptProvider(
                                         context,
@@ -259,9 +259,9 @@ class _TotalSalesMobileState
                                             .where(
                                               (empId) =>
                                                   empId
-                                                      .customerId ==
+                                                      .customerUuid ==
                                                   widget
-                                                      .customerId!,
+                                                      .customerUuid!,
                                             )
                                             .toList(),
                                       )
@@ -301,7 +301,7 @@ class _TotalSalesMobileState
                                           .toList()
                                           .length
                                           .toDouble()
-                                      : widget.customerId !=
+                                      : widget.customerUuid !=
                                           null
                                       ? returnReceiptProvider(
                                             context,
@@ -312,9 +312,9 @@ class _TotalSalesMobileState
                                           .where(
                                             (receipt) =>
                                                 receipt
-                                                    .customerId ==
+                                                    .customerUuid ==
                                                 widget
-                                                    .customerId,
+                                                    .customerUuid,
                                           )
                                           .toList()
                                           .length
@@ -464,7 +464,7 @@ class _TotalSalesMobileState
                                 )
                                 .toList()
                                 .isEmpty
-                            : widget.customerId != null
+                            : widget.customerUuid != null
                             ? returnReceiptProvider(context)
                                 .returnOwnReceiptsByDayOrWeek(
                                   context,
@@ -473,9 +473,9 @@ class _TotalSalesMobileState
                                       ).receipts
                                       .where(
                                         (rec) =>
-                                            rec.customerId ==
+                                            rec.customerUuid ==
                                             widget
-                                                .customerId,
+                                                .customerUuid,
                                       )
                                       .toList(),
                                 )
@@ -524,7 +524,7 @@ class _TotalSalesMobileState
                                           )
                                           .toList()
                                           .length
-                                      : widget.customerId !=
+                                      : widget.customerUuid !=
                                           null
                                       ? returnReceiptProvider(
                                             context,
@@ -534,9 +534,9 @@ class _TotalSalesMobileState
                                           )
                                           .where(
                                             (rec) =>
-                                                rec.customerId ==
+                                                rec.customerUuid ==
                                                 widget
-                                                    .customerId,
+                                                    .customerUuid,
                                           )
                                           .toList()
                                           .length
@@ -566,7 +566,7 @@ class _TotalSalesMobileState
                                                   widget.id,
                                             )
                                             .toList()[index]
-                                        : widget.customerId !=
+                                        : widget.customerUuid !=
                                             null
                                         ? returnReceiptProvider(
                                               context,
@@ -576,9 +576,9 @@ class _TotalSalesMobileState
                                             )
                                             .where(
                                               (rec) =>
-                                                  rec.customerId ==
+                                                  rec.customerUuid ==
                                                   widget
-                                                      .customerId,
+                                                      .customerUuid,
                                             )
                                             .toList()[index]
                                         : returnReceiptProvider(
@@ -595,8 +595,9 @@ class _TotalSalesMobileState
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return ReceiptPage(
-                                            receiptId:
-                                                receipt.id!,
+                                            receiptUuid:
+                                                receipt
+                                                    .uuid!,
                                             isMain: false,
                                           );
                                         },
@@ -606,7 +607,9 @@ class _TotalSalesMobileState
                                       //     getMainReceipts();
                                     });
                                   },
-                                  key: ValueKey(receipt.id),
+                                  key: ValueKey(
+                                    receipt.uuid,
+                                  ),
                                   mainReceipt: receipt,
                                 );
                               },

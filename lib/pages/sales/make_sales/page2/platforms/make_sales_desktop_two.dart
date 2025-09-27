@@ -144,7 +144,7 @@ class _MakeSalesDesktopTwoState
                                             if (returnCustomers(
                                                   context,
                                                 ).selectedCustomerId ==
-                                                '') {
+                                                null) {
                                               return Material(
                                                 color:
                                                     Colors
@@ -278,11 +278,10 @@ class _MakeSalesDesktopTwoState
                                                                         false,
                                                                   )
                                                                   .getCustomerByIdMain(
-                                                                    int.parse(
-                                                                      returnCustomers(
-                                                                        context,
-                                                                      ).selectedCustomerId,
-                                                                    ),
+                                                                    returnCustomers(
+                                                                          context,
+                                                                        ).selectedCustomerId ??
+                                                                        '',
                                                                   )!
                                                                   .name,
                                                             ),
@@ -915,13 +914,20 @@ class _MakeSalesDesktopTwoState
                                                     listen:
                                                         false,
                                                   ).returnPaymentMethod(),
-                                              customerId: int.tryParse(
-                                                returnCustomers(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).selectedCustomerId,
-                                              ),
+                                              // customerId: int.tryParse(
+                                              //   returnCustomers(
+                                              //     context,
+                                              //     listen:
+                                              //         false,
+                                              //   ).selectedCustomerId,
+                                              // ),
+                                              customerUuid:
+                                                  returnCustomers(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).selectedCustomerId,
+
                                               customerName:
                                                   returnCustomers(
                                                     context,
@@ -956,8 +962,8 @@ class _MakeSalesDesktopTwoState
                                                     context,
                                                   ) {
                                                     return ReceiptPage(
-                                                      receiptId:
-                                                          receipt.id!,
+                                                      receiptUuid:
+                                                          receipt.uuid!,
                                                       isMain:
                                                           true,
                                                     );

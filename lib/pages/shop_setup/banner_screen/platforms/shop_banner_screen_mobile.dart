@@ -4,7 +4,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/helpers/clean_up_url.dart';
+import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/copy_staff_id/copy_staff_id.dart';

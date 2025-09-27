@@ -436,8 +436,8 @@ class TotalExpensesDesktopState
                                                             context,
                                                           ) {
                                                             return ExpenseDetails(
-                                                              expenseId:
-                                                                  expense.id!,
+                                                              expenseUuid:
+                                                                  expense.uuid!,
                                                             );
                                                           },
                                                         ),

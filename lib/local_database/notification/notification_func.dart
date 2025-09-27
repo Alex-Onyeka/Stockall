@@ -19,7 +19,12 @@ class NotificationFunc {
   }
 
   List<TempNotification> getNotifications() {
-    return notificationBox.values.toList();
+    List<TempNotification> notifs =
+        notificationBox.values.toList();
+    notifs.sort((a, b) {
+      return b.date.compareTo(a.date);
+    });
+    return notifs;
   }
 
   Future<int> insertAllNotifications(
@@ -28,7 +33,7 @@ class NotificationFunc {
     await clearNotifications();
     try {
       for (var notif in notifications) {
-        await notificationBox.put(notif.id, notif);
+        await notificationBox.put(notif.uuid, notif);
       }
       print('Offline Notif Insert Success');
       return 1;

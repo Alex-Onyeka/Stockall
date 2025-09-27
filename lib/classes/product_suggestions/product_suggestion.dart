@@ -19,12 +19,16 @@ class ProductSuggestion {
   @HiveField(4)
   final int shopId;
 
+  @HiveField(5)
+  String? uuid;
+
   ProductSuggestion({
     this.id,
     required this.createdAt,
     this.name,
     this.costPrice,
     required this.shopId,
+    this.uuid,
   });
 
   factory ProductSuggestion.fromJson(
@@ -38,6 +42,7 @@ class ProductSuggestion {
       name: json['name'] as String?,
       costPrice: (json['cost_price'] as num?)?.toDouble(),
       shopId: json['shop_id'] as int,
+      uuid: json['uuid'] as String?,
     );
   }
 
@@ -48,6 +53,7 @@ class ProductSuggestion {
       'name': name,
       'cost_price': costPrice,
       'shop_id': shopId,
+      'uuid': uuid,
     };
   }
 }

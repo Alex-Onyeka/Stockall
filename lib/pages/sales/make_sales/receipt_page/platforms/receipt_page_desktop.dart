@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -17,10 +18,10 @@ import 'package:stockall/services/printing/import_helper.dart'
 
 class ReceiptPageDesktop extends StatefulWidget {
   final bool isMain;
-  final int receiptId;
+  final String receiptUuid;
   const ReceiptPageDesktop({
     super.key,
-    required this.receiptId,
+    required this.receiptUuid,
     required this.isMain,
   });
 
@@ -61,14 +62,15 @@ class _ReceiptPageDesktopState
   Widget build(BuildContext context) {
     var shop = returnShopProvider(context).userShop;
     var theme = returnTheme(context);
+
     TempMainReceipt mainReceipt = returnReceiptProvider(
       context,
     ).receipts.firstWhere(
-      (rec) => rec.id! == widget.receiptId,
+      (rec) => rec.uuid! == widget.receiptUuid,
       orElse:
           () => TempMainReceipt(
             createdAt: DateTime.now(),
-            id: 1,
+            uuid: '1',
             shopId: shopId(context),
             staffId: AuthService().currentUser!,
             staffName: 'Staff Name',
@@ -119,79 +121,160 @@ class _ReceiptPageDesktopState
                               PopupMenuItem(
                                 onTap: () {
                                   returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  ).updatePrintType(
-                                    shopId: shopId(context),
-                                    type: 1,
-                                  );
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .printType !=
+                                          1
+                                      ? returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).updatePrintType(
+                                        shopId: shopId(
+                                          context,
+                                        ),
+                                        type: 1,
+                                      )
+                                      : {};
                                 },
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).userShop!.printType !=
-                                                    null &&
-                                                returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).userShop!.printType ==
-                                                    1
-                                            ? FontWeight
-                                                .bold
-                                            : null,
-                                  ),
-                                  kIsWeb
-                                      ? 'Printer Type -- 58mm'
-                                      : 'Select USB Printer',
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            returnShopProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).userShop!.printType !=
+                                                        null &&
+                                                    returnShopProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).userShop!.printType ==
+                                                        1
+                                                ? FontWeight
+                                                    .bold
+                                                : null,
+                                      ),
+                                      kIsWeb
+                                          ? 'Printer Type -- 58mm'
+                                          : 'Select USB Printer',
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .printType ==
+                                          1,
+                                      child: Icon(
+                                        size: 17,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                        Icons.check,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               PopupMenuItem(
+                                enabled:
+                                    kIsWeb ||
+                                    platforms(context) ==
+                                        TargetPlatform
+                                            .android ||
+                                    platforms(context) ==
+                                        TargetPlatform.iOS,
                                 onTap: () {
                                   returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  ).updatePrintType(
-                                    shopId: shopId(context),
-                                    type: 2,
-                                  );
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .printType !=
+                                          2
+                                      ? returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).updatePrintType(
+                                        shopId: shopId(
+                                          context,
+                                        ),
+                                        type: 2,
+                                      )
+                                      : {};
                                 },
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).userShop!.printType !=
-                                                    null &&
-                                                returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).userShop!.printType ==
-                                                    2
-                                            ? FontWeight
-                                                .bold
-                                            : null,
-                                  ),
-                                  kIsWeb
-                                      ? 'Printer Type -- 80mm'
-                                      : 'Select Bluetooth Printer',
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            returnShopProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).userShop!.printType !=
+                                                        null &&
+                                                    returnShopProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).userShop!.printType ==
+                                                        2
+                                                ? FontWeight
+                                                    .bold
+                                                : null,
+                                      ),
+                                      kIsWeb
+                                          ? 'Printer Type -- 80mm'
+                                          : 'Select Bluetooth Printer',
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop!
+                                              .printType ==
+                                          2,
+                                      child: Icon(
+                                        size: 17,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                        Icons.check,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ];
@@ -334,8 +417,8 @@ class _ReceiptDetailsContainerState
         returnReceiptProvider(context).produtRecordSalesMain
             .where(
               (record) =>
-                  record.recepitId ==
-                  widget.mainReceipt.id!,
+                  record.receiptUuid ==
+                  widget.mainReceipt.uuid!,
             )
             .toList();
     TempCustomersClass? customer;
@@ -344,10 +427,22 @@ class _ReceiptDetailsContainerState
       customer = returnCustomers(
         context,
       ).customersMain.firstWhere(
-        (c) => c.id == widget.mainReceipt.customerId,
+        (c) => c.uuid == widget.mainReceipt.customerUuid,
       );
     } catch (e) {
       customer = null; // not found
+    }
+
+    TempUserClass? staff;
+
+    try {
+      staff = returnUserProvider(
+        context,
+      ).usersMain.firstWhere(
+        (c) => c.userId == widget.mainReceipt.staffId,
+      );
+    } catch (e) {
+      staff = null; // not found
     }
 
     return Stack(
@@ -485,9 +580,10 @@ class _ReceiptDetailsContainerState
                                               FontWeight
                                                   .normal,
                                         ),
-                                        widget
-                                            .mainReceipt
-                                            .staffName,
+                                        staff?.name ??
+                                            widget
+                                                .mainReceipt
+                                                .staffName,
                                       ),
                                     ],
                                   ),
@@ -1180,7 +1276,7 @@ class _ReceiptDetailsContainerState
                                       .deleteReceipt(
                                         widget
                                             .mainReceipt
-                                            .id!,
+                                            .uuid!,
                                         context,
                                       );
 
@@ -1239,7 +1335,9 @@ class _ReceiptDetailsContainerState
                                   });
 
                                   await receiptP.payCredit(
-                                    widget.mainReceipt.id!,
+                                    widget
+                                        .mainReceipt
+                                        .uuid!,
                                   );
 
                                   if (safeContext.mounted) {
@@ -1292,8 +1390,13 @@ class _ReceiptDetailsContainerState
                               Navigator.of(context).pop();
                               if (kIsWeb) {
                                 downloadPdfWeb(
+                                  staffName:
+                                      staff?.name ??
+                                      widget
+                                          .mainReceipt
+                                          .staffName,
                                   filename:
-                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
+                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
                                   context: safeContext,
                                   receipt:
                                       widget.mainReceipt,
@@ -1307,6 +1410,11 @@ class _ReceiptDetailsContainerState
                               }
                               if (!kIsWeb) {
                                 await generateAndPreviewPdf(
+                                  staffName:
+                                      staff?.name ??
+                                      widget
+                                          .mainReceipt
+                                          .staffName,
                                   context: safeContext,
                                   receipt:
                                       widget.mainReceipt,
@@ -1465,6 +1573,18 @@ class _ReceiptDetailsContainerState
                                     height: 5,
                                   ),
                                   ListTile(
+                                    enabled:
+                                        kIsWeb ||
+                                        platforms(
+                                              context,
+                                            ) ==
+                                            TargetPlatform
+                                                .android ||
+                                        platforms(
+                                              context,
+                                            ) ==
+                                            TargetPlatform
+                                                .iOS,
                                     onTap: () async {
                                       Navigator.of(
                                         context,
@@ -1575,8 +1695,13 @@ class _ReceiptDetailsContainerState
                                 Navigator.of(context).pop();
                                 if (kIsWeb) {
                                   downloadPdfWebRoll(
+                                    staffName:
+                                        staff?.name ??
+                                        widget
+                                            .mainReceipt
+                                            .staffName,
                                     filename:
-                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.id}.pdf',
+                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
                                     context: safeContext,
                                     receipt:
                                         widget.mainReceipt,
@@ -1592,7 +1717,15 @@ class _ReceiptDetailsContainerState
                                         )!.printType!,
                                   );
                                 }
-                                if (!kIsWeb) {
+                                if (!kIsWeb &&
+                                    (platforms(context) ==
+                                            TargetPlatform
+                                                .android ||
+                                        platforms(
+                                              context,
+                                            ) ==
+                                            TargetPlatform
+                                                .iOS)) {
                                   // await printWithRawBT(
                                   //   fileName:
                                   //       'Alex Printing',
@@ -1648,6 +1781,27 @@ class _ReceiptDetailsContainerState
                                           ).userShop!,
                                     );
                                   }
+                                } else {
+                                  generateAndPreviewPdfRoll(
+                                    staffName:
+                                        staff?.name ??
+                                        widget
+                                            .mainReceipt
+                                            .staffName,
+                                    context: safeContext,
+                                    receipt:
+                                        widget.mainReceipt,
+                                    records: records,
+                                    shop:
+                                        returnShopProvider(
+                                          safeContext,
+                                          listen: false,
+                                        ).userShop!,
+                                    printerType:
+                                        shop(
+                                          context,
+                                        )!.printType!,
+                                  );
                                 }
                                 if (safeContext.mounted &&
                                     kIsWeb) {

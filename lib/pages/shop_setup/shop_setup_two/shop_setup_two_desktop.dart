@@ -407,7 +407,14 @@ class _ShopSetupTwoDesktopState
   @override
   void initState() {
     super.initState();
-    countriesFuture = fetchCountries();
+    bool isOnline =
+        returnConnectivityProvider(
+          context,
+          listen: false,
+        ).isConnected;
+    if (isOnline) {
+      countriesFuture = fetchCountries();
+    }
     if (widget.shop != null) {
       selectedCurrency = widget.shop!.currency;
       displayCurrency =
@@ -420,47 +427,49 @@ class _ShopSetupTwoDesktopState
       WidgetsBinding.instance.addPostFrameCallback((
         _,
       ) async {
-        await fetchCountries();
-        countriesFuture = fetchCountries();
-        final selectedCountry = countriesCodes.firstWhere(
-          (country) =>
-              country['name'] == widget.shop!.country,
-          orElse: () => {'name': 'Not Found', 'iso2': '0'},
-        );
+        bool isOnline =
+            returnConnectivityProvider(
+              context,
+              listen: false,
+            ).isConnected;
+        if (isOnline) {
+          await fetchCountries();
+          countriesFuture = fetchCountries();
+          final selectedCountry = countriesCodes.firstWhere(
+            (country) =>
+                country['name'] == widget.shop!.country,
+            orElse:
+                () => {'name': 'Not Found', 'iso2': '0'},
+          );
 
-        selectedCountryCode = selectedCountry['iso2'];
-        selectedCountryName = selectedCountry['name'];
-        // print('countryCode: $selectedCountryCode');
-        // print('countryName: $selectedCountryName');
-        await fetchStates(selectedCountryCode!);
-        stateFuture = fetchStates(selectedCountryCode!);
+          selectedCountryCode = selectedCountry['iso2'];
+          selectedCountryName = selectedCountry['name'];
+          await fetchStates(selectedCountryCode!);
+          stateFuture = fetchStates(selectedCountryCode!);
 
-        // await Future.delayed(
-        //   Duration(milliseconds: 1000),
-        // );
+          final selectedState = stateCodes.firstWhere(
+            (state) => state['name'] == widget.shop!.state,
+            orElse: () => {'name': 'Not Set', 'iso2': '0'},
+          );
 
-        final selectedState = stateCodes.firstWhere(
-          (state) => state['name'] == widget.shop!.state,
-          orElse: () => {'name': 'Not Set', 'iso2': '0'},
-        );
+          selectedStateCode = selectedState['iso2'];
+          selectedStateName = selectedState['name'];
 
-        selectedStateCode = selectedState['iso2'];
-        selectedStateName = selectedState['name'];
-        // print('stateCode: $selectedStateCode');
-        // print('stateName: $selectedStateName');
+          await fetchCities(
+            selectedCountryCode!,
+            selectedStateCode!,
+          );
+          cityFuture = fetchCities(
+            selectedCountryCode!,
+            selectedStateCode!,
+          );
 
-        await fetchCities(
-          selectedCountryCode!,
-          selectedStateCode!,
-        );
-        cityFuture = fetchCities(
-          selectedCountryCode!,
-          selectedStateCode!,
-        );
-
-        selectedCityName = widget.shop!.city;
-        // print('cityName: $selectedCityName');
-        // print('city: $selectedCity');
+          selectedCityName = widget.shop!.city;
+        } else {
+          selectedCountryName = widget.shop!.country;
+          selectedStateName = widget.shop!.state;
+          selectedCityName = widget.shop!.city;
+        }
         setState(
           () {},
         ); // Single setState to update the widget once
@@ -556,378 +565,415 @@ class _ShopSetupTwoDesktopState
                               theme: theme,
                               isOpen: false,
                               onTap: () {
-                                showGeneralDialog(
-                                  context: context,
-                                  pageBuilder: (
-                                    context,
-                                    animation,
-                                    secondaryAnimation,
-                                  ) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        FocusManager
-                                            .instance
-                                            .primaryFocus
-                                            ?.unfocus();
-                                      },
-                                      child: StatefulBuilder(
-                                        builder:
-                                            (
-                                              context,
-                                              setState,
-                                            ) => Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    screenPadding(),
-                                              ),
-                                              child: Material(
-                                                color:
-                                                    Colors
-                                                        .transparent,
-                                                // elevation: 1,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        top:
-                                                            10.0,
-                                                      ),
-                                                  child: Ink(
-                                                    height:
-                                                        MediaQuery.of(
-                                                          context,
-                                                        ).size.height,
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          Colors.grey.shade100,
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: const Color.fromARGB(
-                                                            55,
-                                                            0,
-                                                            0,
-                                                            0,
-                                                          ),
-                                                          blurRadius:
-                                                              5,
-                                                        ),
-                                                      ],
-                                                      borderRadius: BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                          20,
-                                                        ),
-                                                      ),
+                                bool isOnline =
+                                    returnConnectivityProvider(
+                                      context,
+                                      listen: false,
+                                    ).isConnected;
+                                if (isOnline) {
+                                  showGeneralDialog(
+                                    context: context,
+                                    pageBuilder: (
+                                      context,
+                                      animation,
+                                      secondaryAnimation,
+                                    ) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          FocusManager
+                                              .instance
+                                              .primaryFocus
+                                              ?.unfocus();
+                                        },
+                                        child: StatefulBuilder(
+                                          builder:
+                                              (
+                                                context,
+                                                setState,
+                                              ) => Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      screenPadding(),
+                                                ),
+                                                child: Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  // elevation: 1,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(
+                                                      top:
+                                                          10.0,
                                                     ),
-                                                    child: FutureBuilder(
-                                                      future:
-                                                          countriesFuture,
-                                                      builder: (
-                                                        context,
-                                                        snapshot,
-                                                      ) {
-                                                        return Container(
-                                                          height:
-                                                              MediaQuery.of(
-                                                                context,
-                                                              ).size.height *
-                                                              0.9,
-
-                                                          padding: const EdgeInsets.fromLTRB(
-                                                            15,
-                                                            15,
-                                                            15,
-                                                            45,
+                                                    child: Ink(
+                                                      height:
+                                                          MediaQuery.of(
+                                                            context,
+                                                          ).size.height,
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            Colors.grey.shade100,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: const Color.fromARGB(
+                                                              55,
+                                                              0,
+                                                              0,
+                                                              0,
+                                                            ),
+                                                            blurRadius:
+                                                                5,
                                                           ),
-                                                          child: Column(
-                                                            children: [
-                                                              Material(
-                                                                color:
-                                                                    Colors.white,
-                                                                child: Container(
+                                                        ],
+                                                        borderRadius: BorderRadius.vertical(
+                                                          top: Radius.circular(
+                                                            20,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      child: FutureBuilder(
+                                                        future:
+                                                            countriesFuture,
+                                                        builder: (
+                                                          context,
+                                                          snapshot,
+                                                        ) {
+                                                          return Container(
+                                                            height:
+                                                                MediaQuery.of(
+                                                                  context,
+                                                                ).size.height *
+                                                                0.9,
+
+                                                            padding: const EdgeInsets.fromLTRB(
+                                                              15,
+                                                              15,
+                                                              15,
+                                                              45,
+                                                            ),
+                                                            child: Column(
+                                                              children: [
+                                                                Material(
                                                                   color:
                                                                       Colors.white,
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Center(
-                                                                        child: Container(
-                                                                          height:
-                                                                              4,
-                                                                          width:
-                                                                              70,
-                                                                          decoration: BoxDecoration(
-                                                                            borderRadius: BorderRadius.circular(
-                                                                              15,
+                                                                  child: Container(
+                                                                    color:
+                                                                        Colors.white,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Center(
+                                                                          child: Container(
+                                                                            height:
+                                                                                4,
+                                                                            width:
+                                                                                70,
+                                                                            decoration: BoxDecoration(
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                15,
+                                                                              ),
+                                                                              color:
+                                                                                  Colors.grey.shade400,
                                                                             ),
-                                                                            color:
-                                                                                Colors.grey.shade400,
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            10,
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: const EdgeInsets.symmetric(
-                                                                          horizontal:
-                                                                              15.0,
-                                                                        ),
-                                                                        child: Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: [
-                                                                            Column(
-                                                                              crossAxisAlignment:
-                                                                                  CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                Text(
-                                                                                  'Select Your Country',
-                                                                                  style: TextStyle(
-                                                                                    fontSize:
-                                                                                        returnTheme(
-                                                                                          context,
-                                                                                        ).mobileTexts.b1.fontSize,
-                                                                                    fontWeight:
-                                                                                        FontWeight.bold,
-                                                                                  ),
-                                                                                ),
-                                                                                Text(
-                                                                                  'Search For Countries to Select',
-                                                                                  style: TextStyle(
-                                                                                    fontSize:
-                                                                                        returnTheme(
-                                                                                          context,
-                                                                                        ).mobileTexts.b2.fontSize,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            InkWell(
-                                                                              onTap: () {
-                                                                                Navigator.of(
-                                                                                  context,
-                                                                                ).pop();
-                                                                                countryController.clear();
-                                                                              },
-                                                                              child: Container(
-                                                                                padding: EdgeInsets.all(
-                                                                                  10,
-                                                                                ),
-                                                                                decoration: BoxDecoration(
-                                                                                  shape:
-                                                                                      BoxShape.circle,
-                                                                                  color:
-                                                                                      Colors.grey.shade800,
-                                                                                ),
-                                                                                child: Icon(
-                                                                                  color:
-                                                                                      Colors.white,
-                                                                                  Icons.clear_rounded,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            10,
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: const EdgeInsets.symmetric(
-                                                                          horizontal:
-                                                                              20.0,
-                                                                        ),
-                                                                        child: GeneralTextfieldOnly(
-                                                                          hint:
-                                                                              'Search for country names',
-                                                                          lines:
-                                                                              1,
-                                                                          theme:
-                                                                              theme,
-                                                                          controller:
-                                                                              countryController,
-                                                                          onChanged: (
-                                                                            value,
-                                                                          ) {
-                                                                            setState(
-                                                                              () {},
-                                                                            );
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                child: Builder(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    if (snapshot.connectionState ==
-                                                                        ConnectionState.waiting) {
-                                                                      return Scaffold(
-                                                                        body: returnCompProvider(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).showLoader(
-                                                                          'Loading',
-                                                                        ),
-                                                                      );
-                                                                    } else if (snapshot.hasError) {
-                                                                      return Scaffold(
-                                                                        body: EmptyWidgetDisplay(
-                                                                          title:
-                                                                              'An Error Occured',
-                                                                          subText:
-                                                                              'Please check your internet and try again.',
-                                                                          buttonText:
-                                                                              'Close',
-                                                                          theme:
-                                                                              theme,
+                                                                        SizedBox(
                                                                           height:
-                                                                              30,
-                                                                          action: () {
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
-                                                                          },
-                                                                          icon:
-                                                                              Icons.clear,
+                                                                              10,
                                                                         ),
-                                                                      );
-                                                                    } else {
-                                                                      var main =
-                                                                          countriesCodes;
-                                                                      main.sort(
-                                                                        (
-                                                                          a,
-                                                                          b,
-                                                                        ) => a['name'].compareTo(
-                                                                          b['name'],
-                                                                        ),
-                                                                      );
-                                                                      var items =
-                                                                          main
-                                                                              .where(
-                                                                                (
-                                                                                  mainn,
-                                                                                ) => mainn['name'].toString().toLowerCase().contains(
-                                                                                  countryController.text.toLowerCase(),
-                                                                                ),
-                                                                              )
-                                                                              .toList();
-                                                                      if (items.isEmpty) {
-                                                                        return Scaffold(
-                                                                          body: Center(
-                                                                            child: Row(
-                                                                              mainAxisAlignment:
-                                                                                  MainAxisAlignment.center,
-                                                                              children: [
-                                                                                EmptyWidgetDisplay(
-                                                                                  title:
-                                                                                      'Empty List',
-                                                                                  subText:
-                                                                                      'There are no results for this Location.',
-                                                                                  buttonText:
-                                                                                      'Close',
-                                                                                  theme:
-                                                                                      theme,
-                                                                                  height:
-                                                                                      30,
-                                                                                  action: () {
-                                                                                    Navigator.of(
-                                                                                      context,
-                                                                                    ).pop();
-                                                                                  },
-                                                                                  icon:
-                                                                                      Icons.clear,
-                                                                                ),
-                                                                              ],
-                                                                            ),
+                                                                        Padding(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                15.0,
                                                                           ),
-                                                                        );
-                                                                      } else {
-                                                                        return ListView.builder(
-                                                                          itemCount:
-                                                                              items.length,
-                                                                          itemBuilder: (
-                                                                            context,
-                                                                            index,
-                                                                          ) {
-                                                                            var item =
-                                                                                items[index];
-                                                                            return Padding(
-                                                                              padding: const EdgeInsets.symmetric(
-                                                                                vertical:
-                                                                                    5,
+                                                                          child: Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Column(
+                                                                                crossAxisAlignment:
+                                                                                    CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  Text(
+                                                                                    'Select Your Country',
+                                                                                    style: TextStyle(
+                                                                                      fontSize:
+                                                                                          returnTheme(
+                                                                                            context,
+                                                                                          ).mobileTexts.b1.fontSize,
+                                                                                      fontWeight:
+                                                                                          FontWeight.bold,
+                                                                                    ),
+                                                                                  ),
+                                                                                  Text(
+                                                                                    'Search For Countries to Select',
+                                                                                    style: TextStyle(
+                                                                                      fontSize:
+                                                                                          returnTheme(
+                                                                                            context,
+                                                                                          ).mobileTexts.b2.fontSize,
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
                                                                               ),
-                                                                              child: ListTile(
-                                                                                tileColor:
-                                                                                    Colors.white,
-                                                                                title: Text(
-                                                                                  item['name'],
-                                                                                ),
+                                                                              InkWell(
                                                                                 onTap: () {
-                                                                                  setState(
-                                                                                    () {
-                                                                                      final selected = countriesCodes.firstWhere(
-                                                                                        (
-                                                                                          country,
-                                                                                        ) =>
-                                                                                            country['name'] ==
-                                                                                            item['name'],
-                                                                                      );
-                                                                                      setState(
-                                                                                        () {
-                                                                                          selectedCountryCode =
-                                                                                              selected['iso2'] ??
-                                                                                              '0';
-                                                                                          selectedCountryName =
-                                                                                              selected['name'] ??
-                                                                                              'Not Found';
-                                                                                        },
-                                                                                      );
-                                                                                    },
-                                                                                  );
-
                                                                                   Navigator.of(
                                                                                     context,
                                                                                   ).pop();
-                                                                                  setState(
-                                                                                    () {
-                                                                                      stateFuture = fetchStates(
-                                                                                        selectedCountryCode!,
-                                                                                      );
-                                                                                    },
-                                                                                  );
                                                                                   countryController.clear();
                                                                                 },
+                                                                                child: Container(
+                                                                                  padding: EdgeInsets.all(
+                                                                                    10,
+                                                                                  ),
+                                                                                  decoration: BoxDecoration(
+                                                                                    shape:
+                                                                                        BoxShape.circle,
+                                                                                    color:
+                                                                                        Colors.grey.shade800,
+                                                                                  ),
+                                                                                  child: Icon(
+                                                                                    color:
+                                                                                        Colors.white,
+                                                                                    Icons.clear_rounded,
+                                                                                  ),
+                                                                                ),
                                                                               ),
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      }
-                                                                    }
-                                                                  },
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              10,
+                                                                        ),
+                                                                        Padding(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                20.0,
+                                                                          ),
+                                                                          child: GeneralTextfieldOnly(
+                                                                            hint:
+                                                                                'Search for country names',
+                                                                            lines:
+                                                                                1,
+                                                                            theme:
+                                                                                theme,
+                                                                            controller:
+                                                                                countryController,
+                                                                            onChanged: (
+                                                                              value,
+                                                                            ) {
+                                                                              setState(
+                                                                                () {},
+                                                                              );
+                                                                            },
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      },
+                                                                Expanded(
+                                                                  child: Builder(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      if (snapshot.connectionState ==
+                                                                          ConnectionState.waiting) {
+                                                                        return Scaffold(
+                                                                          body: returnCompProvider(
+                                                                            context,
+                                                                            listen:
+                                                                                false,
+                                                                          ).showLoader(
+                                                                            'Loading',
+                                                                          ),
+                                                                        );
+                                                                      } else if (snapshot.hasError) {
+                                                                        return Scaffold(
+                                                                          body: EmptyWidgetDisplay(
+                                                                            title:
+                                                                                'An Error Occured',
+                                                                            subText:
+                                                                                'Please check your internet and try again.',
+                                                                            buttonText:
+                                                                                'Close',
+                                                                            theme:
+                                                                                theme,
+                                                                            height:
+                                                                                30,
+                                                                            action: () {
+                                                                              Navigator.of(
+                                                                                context,
+                                                                              ).pop();
+                                                                            },
+                                                                            icon:
+                                                                                Icons.clear,
+                                                                          ),
+                                                                        );
+                                                                      } else {
+                                                                        var main =
+                                                                            countriesCodes;
+                                                                        main.sort(
+                                                                          (
+                                                                            a,
+                                                                            b,
+                                                                          ) => a['name'].compareTo(
+                                                                            b['name'],
+                                                                          ),
+                                                                        );
+                                                                        var items =
+                                                                            main
+                                                                                .where(
+                                                                                  (
+                                                                                    mainn,
+                                                                                  ) => mainn['name'].toString().toLowerCase().contains(
+                                                                                    countryController.text.toLowerCase(),
+                                                                                  ),
+                                                                                )
+                                                                                .toList();
+                                                                        if (items.isEmpty) {
+                                                                          return Scaffold(
+                                                                            body: Center(
+                                                                              child: Row(
+                                                                                mainAxisAlignment:
+                                                                                    MainAxisAlignment.center,
+                                                                                children: [
+                                                                                  EmptyWidgetDisplay(
+                                                                                    title:
+                                                                                        'Empty List',
+                                                                                    subText:
+                                                                                        'There are no results for this Location.',
+                                                                                    buttonText:
+                                                                                        'Close',
+                                                                                    theme:
+                                                                                        theme,
+                                                                                    height:
+                                                                                        30,
+                                                                                    action: () {
+                                                                                      Navigator.of(
+                                                                                        context,
+                                                                                      ).pop();
+                                                                                    },
+                                                                                    icon:
+                                                                                        Icons.clear,
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        } else {
+                                                                          return ListView.builder(
+                                                                            itemCount:
+                                                                                items.length,
+                                                                            itemBuilder: (
+                                                                              context,
+                                                                              index,
+                                                                            ) {
+                                                                              var item =
+                                                                                  items[index];
+                                                                              return Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  vertical:
+                                                                                      5,
+                                                                                ),
+                                                                                child: ListTile(
+                                                                                  tileColor:
+                                                                                      Colors.white,
+                                                                                  title: Text(
+                                                                                    item['name'],
+                                                                                  ),
+                                                                                  onTap: () {
+                                                                                    setState(
+                                                                                      () {
+                                                                                        final selected = countriesCodes.firstWhere(
+                                                                                          (
+                                                                                            country,
+                                                                                          ) =>
+                                                                                              country['name'] ==
+                                                                                              item['name'],
+                                                                                        );
+                                                                                        setState(
+                                                                                          () {
+                                                                                            selectedCountryCode =
+                                                                                                selected['iso2'] ??
+                                                                                                '0';
+                                                                                            selectedCountryName =
+                                                                                                selected['name'] ??
+                                                                                                'Not Found';
+                                                                                          },
+                                                                                        );
+                                                                                      },
+                                                                                    );
+
+                                                                                    Navigator.of(
+                                                                                      context,
+                                                                                    ).pop();
+                                                                                    setState(
+                                                                                      () {
+                                                                                        stateFuture = fetchStates(
+                                                                                          selectedCountryCode!,
+                                                                                        );
+                                                                                      },
+                                                                                    );
+                                                                                    countryController.clear();
+                                                                                  },
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                      ),
-                                    );
-                                  },
-                                ).then((context) {
-                                  setState(() {});
-                                });
+                                        ),
+                                      );
+                                    },
+                                  ).then((context) {
+                                    setState(() {});
+                                  });
+                                } else {
+                                  setCity(() {
+                                    if (controller
+                                        .text
+                                        .isEmpty) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'Name Field can\'t be set as Empty',
+                                            title:
+                                                'Empty Field',
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      setState(() {
+                                        selectedCountryName =
+                                            controller.text
+                                                .trim();
+                                        selectedCountryCode =
+                                            null;
+                                      });
+
+                                      Navigator.pop(
+                                        context,
+                                      );
+                                    }
+                                  }, 'Country');
+                                }
                               },
                               valueSet:
                                   selectedCountryName !=
@@ -2056,369 +2102,326 @@ class _ShopSetupTwoDesktopState
                                         theme: theme,
                                         isOpen: false,
                                         onTap: () {
-                                          if (widget.shop !=
-                                                  null
-                                              ? states
-                                                  .isEmpty
-                                              : selectedCountryName ==
-                                                  null) {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
+                                          bool isOnline =
+                                              returnConnectivityProvider(
                                                 context,
-                                              ) {
-                                                return InfoAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'Country Must be set before state can be selected.',
-                                                  title:
-                                                      'Country Not Set.',
-                                                );
-                                              },
-                                            );
-                                          } else {
-                                            showGeneralDialog(
-                                              context:
+                                                listen:
+                                                    false,
+                                              ).isConnected;
+                                          if (isOnline) {
+                                            if (widget.shop !=
+                                                    null
+                                                ? states
+                                                    .isEmpty
+                                                : selectedCountryName ==
+                                                    null) {
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder: (
                                                   context,
-                                              pageBuilder: (
-                                                context,
-                                                animation,
-                                                secondaryAnimation,
-                                              ) {
-                                                return StatefulBuilder(
-                                                  builder:
-                                                      (
-                                                        context,
-                                                        setState,
-                                                      ) => FutureBuilder(
-                                                        future:
-                                                            stateFuture,
-                                                        builder: (
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme:
+                                                        theme,
+                                                    message:
+                                                        'Country Must be set before state can be selected.',
+                                                    title:
+                                                        'Country Not Set.',
+                                                  );
+                                                },
+                                              );
+                                            } else {
+                                              showGeneralDialog(
+                                                context:
+                                                    context,
+                                                pageBuilder: (
+                                                  context,
+                                                  animation,
+                                                  secondaryAnimation,
+                                                ) {
+                                                  return StatefulBuilder(
+                                                    builder:
+                                                        (
                                                           context,
-                                                          snapshot,
-                                                        ) {
-                                                          return Material(
-                                                            color:
-                                                                Colors.white,
-                                                            // elevation: 1,
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.only(
-                                                                top:
-                                                                    10.0,
-                                                              ),
-                                                              child: Ink(
-                                                                height:
-                                                                    MediaQuery.of(
-                                                                      context,
-                                                                    ).size.height,
-                                                                decoration: BoxDecoration(
-                                                                  color:
-                                                                      Colors.grey.shade100,
-                                                                  boxShadow: [
-                                                                    BoxShadow(
-                                                                      color: const Color.fromARGB(
-                                                                        55,
-                                                                        0,
-                                                                        0,
-                                                                        0,
-                                                                      ),
-                                                                      blurRadius:
-                                                                          5,
-                                                                    ),
-                                                                  ],
-                                                                  borderRadius: BorderRadius.vertical(
-                                                                    top: Radius.circular(
-                                                                      20,
-                                                                    ),
-                                                                  ),
+                                                          setState,
+                                                        ) => FutureBuilder(
+                                                          future:
+                                                              stateFuture,
+                                                          builder: (
+                                                            context,
+                                                            snapshot,
+                                                          ) {
+                                                            return Material(
+                                                              color:
+                                                                  Colors.white,
+                                                              // elevation: 1,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                  top:
+                                                                      10.0,
                                                                 ),
-                                                                child: Container(
+                                                                child: Ink(
                                                                   height:
                                                                       MediaQuery.of(
                                                                         context,
-                                                                      ).size.height *
-                                                                      0.9,
-
-                                                                  padding: const EdgeInsets.fromLTRB(
-                                                                    15,
-                                                                    15,
-                                                                    15,
-                                                                    45,
+                                                                      ).size.height,
+                                                                  decoration: BoxDecoration(
+                                                                    color:
+                                                                        Colors.grey.shade100,
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                        color: const Color.fromARGB(
+                                                                          55,
+                                                                          0,
+                                                                          0,
+                                                                          0,
+                                                                        ),
+                                                                        blurRadius:
+                                                                            5,
+                                                                      ),
+                                                                    ],
+                                                                    borderRadius: BorderRadius.vertical(
+                                                                      top: Radius.circular(
+                                                                        20,
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Material(
-                                                                        color:
-                                                                            Colors.white,
-                                                                        child: Column(
-                                                                          children: [
-                                                                            Center(
-                                                                              child: Container(
-                                                                                height:
-                                                                                    4,
-                                                                                width:
-                                                                                    70,
-                                                                                decoration: BoxDecoration(
-                                                                                  borderRadius: BorderRadius.circular(
-                                                                                    15,
+                                                                  child: Container(
+                                                                    height:
+                                                                        MediaQuery.of(
+                                                                          context,
+                                                                        ).size.height *
+                                                                        0.9,
+
+                                                                    padding: const EdgeInsets.fromLTRB(
+                                                                      15,
+                                                                      15,
+                                                                      15,
+                                                                      45,
+                                                                    ),
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Material(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          child: Column(
+                                                                            children: [
+                                                                              Center(
+                                                                                child: Container(
+                                                                                  height:
+                                                                                      4,
+                                                                                  width:
+                                                                                      70,
+                                                                                  decoration: BoxDecoration(
+                                                                                    borderRadius: BorderRadius.circular(
+                                                                                      15,
+                                                                                    ),
+                                                                                    color:
+                                                                                        Colors.grey.shade400,
                                                                                   ),
-                                                                                  color:
-                                                                                      Colors.grey.shade400,
                                                                                 ),
                                                                               ),
-                                                                            ),
-                                                                            SizedBox(
-                                                                              height:
-                                                                                  10,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.symmetric(
-                                                                                horizontal:
-                                                                                    15.0,
+                                                                              SizedBox(
+                                                                                height:
+                                                                                    10,
                                                                               ),
-                                                                              child: Row(
-                                                                                mainAxisAlignment:
-                                                                                    MainAxisAlignment.spaceBetween,
-                                                                                children: [
-                                                                                  Column(
-                                                                                    crossAxisAlignment:
-                                                                                        CrossAxisAlignment.start,
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        'Select Your State',
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              returnTheme(
-                                                                                                context,
-                                                                                              ).mobileTexts.b1.fontSize,
-                                                                                          fontWeight:
-                                                                                              FontWeight.bold,
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  horizontal:
+                                                                                      15.0,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Column(
+                                                                                      crossAxisAlignment:
+                                                                                          CrossAxisAlignment.start,
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          'Select Your State',
+                                                                                          style: TextStyle(
+                                                                                            fontSize:
+                                                                                                returnTheme(
+                                                                                                  context,
+                                                                                                ).mobileTexts.b1.fontSize,
+                                                                                            fontWeight:
+                                                                                                FontWeight.bold,
+                                                                                          ),
                                                                                         ),
-                                                                                      ),
-                                                                                      Text(
-                                                                                        'Search For States to Select',
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              returnTheme(
-                                                                                                context,
-                                                                                              ).mobileTexts.b2.fontSize,
+                                                                                        Text(
+                                                                                          'Search For States to Select',
+                                                                                          style: TextStyle(
+                                                                                            fontSize:
+                                                                                                returnTheme(
+                                                                                                  context,
+                                                                                                ).mobileTexts.b2.fontSize,
+                                                                                          ),
                                                                                         ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  InkWell(
-                                                                                    onTap: () {
-                                                                                      Navigator.of(
-                                                                                        context,
-                                                                                      ).pop();
-                                                                                      setState(
-                                                                                        () {
-                                                                                          stateController.clear();
-                                                                                        },
-                                                                                      );
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.all(
-                                                                                        10,
-                                                                                      ),
-                                                                                      decoration: BoxDecoration(
-                                                                                        shape:
-                                                                                            BoxShape.circle,
-                                                                                        color:
-                                                                                            Colors.grey.shade800,
-                                                                                      ),
-                                                                                      child: Icon(
-                                                                                        color:
-                                                                                            Colors.white,
-                                                                                        Icons.clear_rounded,
+                                                                                      ],
+                                                                                    ),
+                                                                                    InkWell(
+                                                                                      onTap: () {
+                                                                                        Navigator.of(
+                                                                                          context,
+                                                                                        ).pop();
+                                                                                        setState(
+                                                                                          () {
+                                                                                            stateController.clear();
+                                                                                          },
+                                                                                        );
+                                                                                      },
+                                                                                      child: Container(
+                                                                                        padding: EdgeInsets.all(
+                                                                                          10,
+                                                                                        ),
+                                                                                        decoration: BoxDecoration(
+                                                                                          shape:
+                                                                                              BoxShape.circle,
+                                                                                          color:
+                                                                                              Colors.grey.shade800,
+                                                                                        ),
+                                                                                        child: Icon(
+                                                                                          color:
+                                                                                              Colors.white,
+                                                                                          Icons.clear_rounded,
+                                                                                        ),
                                                                                       ),
                                                                                     ),
-                                                                                  ),
-                                                                                ],
+                                                                                  ],
+                                                                                ),
                                                                               ),
-                                                                            ),
-                                                                            SizedBox(
-                                                                              height:
+                                                                              SizedBox(
+                                                                                height:
+                                                                                    10,
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  horizontal:
+                                                                                      20.0,
+                                                                                ),
+                                                                                child: GeneralTextfieldOnly(
+                                                                                  hint:
+                                                                                      'Search for state names',
+                                                                                  lines:
+                                                                                      1,
+                                                                                  theme:
+                                                                                      theme,
+                                                                                  controller:
+                                                                                      stateController,
+                                                                                  onChanged: (
+                                                                                    value,
+                                                                                  ) {
+                                                                                    setState(
+                                                                                      () {},
+                                                                                    );
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.end,
+                                                                          children: [
+                                                                            InkWell(
+                                                                              onTap: () {
+                                                                                setCity(
+                                                                                  () {
+                                                                                    if (controller.text.isEmpty) {
+                                                                                      showDialog(
+                                                                                        context:
+                                                                                            context,
+                                                                                        builder: (
+                                                                                          context,
+                                                                                        ) {
+                                                                                          return InfoAlert(
+                                                                                            theme:
+                                                                                                theme,
+                                                                                            message:
+                                                                                                'Name Field can\'t be set as Empty',
+                                                                                            title:
+                                                                                                'Empty Field',
+                                                                                          );
+                                                                                        },
+                                                                                      );
+                                                                                    } else {
+                                                                                      setState(
+                                                                                        () {
+                                                                                          selectedStateName =
+                                                                                              controller.text.trim();
+                                                                                          selectedStateCode =
+                                                                                              null;
+                                                                                          stateSet =
+                                                                                              true;
+                                                                                          cityFuture = fetchCities(
+                                                                                            '',
+
+                                                                                            '',
+                                                                                          );
+                                                                                        },
+                                                                                      );
+
+                                                                                      int count =
+                                                                                          0;
+                                                                                      Navigator.popUntil(
+                                                                                        context,
+                                                                                        (
+                                                                                          route,
+                                                                                        ) {
+                                                                                          return count++ ==
+                                                                                              2;
+                                                                                        },
+                                                                                      );
+                                                                                    }
+                                                                                  },
+                                                                                  'State',
+                                                                                );
+                                                                              },
+                                                                              child: Container(
+                                                                                padding: EdgeInsets.fromLTRB(
+                                                                                  20,
                                                                                   10,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.symmetric(
-                                                                                horizontal:
-                                                                                    20.0,
-                                                                              ),
-                                                                              child: GeneralTextfieldOnly(
-                                                                                hint:
-                                                                                    'Search for state names',
-                                                                                lines:
-                                                                                    1,
-                                                                                theme:
-                                                                                    theme,
-                                                                                controller:
-                                                                                    stateController,
-                                                                                onChanged: (
-                                                                                  value,
-                                                                                ) {
-                                                                                  setState(
-                                                                                    () {},
-                                                                                  );
-                                                                                },
+                                                                                  20,
+                                                                                  5,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  spacing:
+                                                                                      3,
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      'Add Custom State',
+                                                                                    ),
+                                                                                    Icon(
+                                                                                      size:
+                                                                                          20,
+                                                                                      Icons.add,
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                           ],
                                                                         ),
-                                                                      ),
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.end,
-                                                                        children: [
-                                                                          InkWell(
-                                                                            onTap: () {
-                                                                              setCity(
-                                                                                () {
-                                                                                  if (controller.text.isEmpty) {
-                                                                                    showDialog(
-                                                                                      context:
-                                                                                          context,
-                                                                                      builder: (
-                                                                                        context,
-                                                                                      ) {
-                                                                                        return InfoAlert(
-                                                                                          theme:
-                                                                                              theme,
-                                                                                          message:
-                                                                                              'Name Field can\'t be set as Empty',
-                                                                                          title:
-                                                                                              'Empty Field',
-                                                                                        );
-                                                                                      },
-                                                                                    );
-                                                                                  } else {
-                                                                                    setState(
-                                                                                      () {
-                                                                                        selectedStateName =
-                                                                                            controller.text.trim();
-                                                                                        selectedStateCode =
-                                                                                            null;
-                                                                                        stateSet =
-                                                                                            true;
-                                                                                        cityFuture = fetchCities(
-                                                                                          '',
-
-                                                                                          '',
-                                                                                        );
-                                                                                      },
-                                                                                    );
-
-                                                                                    int count =
-                                                                                        0;
-                                                                                    Navigator.popUntil(
-                                                                                      context,
-                                                                                      (
-                                                                                        route,
-                                                                                      ) {
-                                                                                        return count++ ==
-                                                                                            2;
-                                                                                      },
-                                                                                    );
-                                                                                  }
-                                                                                },
-                                                                                'State',
-                                                                              );
-                                                                            },
-                                                                            child: Container(
-                                                                              padding: EdgeInsets.fromLTRB(
-                                                                                20,
-                                                                                10,
-                                                                                20,
-                                                                                5,
-                                                                              ),
-                                                                              child: Row(
-                                                                                spacing:
-                                                                                    3,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    'Add Custom State',
+                                                                        Expanded(
+                                                                          child: Builder(
+                                                                            builder: (
+                                                                              context,
+                                                                            ) {
+                                                                              if (snapshot.connectionState ==
+                                                                                  ConnectionState.waiting) {
+                                                                                return Scaffold(
+                                                                                  body: returnCompProvider(
+                                                                                    context,
+                                                                                    listen:
+                                                                                        false,
+                                                                                  ).showLoader(
+                                                                                    'Loading',
                                                                                   ),
-                                                                                  Icon(
-                                                                                    size:
-                                                                                        20,
-                                                                                    Icons.add,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      Expanded(
-                                                                        child: Builder(
-                                                                          builder: (
-                                                                            context,
-                                                                          ) {
-                                                                            if (snapshot.connectionState ==
-                                                                                ConnectionState.waiting) {
-                                                                              return Scaffold(
-                                                                                body: returnCompProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).showLoader(
-                                                                                  'Loading',
-                                                                                ),
-                                                                              );
-                                                                            } else if (snapshot.hasError) {
-                                                                              return Scaffold(
-                                                                                body: Row(
-                                                                                  mainAxisAlignment:
-                                                                                      MainAxisAlignment.center,
-                                                                                  children: [
-                                                                                    EmptyWidgetDisplay(
-                                                                                      title:
-                                                                                          'An Error Occured',
-                                                                                      subText:
-                                                                                          'Please check your internet and try again.',
-                                                                                      buttonText:
-                                                                                          'Close',
-                                                                                      theme:
-                                                                                          theme,
-                                                                                      height:
-                                                                                          30,
-                                                                                      action: () {
-                                                                                        Navigator.of(
-                                                                                          context,
-                                                                                        ).pop();
-                                                                                      },
-                                                                                      icon:
-                                                                                          Icons.clear,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              );
-                                                                            } else {
-                                                                              var main =
-                                                                                  stateCodes;
-                                                                              main.sort(
-                                                                                (
-                                                                                  a,
-                                                                                  b,
-                                                                                ) => a['name'].compareTo(
-                                                                                  b['name'],
-                                                                                ),
-                                                                              );
-                                                                              var items =
-                                                                                  main
-                                                                                      .where(
-                                                                                        (
-                                                                                          mainn,
-                                                                                        ) => mainn['name'].toString().toLowerCase().contains(
-                                                                                          stateController.text.toLowerCase(),
-                                                                                        ),
-                                                                                      )
-                                                                                      .toList();
-
-                                                                              if (items.isEmpty) {
+                                                                                );
+                                                                              } else if (snapshot.hasError) {
                                                                                 return Scaffold(
                                                                                   body: Row(
                                                                                     mainAxisAlignment:
@@ -2426,68 +2429,19 @@ class _ShopSetupTwoDesktopState
                                                                                     children: [
                                                                                       EmptyWidgetDisplay(
                                                                                         title:
-                                                                                            'Empty List',
+                                                                                            'An Error Occured',
                                                                                         subText:
-                                                                                            'There are no results for this Location.',
+                                                                                            'Please check your internet and try again.',
                                                                                         buttonText:
-                                                                                            'Add State',
+                                                                                            'Close',
                                                                                         theme:
                                                                                             theme,
                                                                                         height:
                                                                                             30,
                                                                                         action: () {
-                                                                                          setCity(
-                                                                                            () {
-                                                                                              if (controller.text.isEmpty) {
-                                                                                                showDialog(
-                                                                                                  context:
-                                                                                                      context,
-                                                                                                  builder: (
-                                                                                                    context,
-                                                                                                  ) {
-                                                                                                    return InfoAlert(
-                                                                                                      theme:
-                                                                                                          theme,
-                                                                                                      message:
-                                                                                                          'Name Field can\'t be set as Empty',
-                                                                                                      title:
-                                                                                                          'Empty Field',
-                                                                                                    );
-                                                                                                  },
-                                                                                                );
-                                                                                              } else {
-                                                                                                setState(
-                                                                                                  () {
-                                                                                                    selectedStateName =
-                                                                                                        controller.text.trim();
-                                                                                                    selectedStateCode =
-                                                                                                        null;
-                                                                                                    stateSet =
-                                                                                                        true;
-                                                                                                    cityFuture = fetchCities(
-                                                                                                      selectedCountryCode ??
-                                                                                                          '',
-                                                                                                      selectedStateCode ??
-                                                                                                          '',
-                                                                                                    );
-                                                                                                  },
-                                                                                                );
-
-                                                                                                int count =
-                                                                                                    0;
-                                                                                                Navigator.popUntil(
-                                                                                                  context,
-                                                                                                  (
-                                                                                                    route,
-                                                                                                  ) {
-                                                                                                    return count++ ==
-                                                                                                        2;
-                                                                                                  },
-                                                                                                );
-                                                                                              }
-                                                                                            },
-                                                                                            'State',
-                                                                                          );
+                                                                                          Navigator.of(
+                                                                                            context,
+                                                                                          ).pop();
                                                                                         },
                                                                                         icon:
                                                                                             Icons.clear,
@@ -2496,91 +2450,229 @@ class _ShopSetupTwoDesktopState
                                                                                   ),
                                                                                 );
                                                                               } else {
-                                                                                return ListView.builder(
-                                                                                  itemCount:
-                                                                                      items.length,
-                                                                                  itemBuilder: (
-                                                                                    context,
-                                                                                    index,
-                                                                                  ) {
-                                                                                    var item =
-                                                                                        items[index];
-                                                                                    return Padding(
-                                                                                      padding: const EdgeInsets.symmetric(
-                                                                                        vertical:
-                                                                                            5,
-                                                                                      ),
-                                                                                      child: ListTile(
-                                                                                        tileColor:
-                                                                                            Colors.white,
-                                                                                        title: Text(
-                                                                                          item['name'],
-                                                                                        ),
-                                                                                        onTap: () {
-                                                                                          setState(
-                                                                                            () {
-                                                                                              final selected = stateCodes.firstWhere(
-                                                                                                (
-                                                                                                  state,
-                                                                                                ) =>
-                                                                                                    state['name'] ==
-                                                                                                    item['name'],
-                                                                                              );
-                                                                                              setState(
-                                                                                                () {
-                                                                                                  selectedStateCode =
-                                                                                                      selected['iso2'] ??
-                                                                                                      '0';
-                                                                                                  selectedStateName =
-                                                                                                      selected['name'] ??
-                                                                                                      '';
-                                                                                                },
-                                                                                              );
-                                                                                            },
-                                                                                          );
-                                                                                          setState(
-                                                                                            () {
-                                                                                              cityFuture = fetchCities(
-                                                                                                selectedCountryCode!,
-                                                                                                selectedStateCode!,
-                                                                                              );
-                                                                                            },
-                                                                                          );
-                                                                                          Navigator.of(
-                                                                                            context,
-                                                                                          ).pop();
-                                                                                          setState(
-                                                                                            () {
-                                                                                              stateController.clear();
-                                                                                            },
-                                                                                          );
-                                                                                        },
-                                                                                      ),
-                                                                                    );
-                                                                                  },
+                                                                                var main =
+                                                                                    stateCodes;
+                                                                                main.sort(
+                                                                                  (
+                                                                                    a,
+                                                                                    b,
+                                                                                  ) => a['name'].compareTo(
+                                                                                    b['name'],
+                                                                                  ),
                                                                                 );
+                                                                                var items =
+                                                                                    main
+                                                                                        .where(
+                                                                                          (
+                                                                                            mainn,
+                                                                                          ) => mainn['name'].toString().toLowerCase().contains(
+                                                                                            stateController.text.toLowerCase(),
+                                                                                          ),
+                                                                                        )
+                                                                                        .toList();
+
+                                                                                if (items.isEmpty) {
+                                                                                  return Scaffold(
+                                                                                    body: Row(
+                                                                                      mainAxisAlignment:
+                                                                                          MainAxisAlignment.center,
+                                                                                      children: [
+                                                                                        EmptyWidgetDisplay(
+                                                                                          title:
+                                                                                              'Empty List',
+                                                                                          subText:
+                                                                                              'There are no results for this Location.',
+                                                                                          buttonText:
+                                                                                              'Add State',
+                                                                                          theme:
+                                                                                              theme,
+                                                                                          height:
+                                                                                              30,
+                                                                                          action: () {
+                                                                                            setCity(
+                                                                                              () {
+                                                                                                if (controller.text.isEmpty) {
+                                                                                                  showDialog(
+                                                                                                    context:
+                                                                                                        context,
+                                                                                                    builder: (
+                                                                                                      context,
+                                                                                                    ) {
+                                                                                                      return InfoAlert(
+                                                                                                        theme:
+                                                                                                            theme,
+                                                                                                        message:
+                                                                                                            'Name Field can\'t be set as Empty',
+                                                                                                        title:
+                                                                                                            'Empty Field',
+                                                                                                      );
+                                                                                                    },
+                                                                                                  );
+                                                                                                } else {
+                                                                                                  setState(
+                                                                                                    () {
+                                                                                                      selectedStateName =
+                                                                                                          controller.text.trim();
+                                                                                                      selectedStateCode =
+                                                                                                          null;
+                                                                                                      stateSet =
+                                                                                                          true;
+                                                                                                      cityFuture = fetchCities(
+                                                                                                        selectedCountryCode ??
+                                                                                                            '',
+                                                                                                        selectedStateCode ??
+                                                                                                            '',
+                                                                                                      );
+                                                                                                    },
+                                                                                                  );
+
+                                                                                                  int count =
+                                                                                                      0;
+                                                                                                  Navigator.popUntil(
+                                                                                                    context,
+                                                                                                    (
+                                                                                                      route,
+                                                                                                    ) {
+                                                                                                      return count++ ==
+                                                                                                          2;
+                                                                                                    },
+                                                                                                  );
+                                                                                                }
+                                                                                              },
+                                                                                              'State',
+                                                                                            );
+                                                                                          },
+                                                                                          icon:
+                                                                                              Icons.clear,
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  );
+                                                                                } else {
+                                                                                  return ListView.builder(
+                                                                                    itemCount:
+                                                                                        items.length,
+                                                                                    itemBuilder: (
+                                                                                      context,
+                                                                                      index,
+                                                                                    ) {
+                                                                                      var item =
+                                                                                          items[index];
+                                                                                      return Padding(
+                                                                                        padding: const EdgeInsets.symmetric(
+                                                                                          vertical:
+                                                                                              5,
+                                                                                        ),
+                                                                                        child: ListTile(
+                                                                                          tileColor:
+                                                                                              Colors.white,
+                                                                                          title: Text(
+                                                                                            item['name'],
+                                                                                          ),
+                                                                                          onTap: () {
+                                                                                            setState(
+                                                                                              () {
+                                                                                                final selected = stateCodes.firstWhere(
+                                                                                                  (
+                                                                                                    state,
+                                                                                                  ) =>
+                                                                                                      state['name'] ==
+                                                                                                      item['name'],
+                                                                                                );
+                                                                                                setState(
+                                                                                                  () {
+                                                                                                    selectedStateCode =
+                                                                                                        selected['iso2'] ??
+                                                                                                        '0';
+                                                                                                    selectedStateName =
+                                                                                                        selected['name'] ??
+                                                                                                        '';
+                                                                                                  },
+                                                                                                );
+                                                                                              },
+                                                                                            );
+                                                                                            setState(
+                                                                                              () {
+                                                                                                cityFuture = fetchCities(
+                                                                                                  selectedCountryCode!,
+                                                                                                  selectedStateCode!,
+                                                                                                );
+                                                                                              },
+                                                                                            );
+                                                                                            Navigator.of(
+                                                                                              context,
+                                                                                            ).pop();
+                                                                                            setState(
+                                                                                              () {
+                                                                                                stateController.clear();
+                                                                                              },
+                                                                                            );
+                                                                                          },
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                                  );
+                                                                                }
                                                                               }
-                                                                            }
-                                                                          },
+                                                                            },
+                                                                          ),
                                                                         ),
-                                                                      ),
-                                                                    ],
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
+                                                            );
+                                                          },
+                                                        ),
+                                                  );
+                                                },
+                                              ).then((
+                                                context,
+                                              ) {
+                                                setState(
+                                                  () {},
                                                 );
-                                              },
-                                            ).then((
-                                              context,
-                                            ) {
-                                              setState(
-                                                () {},
-                                              );
-                                            });
+                                              });
+                                            }
+                                          } else {
+                                            setCity(() {
+                                              if (controller
+                                                  .text
+                                                  .isEmpty) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Name Field can\'t be set as Empty',
+                                                      title:
+                                                          'Empty Field',
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                setState(() {
+                                                  selectedStateName =
+                                                      controller
+                                                          .text
+                                                          .trim();
+                                                  selectedStateCode =
+                                                      null;
+                                                  stateSet =
+                                                      true;
+                                                });
+
+                                                Navigator.pop(
+                                                  context,
+                                                );
+                                              }
+                                            }, 'State');
                                           }
                                         },
                                         valueSet:
@@ -2595,418 +2687,320 @@ class _ShopSetupTwoDesktopState
                                         theme: theme,
                                         isOpen: false,
                                         onTap: () {
-                                          if (widget.shop !=
-                                                  null
-                                              ? cities
-                                                  .isEmpty
-                                              : selectedStateName ==
-                                                  null) {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
+                                          bool isOnline =
+                                              returnConnectivityProvider(
                                                 context,
-                                              ) {
-                                                return InfoAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'You must set Your state Location before setting City.',
-                                                  title:
-                                                      'State Not Set',
-                                                );
-                                              },
-                                            );
-                                          } else {
-                                            showGeneralDialog(
-                                              context:
-                                                  context,
-                                              pageBuilder: (
-                                                context,
-                                                animation,
-                                                secondaryAnimation,
-                                              ) {
-                                                return FutureBuilder(
-                                                  future:
-                                                      cityFuture,
-                                                  builder: (
+                                                listen:
+                                                    false,
+                                              ).isConnected;
+                                          if (isOnline) {
+                                            if (widget.shop !=
+                                                    null
+                                                ? cities
+                                                    .isEmpty
+                                                : selectedStateName ==
+                                                    null) {
+                                              showDialog(
+                                                context:
                                                     context,
-                                                    snapshot,
-                                                  ) {
-                                                    return StatefulBuilder(
-                                                      builder:
-                                                          (
-                                                            context,
-                                                            setState,
-                                                          ) => Material(
-                                                            color:
-                                                                Colors.transparent,
-                                                            // elevation: 1,
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.only(
-                                                                top:
-                                                                    10.0,
-                                                              ),
-                                                              child: Ink(
-                                                                height:
-                                                                    MediaQuery.of(
-                                                                      context,
-                                                                    ).size.height,
-                                                                decoration: BoxDecoration(
-                                                                  color:
-                                                                      Colors.grey.shade100,
-                                                                  boxShadow: [
-                                                                    BoxShadow(
-                                                                      color: const Color.fromARGB(
-                                                                        55,
-                                                                        0,
-                                                                        0,
-                                                                        0,
-                                                                      ),
-                                                                      blurRadius:
-                                                                          5,
-                                                                    ),
-                                                                  ],
-                                                                  borderRadius: BorderRadius.vertical(
-                                                                    top: Radius.circular(
-                                                                      20,
-                                                                    ),
-                                                                  ),
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme:
+                                                        theme,
+                                                    message:
+                                                        'You must set Your state Location before setting City.',
+                                                    title:
+                                                        'State Not Set',
+                                                  );
+                                                },
+                                              );
+                                            } else {
+                                              showGeneralDialog(
+                                                context:
+                                                    context,
+                                                pageBuilder: (
+                                                  context,
+                                                  animation,
+                                                  secondaryAnimation,
+                                                ) {
+                                                  return FutureBuilder(
+                                                    future:
+                                                        cityFuture,
+                                                    builder: (
+                                                      context,
+                                                      snapshot,
+                                                    ) {
+                                                      return StatefulBuilder(
+                                                        builder:
+                                                            (
+                                                              context,
+                                                              setState,
+                                                            ) => Material(
+                                                              color:
+                                                                  Colors.transparent,
+                                                              // elevation: 1,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                  top:
+                                                                      10.0,
                                                                 ),
-                                                                child: Container(
+                                                                child: Ink(
                                                                   height:
                                                                       MediaQuery.of(
                                                                         context,
-                                                                      ).size.height *
-                                                                      0.9,
-
-                                                                  padding: const EdgeInsets.fromLTRB(
-                                                                    15,
-                                                                    15,
-                                                                    15,
-                                                                    45,
+                                                                      ).size.height,
+                                                                  decoration: BoxDecoration(
+                                                                    color:
+                                                                        Colors.grey.shade100,
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                        color: const Color.fromARGB(
+                                                                          55,
+                                                                          0,
+                                                                          0,
+                                                                          0,
+                                                                        ),
+                                                                        blurRadius:
+                                                                            5,
+                                                                      ),
+                                                                    ],
+                                                                    borderRadius: BorderRadius.vertical(
+                                                                      top: Radius.circular(
+                                                                        20,
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Material(
-                                                                        color:
-                                                                            Colors.white,
-                                                                        child: Column(
-                                                                          children: [
-                                                                            Center(
-                                                                              child: Container(
-                                                                                height:
-                                                                                    4,
-                                                                                width:
-                                                                                    70,
-                                                                                decoration: BoxDecoration(
-                                                                                  borderRadius: BorderRadius.circular(
-                                                                                    15,
+                                                                  child: Container(
+                                                                    height:
+                                                                        MediaQuery.of(
+                                                                          context,
+                                                                        ).size.height *
+                                                                        0.9,
+
+                                                                    padding: const EdgeInsets.fromLTRB(
+                                                                      15,
+                                                                      15,
+                                                                      15,
+                                                                      45,
+                                                                    ),
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Material(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          child: Column(
+                                                                            children: [
+                                                                              Center(
+                                                                                child: Container(
+                                                                                  height:
+                                                                                      4,
+                                                                                  width:
+                                                                                      70,
+                                                                                  decoration: BoxDecoration(
+                                                                                    borderRadius: BorderRadius.circular(
+                                                                                      15,
+                                                                                    ),
+                                                                                    color:
+                                                                                        Colors.grey.shade400,
                                                                                   ),
-                                                                                  color:
-                                                                                      Colors.grey.shade400,
                                                                                 ),
                                                                               ),
-                                                                            ),
-                                                                            SizedBox(
-                                                                              height:
-                                                                                  10,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.symmetric(
-                                                                                horizontal:
-                                                                                    15.0,
+                                                                              SizedBox(
+                                                                                height:
+                                                                                    10,
                                                                               ),
-                                                                              child: Row(
-                                                                                mainAxisAlignment:
-                                                                                    MainAxisAlignment.spaceBetween,
-                                                                                children: [
-                                                                                  Column(
-                                                                                    crossAxisAlignment:
-                                                                                        CrossAxisAlignment.start,
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        'Select Your City',
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              returnTheme(
-                                                                                                context,
-                                                                                              ).mobileTexts.b1.fontSize,
-                                                                                          fontWeight:
-                                                                                              FontWeight.bold,
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  horizontal:
+                                                                                      15.0,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Column(
+                                                                                      crossAxisAlignment:
+                                                                                          CrossAxisAlignment.start,
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          'Select Your City',
+                                                                                          style: TextStyle(
+                                                                                            fontSize:
+                                                                                                returnTheme(
+                                                                                                  context,
+                                                                                                ).mobileTexts.b1.fontSize,
+                                                                                            fontWeight:
+                                                                                                FontWeight.bold,
+                                                                                          ),
                                                                                         ),
-                                                                                      ),
-                                                                                      Text(
-                                                                                        'Search For cities to Select',
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              returnTheme(
-                                                                                                context,
-                                                                                              ).mobileTexts.b2.fontSize,
+                                                                                        Text(
+                                                                                          'Search For cities to Select',
+                                                                                          style: TextStyle(
+                                                                                            fontSize:
+                                                                                                returnTheme(
+                                                                                                  context,
+                                                                                                ).mobileTexts.b2.fontSize,
+                                                                                          ),
                                                                                         ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  InkWell(
-                                                                                    onTap: () {
-                                                                                      Navigator.of(
-                                                                                        context,
-                                                                                      ).pop();
-                                                                                      cityController.clear();
-                                                                                      controller.clear();
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.all(
-                                                                                        10,
-                                                                                      ),
-                                                                                      decoration: BoxDecoration(
-                                                                                        shape:
-                                                                                            BoxShape.circle,
-                                                                                        color:
-                                                                                            Colors.grey.shade800,
-                                                                                      ),
-                                                                                      child: Icon(
-                                                                                        color:
-                                                                                            Colors.white,
-                                                                                        Icons.clear_rounded,
+                                                                                      ],
+                                                                                    ),
+                                                                                    InkWell(
+                                                                                      onTap: () {
+                                                                                        Navigator.of(
+                                                                                          context,
+                                                                                        ).pop();
+                                                                                        cityController.clear();
+                                                                                        controller.clear();
+                                                                                      },
+                                                                                      child: Container(
+                                                                                        padding: EdgeInsets.all(
+                                                                                          10,
+                                                                                        ),
+                                                                                        decoration: BoxDecoration(
+                                                                                          shape:
+                                                                                              BoxShape.circle,
+                                                                                          color:
+                                                                                              Colors.grey.shade800,
+                                                                                        ),
+                                                                                        child: Icon(
+                                                                                          color:
+                                                                                              Colors.white,
+                                                                                          Icons.clear_rounded,
+                                                                                        ),
                                                                                       ),
                                                                                     ),
-                                                                                  ),
-                                                                                ],
+                                                                                  ],
+                                                                                ),
                                                                               ),
-                                                                            ),
-                                                                            SizedBox(
-                                                                              height:
+                                                                              SizedBox(
+                                                                                height:
+                                                                                    10,
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  horizontal:
+                                                                                      20.0,
+                                                                                ),
+                                                                                child: GeneralTextfieldOnly(
+                                                                                  hint:
+                                                                                      'Search for city names',
+                                                                                  lines:
+                                                                                      1,
+                                                                                  theme:
+                                                                                      theme,
+                                                                                  controller:
+                                                                                      cityController,
+                                                                                  onChanged: (
+                                                                                    value,
+                                                                                  ) {
+                                                                                    setState(
+                                                                                      () {},
+                                                                                    );
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              10,
+                                                                        ),
+                                                                        Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.end,
+                                                                          children: [
+                                                                            InkWell(
+                                                                              onTap: () {
+                                                                                setCity(
+                                                                                  () {
+                                                                                    if (controller.text.isEmpty) {
+                                                                                      showDialog(
+                                                                                        context:
+                                                                                            context,
+                                                                                        builder: (
+                                                                                          context,
+                                                                                        ) {
+                                                                                          return InfoAlert(
+                                                                                            theme:
+                                                                                                theme,
+                                                                                            message:
+                                                                                                'Name Field can\'t be set as Empty',
+                                                                                            title:
+                                                                                                'Empty Field',
+                                                                                          );
+                                                                                        },
+                                                                                      );
+                                                                                    } else {
+                                                                                      setState(
+                                                                                        () {
+                                                                                          selectedCityName =
+                                                                                              controller.text.trim();
+                                                                                        },
+                                                                                      );
+                                                                                      int count =
+                                                                                          0;
+                                                                                      Navigator.popUntil(
+                                                                                        context,
+                                                                                        (
+                                                                                          route,
+                                                                                        ) {
+                                                                                          return count++ ==
+                                                                                              2;
+                                                                                        },
+                                                                                      );
+                                                                                    }
+                                                                                  },
+                                                                                  'City',
+                                                                                );
+                                                                              },
+                                                                              child: Container(
+                                                                                padding: EdgeInsets.fromLTRB(
+                                                                                  20,
                                                                                   10,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.symmetric(
-                                                                                horizontal:
-                                                                                    20.0,
-                                                                              ),
-                                                                              child: GeneralTextfieldOnly(
-                                                                                hint:
-                                                                                    'Search for city names',
-                                                                                lines:
-                                                                                    1,
-                                                                                theme:
-                                                                                    theme,
-                                                                                controller:
-                                                                                    cityController,
-                                                                                onChanged: (
-                                                                                  value,
-                                                                                ) {
-                                                                                  setState(
-                                                                                    () {},
-                                                                                  );
-                                                                                },
+                                                                                  20,
+                                                                                  5,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  spacing:
+                                                                                      3,
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      'Add City',
+                                                                                    ),
+                                                                                    Icon(
+                                                                                      size:
+                                                                                          20,
+                                                                                      Icons.add,
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                           ],
                                                                         ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            10,
-                                                                      ),
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.end,
-                                                                        children: [
-                                                                          InkWell(
-                                                                            onTap: () {
-                                                                              setCity(
-                                                                                () {
-                                                                                  if (controller.text.isEmpty) {
-                                                                                    showDialog(
-                                                                                      context:
-                                                                                          context,
-                                                                                      builder: (
-                                                                                        context,
-                                                                                      ) {
-                                                                                        return InfoAlert(
-                                                                                          theme:
-                                                                                              theme,
-                                                                                          message:
-                                                                                              'Name Field can\'t be set as Empty',
-                                                                                          title:
-                                                                                              'Empty Field',
-                                                                                        );
-                                                                                      },
-                                                                                    );
-                                                                                  } else {
-                                                                                    setState(
-                                                                                      () {
-                                                                                        selectedCityName =
-                                                                                            controller.text.trim();
-                                                                                      },
-                                                                                    );
-                                                                                    int count =
-                                                                                        0;
-                                                                                    Navigator.popUntil(
-                                                                                      context,
-                                                                                      (
-                                                                                        route,
-                                                                                      ) {
-                                                                                        return count++ ==
-                                                                                            2;
-                                                                                      },
-                                                                                    );
-                                                                                  }
-                                                                                },
-                                                                                'City',
-                                                                              );
-                                                                            },
-                                                                            child: Container(
-                                                                              padding: EdgeInsets.fromLTRB(
-                                                                                20,
-                                                                                10,
-                                                                                20,
-                                                                                5,
-                                                                              ),
-                                                                              child: Row(
-                                                                                spacing:
-                                                                                    3,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    'Add City',
+                                                                        Expanded(
+                                                                          child: Builder(
+                                                                            builder: (
+                                                                              context,
+                                                                            ) {
+                                                                              if (snapshot.connectionState ==
+                                                                                  ConnectionState.waiting) {
+                                                                                return Scaffold(
+                                                                                  body: returnCompProvider(
+                                                                                    context,
+                                                                                    listen:
+                                                                                        false,
+                                                                                  ).showLoader(
+                                                                                    'Loading',
                                                                                   ),
-                                                                                  Icon(
-                                                                                    size:
-                                                                                        20,
-                                                                                    Icons.add,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      Expanded(
-                                                                        child: Builder(
-                                                                          builder: (
-                                                                            context,
-                                                                          ) {
-                                                                            if (snapshot.connectionState ==
-                                                                                ConnectionState.waiting) {
-                                                                              return Scaffold(
-                                                                                body: returnCompProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).showLoader(
-                                                                                  'Loading',
-                                                                                ),
-                                                                              );
-                                                                            } else if (stateSet ==
-                                                                                    true &&
-                                                                                (selectedStateCode ==
-                                                                                    null)) {
-                                                                              return Scaffold(
-                                                                                body: Row(
-                                                                                  mainAxisAlignment:
-                                                                                      MainAxisAlignment.center,
-                                                                                  children: [
-                                                                                    EmptyWidgetDisplay(
-                                                                                      title:
-                                                                                          'Empty List',
-                                                                                      subText:
-                                                                                          'There are no results for this Location.',
-                                                                                      buttonText:
-                                                                                          'Add Custom City',
-                                                                                      theme:
-                                                                                          theme,
-                                                                                      height:
-                                                                                          30,
-                                                                                      action: () {
-                                                                                        setCity(
-                                                                                          () {
-                                                                                            if (controller.text.isEmpty) {
-                                                                                              showDialog(
-                                                                                                context:
-                                                                                                    context,
-                                                                                                builder: (
-                                                                                                  context,
-                                                                                                ) {
-                                                                                                  return InfoAlert(
-                                                                                                    theme:
-                                                                                                        theme,
-                                                                                                    message:
-                                                                                                        'Name Field can\'t be set as Empty',
-                                                                                                    title:
-                                                                                                        'Empty Field',
-                                                                                                  );
-                                                                                                },
-                                                                                              );
-                                                                                            } else {
-                                                                                              setState(
-                                                                                                () {
-                                                                                                  selectedCityName =
-                                                                                                      controller.text.trim();
-                                                                                                },
-                                                                                              );
-                                                                                              int count =
-                                                                                                  0;
-                                                                                              Navigator.popUntil(
-                                                                                                context,
-                                                                                                (
-                                                                                                  route,
-                                                                                                ) {
-                                                                                                  return count++ ==
-                                                                                                      2;
-                                                                                                },
-                                                                                              );
-                                                                                            }
-                                                                                          },
-                                                                                          'City',
-                                                                                        );
-                                                                                      },
-                                                                                      icon:
-                                                                                          Icons.clear,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              );
-                                                                            } else if (snapshot.hasError) {
-                                                                              return Scaffold(
-                                                                                body: EmptyWidgetDisplay(
-                                                                                  title:
-                                                                                      'An Error Occured',
-                                                                                  subText:
-                                                                                      'Please check your internet and try again.',
-                                                                                  buttonText:
-                                                                                      'Close',
-                                                                                  theme:
-                                                                                      theme,
-                                                                                  height:
-                                                                                      30,
-                                                                                  action: () {
-                                                                                    Navigator.of(
-                                                                                      context,
-                                                                                    ).pop();
-                                                                                    setState(
-                                                                                      () {
-                                                                                        cityController.clear();
-                                                                                      },
-                                                                                    );
-                                                                                  },
-                                                                                  icon:
-                                                                                      Icons.clear,
-                                                                                ),
-                                                                              );
-                                                                            } else {
-                                                                              var items =
-                                                                                  cities
-                                                                                      .where(
-                                                                                        (
-                                                                                          city,
-                                                                                        ) => city.toLowerCase().contains(
-                                                                                          cityController.text.toLowerCase(),
-                                                                                        ),
-                                                                                      )
-                                                                                      .toList();
-                                                                              items.sort();
-                                                                              if (items.isEmpty) {
+                                                                                );
+                                                                              } else if (stateSet ==
+                                                                                      true &&
+                                                                                  (selectedStateCode ==
+                                                                                      null)) {
                                                                                 return Scaffold(
                                                                                   body: Row(
                                                                                     mainAxisAlignment:
@@ -3014,7 +3008,7 @@ class _ShopSetupTwoDesktopState
                                                                                     children: [
                                                                                       EmptyWidgetDisplay(
                                                                                         title:
-                                                                                            'Empty Listt',
+                                                                                            'Empty List',
                                                                                         subText:
                                                                                             'There are no results for this Location.',
                                                                                         buttonText:
@@ -3072,71 +3066,210 @@ class _ShopSetupTwoDesktopState
                                                                                     ],
                                                                                   ),
                                                                                 );
-                                                                              } else {
-                                                                                return ListView.builder(
-                                                                                  itemCount:
-                                                                                      items.length,
-                                                                                  itemBuilder: (
-                                                                                    context,
-                                                                                    index,
-                                                                                  ) {
-                                                                                    var item =
-                                                                                        items[index];
-                                                                                    return Padding(
-                                                                                      padding: const EdgeInsets.symmetric(
-                                                                                        vertical:
-                                                                                            5,
-                                                                                      ),
-                                                                                      child: ListTile(
-                                                                                        tileColor:
-                                                                                            Colors.white,
-                                                                                        title: Text(
-                                                                                          item,
-                                                                                        ),
-                                                                                        onTap: () {
-                                                                                          setState(
-                                                                                            () {
-                                                                                              selectedCity =
-                                                                                                  item;
-                                                                                              selectedCityName =
-                                                                                                  item;
-                                                                                            },
-                                                                                          );
-                                                                                          Navigator.of(
-                                                                                            context,
-                                                                                          ).pop();
-                                                                                          setState(
-                                                                                            () {
-                                                                                              cityController.clear();
-                                                                                            },
-                                                                                          );
+                                                                              } else if (snapshot.hasError) {
+                                                                                return Scaffold(
+                                                                                  body: EmptyWidgetDisplay(
+                                                                                    title:
+                                                                                        'An Error Occured',
+                                                                                    subText:
+                                                                                        'Please check your internet and try again.',
+                                                                                    buttonText:
+                                                                                        'Close',
+                                                                                    theme:
+                                                                                        theme,
+                                                                                    height:
+                                                                                        30,
+                                                                                    action: () {
+                                                                                      Navigator.of(
+                                                                                        context,
+                                                                                      ).pop();
+                                                                                      setState(
+                                                                                        () {
+                                                                                          cityController.clear();
                                                                                         },
-                                                                                      ),
-                                                                                    );
-                                                                                  },
+                                                                                      );
+                                                                                    },
+                                                                                    icon:
+                                                                                        Icons.clear,
+                                                                                  ),
                                                                                 );
+                                                                              } else {
+                                                                                var items =
+                                                                                    cities
+                                                                                        .where(
+                                                                                          (
+                                                                                            city,
+                                                                                          ) => city.toLowerCase().contains(
+                                                                                            cityController.text.toLowerCase(),
+                                                                                          ),
+                                                                                        )
+                                                                                        .toList();
+                                                                                items.sort();
+                                                                                if (items.isEmpty) {
+                                                                                  return Scaffold(
+                                                                                    body: Row(
+                                                                                      mainAxisAlignment:
+                                                                                          MainAxisAlignment.center,
+                                                                                      children: [
+                                                                                        EmptyWidgetDisplay(
+                                                                                          title:
+                                                                                              'Empty Listt',
+                                                                                          subText:
+                                                                                              'There are no results for this Location.',
+                                                                                          buttonText:
+                                                                                              'Add Custom City',
+                                                                                          theme:
+                                                                                              theme,
+                                                                                          height:
+                                                                                              30,
+                                                                                          action: () {
+                                                                                            setCity(
+                                                                                              () {
+                                                                                                if (controller.text.isEmpty) {
+                                                                                                  showDialog(
+                                                                                                    context:
+                                                                                                        context,
+                                                                                                    builder: (
+                                                                                                      context,
+                                                                                                    ) {
+                                                                                                      return InfoAlert(
+                                                                                                        theme:
+                                                                                                            theme,
+                                                                                                        message:
+                                                                                                            'Name Field can\'t be set as Empty',
+                                                                                                        title:
+                                                                                                            'Empty Field',
+                                                                                                      );
+                                                                                                    },
+                                                                                                  );
+                                                                                                } else {
+                                                                                                  setState(
+                                                                                                    () {
+                                                                                                      selectedCityName =
+                                                                                                          controller.text.trim();
+                                                                                                    },
+                                                                                                  );
+                                                                                                  int count =
+                                                                                                      0;
+                                                                                                  Navigator.popUntil(
+                                                                                                    context,
+                                                                                                    (
+                                                                                                      route,
+                                                                                                    ) {
+                                                                                                      return count++ ==
+                                                                                                          2;
+                                                                                                    },
+                                                                                                  );
+                                                                                                }
+                                                                                              },
+                                                                                              'City',
+                                                                                            );
+                                                                                          },
+                                                                                          icon:
+                                                                                              Icons.clear,
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  );
+                                                                                } else {
+                                                                                  return ListView.builder(
+                                                                                    itemCount:
+                                                                                        items.length,
+                                                                                    itemBuilder: (
+                                                                                      context,
+                                                                                      index,
+                                                                                    ) {
+                                                                                      var item =
+                                                                                          items[index];
+                                                                                      return Padding(
+                                                                                        padding: const EdgeInsets.symmetric(
+                                                                                          vertical:
+                                                                                              5,
+                                                                                        ),
+                                                                                        child: ListTile(
+                                                                                          tileColor:
+                                                                                              Colors.white,
+                                                                                          title: Text(
+                                                                                            item,
+                                                                                          ),
+                                                                                          onTap: () {
+                                                                                            setState(
+                                                                                              () {
+                                                                                                selectedCity =
+                                                                                                    item;
+                                                                                                selectedCityName =
+                                                                                                    item;
+                                                                                              },
+                                                                                            );
+                                                                                            Navigator.of(
+                                                                                              context,
+                                                                                            ).pop();
+                                                                                            setState(
+                                                                                              () {
+                                                                                                cityController.clear();
+                                                                                              },
+                                                                                            );
+                                                                                          },
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                                  );
+                                                                                }
                                                                               }
-                                                                            }
-                                                                          },
+                                                                            },
+                                                                          ),
                                                                         ),
-                                                                      ),
-                                                                    ],
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ).then((
+                                                context,
+                                              ) {
+                                                setState(
+                                                  () {},
+                                                );
+                                              });
+                                            }
+                                          } else {
+                                            setCity(() {
+                                              if (controller
+                                                  .text
+                                                  .isEmpty) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Name Field can\'t be set as Empty',
+                                                      title:
+                                                          'Empty Field',
                                                     );
                                                   },
                                                 );
-                                              },
-                                            ).then((
-                                              context,
-                                            ) {
-                                              setState(
-                                                () {},
-                                              );
-                                            });
+                                              } else {
+                                                setState(() {
+                                                  selectedCityName =
+                                                      controller
+                                                          .text
+                                                          .trim();
+                                                });
+                                                Navigator.pop(
+                                                  context,
+                                                );
+                                              }
+                                            }, 'City');
                                           }
                                         },
                                         valueSet:

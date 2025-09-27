@@ -383,8 +383,8 @@ class _TotalProductsMobileState
                                                       context,
                                                     ) {
                                                       return ProductDetailsPage(
-                                                        productId:
-                                                            product.id!,
+                                                        productUuid:
+                                                            product.uuid!,
                                                       );
                                                     },
                                                   ),
@@ -591,8 +591,8 @@ class _TotalProductsMobileState
                                                       context,
                                                     ) {
                                                       return ProductDetailsPage(
-                                                        productId:
-                                                            product.id!,
+                                                        productUuid:
+                                                            product.uuid!,
                                                       );
                                                     },
                                                   ),
@@ -664,8 +664,8 @@ class _TotalProductsMobileState
                                                       context,
                                                     ) {
                                                       return ProductDetailsPage(
-                                                        productId:
-                                                            product.id!,
+                                                        productUuid:
+                                                            product.uuid!,
                                                       );
                                                     },
                                                   ),

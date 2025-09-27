@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:uuid/uuid.dart';
 
 String formatLargeNumber(String numberString) {
   final number = int.tryParse(
@@ -163,4 +164,10 @@ String formatMoneyBig({
     ); // Ensures .0 is included
     return '$symbol$formatted $suffix';
   }
+}
+
+var uuid = Uuid();
+
+String uuidGen() {
+  return uuid.v4();
 }

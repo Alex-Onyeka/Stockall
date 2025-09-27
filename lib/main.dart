@@ -259,6 +259,16 @@ TranslationProvider returnTranslationProvider(
   );
 }
 
+ConnectivityProvider returnConnectivityProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<ConnectivityProvider>(
+    context,
+    listen: listen,
+  );
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,

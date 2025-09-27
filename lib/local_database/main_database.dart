@@ -8,9 +8,6 @@ import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/product_suggestion/product_suggestion_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
@@ -23,21 +20,19 @@ class MainDatabase extends ChangeNotifier {
 
   Future<void> initHive() async {
     await Hive.initFlutter();
+    await UserFunc().init();
+    await ShopFunc().init();
     await VisibilityBox().init();
     await CustomerFunc().init();
     await ExpensesFunc().init();
-    await UserFunc().init();
     await NotificationFunc().init();
     await ProductsFunc().init();
     await ProductRecordFunc().init();
-    await ShopFunc().init();
     await ProductSuggestionFunc().init();
     await MainReceiptFunc().init();
-    await CreatedProductFunc().init();
-    await DeletedProductsFunc().init();
-    await UpdatedProductsFunc().init();
     await LoggedInUserFunc().init();
-
     print('init Complete');
   }
 }
+
+int highestHiveClassIndex = 27;

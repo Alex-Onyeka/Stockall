@@ -5,15 +5,19 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
+import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
+import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
+import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
-import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
-class TopNavBar extends StatelessWidget {
+class TopNavBar extends StatefulWidget {
   final Function()? refreshAction;
   final List<TempNotification> notifications;
   final String? title;
@@ -34,6 +38,11 @@ class TopNavBar extends StatelessWidget {
     this.refreshAction,
   });
 
+  @override
+  State<TopNavBar> createState() => _TopNavBarState();
+}
+
+class _TopNavBarState extends State<TopNavBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,7 +68,7 @@ class TopNavBar extends StatelessWidget {
           InkWell(
             onTap: () {
               screenWidth(context) < mobileScreen
-                  ? openSideBar!()
+                  ? widget.openSideBar!()
                   : Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -120,19 +129,21 @@ class TopNavBar extends StatelessWidget {
                         Text(
                           style: TextStyle(
                             fontSize:
-                                theme
+                                widget
+                                    .theme
                                     .mobileTexts
                                     .b2
                                     .fontSize,
                             fontWeight:
-                                theme
+                                widget
+                                    .theme
                                     .mobileTexts
                                     .b2
                                     .fontWeightBold,
                             color: Colors.black,
                           ),
                           cutLongText(
-                            title ??
+                            widget.title ??
                                 returnShopProvider(
                                   context,
                                 ).userShop?.name ??
@@ -152,13 +163,20 @@ class TopNavBar extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontSize:
-                            theme.mobileTexts.b3.fontSize,
+                            widget
+                                .theme
+                                .mobileTexts
+                                .b3
+                                .fontSize,
                         color:
-                            theme.lightModeColor.prColor250,
+                            widget
+                                .theme
+                                .lightModeColor
+                                .prColor250,
                         fontWeight: FontWeight.w500,
                       ),
                       cutLongText(
-                        subText ??
+                        widget.subText ??
                             returnShopProvider(
                               context,
                             ).userShop?.email ??
@@ -188,59 +206,115 @@ class TopNavBar extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
-                    onTap: refreshAction,
+                    onTap: () async {
+                      await CreatedExpensesFunc()
+                          .clearExpenses();
+                      await UpdatedExpensesFunc()
+                          .clearupdatedExpenses();
+                      await DeletedExpensesFunc()
+                          .clearDeletedExpenses();
+                      await CreatedReceiptsFunc()
+                          .clearReceipts();
+                      await CreatedRecordsFunc()
+                          .clearRecords();
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: StreamBuilder(
-                        stream:
-                            ConnectivityProvider()
-                                .connectivityStream,
-                        builder: (context, snapshot) {
-                          return Row(
-                            spacing: 5,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                snapshot.connectionState ==
-                                        ConnectionState
-                                            .waiting
-                                    ? 'Checking'
-                                    : snapshot.hasError
-                                    ? 'Error'
-                                    : snapshot.data!.isEmpty
-                                    ? 'Not Connected'
-                                    : 'Connected',
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color:
-                                      snapshot.connectionState ==
-                                              ConnectionState
-                                                  .waiting
-                                          ? Colors.amber
-                                          : snapshot
-                                              .hasError
-                                          ? Colors.grey
-                                          : snapshot
-                                              .data!
-                                              .isEmpty
-                                          ? Colors.grey
-                                          : Colors.green,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                      child:
+                      // StreamBuilder(
+                      //   stream:
+                      //       ConnectivityProvider()
+                      //           .connectivityStream,
+                      //   builder: (context, snapshot) {
+                      //     return Row(
+                      //       spacing: 5,
+                      //       children: [
+                      //         Text(
+                      //           style: TextStyle(
+                      //             fontSize:
+                      //                 theme
+                      //                     .mobileTexts
+                      //                     .b3
+                      //                     .fontSize,
+                      //             fontWeight:
+                      //                 FontWeight.bold,
+                      //           ),
+                      //           snapshot.connectionState ==
+                      //                   ConnectionState
+                      //                       .waiting
+                      //               ? 'Checking'
+                      //               : snapshot.hasError
+                      //               ? 'Error'
+                      //               : snapshot.data!.isEmpty
+                      //               ? 'Not Connected'
+                      //               : 'Connected',
+                      //         ),
+                      //         Container(
+                      //           padding: EdgeInsets.all(3),
+                      //           decoration: BoxDecoration(
+                      //             shape: BoxShape.circle,
+                      //             color:
+                      //                 snapshot.connectionState ==
+                      //                         ConnectionState
+                      //                             .waiting
+                      //                     ? Colors.amber
+                      //                     : snapshot
+                      //                         .hasError
+                      //                     ? Colors.grey
+                      //                     : snapshot
+                      //                         .data!
+                      //                         .isEmpty
+                      //                     ? Colors.grey
+                      //                     : Colors.green,
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     );
+                      //   },
+                      // ),
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+
+                            returnConnectivityProvider(
+                              context,
+                            ).connectedText(),
+                          ),
+                          Icon(
+                            size: 17,
+                            color:
+                                returnConnectivityProvider(
+                                  context,
+                                ).connectedColor(),
+                            returnConnectivityProvider(
+                                  context,
+                                ).isConnected
+                                ? Icons.wifi
+                                : Icons.wifi_off_sharp,
+                          ),
+                          // Container(
+                          //   padding: EdgeInsets.all(3),
+                          //   decoration: BoxDecoration(
+                          //     shape: BoxShape.circle,
+                          //     color:
+                          //         returnConnectivityProvider(
+                          //               context,
+                          //             ).isConnected
+                          //             ? Colors.green
+                          //             : Colors.grey,
+                          //   ),
+                          // ),
+                        ],
                       ),
                     ),
                   ),
@@ -273,7 +347,8 @@ class TopNavBar extends StatelessWidget {
                           Text(
                             style: TextStyle(
                               fontSize:
-                                  theme
+                                  widget
+                                      .theme
                                       .mobileTexts
                                       .b3
                                       .fontSize,
@@ -399,7 +474,11 @@ class TopNavBar extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
-                    onTap: refreshAction,
+                    onTap: widget.refreshAction,
+                    // onTap: () async {
+                    //   await MainReceiptFunc()
+                    //       .clearReceipts();
+                    // },
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
@@ -408,7 +487,8 @@ class TopNavBar extends StatelessWidget {
                           Text(
                             style: TextStyle(
                               fontSize:
-                                  theme
+                                  widget
+                                      .theme
                                       .mobileTexts
                                       .b3
                                       .fontSize,
@@ -441,7 +521,7 @@ class TopNavBar extends StatelessWidget {
                       children: [
                         InkWell(
                           onTap: () {
-                            action!();
+                            widget.action!();
                           },
                           child: Container(
                             padding: EdgeInsets.all(10),
@@ -463,7 +543,7 @@ class TopNavBar extends StatelessWidget {
                         ),
                         Visibility(
                           visible:
-                              notifications
+                              widget.notifications
                                   .where(
                                     (notif) =>
                                         !notif.isViewed,
@@ -474,7 +554,8 @@ class TopNavBar extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient:
-                                  theme
+                                  widget
+                                      .theme
                                       .lightModeColor
                                       .secGradient,
                             ),
@@ -484,7 +565,7 @@ class TopNavBar extends StatelessWidget {
                                   fontWeight:
                                       FontWeight.bold,
                                   fontSize:
-                                      notifications
+                                      widget.notifications
                                                   .where(
                                                     (
                                                       notif,
@@ -497,7 +578,7 @@ class TopNavBar extends StatelessWidget {
                                           : 14,
                                   color: Colors.white,
                                 ),
-                                '${notifications.where((notif) => !notif.isViewed).length}',
+                                '${widget.notifications.where((notif) => !notif.isViewed).length}',
                               ),
                             ),
                           ),
@@ -522,7 +603,7 @@ class TopNavBar extends StatelessWidget {
                               context: context,
                               builder: (dialogContext) {
                                 return ConfirmationAlert(
-                                  theme: theme,
+                                  theme: widget.theme,
                                   message:
                                       'You are about to Logout',
                                   title: 'Are you Sure?',

@@ -6,6 +6,7 @@ import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/nav_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
@@ -88,8 +89,9 @@ class AuthService extends ChangeNotifier {
   Future<int> signIn(
     String email,
     String password,
-    BuildContext context,
+    // BuildContext context,
   ) async {
+    NavProvider navProvider = NavProvider();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       try {
@@ -126,20 +128,13 @@ class AuthService extends ChangeNotifier {
         await UserFunc().insertUser(tempUser);
         print('Offline User Insertted');
 
-        if (context.mounted) {
-          returnNavProvider(
-            context,
-            listen: false,
-          ).verify();
-          returnNavProvider(
-            context,
-            listen: false,
-          ).offLoading();
-        }
+        navProvider.verify();
+        navProvider.offLoading();
 
         print(
           "✅ User signed in and saved locally: ${tempUser.email}",
         );
+
         return 1;
       } catch (e) {
         print("❌ Sign-in failed: ${e.toString()}");
@@ -160,6 +155,7 @@ class AuthService extends ChangeNotifier {
             LoggedInUser(loggedInUser: user),
           );
           print('Offline User Logged In');
+
           return 1;
         } else {
           print('Offline User Not Found');
@@ -233,6 +229,32 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
+    returnCustomers(
+      context,
+      listen: false,
+    ).clearCustomers();
+    returnData(context, listen: false).clearProducts();
+    returnExpensesProvider(
+      context,
+      listen: false,
+    ).clearExpenses();
+    returnNotificationProvider(
+      context,
+      listen: false,
+    ).clearNotifications();
+    returnSuggestionProvider(
+      context,
+      listen: false,
+    ).clearSuggestionsMain();
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceipts();
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).load(false);
+    returnSalesProvider(context, listen: false).clearCart();
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
@@ -242,6 +264,7 @@ class AuthService extends ChangeNotifier {
       await LoggedInUserFunc().logOut();
     }
     if (context.mounted) {
+      returnNavProvider(context, listen: false).navigate(0);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -250,40 +273,16 @@ class AuthService extends ChangeNotifier {
           },
         ),
       );
-      returnNavProvider(context, listen: false).navigate(0);
       returnShopProvider(
         context,
         listen: false,
       ).clearShop();
-      returnCustomers(
-        context,
-        listen: false,
-      ).clearCustomers();
       returnUserProvider(
         context,
         listen: false,
       ).clearUsers();
-      returnData(context, listen: false).clearProducts();
-      returnExpensesProvider(
-        context,
-        listen: false,
-      ).clearExpenses();
-      returnNotificationProvider(
-        context,
-        listen: false,
-      ).clearNotifications();
-      returnSuggestionProvider(
-        context,
-        listen: false,
-      ).clearSuggestionsMain();
-      returnReceiptProvider(
-        context,
-        listen: false,
-      ).clearReceipts();
-      returnSalesProvider(
-        context,
-        listen: false,
-      ).clearCart();
+    } else {
+      print('Context is Not Mounted');
     }
 
     notifyListeners();
@@ -305,13 +304,16 @@ class AuthService extends ChangeNotifier {
 
   User? get currentUserAuth => _client.auth.currentUser;
 
+  TempUserClass? get currentUserOffline =>
+      LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
+
   String? get currentUser =>
-      connectivity.isConnected
-          ? _client.auth.currentUser?.id
-          : LoggedInUserFunc()
-              .getLoggedInUser()
-              ?.loggedInUser
-              ?.userId;
+      // connectivity.isConnected
+      _client.auth.currentUser?.id ??
+      LoggedInUserFunc()
+          .getLoggedInUser()
+          ?.loggedInUser
+          ?.userId;
 
   String? get currentUserEmail =>
       connectivity.isConnected

@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/helpers/clean_up_url.dart';
+import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
@@ -72,8 +75,8 @@ class _DashboardMobileState extends State<DashboardMobile> {
       GlobalKey<ScaffoldState>();
   late TempShopClass shop;
 
-  Future<List<TempMainReceipt>> getMainReceipts() {
-    var tempReceipts = returnReceiptProvider(
+  Future<List<TempMainReceipt>> getMainReceipts() async {
+    var tempReceipts = await returnReceiptProvider(
       context,
       listen: false,
     ).loadReceipts(widget.shopId!, context);
@@ -142,13 +145,28 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
   late Future<List<TempExpensesClass>> expensesFuture;
 
-  Future<List<TempExpensesClass>> getExpenses() {
-    var tempExp = returnExpensesProvider(
+  Future<List<TempExpensesClass>> getExpenses() async {
+    var tempExp = await returnExpensesProvider(
       context,
       listen: false,
     ).getExpenses(widget.shopId ?? 0);
 
     return tempExp;
+  }
+
+  late Future<List<TempCustomersClass>> customerFuture;
+  Future<List<TempCustomersClass>> getCustomers() async {
+    var customers = await returnCustomers(
+      context,
+      listen: false,
+    ).fetchCustomers(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+    );
+
+    return customers;
   }
 
   TextEditingController emailController =
@@ -167,11 +185,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
       getProdutRecordsFuture = getProductSalesRecord();
       expensesFuture = getExpenses();
       productsFuture = getProducts();
+      employeesFuture = getEmployees();
+      customerFuture = getCustomers();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         returnReceiptProvider(
           context,
           listen: false,
-        ).load();
+        ).load(true);
         print('Data Loaded');
       });
     }
@@ -179,18 +199,67 @@ class _DashboardMobileState extends State<DashboardMobile> {
     notificationsFuture = fetchNotifications();
   }
 
-  Future<void> refreshAll() async {
-    getMainReceipts();
-    getProductSalesRecord();
-    getExpenses();
-    returnUserProvider(
-      context,
-      listen: false,
-    ).fetchCurrentUser(context);
-    getProducts();
-    clearDate();
-    fetchNotifications();
+  late Future<List<TempUserClass>> employeesFuture;
+  Future<List<TempUserClass>> getEmployees() {
+    var users =
+        returnUserProvider(
+          context,
+          listen: false,
+        ).fetchUsers();
+
+    return users;
   }
+
+  // Future<void> refreshAll() async {
+  //   var safeContext = context;
+  //   int isSynced =
+  //       returnData(context, listen: false).isSynced();
+  //   bool isOnline = await ConnectivityProvider().isOnline();
+  //   if (isSynced == 0 && context.mounted && isOnline) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return ConfirmationAlert(
+  //           theme: returnTheme(context, listen: false),
+  //           message:
+  //               'You have unsynced Records, are you sure you want to proceed?',
+  //           title: 'Unsynced Records Detected',
+  //           action: () async {
+  //             Navigator.of(context).pop();
+  //             await returnData(
+  //               context,
+  //               listen: false,
+  //             ).syncData(safeContext);
+
+  //             getMainReceipts();
+  //             getProductSalesRecord();
+  //             getExpenses();
+  //             getEmployees();
+  //             returnUserProvider(
+  //               context,
+  //               listen: false,
+  //             ).fetchCurrentUser(safeContext);
+  //             getProducts();
+  //             clearDate();
+  //             fetchNotifications();
+  //           },
+  //         );
+  //       },
+  //     );
+  //   } else {
+  //     getMainReceipts();
+  //     getProductSalesRecord();
+  //     getExpenses();
+  //     getEmployees();
+  //     returnUserProvider(
+  //       context,
+  //       listen: false,
+  //     ).fetchCurrentUser(safeContext);
+  //     getProducts();
+  //     clearDate();
+  //     fetchNotifications();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -325,8 +394,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                       ),
                       Expanded(
                         child: RefreshIndicator(
-                          onRefresh: () {
-                            return refreshAll();
+                          onRefresh: () async {
+                            return await RefreshFunctions(
+                              context,
+                            ).refreshAll(context);
                           },
                           backgroundColor: Colors.white,
                           color:

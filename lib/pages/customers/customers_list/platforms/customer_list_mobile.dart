@@ -232,7 +232,8 @@ class _CustomerListMobileState
                                               context,
                                               listen: false,
                                             ).selectCustomer(
-                                              customer.id!,
+                                              customer
+                                                  .uuid!,
                                               customer.name,
                                             );
                                             Navigator.of(
@@ -246,8 +247,8 @@ class _CustomerListMobileState
                                                   context,
                                                 ) {
                                                   return CustomerPage(
-                                                    id:
-                                                        customer.id!,
+                                                    uuid:
+                                                        customer.uuid!,
                                                   );
                                                 },
                                               ),
@@ -307,7 +308,7 @@ class _CustomerListMobileState
                                         context,
                                         listen: false,
                                       ).selectCustomer(
-                                        customer.id!,
+                                        customer.uuid!,
                                         customer.name,
                                       );
                                       Navigator.of(
@@ -325,9 +326,9 @@ class _CustomerListMobileState
                                             context,
                                           ) {
                                             return CustomerPage(
-                                              id:
+                                              uuid:
                                                   customer
-                                                      .id!,
+                                                      .uuid!,
                                             );
                                           },
                                         ),

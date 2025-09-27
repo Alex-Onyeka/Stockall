@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
+import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   Future<void> createShop(TempShopClass shop) async {
+    shop.updatedAt = DateTime.now();
     // Insert the shop
     await supabase.from('shops').insert(shop.toJson());
 
@@ -21,7 +26,7 @@ class ShopProvider extends ChangeNotifier {
   }
 
   Future<TempShopClass?> getUserShop(String userId) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       final response =
           await supabase.from('shops').select().contains(
@@ -30,14 +35,16 @@ class ShopProvider extends ChangeNotifier {
           ).maybeSingle();
 
       if (response == null) {
-        await ShopFunc().clearShop();
+        // await ShopFunc().clearShop();
+        print('User Shop not found');
         return null;
       }
-      userShop = TempShopClass.fromJson(response);
+      setShop(TempShopClass.fromJson(response));
+      print('User Shop found ${userShop?.name}');
       notifyListeners();
       await ShopFunc().insertShop(userShop!);
     } else {
-      userShop = ShopFunc().getShop();
+      setShop(ShopFunc().getShop());
     }
     notifyListeners();
 
@@ -49,19 +56,33 @@ class ShopProvider extends ChangeNotifier {
     required int? type,
   }) async {
     try {
-      await supabase
-          .from('shops')
-          .update({'print_type': type})
-          .eq('shop_id', shopId)
-          .maybeSingle();
+      bool isOnline = await connectivity.isOnline();
+      if (isOnline) {
+        await supabase
+            .from('shops')
+            .update({'print_type': type})
+            .eq('shop_id', shopId)
+            .maybeSingle();
 
-      final response = await getUserShop(
-        AuthService().currentUser!,
-      );
-
-      if (response != null) {
-        setShop(response);
-        notifyListeners();
+        final response = await getUserShop(
+          AuthService().currentUser!,
+        );
+        if (response != null) {
+          setShop(response);
+          notifyListeners();
+        }
+      } else {
+        TempShopClass? shop = ShopFunc().getShop();
+        if (shop != null) {
+          shop.printType = type;
+          shop.updatedAt = DateTime.now();
+          ShopFunc().updateShop(shop);
+          UpdatedShopFunc().createUpdatedShop(
+            UpdatedShop(shop: shop),
+          );
+          setShop(shop);
+          notifyListeners();
+        }
       }
     } catch (e) {
       print("❌ Failed to update print type: $e");
@@ -74,27 +95,45 @@ class ShopProvider extends ChangeNotifier {
     required String email,
     required String? phoneNumber,
   }) async {
-    try {
-      await supabase
-          .from('shops')
-          .update({
-            'name': name,
-            'email': email,
-            'phone_number': phoneNumber,
-          })
-          .eq('shop_id', shopId)
-          .maybeSingle();
+    bool isOnline = await connectivity.isOnline();
 
-      final response = await getUserShop(
-        AuthService().currentUser!,
-      );
+    if (isOnline) {
+      try {
+        await supabase
+            .from('shops')
+            .update({
+              'name': name,
+              'email': email,
+              'phone_number': phoneNumber,
+              'updated_at':
+                  DateTime.now().toIso8601String(),
+            })
+            .eq('shop_id', shopId)
+            .maybeSingle();
 
-      if (response != null) {
-        setShop(response);
-        notifyListeners();
+        final response = await getUserShop(
+          AuthService().currentUser!,
+        );
+
+        if (response != null) {
+          setShop(response);
+          notifyListeners();
+        }
+      } catch (e) {
+        print("❌ Failed to update contact details: $e");
       }
-    } catch (e) {
-      print("❌ Failed to update contact details: $e");
+    } else {
+      TempShopClass? shop = ShopFunc().getShop();
+      shop?.updatedAt = DateTime.now();
+      shop?.email = email;
+      shop?.phoneNumber = phoneNumber;
+      shop?.name = name;
+      await ShopFunc().updateShop(shop);
+      shop != null
+          ? await UpdatedShopFunc().createUpdatedShop(
+            UpdatedShop(shop: shop),
+          )
+          : {};
     }
   }
 
@@ -102,23 +141,43 @@ class ShopProvider extends ChangeNotifier {
     required int shopId,
     required String currency,
   }) async {
-    try {
-      await supabase
-          .from('shops')
-          .update({'currency': currency})
-          .eq('shop_id', shopId)
-          .maybeSingle();
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        await supabase
+            .from('shops')
+            .update({
+              'currency': currency,
+              'updated_at':
+                  DateTime.now().toIso8601String(),
+            })
+            .eq('shop_id', shopId)
+            .maybeSingle();
 
-      final response = await getUserShop(
-        AuthService().currentUser!,
-      );
+        final response = await getUserShop(
+          AuthService().currentUser!,
+        );
 
-      if (response != null) {
-        setShop(response);
+        if (response != null) {
+          setShop(response);
+          notifyListeners();
+        }
+      } catch (e) {
+        print("❌ Failed to update contact details: $e");
+      }
+    } else {
+      TempShopClass? shop = ShopFunc().getShop();
+      shop?.updatedAt = DateTime.now();
+      shop?.currency = currency;
+      await ShopFunc().updateShop(shop);
+
+      if (shop != null) {
+        await UpdatedShopFunc().createUpdatedShop(
+          UpdatedShop(shop: shop),
+        );
+        setShop(shop);
         notifyListeners();
       }
-    } catch (e) {
-      print("❌ Failed to update contact details: $e");
     }
   }
 
@@ -129,87 +188,137 @@ class ShopProvider extends ChangeNotifier {
     required String city,
     required String? address,
   }) async {
-    try {
-      final response =
-          await supabase
-              .from('shops')
-              .update({
-                'country': country,
-                'state': state,
-                'city': city,
-                'shop_address': address,
-              })
-              .eq('shop_id', shopId)
-              .maybeSingle();
-      final shop = await getUserShop(
-        AuthService().currentUser!,
-      );
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        final response =
+            await supabase
+                .from('shops')
+                .update({
+                  'country': country,
+                  'state': state,
+                  'city': city,
+                  'shop_address': address,
+                  'updated_at':
+                      DateTime.now().toIso8601String(),
+                })
+                .eq('shop_id', shopId)
+                .maybeSingle();
+        final shop = await getUserShop(
+          AuthService().currentUser!,
+        );
 
-      if (response != null) {
-        setShop(shop!);
+        if (response != null) {
+          setShop(shop!);
+          notifyListeners();
+        }
+      } catch (e) {
+        print("❌ Failed to update location: $e");
+      }
+    } else {
+      TempShopClass? shop = ShopFunc().getShop();
+      shop?.updatedAt = DateTime.now();
+      shop?.country = country;
+      shop?.state = state;
+      shop?.city = city;
+      shop?.shopAddress = address;
+      await ShopFunc().updateShop(shop);
+      if (shop != null) {
+        await UpdatedShopFunc().createUpdatedShop(
+          UpdatedShop(shop: shop),
+        );
+        setShop(shop);
         notifyListeners();
       }
-    } catch (e) {
-      print("❌ Failed to update location: $e");
     }
   }
 
   Future<List<String>> fetchShopCategories(
     int shopId,
   ) async {
-    final response =
-        await supabase
-            .from('shops')
-            .select('categories')
-            .eq('shop_id', shopId)
-            .single();
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      final response =
+          await supabase
+              .from('shops')
+              .select('categories')
+              .eq('shop_id', shopId)
+              .single();
 
-    final List<dynamic> categories =
-        response['categories'] ?? [];
-    notifyListeners();
-    return categories.cast<String>();
+      final List<dynamic> categories =
+          response['categories'] ?? [];
+      notifyListeners();
+      return categories.cast<String>();
+    } else {
+      TempShopClass? shop = ShopFunc().getShop();
+      if (shop != null) {
+        final List<String>? categories = shop.categories;
+        return categories ?? [];
+      } else {
+        return [];
+      }
+    }
   }
 
   Future<void> appendShopCategories({
     required int shopId,
     required List<String> newCategories,
   }) async {
-    try {
-      // Step 1: Fetch existing categories
-      final response =
-          await supabase
-              .from('shops')
-              .select('categories')
-              .eq('shop_id', shopId)
-              .maybeSingle();
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        // Step 1: Fetch existing categories
+        final response =
+            await supabase
+                .from('shops')
+                .select('categories')
+                .eq('shop_id', shopId)
+                .maybeSingle();
 
-      List<String> existingCategories =
-          (response?['categories'] as List<dynamic>?)
-              ?.cast<String>() ??
-          [];
+        List<String> existingCategories =
+            (response?['categories'] as List<dynamic>?)
+                ?.cast<String>() ??
+            [];
 
-      // Step 2: Merge and deduplicate
-      final updatedCategories =
-          {
-            ...existingCategories,
-            ...newCategories,
-          }.toList();
+        // Step 2: Merge and deduplicate
+        final updatedCategories =
+            {
+              ...existingCategories,
+              ...newCategories,
+            }.toList();
 
-      // Step 3: Update in database
+        // Step 3: Update in database
 
-      await supabase
-          .from('shops')
-          .update({'categories': updatedCategories})
-          .eq('shop_id', shopId)
-          .select();
+        await supabase
+            .from('shops')
+            .update({'categories': updatedCategories})
+            .eq('shop_id', shopId)
+            .select();
 
-      await getUserShop(AuthService().currentUser!);
-      notifyListeners();
+        await getUserShop(AuthService().currentUser!);
+        notifyListeners();
 
-      // print('Updated categories: $updateResult');
-    } catch (e) {
-      // print('Error appending categories: $e');
-      rethrow;
+        // print('Updated categories: $updateResult');
+      } catch (e) {
+        // print('Error appending categories: $e');
+        rethrow;
+      }
+    } else {
+      TempShopClass? shop = ShopFunc().getShop();
+      if (shop != null) {
+        shop.updatedAt = DateTime.now();
+        shop.categories =
+            {
+              ...shop.categories ?? [],
+              ...newCategories,
+            }.toList();
+        await ShopFunc().updateShop(shop);
+        await UpdatedShopFunc().createUpdatedShop(
+          UpdatedShop(shop: shop),
+        );
+        setShop(shop);
+        notifyListeners();
+      }
     }
   }
 
@@ -313,18 +422,18 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  ShopProvider() {
-    _init();
-  }
-  Future<void> _init() async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId != null) {
-      final shop = await getUserShop(userId);
-      if (shop != null) {
-        setShop(shop);
-      }
-    }
-  }
+  // ShopProvider() {
+  //   _init();
+  // }
+  // Future<void> _init() async {
+  //   final userId = AuthService().currentUser;
+  //   if (userShop == null) {
+  //     final shop = await getUserShop(userId!);
+  //     if (shop != null) {
+  //       setShop(shop);
+  //     }
+  //   }
+  // }
 
   bool isUpdated = false;
 
@@ -352,4 +461,111 @@ class ShopProvider extends ChangeNotifier {
   String state = '';
   String city = '';
   String address = '';
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  //
+  //
+  //
+  //
+
+  Future<void> updateShopSync(BuildContext context) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      print(
+        UpdatedShopFunc()
+            .getUpdatedShop()
+            .length
+            .toString(),
+      );
+
+      if (UpdatedShopFunc().getUpdatedShop().isNotEmpty &&
+          isOnline) {
+        final updatedShop =
+            UpdatedShopFunc().getUpdatedShop();
+
+        for (final updated in updatedShop) {
+          final localShop = updated.shop;
+
+          localShop.updatedAt ??= DateTime.now().toUtc();
+
+          if (localShop.shopId == null) {
+            print('⚠️ Local shopId is null, skipping');
+            continue;
+          }
+          final remoteData =
+              await supabase
+                  .from('shops')
+                  .select('shop_id, updated_at')
+                  .eq('shop_id', localShop.shopId!)
+                  .maybeSingle();
+
+          if (remoteData == null) {
+            await supabase
+                .from('shops')
+                .insert(localShop.toJson());
+            print(
+              'Inserted Shop with Shop Id ${localShop.shopId}',
+            );
+            await UpdatedShopFunc().deleteUpdatedShop(
+              localShop.shopId!,
+            );
+          } else {
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
+            final remoteUpdatedAt =
+                remoteUpdatedAtRaw == null
+                    ? null
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
+
+            localShop.updatedAt =
+                (localShop.updatedAt ?? DateTime.now())
+                    .toUtc();
+            print(
+              "Local updatedAt: ${localShop.updatedAt}",
+            );
+            print("Remote updatedAt: $remoteUpdatedAt");
+
+            if (remoteUpdatedAt == null ||
+                localShop.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
+              await supabase
+                  .from('shops')
+                  .update(localShop.toJson())
+                  .eq('shop_id', localShop.shopId!);
+              print(
+                'Updated Shop with shopId ${localShop.shopId}',
+              );
+              await UpdatedShopFunc().deleteUpdatedShop(
+                localShop.shopId!,
+              );
+            } else {
+              print(
+                'Skipped Shop ${localShop.shopId}, remote is newer ✅',
+              );
+            }
+          }
+        }
+
+        await UpdatedShopFunc().clearUpdatedShop();
+        print('Unsynced updated Shop cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Shop ✅');
+          await getUserShop(AuthService().currentUser!);
+        }
+      }
+    } catch (e) {
+      print('Batch update failed ❌: $e');
+    }
+  }
 }

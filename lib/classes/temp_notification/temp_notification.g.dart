@@ -17,7 +17,6 @@ class TempNotificationAdapter extends TypeAdapter<TempNotification> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempNotification(
-      id: fields[0] as int?,
       shopId: fields[2] as int,
       notifId: fields[1] as String,
       productId: fields[3] as int?,
@@ -28,17 +27,18 @@ class TempNotificationAdapter extends TypeAdapter<TempNotification> {
       isViewed: fields[10] as bool,
       category: fields[9] as String,
       itemName: fields[4] as String?,
+      uuid: fields[13] as String?,
       departmentName: fields[11] as String?,
       departmentId: fields[12] as int?,
+      productUuid: fields[14] as String?,
+      expensesUuid: fields[15] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempNotification obj) {
     writer
-      ..writeByte(13)
-      ..writeByte(0)
-      ..write(obj.id)
+      ..writeByte(15)
       ..writeByte(1)
       ..write(obj.notifId)
       ..writeByte(2)
@@ -62,7 +62,13 @@ class TempNotificationAdapter extends TypeAdapter<TempNotification> {
       ..writeByte(11)
       ..write(obj.departmentName)
       ..writeByte(12)
-      ..write(obj.departmentId);
+      ..write(obj.departmentId)
+      ..writeByte(13)
+      ..write(obj.uuid)
+      ..writeByte(14)
+      ..write(obj.productUuid)
+      ..writeByte(15)
+      ..write(obj.expensesUuid);
   }
 
   @override

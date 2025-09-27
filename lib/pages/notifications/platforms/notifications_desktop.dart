@@ -320,17 +320,15 @@ class _NotificatonTileMainState
       ),
       child: InkWell(
         onTap: () {
-          returnNotificationProvider(
-            context,
-            listen: false,
-          ).updateNotification(widget.notif.id!);
-          if (widget.notif.productId != null) {
+          if (context.mounted &&
+              widget.notif.productUuid != null) {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
                   return ProductDetailsPage(
-                    productId: widget.notif.productId ?? 0,
+                    notifId: widget.notif.uuid,
+                    productUuid: widget.notif.productUuid!,
                   );
                 },
               ),
@@ -341,7 +339,8 @@ class _NotificatonTileMainState
               MaterialPageRoute(
                 builder: (context) {
                   return ExpenseDetails(
-                    expenseId: widget.notif.expenseId ?? 0,
+                    expenseUuid:
+                        widget.notif.expensesUuid ?? '0',
                   );
                 },
               ),

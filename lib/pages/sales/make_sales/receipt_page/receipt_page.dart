@@ -4,11 +4,11 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_p
 import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_page_mobile.dart';
 
 class ReceiptPage extends StatelessWidget {
-  final int receiptId;
+  final String receiptUuid;
   final bool isMain;
   const ReceiptPage({
     super.key,
-    required this.receiptId,
+    required this.receiptUuid,
     required this.isMain,
   });
 
@@ -19,12 +19,12 @@ class ReceiptPage extends StatelessWidget {
         if (constraints.maxWidth < mobileScreen) {
           return ReceiptPageMobile(
             isMain: isMain,
-            receiptId: receiptId,
+            receiptUuid: receiptUuid,
           );
         } else {
           return ReceiptPageDesktop(
             isMain: isMain,
-            receiptId: receiptId,
+            receiptUuid: receiptUuid,
           );
         }
       },

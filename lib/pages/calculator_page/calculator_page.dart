@@ -31,52 +31,55 @@ class _CalculatorPageState extends State<CalculatorPage> {
     var theme = returnTheme(context);
     return Stack(
       children: [
-        Row(
-          spacing: 15,
-          children: [
-            MyDrawerWidget(
-              globalKey: _scaffoldKey,
-              action: () {
-                var safeContext = context;
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return ConfirmationAlert(
-                      theme: theme,
-                      message: 'You are about to Logout',
-                      title: 'Are you Sure?',
-                      action: () async {
-                        Navigator.of(context).pop();
-                        setState(() {
-                          isLoading = true;
-                        });
-                        if (safeContext.mounted) {
-                          await AuthService().signOut(
-                            safeContext,
-                          );
-                        }
-                      },
-                    );
-                  },
-                );
-              },
-              theme: theme,
-              notifications:
-                  returnNotificationProvider(
-                        context,
-                      ).notifications.isEmpty
-                      ? []
-                      : returnNotificationProvider(
-                        context,
-                      ).notifications,
-            ),
-            Expanded(
-              child: DesktopPageContainer(
-                widget: MyCalculatorDesktop(),
+        Container(
+          color: Colors.white,
+          child: Row(
+            spacing: 15,
+            children: [
+              MyDrawerWidget(
+                globalKey: _scaffoldKey,
+                action: () {
+                  var safeContext = context;
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ConfirmationAlert(
+                        theme: theme,
+                        message: 'You are about to Logout',
+                        title: 'Are you Sure?',
+                        action: () async {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            isLoading = true;
+                          });
+                          if (safeContext.mounted) {
+                            await AuthService().signOut(
+                              safeContext,
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+                theme: theme,
+                notifications:
+                    returnNotificationProvider(
+                          context,
+                        ).notifications.isEmpty
+                        ? []
+                        : returnNotificationProvider(
+                          context,
+                        ).notifications,
               ),
-            ),
-            RightSideBar(theme: theme),
-          ],
+              Expanded(
+                child: DesktopPageContainer(
+                  widget: MyCalculatorDesktop(),
+                ),
+              ),
+              RightSideBar(theme: theme),
+            ],
+          ),
         ),
         Visibility(
           visible: isLoading,

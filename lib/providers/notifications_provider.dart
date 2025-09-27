@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationProvider with ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   List<TempNotification> _notifications = [];
 
@@ -14,6 +16,7 @@ class NotificationProvider with ChangeNotifier {
 
   void clearNotifications() {
     _notifications.clear();
+    print('Notifications Cleared');
     notifyListeners();
   }
 
@@ -25,32 +28,36 @@ class NotificationProvider with ChangeNotifier {
   Future<void> deleteNotificationFromSupabase(
     TempNotification notif,
   ) async {
-    try {
-      debugPrint(
-        'Attempting to delete notification ID: ${notif.id}',
-      );
+    bool isOnline = await connectivity.isOnline();
 
-      final response =
-          await supabase
-              .from('notifications')
-              .delete()
-              .eq('id', notif.id!)
-              .select(); // confirm deletion
-
-      debugPrint('Deleted rows: $response');
-
-      if (response.isNotEmpty) {
-        deleteNotification(notif);
+    if (isOnline) {
+      try {
         debugPrint(
-          'Notification ${notif.id} deleted successfully.',
+          'Attempting to delete notification ID: ${notif.uuid}',
         );
-      } else {
-        debugPrint(
-          'No matching notification found to delete.',
-        );
+
+        final response =
+            await supabase
+                .from('notifications')
+                .delete()
+                .eq('uuid', notif.uuid!)
+                .select(); // confirm deletion
+
+        debugPrint('Deleted rows: $response');
+
+        if (response.isNotEmpty) {
+          deleteNotification(notif);
+          debugPrint(
+            'Notification ${notif.uuid} deleted successfully.',
+          );
+        } else {
+          debugPrint(
+            'No matching notification found to delete.',
+          );
+        }
+      } catch (e) {
+        debugPrint('Error deleting notification: $e');
       }
-    } catch (e) {
-      debugPrint('Error deleting notification: $e');
     }
   }
 
@@ -85,42 +92,55 @@ class NotificationProvider with ChangeNotifier {
     return _notifications;
   }
 
-  Future<void> updateNotification(int notifId) async {
-    try {
-      final response = await supabase
-          .from('notifications')
-          .update({'is_viewed': true})
-          .eq(
-            'id',
-            notifId,
-          ); // FIXED: Use 'id' not 'notif_id'
+  Future<void> updateNotification(String notifUuid) async {
+    bool isOnline = await connectivity.isOnline();
 
-      if (response != null) {
-        debugPrint('Notification $notifId updated.');
-      }
-
-      // Update locally
-      int index = _notifications.indexWhere(
-        (n) => n.id == notifId,
-      );
-      if (index != -1) {
-        _notifications[index] = TempNotification(
-          id: _notifications[index].id,
-          notifId: _notifications[index].notifId,
-          shopId: _notifications[index].shopId,
-          productId: _notifications[index].productId,
-          title: _notifications[index].title,
-          text: _notifications[index].text,
-          date: _notifications[index].date,
-          category: _notifications[index].category,
-          itemName: _notifications[index].itemName,
-
-          isViewed: true,
+    if (isOnline) {
+      try {
+        print(
+          'Updating notification with uuid: $notifUuid',
         );
-        notifyListeners();
+        final response =
+            await supabase
+                .from('notifications')
+                .update({'is_viewed': true})
+                .eq('uuid', notifUuid)
+                .select()
+                .maybeSingle();
+
+        if (response == null) {
+          debugPrint(
+            '⚠️ No notification found with uuid $notifUuid',
+          );
+        } else {
+          debugPrint(
+            '✅ Notification $notifUuid updated: $response',
+          );
+        }
+
+        // Update locally
+        int index = _notifications.indexWhere(
+          (n) => n.uuid == notifUuid,
+        );
+        if (index != -1) {
+          _notifications[index] = TempNotification(
+            uuid: _notifications[index].uuid,
+            notifId: _notifications[index].notifId,
+            shopId: _notifications[index].shopId,
+            productId: _notifications[index].productId,
+            productUuid: _notifications[index].productUuid,
+            title: _notifications[index].title,
+            text: _notifications[index].text,
+            date: _notifications[index].date,
+            category: _notifications[index].category,
+            itemName: _notifications[index].itemName,
+            isViewed: true,
+          );
+          notifyListeners();
+        }
+      } catch (e) {
+        debugPrint('Error updating notification: $e');
       }
-    } catch (e) {
-      debugPrint('Error updating notification: $e');
     }
   }
 }

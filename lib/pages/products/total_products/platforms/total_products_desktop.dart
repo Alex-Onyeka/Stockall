@@ -233,6 +233,47 @@ class _TotalProductsDesktopState
                     appBar: appBar(
                       context: context,
                       title: 'All Items',
+                      widget: Visibility(
+                        visible:
+                            screenWidth(context) >
+                            mobileScreen,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            onTap: () async {
+                              await getProductList();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                10,
+                              ),
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Refresh',
+                                  ),
+                                  Icon(
+                                    size: 18,
+                                    Icons.refresh_rounded,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     floatingActionButton: Visibility(
                       visible: authorization(
@@ -666,8 +707,8 @@ class _TotalProductsDesktopState
                                                                     context,
                                                                   ) {
                                                                     return ProductDetailsPage(
-                                                                      productId:
-                                                                          product.id!,
+                                                                      productUuid:
+                                                                          product.uuid!,
                                                                     );
                                                                   },
                                                                 ),
@@ -895,8 +936,8 @@ class _TotalProductsDesktopState
                                                                     context,
                                                                   ) {
                                                                     return ProductDetailsPage(
-                                                                      productId:
-                                                                          product.id!,
+                                                                      productUuid:
+                                                                          product.uuid!,
                                                                     );
                                                                   },
                                                                 ),
@@ -944,8 +985,8 @@ class _TotalProductsDesktopState
                                                                     context,
                                                                   ) {
                                                                     return ProductDetailsPage(
-                                                                      productId:
-                                                                          product.id!,
+                                                                      productUuid:
+                                                                          product.uuid!,
                                                                     );
                                                                   },
                                                                 ),

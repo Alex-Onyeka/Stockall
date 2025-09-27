@@ -71,20 +71,19 @@ class ReportProvider extends ChangeNotifier {
     List<TempProductSaleRecord> records,
   ) {
     // Step 1: Group sold products by productId and sum quantities
-    final Map<int, double> quantityMap = {};
+    final Map<String, double> quantityMap = {};
     for (var record in records) {
-      quantityMap[record.productId] =
-          (quantityMap[record.productId] ?? 0) +
-          record.quantity;
+      quantityMap[record.uuid!] =
+          (quantityMap[record.uuid] ?? 0) + record.quantity;
     }
 
     // Step 2: Create ProductQuantitySummary for all products
     final List<ProductQuantitySummary> summaryList =
         allProducts.map((product) {
           return ProductQuantitySummary(
-            productId: product.id!,
+            productUuid: product.uuid!,
             productName: product.name,
-            totalQuantity: quantityMap[product.id] ?? 0,
+            totalQuantity: quantityMap[product.uuid] ?? 0,
           );
         }).toList();
 
@@ -100,19 +99,18 @@ class ReportProvider extends ChangeNotifier {
     List<TempProductClass> allProducts,
     List<TempProductSaleRecord> records,
   ) {
-    final Map<int, double> quantityMap = {};
+    final Map<String, double> quantityMap = {};
     for (var record in records) {
-      quantityMap[record.productId] =
-          (quantityMap[record.productId] ?? 0) +
-          record.quantity;
+      quantityMap[record.uuid!] =
+          (quantityMap[record.uuid] ?? 0) + record.quantity;
     }
 
     final List<ProductQuantitySummary> summaryList =
         allProducts.map((product) {
           return ProductQuantitySummary(
-            productId: product.id!,
+            productUuid: product.uuid!,
             productName: product.name,
-            totalQuantity: quantityMap[product.id] ?? 0,
+            totalQuantity: quantityMap[product.uuid] ?? 0,
           );
         }).toList();
 

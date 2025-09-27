@@ -7,6 +7,7 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
+import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -171,46 +172,52 @@ class _EmployeeListDesktopState
                         text: 'Add New Employee',
                       ),
                     ),
-                    appBar: AppBar(
-                      toolbarHeight: 60,
-                      leading: Opacity(
-                        opacity: 0,
-                        child: IconButton(
-                          onPressed: () {
-                            // Navigator.of(context).pop();
-                          },
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 10.0,
-                              right: 5,
-                            ),
-                            child: Icon(
-                              Icons
-                                  .arrow_back_ios_new_rounded,
+                    appBar: appBar(
+                      context: context,
+                      title:
+                          user.userId! == user.authUserId
+                              ? 'Your Employees'
+                              : 'My Account',
+                      widget: Visibility(
+                        visible:
+                            screenWidth(context) >
+                            mobileScreen,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            onTap: () async {
+                              await getEmployees();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                10,
+                              ),
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Refresh',
+                                  ),
+                                  Icon(
+                                    size: 18,
+                                    Icons.refresh_rounded,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      centerTitle: true,
-                      title: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .h4
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            user.userId! == user.authUserId
-                                ? 'Your Employees'
-                                : 'My Account',
-                          ),
-                        ],
                       ),
                     ),
                     body: Builder(

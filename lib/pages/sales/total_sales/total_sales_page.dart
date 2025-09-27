@@ -6,12 +6,12 @@ import 'package:stockall/pages/sales/total_sales/platforms/total_sales_mobile.da
 class TotalSalesPage extends StatelessWidget {
   final String? id;
   final bool? turnOff;
-  final int? customerId;
+  final String? customerUuid;
   final bool? isInvoice;
   const TotalSalesPage({
     super.key,
     this.id,
-    this.customerId,
+    this.customerUuid,
     this.isInvoice,
     this.turnOff,
   });
@@ -23,12 +23,12 @@ class TotalSalesPage extends StatelessWidget {
         if (constraints.maxWidth < mobileScreen) {
           return TotalSalesMobile(
             id: id,
-            customerId: customerId,
+            customerUuid: customerUuid,
             isInvoice: isInvoice,
           );
         } else {
           return TotalSalesDesktop(
-            customerId: customerId,
+            customerUuid: customerUuid,
             turnOff: turnOff,
             id: id,
             isInvoice: isInvoice,

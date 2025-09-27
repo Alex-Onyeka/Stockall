@@ -3,8 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/platforms/expenses_desktop.dart';
 import 'package:stockall/pages/expenses/platforms/expenses_moblie.dart';
-import 'package:stockall/providers/nav_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class ExpensesPage extends StatefulWidget {
   final bool? turnOn;
@@ -25,26 +23,10 @@ class _ExpensesPageState extends State<ExpensesPage> {
     super.initState();
     returnNavProvider(context, listen: false).navigate(4);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final userShop = await returnShopProvider(
+      await returnNavProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!);
-      if (context.mounted && userShop == null) {
-        // ignore: use_build_context_synchronously
-        NavProvider().nullShop(context);
-      } else {
-        if (context.mounted) {
-          final provider = returnUserProvider(
-            context,
-            listen: false,
-          );
-
-          if (context.mounted) {
-            await provider.fetchCurrentUser(context);
-          }
-        }
-      }
-
+      ).validate(context);
       setState(() {
         // stillLoading = false;
       });

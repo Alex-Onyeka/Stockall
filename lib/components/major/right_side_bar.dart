@@ -277,13 +277,21 @@ class RightSideBar extends StatelessWidget {
                       child: Builder(
                         builder: (context) {
                           if (returnReceiptProvider(context)
-                              .returnOwnReceiptsByDayOrWeek(
-                                context,
-                                returnReceiptProvider(
-                                  context,
-                                ).receipts,
-                              )
-                              .isEmpty) {
+                                  .returnOwnReceiptsByDayOrWeek(
+                                    context,
+                                    returnReceiptProvider(
+                                      context,
+                                    ).receipts,
+                                  )
+                                  .isEmpty ||
+                              returnReceiptProvider(context)
+                                  .returnproductsRecordByDayOrWeek(
+                                    context,
+                                    returnReceiptProvider(
+                                      context,
+                                    ).produtRecordSalesMain,
+                                  )
+                                  .isEmpty) {
                             return Expanded(
                               child: Material(
                                 color: Colors.transparent,
@@ -340,7 +348,7 @@ class RightSideBar extends StatelessWidget {
                                   context,
                                   index,
                                 ) {
-                                  TempMainReceipt rec =
+                                  var receipts =
                                       returnReceiptProvider(
                                         context,
                                       ).returnOwnReceiptsByDayOrWeek(
@@ -348,27 +356,41 @@ class RightSideBar extends StatelessWidget {
                                         returnReceiptProvider(
                                           context,
                                         ).receipts,
-                                      )[index];
+                                      );
+                                  receipts.sort(
+                                    (a, b) => b.createdAt
+                                        .compareTo(
+                                          a.createdAt,
+                                        ),
+                                  );
+                                  TempMainReceipt? rec =
+                                      receipts[index];
                                   String itemName =
                                       returnReceiptProvider(
                                                 context,
-                                                listen:
-                                                    false,
                                               )
                                               .produtRecordSalesMain
-                                              .isNotEmpty
-                                          ? returnReceiptProvider(
+                                              .where(
+                                                (record) =>
+                                                    record
+                                                        .receiptUuid ==
+                                                    rec.uuid,
+                                              )
+                                              .toList()
+                                              .isEmpty
+                                          ? 'Item name'
+                                          : returnReceiptProvider(
                                                 context,
                                               )
                                               .produtRecordSalesMain
-                                              .firstWhere(
+                                              .where(
                                                 (record) =>
                                                     record
-                                                        .recepitId ==
-                                                    rec.id!,
+                                                        .receiptUuid ==
+                                                    rec.uuid,
                                               )
-                                              .productName
-                                          : 'Item name';
+                                              .first
+                                              .productName;
                                   return Padding(
                                     padding:
                                         const EdgeInsets.only(
@@ -387,8 +409,8 @@ class RightSideBar extends StatelessWidget {
                                                 context,
                                               ) {
                                                 return ReceiptPage(
-                                                  receiptId:
-                                                      rec.id!,
+                                                  receiptUuid:
+                                                      rec.uuid!,
                                                   isMain:
                                                       false,
                                                 );

@@ -3,8 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/employee_list/platforms/employee_list_desktop.dart';
 import 'package:stockall/pages/employees/employee_list/platforms/employee_list_mobile.dart';
-import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class EmployeeListPage extends StatefulWidget {
   final String empId;
@@ -22,20 +20,10 @@ class _EmployeeListPageState
     super.initState();
     returnNavProvider(context, listen: false).navigate(7);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final userShop = await returnShopProvider(
+      await returnNavProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!);
-      if (context.mounted && userShop == null) {
-        Navigator.pushAndRemoveUntil(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-            builder: (context) => ShopBannerScreen(),
-          ),
-          (route) => false,
-        );
-      }
+      ).validate(context);
 
       setState(() {
         // stillLoading = false;

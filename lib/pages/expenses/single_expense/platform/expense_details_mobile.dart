@@ -10,10 +10,10 @@ import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ExpenseDetailsMobile extends StatelessWidget {
-  final int expenseId;
+  final String expenseUuid;
   const ExpenseDetailsMobile({
     super.key,
-    required this.expenseId,
+    required this.expenseUuid,
   });
 
   @override
@@ -42,7 +42,7 @@ class ExpenseDetailsMobile extends StatelessWidget {
                   ),
                   DetailsPageContainer(
                     theme: theme,
-                    expenseId: expenseId,
+                    expenseUuid: expenseUuid,
                   ),
                 ],
               ),
@@ -56,11 +56,11 @@ class ExpenseDetailsMobile extends StatelessWidget {
 
 class DetailsPageContainer extends StatefulWidget {
   final ThemeProvider theme;
-  final int expenseId;
+  final String expenseUuid;
   const DetailsPageContainer({
     super.key,
     required this.theme,
-    required this.expenseId,
+    required this.expenseUuid,
   });
 
   @override
@@ -116,7 +116,7 @@ class _DetailsPageContainerState
 
     final matching = returnExpensesProvider(
       context,
-    ).expenses.where((e) => e.id == widget.expenseId);
+    ).expenses.where((e) => e.uuid == widget.expenseUuid);
 
     if (matching.isEmpty) {
       return Scaffold(
@@ -130,7 +130,7 @@ class _DetailsPageContainerState
     // final expense = matching.first;
 
     var expense = matching.firstWhere(
-      (exp) => exp.id! == widget.expenseId,
+      (exp) => exp.uuid! == widget.expenseUuid,
     );
 
     return Stack(
@@ -293,7 +293,7 @@ class _DetailsPageContainerState
                                 });
 
                                 await expP.deleteExpense(
-                                  expense.id!,
+                                  expense.uuid!,
                                   safeContext,
                                 );
 

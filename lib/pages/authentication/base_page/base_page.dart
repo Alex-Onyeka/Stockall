@@ -13,7 +13,7 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePageState extends State<BasePage> {
-  // bool isLoading = true;
+  bool isLoading = true;
   void switchLoading() {
     Future.delayed(Duration(seconds: 1), () {
       if (context.mounted) {
@@ -49,7 +49,7 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    // final userId = AuthService().checkAuth();
+    // return Scaffold();
     if (returnNavProvider(context).isLoadingMain) {
       return Scaffold(
         body: returnCompProvider(

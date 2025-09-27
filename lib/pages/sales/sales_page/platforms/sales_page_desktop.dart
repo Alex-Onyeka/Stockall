@@ -504,8 +504,8 @@ class _SalesPageDesktopState
                                                                   context,
                                                                 ) {
                                                                   return ReceiptPage(
-                                                                    receiptId:
-                                                                        mainReceipt.id!,
+                                                                    receiptUuid:
+                                                                        mainReceipt.uuid!,
                                                                     isMain:
                                                                         false,
                                                                   );
@@ -522,7 +522,7 @@ class _SalesPageDesktopState
                                                           mainReceipt:
                                                               mainReceipt,
                                                           key: ValueKey(
-                                                            mainReceipt.id!,
+                                                            mainReceipt.uuid!,
                                                           ),
                                                         );
                                                       },

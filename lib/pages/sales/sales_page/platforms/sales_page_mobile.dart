@@ -457,8 +457,8 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                     context,
                                                   ) {
                                                     return ReceiptPage(
-                                                      receiptId:
-                                                          mainReceipt.id!,
+                                                      receiptUuid:
+                                                          mainReceipt.uuid!,
                                                       isMain:
                                                           false,
                                                     );
@@ -472,7 +472,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                 mainReceipt,
                                             key: ValueKey(
                                               mainReceipt
-                                                  .id!,
+                                                  .uuid!,
                                             ),
                                           );
                                           // return ListTile(

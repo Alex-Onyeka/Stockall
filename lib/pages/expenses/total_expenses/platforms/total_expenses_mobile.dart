@@ -340,9 +340,9 @@ class _TotalExpensesMobileState
                                               context,
                                             ) {
                                               return ExpenseDetails(
-                                                expenseId:
+                                                expenseUuid:
                                                     expense
-                                                        .id!,
+                                                        .uuid!,
                                               );
                                             },
                                           ),

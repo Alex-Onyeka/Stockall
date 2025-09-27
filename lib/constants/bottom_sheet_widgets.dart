@@ -2206,8 +2206,8 @@ class _CustomBottomPanelState
                                                       (
                                                         item,
                                                       ) =>
-                                                          item.item.id! ==
-                                                          product.id,
+                                                          item.item.uuid! ==
+                                                          product.uuid,
                                                     )
                                                     .isNotEmpty) {
                                                   selectProduct(
@@ -2236,8 +2236,8 @@ class _CustomBottomPanelState
                                                                 (
                                                                   item,
                                                                 ) =>
-                                                                    item.item.id! ==
-                                                                    product.id!,
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
                                                               )
                                                               .quantity,
                                                     ),
@@ -2315,8 +2315,8 @@ class _CustomBottomPanelState
                                                       (
                                                         item,
                                                       ) =>
-                                                          item.item.id! ==
-                                                          product.id,
+                                                          item.item.uuid! ==
+                                                          product.uuid,
                                                     )
                                                     .isNotEmpty) {
                                                   selectProduct(
@@ -2345,8 +2345,8 @@ class _CustomBottomPanelState
                                                                 (
                                                                   item,
                                                                 ) =>
-                                                                    item.item.id! ==
-                                                                    product.id!,
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
                                                               )
                                                               .quantity,
                                                     ),
@@ -2483,8 +2483,8 @@ class _CustomBottomPanelState
                                                       (
                                                         item,
                                                       ) =>
-                                                          item.item.id! ==
-                                                          product.id,
+                                                          item.item.uuid! ==
+                                                          product.uuid,
                                                     )
                                                     .isNotEmpty) {
                                                   selectProduct(
@@ -2513,8 +2513,8 @@ class _CustomBottomPanelState
                                                                 (
                                                                   item,
                                                                 ) =>
-                                                                    item.item.id! ==
-                                                                    product.id!,
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
                                                               )
                                                               .quantity,
                                                     ),
@@ -2592,8 +2592,8 @@ class _CustomBottomPanelState
                                                       (
                                                         item,
                                                       ) =>
-                                                          item.item.id! ==
-                                                          product.id,
+                                                          item.item.uuid! ==
+                                                          product.uuid,
                                                     )
                                                     .isNotEmpty) {
                                                   selectProduct(
@@ -2622,8 +2622,8 @@ class _CustomBottomPanelState
                                                                 (
                                                                   item,
                                                                 ) =>
-                                                                    item.item.id! ==
-                                                                    product.id!,
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
                                                               )
                                                               .quantity,
                                                     ),

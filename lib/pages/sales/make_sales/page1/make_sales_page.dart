@@ -3,8 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
-import 'package:stockall/providers/nav_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class MakeSalesPage extends StatefulWidget {
   final bool? isMain;
@@ -29,23 +27,10 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final userShop = await returnShopProvider(
+      await returnNavProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!);
-      if (context.mounted && userShop == null) {
-        // ignore: use_build_context_synchronously
-        NavProvider().nullShop(context);
-      } else {
-        if (context.mounted) {
-          final provider = returnUserProvider(
-            context,
-            listen: false,
-          );
-
-          await provider.fetchCurrentUser(context);
-        }
-      }
+      ).validate(context);
 
       setState(() {
         // stillLoading = false;

@@ -3,8 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_desktop.dart';
 import 'package:stockall/pages/dashboard/platforms/dashboard_mobile.dart';
-import 'package:stockall/providers/nav_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class Dashboard extends StatefulWidget {
   final int? shopId;
@@ -60,33 +58,27 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _handlePostFrameLogic() async {
-    final userProvider = returnUserProvider(
+    await returnNavProvider(
       context,
       listen: false,
-    );
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
-
-    final userShop = await shopProvider.getUserShop(
-      AuthService().currentUser!,
-    );
-
-    if (!mounted) return;
-
-    if (userShop == null) {
-      // Navigate and return immediately
-      // ignore: use_build_context_synchronously
-      NavProvider().nullShop(context);
-      return;
-    }
-
+    ).validate(context);
     clearDate();
 
     if (!mounted) return;
+  }
 
-    await userProvider.fetchCurrentUser(context);
+  Future<void> getMainReceipts() async {
+    await returnReceiptProvider(
+      context,
+      listen: false,
+    ).loadReceipts(
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop!.shopId!,
+      context,
+    );
+    setState(() {});
   }
 
   @override

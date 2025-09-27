@@ -64,6 +64,15 @@ class TempShopClass {
   @HiveField(19)
   String? language;
 
+  @HiveField(20)
+  DateTime? updatedAt;
+
+  @HiveField(21)
+  int? plan;
+
+  @HiveField(22)
+  DateTime? nextPayment;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -85,6 +94,9 @@ class TempShopClass {
     required this.isVerified,
     this.printType,
     this.language,
+    this.updatedAt,
+    this.plan,
+    this.nextPayment,
   });
 
   factory TempShopClass.fromJson(
@@ -115,12 +127,23 @@ class TempShopClass {
       isVerified: json['is_verified'] as bool,
       printType: json['print_type'] as int?,
       language: json['language'] as String?,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'] as String)
+              : null,
+      plan: json['plan'],
+      nextPayment:
+          json['next_payment'] != null
+              ? DateTime.parse(
+                json['next_payment'] as String,
+              )
+              : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'shop_id': shopId,
+      // 'shop_id': shopId,
       'created_at': createdAt.toIso8601String(),
       'user_id': userId,
       'email': email,
@@ -139,6 +162,9 @@ class TempShopClass {
       'is_verified': isVerified,
       'print_type': printType,
       'language': language,
+      'updated_at': updatedAt?.toIso8601String(),
+      'plan': plan,
+      'next_payment': nextPayment,
     };
   }
 }

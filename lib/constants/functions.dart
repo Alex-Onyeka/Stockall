@@ -19,6 +19,7 @@ import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:file_saver/file_saver.dart';
 
 void openWhatsApp() async {
   final phone = '2347048507587'; // your number
@@ -340,6 +341,7 @@ final List<CurrencyClass> currencies = [
 // PDF RECEIPT GENERATOR
 Future<void> generateAndPreviewPdf({
   required TempMainReceipt receipt,
+  required String staffName,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
@@ -349,15 +351,27 @@ Future<void> generateAndPreviewPdf({
     context,
     listen: false,
   ).toggleIsLoading(true);
-  final Uint8List pdfBytes = await _buildPdf(
+  final Uint8List bytes = await _buildPdf(
     receipt,
+    staffName,
     records,
     shop,
     context,
   );
+  var receiptId = receipt.uuid!.toString().substring(0, 5);
+  var name =
+      receipt.isInvoice
+          ? "Stockall_Invoice_$receiptId"
+          : "Stockall_Receipt_$receiptId";
+
+  if (Platform.isAndroid || Platform.isIOS) {
+    await savePdfMobile(bytes, name);
+  } else {
+    await savePdfDesktop(bytes, name);
+  }
 
   // 2. Open native print/share/save dialog (cross-platform)
-  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  // await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
     returnReceiptProvider(
       context,
@@ -366,9 +380,32 @@ Future<void> generateAndPreviewPdf({
   }
 }
 
+Future<void> savePdfDesktop(
+  Uint8List bytes,
+  String name,
+) async {
+  await FileSaver.instance.saveFile(
+    name: name,
+    fileExtension: "pdf",
+    bytes: bytes,
+    mimeType: MimeType.pdf,
+  );
+}
+
+Future<void> savePdfMobile(
+  Uint8List bytes,
+  String name,
+) async {
+  await Printing.sharePdf(
+    bytes: bytes,
+    filename: '$name.pdf',
+  );
+}
+
 Future<void> generateAndPreviewPdfRoll({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
+  required String staffName,
   required TempShopClass shop,
   required BuildContext context,
   required int printerType,
@@ -381,6 +418,7 @@ Future<void> generateAndPreviewPdfRoll({
   final Uint8List pdfBytes = await _buildPdfRoll(
     receipt,
     records,
+    staffName,
     shop,
     context,
     printerType,
@@ -398,6 +436,7 @@ Future<void> generateAndPreviewPdfRoll({
 
 Future<Uint8List> _buildPdf(
   TempMainReceipt receipt,
+  String staffName,
   List<TempProductSaleRecord> records,
   TempShopClass shop,
   BuildContext context,
@@ -589,7 +628,7 @@ Future<Uint8List> _buildPdf(
                                 font: fontBold,
                                 fontSize: 10,
                               ),
-                              receipt.staffName,
+                              staffName,
                             ),
                           ],
                         ),
@@ -953,6 +992,7 @@ Future<void> printWithRawBT(
 {
   required String fileName,
   required TempMainReceipt receipt,
+  required String staffName,
   required List<TempProductSaleRecord> records,
   required TempShopClass shop,
   required BuildContext context,
@@ -964,6 +1004,7 @@ Future<void> printWithRawBT(
   var pdfBytes = await _buildPdfRoll(
     receipt,
     records,
+    staffName,
     shop,
     context,
     printerType,
@@ -981,6 +1022,7 @@ Future<void> printWithRawBT(
 Future<Uint8List> _buildPdfRoll(
   TempMainReceipt receipt,
   List<TempProductSaleRecord> records,
+  String staffName,
   TempShopClass shop,
   BuildContext context,
   int printerType,
@@ -1123,7 +1165,7 @@ Future<Uint8List> _buildPdfRoll(
                               font: fontBold,
                               fontSize: parText,
                             ),
-                            receipt.staffName,
+                            staffName,
                           ),
                         ],
                       ),
@@ -1489,9 +1531,40 @@ Future<Uint8List> _buildPdfRoll(
   return pdf.save();
 }
 
+class PdfPreviewPage extends StatefulWidget {
+  final Function() generatePdf;
+  const PdfPreviewPage({
+    super.key,
+    required this.generatePdf,
+  });
+
+  @override
+  State<PdfPreviewPage> createState() =>
+      _PdfPreviewPageState();
+}
+
+class _PdfPreviewPageState extends State<PdfPreviewPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("PDF Preview")),
+      body: PdfPreview(
+        build:
+            (format) async =>
+                (await widget.generatePdf()).save(),
+        allowPrinting: true,
+        allowSharing: true,
+        initialPageFormat: PdfPageFormat.a4,
+        pdfFileName: "stockall_receipt.pdf",
+      ),
+    );
+  }
+}
+
 void downloadPdfWeb({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
+  required String staffName,
   required TempShopClass shop,
   required BuildContext context,
   required String filename,
@@ -1499,6 +1572,7 @@ void downloadPdfWeb({
   try {
     final pdfBytes = await _buildPdf(
       receipt,
+      staffName,
       records,
       returnShopProvider(context, listen: false).userShop!,
       context,
@@ -1531,6 +1605,7 @@ void downloadPdfWeb({
 void downloadPdfWebRoll({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
+  required String staffName,
   required TempShopClass shop,
   required BuildContext context,
   required String filename,
@@ -1541,6 +1616,7 @@ void downloadPdfWebRoll({
     final pdfBytes = await _buildPdfRoll(
       receipt,
       records,
+      staffName,
       returnShopProvider(context, listen: false).userShop!,
       context,
       printType,
@@ -1549,19 +1625,19 @@ void downloadPdfWebRoll({
     // ✅ Ensure Uint8List
     final pdfUint8 = Uint8List.fromList(pdfBytes);
 
-    // // Step 1: Download
-    // final blob = html.Blob([pdfUint8], 'application/pdf');
-    // final url = html.Url.createObjectUrlFromBlob(blob);
+    // Step 1: Download
+    final blob = html.Blob([pdfUint8], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
 
-    // final anchor =
-    //     html.AnchorElement(href: url)
-    //       ..download = filename
-    //       ..style.display = 'none';
+    final anchor =
+        html.AnchorElement(href: url)
+          ..download = filename
+          ..style.display = 'none';
 
-    // html.document.body?.append(anchor);
-    // anchor.click();
-    // anchor.remove();
-    // html.Url.revokeObjectUrl(url);
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+    html.Url.revokeObjectUrl(url);
 
     // Step 2: Print (make sure this runs in same click event if possible)
     await Printing.layoutPdf(

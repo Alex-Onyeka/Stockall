@@ -43,6 +43,9 @@ class TempCustomersClass extends HiveObject {
   @HiveField(12)
   String? uuid;
 
+  @HiveField(13)
+  DateTime? updatedAt;
+
   TempCustomersClass({
     this.country,
     this.id,
@@ -57,6 +60,7 @@ class TempCustomersClass extends HiveObject {
     this.departmentName,
     this.departmentId,
     this.uuid,
+    this.updatedAt,
   });
 
   factory TempCustomersClass.fromJson(
@@ -67,21 +71,25 @@ class TempCustomersClass extends HiveObject {
       uuid: json['uuid'] as String?,
       dateAdded: DateTime.parse(json['date_added']),
       shopId: json['shop_id'] as int,
-      country: json['country'] as String,
+      country: json['country'] as String?,
       name: json['name'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
-      address: json['address'] as String,
-      city: json['city'] as String,
-      state: json['state'] as String,
+      address: json['address'] as String?,
+      city: json['city'] as String?,
+      state: json['state'] as String?,
       departmentId: json['department_id'] as int?,
       departmentName: json['department_name'] as String?,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'date_added': dateAdded.toIso8601String(),
       'shop_id': shopId,
       'country': country,
@@ -94,6 +102,7 @@ class TempCustomersClass extends HiveObject {
       'department_id': departmentId,
       'department_name': departmentName,
       'uuid': uuid,
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 }

@@ -5,16 +5,27 @@ import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/de
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
+import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
+import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
+import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
+import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
+import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
+import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
+import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 
 class DataProvider extends ChangeNotifier {
   bool isLoading = false;
@@ -36,7 +47,14 @@ class DataProvider extends ChangeNotifier {
     // var data =
     bool isOnline = await connectivity.isOnline();
 
+    product.uuid = uuidGen();
+    product.updatedAt = DateTime.now();
+
     if (isOnline) {
+      // if (isSynced() == 0 && context.mounted) {
+      //   print('Syncing Data In t')
+      //   syncData(context);
+      // }
       var data =
           await supabase
               .from('products')
@@ -48,37 +66,14 @@ class DataProvider extends ChangeNotifier {
       await ProductsFunc().createProduct(newProduct);
       print('Total Success');
     } else {
-      final uuid = Uuid();
-      product.uuid ??= uuid.v4();
-      // Ensure createdAt is always set
       product.createdAt ??= DateTime.now();
 
-      if (product.uuid != null) {
-        await ProductsFunc().createProduct(product);
-        await CreatedProductFunc().createProduct(
-          CreatedProducts(product: product),
-        );
-        print('Offline Success');
-        print('Offline Product inserted Successfully');
-      } else {
-        // final products = ProductsFunc().getProducts();
-        // int newId = 1;
-
-        // if (products.isNotEmpty) {
-        //   final maxId = products
-        //       .map((p) => p.uuid ?? 0)
-        //       .reduce((a, b) => a > b ? a : b);
-        //   newId = maxId + 1;
-        // }
-        // product.id = newId;
-        product.createdAt = DateTime.now();
-        await ProductsFunc().createProduct(product);
-        await CreatedProductFunc().createProduct(
-          CreatedProducts(product: product),
-        );
-        print('Offline Success');
-        print('Offline Product inserted Successfully');
-      }
+      await ProductsFunc().createProduct(product);
+      await CreatedProductFunc().createProduct(
+        CreatedProducts(product: product),
+      );
+      print('Offline Success');
+      print('Offline Product inserted Successfully');
     }
 
     // productList.add(newProduct);
@@ -104,12 +99,11 @@ class DataProvider extends ChangeNotifier {
       if (CreatedProductFunc().getProducts().isNotEmpty &&
           isOnline) {
         final tempProducts =
-            CreatedProductFunc().getProducts().map((cp) {
-              cp.product.uuid = null;
-              return cp.product;
-            }).toList();
+            CreatedProductFunc().getProducts().toList();
         final payload =
-            tempProducts.map((p) => p.toJson()).toList();
+            tempProducts
+                .map((p) => p.product.toJson())
+                .toList();
 
         // Insert all at once
         final data =
@@ -152,7 +146,7 @@ class DataProvider extends ChangeNotifier {
         final uuids =
             DeletedProductsFunc()
                 .getProductIds()
-                .map((p) => p.productid)
+                .map((p) => p.productUuid)
                 .toList();
 
         final data =
@@ -294,6 +288,13 @@ class DataProvider extends ChangeNotifier {
     clearFields();
   }
 
+  //
+  //
+  //
+  //
+  //
+  //
+
   Future<void> syncData(BuildContext context) async {
     int isSynced =
         returnData(context, listen: false).isSynced();
@@ -303,23 +304,184 @@ class DataProvider extends ChangeNotifier {
     ).getUserShop(AuthService().currentUser!);
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      if (shop != null && context.mounted) {
-        if (isSynced == 0) {
-          toggleSyncing(true);
-          await createProductsSync(context);
-          print('Finished Syncing Created Products');
-          setSyncProgress(1);
-          if (context.mounted) {
-            await deleteProductsSync(context);
-            print('Finished Syncing Deleted Products');
-            setSyncProgress(2);
+      if (shop != null) {
+        if (context.mounted) {
+          if (isSynced == 0) {
+            toggleSyncing(true);
+            if (CreatedProductFunc()
+                    .getProducts()
+                    .isNotEmpty &&
+                isOnline) {
+              await createProductsSync(context);
+              print('Finished Syncing Created Products');
+              setSyncProgress(1);
+            }
+            if (DeletedProductsFunc()
+                    .getProductIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await deleteProductsSync(context);
+              print('Finished Syncing Deleted Products');
+              setSyncProgress(2);
+            }
+            if (UpdatedProductsFunc()
+                    .getProducts()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await updateProductsSync(context);
+              print('Finished Syncing Updated Products');
+              setSyncProgress(3);
+            }
+            if (CreatedExpensesFunc()
+                    .getExpenses()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnExpensesProvider(
+                context,
+                listen: false,
+              ).createExpensesSync(context);
+              print('Finished Syncing Created Expenses');
+              setSyncProgress(4);
+            }
+            if (UpdatedExpensesFunc()
+                    .getExpenses()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnExpensesProvider(
+                context,
+                listen: false,
+              ).updateExpensesSync(context);
+              print('Finished Syncing Updated Expenses');
+              setSyncProgress(5);
+            }
+            if (DeletedExpensesFunc()
+                    .getExpenseIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnExpensesProvider(
+                context,
+                listen: false,
+              ).deleteExpensesSync(context);
+              print('Finished Syncing Deleted Expenses');
+              setSyncProgress(6);
+            }
+            if (CreatedCustomersFunc()
+                    .getCustomers()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnCustomers(
+                context,
+                listen: false,
+              ).createCustomersSync(context);
+              print('Finished Syncing Created Customer');
+              setSyncProgress(7);
+            }
+            if (UpdatedCustomersFunc()
+                    .getCustomers()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnCustomers(
+                context,
+                listen: false,
+              ).updateCustomersSync(context);
+              print('Finished Syncing Updated Customers');
+              setSyncProgress(8);
+            }
+            if (DeletedCustomersFunc()
+                    .getCustomerIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnCustomers(
+                context,
+                listen: false,
+              ).deletedCustomersSync(context);
+              print('Finished Syncing Deleted Customers');
+              setSyncProgress(9);
+            }
+            if (CreatedReceiptsFunc()
+                    .getReceipts()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              // await decrementProductsQuantitySync(context);
+              print(
+                'Finished Syncing Products Decrementiation',
+              );
+              setSyncProgress(10);
+            }
+
+            if (CreatedReceiptsFunc()
+                    .getReceipts()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnReceiptProvider(
+                context,
+                listen: false,
+              ).createRecordsSync(context);
+              print(
+                'Finished Syncing Created Records Customers',
+              );
+              setSyncProgress(11);
+            }
+            if (CreatedReceiptsFunc()
+                    .getReceipts()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnReceiptProvider(
+                context,
+                listen: false,
+              ).createReceiptsSync(context);
+              print('Finished Syncing Created Receipts');
+              setSyncProgress(12);
+            }
+            if (DeletedReceiptsFunc()
+                    .getReceiptIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnReceiptProvider(
+                context,
+                listen: false,
+              ).deleteReceiptsSync(context);
+              print('Finished Syncing Created Receipts');
+              setSyncProgress(13);
+            }
+            if (UpdatedReceiptsFunc()
+                    .getReceiptIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnReceiptProvider(
+                context,
+                listen: false,
+              ).updateReceiptsSync(context);
+              print('Finished Syncing Created Receipts');
+              setSyncProgress(14);
+            }
+            if (UpdatedShopFunc()
+                    .getUpdatedShop()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnShopProvider(
+                context,
+                listen: false,
+              ).updateShopSync(context);
+              print('Finished Syncing Created Receipts');
+              setSyncProgress(15);
+            }
+            toggleSyncing(false);
           }
-          if (context.mounted) {
-            await updateProductsSync(context);
-            print('Finished Syncing Updated Products');
-            setSyncProgress(3);
-          }
-          toggleSyncing(false);
         }
       } else {
         await ShopFunc().clearShop();
@@ -347,10 +509,14 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  //
+  //
+  //
+  //
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 3) * 100;
+    syncProgress = (value / 15) * 100;
     notifyListeners();
   }
 
@@ -365,7 +531,23 @@ class DataProvider extends ChangeNotifier {
     } else {
       if (CreatedProductFunc().getProducts().isEmpty &&
           DeletedProductsFunc().getProductIds().isEmpty &&
-          UpdatedProductsFunc().getProducts().isEmpty) {
+          UpdatedProductsFunc().getProducts().isEmpty &&
+          CreatedExpensesFunc().getExpenses().isEmpty &&
+          DeletedExpensesFunc().getExpenseIds().isEmpty &&
+          UpdatedExpensesFunc().getExpenses().isEmpty &&
+          CreatedCustomersFunc().getCustomers().isEmpty &&
+          UpdatedCustomersFunc().getCustomers().isEmpty &&
+          DeletedCustomersFunc().getCustomerIds().isEmpty &&
+          CreatedReceiptsFunc().getReceipts().isEmpty &&
+          CreatedRecordsFunc().getRecords().isEmpty &&
+          DeletedReceiptsFunc().getReceiptIds().isEmpty &&
+          UpdatedReceiptsFunc().getReceiptIds().isEmpty &&
+          UpdatedShopFunc().getUpdatedShop().isEmpty
+      // && DeletedRecordsFunc().getRecordIds().isEmpty &&
+      // IncrementedProductsFunc()
+      //     .getIncrementedProducts()
+      //     .isEmpty
+      ) {
         return 1;
       } else {
         return 0;
@@ -433,6 +615,7 @@ class DataProvider extends ChangeNotifier {
 
   void clearProducts() {
     productList.clear();
+    print('Products Cleared');
     notifyListeners();
   }
 
@@ -493,9 +676,10 @@ class DataProvider extends ChangeNotifier {
     required BuildContext context,
   }) async {
     bool isOnline = await connectivity.isOnline();
-    product.updatedAt = DateTime.now().toLocal();
+
     print(product.isManaged.toString());
     if (isOnline) {
+      product.updatedAt = DateTime.now().toLocal();
       await supabase
           .from('products')
           .update(product.toJson())
@@ -503,9 +687,24 @@ class DataProvider extends ChangeNotifier {
       print('${product.uuid}');
     } else {
       await ProductsFunc().updateProduct(product);
-      await UpdatedProductsFunc().createUpdatedProduct(
-        UpdatedProducts(product: product),
-      );
+      var containsCreated =
+          CreatedProductFunc()
+              .getProducts()
+              .where(
+                (createdProduct) =>
+                    createdProduct.product.uuid ==
+                    product.uuid,
+              )
+              .toList();
+      if (containsCreated.isEmpty) {
+        await UpdatedProductsFunc().createUpdatedProduct(
+          UpdatedProducts(product: product),
+        );
+      } else {
+        await CreatedProductFunc().updateProduct(
+          CreatedProducts(product: product),
+        );
+      }
       print(product.updatedAt.toString());
       print('${product.uuid}');
     }
@@ -550,7 +749,7 @@ class DataProvider extends ChangeNotifier {
   // }
 
   Future<bool> updateDiscount({
-    required int productId,
+    required String productUuid,
     required double? newDiscount,
     DateTime? statDate,
     DateTime? endDate,
@@ -573,7 +772,7 @@ class DataProvider extends ChangeNotifier {
                       .first,
               'updated_at': DateTime.now(),
             })
-            .eq('id', productId)
+            .eq('uuid', productUuid)
             .maybeSingle();
 
     if (context.mounted) {
@@ -618,7 +817,7 @@ class DataProvider extends ChangeNotifier {
   // }
 
   Future<void> deleteProductMain(
-    int productId,
+    String productUuid,
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
@@ -626,15 +825,15 @@ class DataProvider extends ChangeNotifier {
       await supabase
           .from('products')
           .delete()
-          .eq('id', productId);
+          .eq('uuid', productUuid);
     } else {
-      await ProductsFunc().deleteProduct(productId);
+      await ProductsFunc().deleteProduct(productUuid);
       var containsCreated =
           CreatedProductFunc()
               .getProducts()
               .where(
                 (product) =>
-                    product.product.id == productId,
+                    product.product.uuid == productUuid,
               )
               .toList();
 
@@ -643,7 +842,7 @@ class DataProvider extends ChangeNotifier {
               .getProducts()
               .where(
                 (product) =>
-                    product.product.id == productId,
+                    product.product.uuid == productUuid,
               )
               .toList();
       print(
@@ -654,11 +853,11 @@ class DataProvider extends ChangeNotifier {
       );
       if (containsCreated.isNotEmpty) {
         await CreatedProductFunc().createdProductsBox
-            .delete(productId);
+            .delete(productUuid);
       } else {
         await DeletedProductsFunc().createDeletedProduct(
           DeletedProducts(
-            productid: productId,
+            productUuid: productUuid,
             date: DateTime.now(),
           ),
         );

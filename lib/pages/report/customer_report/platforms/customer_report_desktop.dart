@@ -78,7 +78,7 @@ class _CustomerReportDesktopState
                 context,
               ).produtRecordSalesMain,
             )
-            .where((record) => record.customerId != null)
+            .where((record) => record.customerUuid != null)
             .toList();
 
     return Stack(
