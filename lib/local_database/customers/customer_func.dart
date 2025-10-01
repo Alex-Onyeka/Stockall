@@ -42,7 +42,7 @@ class CustomerFunc {
       for (var customer in customers) {
         await customerBox.put(customer.uuid, customer);
       }
-      print('Offline Customers Inserted Successfully');
+      print('Offline Customers Inserted Successfullyy');
       return 1;
     } catch (e) {
       print(
