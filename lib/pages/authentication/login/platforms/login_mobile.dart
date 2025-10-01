@@ -382,7 +382,7 @@ class _LoginMobileState extends State<LoginMobile> {
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader(General().loadingText),
+          ).showLoader(message: General().loadingText),
         ),
         Visibility(
           visible: showwSuccess,

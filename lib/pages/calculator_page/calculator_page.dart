@@ -85,7 +85,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
           visible: isLoading,
           child: returnCompProvider(
             context,
-          ).showLoader('Logging Out...'),
+          ).showLoader(message: 'Logging Out...'),
         ),
       ],
     );

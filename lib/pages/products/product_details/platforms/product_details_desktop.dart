@@ -82,7 +82,7 @@ class _ProductDetailsDesktopState
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading...'),
+        ).showLoader(message: 'Loading...'),
       );
     } else {
       TempProductClass product = productList.first;
@@ -1819,7 +1819,7 @@ class _ProductDetailsDesktopState
                       child: returnCompProvider(
                         context,
                         listen: false,
-                      ).showLoader('Updating'),
+                      ).showLoader(message: 'Updating'),
                     ),
                   ],
                 ),

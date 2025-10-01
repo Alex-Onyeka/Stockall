@@ -459,7 +459,7 @@ class _ProductReportMobileState
                 child: returnCompProvider(
                   context,
                   listen: false,
-                ).showLoader('Generating Record'),
+                ).showLoader(message: 'Generating Record'),
               ),
             ],
           ),

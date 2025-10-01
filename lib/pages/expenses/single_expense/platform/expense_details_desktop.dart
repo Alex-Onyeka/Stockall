@@ -89,7 +89,7 @@ class _DetailsPageContainerState
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading'),
+        ).showLoader(message: 'Loading'),
       );
     }
 
@@ -314,7 +314,7 @@ class _DetailsPageContainerState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
       ],
     );

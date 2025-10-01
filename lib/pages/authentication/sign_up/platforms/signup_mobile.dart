@@ -456,7 +456,7 @@ class _SignupMobileState extends State<SignupMobile> {
           child: Provider.of<CompProvider>(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
         Visibility(
           visible: showSuccess,

@@ -535,7 +535,7 @@ class _CustomerListDesktopState
             visible: isLoading,
             child: returnCompProvider(
               context,
-            ).showLoader('Logging Out...'),
+            ).showLoader(message: 'Logging Out...'),
           ),
         ],
       ),

@@ -27,8 +27,8 @@ class _BasePageState extends State<BasePage> {
 
   String? userAuthId;
 
-  Future<void> getUserAuthId() async {
-    String? temp = await AuthService().checkAuth();
+  void getUserAuthId() {
+    String? temp = AuthService().currentUser;
     setState(() {
       userAuthId = temp;
     });
@@ -39,11 +39,16 @@ class _BasePageState extends State<BasePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       switchLoading();
+      // var userOffline = AuthService().currentUserOffline;
+      // var userAuth = AuthService().currentUserAuth;
+      // if (condition) {
+
+      // }
       returnCompProvider(
         context,
         listen: false,
       ).setVisible();
-      await getUserAuthId();
+      getUserAuthId();
     });
   }
 
@@ -55,7 +60,12 @@ class _BasePageState extends State<BasePage> {
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader(General().loadingText),
+        ).showLoader(
+          message: General().loadingText,
+          action: () async {
+            AuthService().signOut(context);
+          },
+        ),
       );
     } else {
       if (userAuthId != null) {

@@ -267,7 +267,7 @@ class _NotificationsDesktopState
             child: returnCompProvider(
               context,
               listen: false,
-            ).showLoader('Logging Out...'),
+            ).showLoader(message: 'Logging Out...'),
           ),
         ],
       ),

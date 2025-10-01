@@ -443,7 +443,7 @@ class _ShopBannerScreenDesktopState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
       ],
     );

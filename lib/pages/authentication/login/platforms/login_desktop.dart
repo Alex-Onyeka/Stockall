@@ -333,7 +333,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader(General().loadingText),
+          ).showLoader(message: General().loadingText),
         ),
         Visibility(
           visible: showwSuccess,

@@ -414,7 +414,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
           child: Provider.of<CompProvider>(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
         Visibility(
           visible: showSuccess,

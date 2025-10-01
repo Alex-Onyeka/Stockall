@@ -78,7 +78,7 @@ class _ProductDetailsMobileState
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading...'),
+        ).showLoader(message: 'Loading...'),
       );
     } else {
       TempProductClass product = productList.first;
@@ -1692,7 +1692,7 @@ class _ProductDetailsMobileState
             child: returnCompProvider(
               context,
               listen: false,
-            ).showLoader('Updating'),
+            ).showLoader(message: 'Updating'),
           ),
         ],
       );

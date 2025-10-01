@@ -649,7 +649,7 @@ class _SalesPageDesktopState
             visible: isLoading,
             child: returnCompProvider(
               context,
-            ).showLoader('Logging Out...'),
+            ).showLoader(message: 'Logging Out...'),
           ),
         ],
       ),

@@ -650,7 +650,8 @@ class _AddCustomerMobileState
                                                                                       listen:
                                                                                           false,
                                                                                     ).showLoader(
-                                                                                      'Loading',
+                                                                                      message:
+                                                                                          'Loading',
                                                                                     ),
                                                                                   );
                                                                                 } else if (snapshot.hasError) {
@@ -1112,7 +1113,8 @@ class _AddCustomerMobileState
                                                                                     listen:
                                                                                         false,
                                                                                   ).showLoader(
-                                                                                    'Loading',
+                                                                                    message:
+                                                                                        'Loading',
                                                                                   ),
                                                                                 );
                                                                               } else if (snapshot.hasError) {
@@ -1620,7 +1622,8 @@ class _AddCustomerMobileState
                                                                                     listen:
                                                                                         false,
                                                                                   ).showLoader(
-                                                                                    'Loading',
+                                                                                    message:
+                                                                                        'Loading',
                                                                                   ),
                                                                                 );
                                                                               } else if (stateSet ==

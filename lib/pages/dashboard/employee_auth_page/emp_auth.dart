@@ -1118,7 +1118,22 @@ class _EmpAuthState extends State<EmpAuth> {
                   visible: isLoading,
                   child: returnCompProvider(
                     context,
-                  ).showLoader('Loading'),
+                  ).showLoader(
+                    message: 'Loading',
+                    action: () async {
+                      await AuthService().signOut(context);
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AuthScreensPage();
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

@@ -904,7 +904,7 @@ class _SalesAndRevenueReportMobileState
                 child: returnCompProvider(
                   context,
                   listen: false,
-                ).showLoader('Generating Pdf'),
+                ).showLoader(message: 'Generating Pdf'),
               ),
             ],
           ),

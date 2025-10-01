@@ -908,7 +908,8 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                                                           listen:
                                                                               false,
                                                                         ).showLoader(
-                                                                          'Loading',
+                                                                          message:
+                                                                              'Loading',
                                                                         ),
                                                                       ),
                                                                     );

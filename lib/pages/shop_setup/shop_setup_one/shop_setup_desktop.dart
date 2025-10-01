@@ -328,7 +328,7 @@ class _ShopSetupDesktopState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Updating'),
+          ).showLoader(message: 'Updating'),
         ),
         Visibility(
           visible: showSuccess,

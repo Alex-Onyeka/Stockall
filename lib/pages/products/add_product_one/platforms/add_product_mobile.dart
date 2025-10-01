@@ -1654,9 +1654,10 @@ class _AddProductMobileState
             context,
             listen: false,
           ).showLoader(
-            widget.product != null
-                ? 'Updating Item'
-                : 'Creating Item',
+            message:
+                widget.product != null
+                    ? 'Updating Item'
+                    : 'Creating Item',
           ),
         ),
         Visibility(

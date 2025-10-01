@@ -672,7 +672,7 @@ class _EditMobileState extends State<EditMobile> {
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
         Visibility(
           visible: showSuccess,

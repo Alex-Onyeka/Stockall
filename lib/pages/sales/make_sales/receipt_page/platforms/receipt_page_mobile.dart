@@ -1737,7 +1737,7 @@ class _ReceiptDetailsContainerState
             child: returnCompProvider(
               context,
               listen: false,
-            ).showLoader('Generating Receipt'),
+            ).showLoader(message: 'Generating Receipt'),
           ),
         ),
         Visibility(
@@ -1749,7 +1749,7 @@ class _ReceiptDetailsContainerState
             child: returnCompProvider(
               context,
               listen: false,
-            ).showLoader('Loading'),
+            ).showLoader(message: 'Loading'),
           ),
         ),
         Visibility(

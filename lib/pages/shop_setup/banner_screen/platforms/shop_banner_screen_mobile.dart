@@ -263,7 +263,7 @@ class _ShopBannerScreenMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
       ],
     );

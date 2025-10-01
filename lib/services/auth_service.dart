@@ -308,7 +308,6 @@ class AuthService extends ChangeNotifier {
       LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
 
   String? get currentUser =>
-      // connectivity.isConnected
       _client.auth.currentUser?.id ??
       LoggedInUserFunc()
           .getLoggedInUser()
@@ -316,12 +315,11 @@ class AuthService extends ChangeNotifier {
           ?.userId;
 
   String? get currentUserEmail =>
-      connectivity.isConnected
-          ? _client.auth.currentUser?.email
-          : LoggedInUserFunc()
-              .getLoggedInUser()
-              ?.loggedInUser
-              ?.email;
+      _client.auth.currentUser?.email ??
+      LoggedInUserFunc()
+          .getLoggedInUser()
+          ?.loggedInUser
+          ?.email;
 
   Future<String?> checkAuth() async {
     bool isOnline = await connectivity.isOnline();

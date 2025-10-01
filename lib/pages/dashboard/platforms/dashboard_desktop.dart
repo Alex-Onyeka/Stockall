@@ -263,7 +263,7 @@ class _DashboardDesktopState
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading'),
+        ).showLoader(message: 'Loading'),
       );
     } else {
       if (!returnReceiptProvider(
@@ -273,7 +273,7 @@ class _DashboardDesktopState
         return returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading');
+        ).showLoader(message: 'Loading');
       } else {
         // return Container();
         return Scaffold(
@@ -1554,7 +1554,9 @@ class _DashboardDesktopState
                                           .isLoading,
                                   child: returnCompProvider(
                                     context,
-                                  ).showLoader('Loading'),
+                                  ).showLoader(
+                                    message: 'Loading',
+                                  ),
                                 ),
                               ],
                             ),
@@ -1570,7 +1572,7 @@ class _DashboardDesktopState
                 visible: isLoading,
                 child: returnCompProvider(
                   context,
-                ).showLoader('Logging Out'),
+                ).showLoader(message: 'Logging Out'),
               ),
             ],
           ),

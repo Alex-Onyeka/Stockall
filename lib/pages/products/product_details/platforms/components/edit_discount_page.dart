@@ -642,7 +642,7 @@ class _EditDiscountPageState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
         Visibility(
           visible: showSuccess,

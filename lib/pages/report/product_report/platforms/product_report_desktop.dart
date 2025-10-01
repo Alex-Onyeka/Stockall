@@ -474,7 +474,9 @@ class ProductReportDesktopState
                   child: returnCompProvider(
                     context,
                     listen: false,
-                  ).showLoader('Generating Record'),
+                  ).showLoader(
+                    message: 'Generating Record',
+                  ),
                 ),
               ],
             ),

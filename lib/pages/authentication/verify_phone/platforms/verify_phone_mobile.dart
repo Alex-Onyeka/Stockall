@@ -235,7 +235,7 @@ class _VerifyPhoneMobileState
           child: returnCompProvider(
             context,
             listen: false,
-          ).showLoader('Verifying Email'),
+          ).showLoader(message: 'Verifying Email'),
         ),
       ],
     );

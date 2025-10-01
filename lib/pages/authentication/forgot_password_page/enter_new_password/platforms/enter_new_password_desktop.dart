@@ -484,7 +484,7 @@ class _EnterNewPasswordDesktopState
               child: returnCompProvider(
                 context,
                 listen: false,
-              ).showLoader(General().loadingText),
+              ).showLoader(message: General().loadingText),
             ),
             Visibility(
               visible: showSuccess,

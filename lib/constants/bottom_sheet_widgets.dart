@@ -3299,7 +3299,7 @@ class _CountryBottomSheetState
                           body: returnCompProvider(
                             context,
                             listen: false,
-                          ).showLoader('Loading'),
+                          ).showLoader(message: 'Loading'),
                         );
                       } else if (snapshot.hasError) {
                         return Scaffold(

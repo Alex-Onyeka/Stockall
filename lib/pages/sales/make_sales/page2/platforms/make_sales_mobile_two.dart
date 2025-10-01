@@ -885,7 +885,7 @@ class _MakeSalesMobileTwoState
           visible: isLoading,
           child: returnCompProvider(
             context,
-          ).showLoader('Loading'),
+          ).showLoader(message: 'Loading'),
         ),
         Visibility(
           visible: showSuccess,

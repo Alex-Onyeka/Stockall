@@ -897,7 +897,8 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                                                         listen:
                                                                             false,
                                                                       ).showLoader(
-                                                                        'Loading',
+                                                                        message:
+                                                                            'Loading',
                                                                       ),
                                                                     ),
                                                                   );

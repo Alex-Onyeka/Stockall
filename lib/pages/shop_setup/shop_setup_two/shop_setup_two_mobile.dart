@@ -739,7 +739,8 @@ class _ShopSetupTwoMobileState
                                                                           listen:
                                                                               false,
                                                                         ).showLoader(
-                                                                          'Loading',
+                                                                          message:
+                                                                              'Loading',
                                                                         ),
                                                                       );
                                                                     } else if (snapshot.hasError) {
@@ -1257,7 +1258,8 @@ class _ShopSetupTwoMobileState
                                                                                     listen:
                                                                                         false,
                                                                                   ).showLoader(
-                                                                                    'Loading',
+                                                                                    message:
+                                                                                        'Loading',
                                                                                   ),
                                                                                 );
                                                                               } else if (snapshot.hasError) {
@@ -1789,7 +1791,8 @@ class _ShopSetupTwoMobileState
                                                                                     listen:
                                                                                         false,
                                                                                   ).showLoader(
-                                                                                    'Loading',
+                                                                                    message:
+                                                                                        'Loading',
                                                                                   ),
                                                                                 );
                                                                               } else if (stateSet ==
@@ -2370,7 +2373,8 @@ class _ShopSetupTwoMobileState
                                                                                     listen:
                                                                                         false,
                                                                                   ).showLoader(
-                                                                                    'Loading',
+                                                                                    message:
+                                                                                        'Loading',
                                                                                   ),
                                                                                 );
                                                                               } else if (snapshot.hasError) {
@@ -2946,7 +2950,8 @@ class _ShopSetupTwoMobileState
                                                                                     listen:
                                                                                         false,
                                                                                   ).showLoader(
-                                                                                    'Loading',
+                                                                                    message:
+                                                                                        'Loading',
                                                                                   ),
                                                                                 );
                                                                               } else if (stateSet ==
@@ -3598,9 +3603,10 @@ class _ShopSetupTwoMobileState
               context,
               listen: false,
             ).showLoader(
-              widget.shop != null
-                  ? 'Updating Details'
-                  : 'Setting Up Your Shop',
+              message:
+                  widget.shop != null
+                      ? 'Updating Details'
+                      : 'Setting Up Your Shop',
             ),
           ),
           Visibility(

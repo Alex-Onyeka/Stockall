@@ -274,7 +274,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
             visible: isLoading,
             child: returnCompProvider(
               context,
-            ).showLoader('Logging Out...'),
+            ).showLoader(message: 'Logging Out...'),
           ),
         ],
       ),

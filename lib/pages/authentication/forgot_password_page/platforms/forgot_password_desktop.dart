@@ -261,7 +261,7 @@ class _ForgotPasswordDesktopState
               child: returnCompProvider(
                 context,
                 listen: false,
-              ).showLoader(General().loadingText),
+              ).showLoader(message: General().loadingText),
             ),
           ],
         ),

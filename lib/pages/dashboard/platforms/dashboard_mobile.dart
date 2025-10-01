@@ -274,7 +274,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading'),
+        ).showLoader(message: 'Loading'),
       );
     } else {
       if (!returnReceiptProvider(
@@ -284,7 +284,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
         return returnCompProvider(
           context,
           listen: false,
-        ).showLoader('Loading');
+        ).showLoader(message: 'Loading');
       } else {
         // return Container();
         return Stack(
@@ -1498,7 +1498,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                             .isLoading,
                     child: returnCompProvider(
                       context,
-                    ).showLoader('Loading'),
+                    ).showLoader(message: 'Loading'),
                   ),
                 ],
               ),

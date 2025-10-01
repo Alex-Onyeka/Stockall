@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
             return returnCompProvider(
               context,
               listen: false,
-            ).showLoader('Loading...');
+            ).showLoader(message: 'Loading...');
           } else if (snapshot.hasError) {
             return Scaffold(
               body: Center(
@@ -142,7 +142,7 @@ class _HomeState extends State<Home> {
                         return returnCompProvider(
                           context,
                           listen: false,
-                        ).showLoader('Loading...');
+                        ).showLoader(message: 'Loading...');
                       } else if (shopSnapshot.hasError) {
                         return Scaffold(
                           body: Center(
