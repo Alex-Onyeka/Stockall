@@ -14,6 +14,7 @@ import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -60,8 +61,6 @@ class _ProductPageDesktopState
   @override
   void initState() {
     super.initState();
-    // _productsFuture =
-    // getProductList(context);
     notificationsFuture = fetchNotifications();
   }
 
@@ -82,22 +81,16 @@ class _ProductPageDesktopState
     return tempGet;
   }
 
-  Future<void> getProductList(
-    // BuildContext context,
-  ) async {
-    // return returnData(context, listen: false).productList;
-    await returnData(
+  Future<void> getProductList() async {
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).getProducts(shopId(context));
+    ).refreshProducts(context);
     setState(() {});
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // getProductList(context);
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =

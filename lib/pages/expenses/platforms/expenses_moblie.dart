@@ -7,6 +7,7 @@ import 'package:stockall/components/major/items_summary.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -40,6 +41,12 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
       context,
       listen: false,
     ).clearExpenseDate();
+  }
+
+  Future<void> getExpenses() async {
+    await RefreshFunctions(
+      context,
+    ).refreshExpenses(context);
   }
 
   @override
@@ -318,54 +325,68 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                         ),
                                       );
                                     } else {
-                                      return SizedBox(
-                                        height:
-                                            MediaQuery.of(
+                                      return RefreshIndicator(
+                                        onRefresh: () async {
+                                          await getExpenses();
+                                        },
+                                        backgroundColor:
+                                            Colors.white,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .prColor300,
+                                        displacement: 10,
+                                        child: SizedBox(
+                                          height:
+                                              MediaQuery.of(
+                                                    context,
+                                                  )
+                                                  .size
+                                                  .height -
+                                              350,
+                                          child: ListView.builder(
+                                            itemCount:
+                                                expenses
+                                                    .length,
+                                            itemBuilder: (
                                               context,
-                                            ).size.height -
-                                            350,
-                                        child: ListView.builder(
-                                          itemCount:
-                                              expenses
-                                                  .length,
-                                          itemBuilder: (
-                                            context,
-                                            index,
-                                          ) {
-                                            TempExpensesClass
-                                            expense =
-                                                expenses[index];
-                                            return ExpensesTile(
-                                              action: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return ExpenseDetails(
-                                                        expenseUuid:
-                                                            expense.uuid!,
-                                                      );
-                                                    },
-                                                  ),
-                                                ).then((
-                                                  context,
-                                                ) {
-                                                  setState(() {
-                                                    // expensesFuture =
-                                                    //     getExpenses();
+                                              index,
+                                            ) {
+                                              TempExpensesClass
+                                              expense =
+                                                  expenses[index];
+                                              return ExpensesTile(
+                                                action: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return ExpenseDetails(
+                                                          expenseUuid:
+                                                              expense.uuid!,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ).then((
+                                                    context,
+                                                  ) {
+                                                    setState(() {
+                                                      // expensesFuture =
+                                                      //     getExpenses();
+                                                    });
                                                   });
-                                                });
-                                              },
-                                              expense:
-                                                  expense,
-                                              key: ValueKey(
-                                                expense
-                                                    .uuid!,
-                                              ),
-                                            );
-                                          },
+                                                },
+                                                expense:
+                                                    expense,
+                                                key: ValueKey(
+                                                  expense
+                                                      .uuid!,
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         ),
                                       );
                                     }

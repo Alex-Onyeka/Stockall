@@ -1687,6 +1687,9 @@ class _ReceiptDetailsContainerState
                                           ).userShop!,
                                     );
                                   } else {
+                                    print(
+                                      'Bluetooth Scanning Started',
+                                    );
                                     scanBluetoothPrinters(
                                       receipt:
                                           widget

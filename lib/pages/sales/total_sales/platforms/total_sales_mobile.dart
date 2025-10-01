@@ -6,6 +6,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -29,16 +30,9 @@ class TotalSalesMobile extends StatefulWidget {
 class _TotalSalesMobileState
     extends State<TotalSalesMobile> {
   Future<void> getMainReceipts() async {
-    await returnReceiptProvider(
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-      context,
-    );
+    ).refreshReceipts(context);
     setState(() {});
   }
 

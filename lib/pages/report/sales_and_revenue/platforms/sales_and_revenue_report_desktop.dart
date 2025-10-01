@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
@@ -11,6 +10,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -25,38 +25,20 @@ class SalesAndRevenueReportDesktop extends StatefulWidget {
 class _SalesAndRevenueReportDesktopState
     extends State<SalesAndRevenueReportDesktop> {
   bool isSummary = false;
-  late Future<List<TempProductSaleRecord>>
-  productRecordFuture;
-  Future<List<TempProductSaleRecord>>
-  getProductRecord() async {
-    var tempEx = await returnReceiptProvider(
+  late Future<void> productRecordFuture;
+  Future<void> getProductRecord() async {
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-
-    return tempEx;
+    ).refreshProductSalesRecord(context);
   }
 
   int sortIndex = 1;
 
-  late Future<List<TempProductClass>> productsFuture;
-  Future<List<TempProductClass>> getProducts() async {
-    var tempEx = await returnData(
+  late Future<void> productsFuture;
+  Future<void> getProducts() async {
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).getProducts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-
-    return tempEx;
+    ).refreshProducts(context);
   }
 
   List<ProductReportSummary> generateProductReportSummary(
@@ -790,16 +772,9 @@ class _SalesAndRevenueReportDesktopState
                                             });
                                             return RefreshIndicator(
                                               onRefresh: () {
-                                                return returnReceiptProvider(
+                                                return RefreshFunctions(
                                                   context,
-                                                  listen:
-                                                      false,
-                                                ).loadReceipts(
-                                                  returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop!.shopId!,
+                                                ).refreshReceipts(
                                                   context,
                                                 );
                                               },
@@ -862,16 +837,9 @@ class _SalesAndRevenueReportDesktopState
                                             // return Container();
                                             return RefreshIndicator(
                                               onRefresh: () {
-                                                return returnReceiptProvider(
+                                                return RefreshFunctions(
                                                   context,
-                                                  listen:
-                                                      false,
-                                                ).loadReceipts(
-                                                  returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop!.shopId!,
+                                                ).refreshReceipts(
                                                   context,
                                                 );
                                               },

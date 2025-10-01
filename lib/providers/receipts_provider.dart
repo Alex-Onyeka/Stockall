@@ -101,6 +101,9 @@ class ReceiptsProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
+        if (data.isNotEmpty) {
+          print('Receipts Gotten');
+        }
 
         _receipts =
             (data as List)
@@ -357,7 +360,10 @@ class ReceiptsProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
-            returnShopProvider(context).userShop!.shopId!,
+            returnShopProvider(
+              context,
+              listen: false,
+            ).userShop!.shopId!,
             context,
           );
         }

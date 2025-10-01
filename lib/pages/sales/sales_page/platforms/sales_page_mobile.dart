@@ -11,6 +11,7 @@ import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
@@ -29,16 +30,9 @@ class SalesPageMobile extends StatefulWidget {
 
 class _SalesPageMobileState extends State<SalesPageMobile> {
   Future<void> getMainReceipts() async {
-    await returnReceiptProvider(
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-      context,
-    );
+    ).refreshReceipts(context);
     setState(() {});
   }
 

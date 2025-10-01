@@ -5,6 +5,7 @@ import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -20,22 +21,6 @@ class TotalExpensesMobile extends StatefulWidget {
 
 class _TotalExpensesMobileState
     extends State<TotalExpensesMobile> {
-  // Future<List<TempExpensesClass>> getExpenses() {
-  //   var tempExpenses = returnExpensesProvider(
-  //     context,
-  //     listen: false,
-  //   ).getExpenses(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ).userShop!.shopId!,
-  //   );
-
-  //   return tempExpenses;
-  // }
-
-  // late Future<List<TempExpensesClass>> expensesFuture;
-
   @override
   void initState() {
     super.initState();
@@ -55,6 +40,12 @@ class _TotalExpensesMobileState
       context,
       listen: false,
     ).clearExpenseDate();
+  }
+
+  Future<void> getExpenses() async {
+    await RefreshFunctions(
+      context,
+    ).refreshExpenses(context);
   }
 
   @override
@@ -111,39 +102,14 @@ class _TotalExpensesMobileState
                 },
               ),
             ).then((_) {
-              setState(() {
-                // expensesFuture = getExpenses();
-              });
+              setState(() {});
             });
           },
           color: theme.lightModeColor.secColor100,
           text: 'Add Expenses',
           theme: theme,
         ),
-        body:
-        //  FutureBuilder(
-        //   future: expensesFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState ==
-        //         ConnectionState.waiting) {
-        //       return returnCompProvider(
-        //         context,
-        //         listen: false,
-        //       ).showLoader('Loading');
-        //     } else if (snapshot.hasError) {
-        //       return EmptyWidgetDisplayOnly(
-        //         title: 'An Error Occured',
-        //         subText:
-        //             'Couldn\'t load your data because an error occured. Check your internet connection and try again.',
-        //         theme: theme,
-        //         height: 30,
-        //         icon: Icons.clear,
-        //       );
-        //     } else {
-        //     }
-        //   },
-        // ),
-        Builder(
+        body: Builder(
           builder: (context) {
             var expenses = returnExpensesProvider(
               context,
@@ -166,11 +132,8 @@ class _TotalExpensesMobileState
                     horizontal: 20.0,
                   ),
                   child: RefreshIndicator(
-                    onRefresh: () {
-                      return returnExpensesProvider(
-                        context,
-                        listen: false,
-                      ).getExpenses(shopId(context));
+                    onRefresh: () async {
+                      await getExpenses();
                     },
                     backgroundColor: Colors.white,
                     color: theme.lightModeColor.prColor300,

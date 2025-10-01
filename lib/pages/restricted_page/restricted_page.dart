@@ -26,7 +26,7 @@ class RestrictedPage extends StatefulWidget {
 class _RestrictedPageState extends State<RestrictedPage> {
   Future<void> _launchUrl() async {
     final Uri url = Uri.parse(
-      'https://www.stockallapp.com/#/reset-password',
+      'https://www.stockallapp.com/#/subscription',
     );
     if (!await launchUrl(
       url,

@@ -7,9 +7,11 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
+import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -50,6 +52,12 @@ class TotalExpensesDesktopState
   bool isLoading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
+
+  Future<void> getExpenses() async {
+    await RefreshFunctions(
+      context,
+    ).refreshExpenses(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,46 +155,96 @@ class TotalExpensesDesktopState
                 Expanded(
                   child: DesktopPageContainer(
                     widget: Scaffold(
-                      appBar: AppBar(
-                        toolbarHeight: 60,
-                        leading: IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 10.0,
-                              right: 5,
-                            ),
-                            child: Icon(
-                              Icons
-                                  .arrow_back_ios_new_rounded,
+                      appBar: appBar(
+                        context: context,
+                        title:
+                            returnExpensesProvider(
+                              context,
+                            ).dateSet ??
+                            'Todays Expenses',
+                        widget: Visibility(
+                          visible:
+                              screenWidth(context) >
+                              mobileScreen,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              onTap: () async {
+                                await getExpenses();
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(
+                                      10,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Refresh',
+                                    ),
+                                    Icon(
+                                      size: 18,
+                                      Icons.refresh_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        centerTitle: true,
-                        title: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              returnExpensesProvider(
-                                    context,
-                                  ).dateSet ??
-                                  'Todays Expenses',
-                            ),
-                          ],
-                        ),
                       ),
+                      // AppBar(
+                      //   toolbarHeight: 60,
+                      //   leading: IconButton(
+                      //     onPressed: () {
+                      //       Navigator.of(context).pop();
+                      //     },
+                      //     icon: Padding(
+                      //       padding: const EdgeInsets.only(
+                      //         left: 10.0,
+                      //         right: 5,
+                      //       ),
+                      //       child: Icon(
+                      //         Icons
+                      //             .arrow_back_ios_new_rounded,
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   centerTitle: true,
+                      //   title: Column(
+                      //     crossAxisAlignment:
+                      //         CrossAxisAlignment.center,
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Text(
+                      //         style: TextStyle(
+                      //           fontSize:
+                      //               theme
+                      //                   .mobileTexts
+                      //                   .b1
+                      //                   .fontSize,
+                      //           fontWeight: FontWeight.bold,
+                      //         ),
+                      //         returnExpensesProvider(
+                      //               context,
+                      //             ).dateSet ??
+                      //             'Todays Expenses',
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       floatingActionButton:
                           FloatingActionButtonMain(
                             action: () {

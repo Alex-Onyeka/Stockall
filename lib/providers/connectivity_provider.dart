@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/main.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
   final Connectivity _connectivity = Connectivity();
@@ -20,25 +19,11 @@ class ConnectivityProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void checkConnection(
-    BuildContext context,
-    bool value,
-  ) async {
+  void checkConnection(bool value) async {
     isConnected = value;
     print('Connection is Now $value');
-    await returnNavProvider(
-      context,
-      listen: false,
-    ).validate(context);
     notifyListeners();
   }
-
-  // Future<void> testBitch() async {
-  //   print('Before three Seconds');
-  //   Future.delayed(Duration(seconds: 3), () {
-  //     print('After three Seconds');
-  //   });
-  // }
 
   String connectedText() {
     return isConnected ? 'Connected' : 'Not Connected';
@@ -113,7 +98,7 @@ class ConnectivityProvider extends ChangeNotifier {
         return prev.toString() == next.toString();
       });
 
-  Future<bool> isOnline(BuildContext context) async {
+  Future<bool> isOnline() async {
     final results = await _connectivity.checkConnectivity();
     print('Connectivity results: $results');
     bool anything = results.any(
@@ -123,7 +108,7 @@ class ConnectivityProvider extends ChangeNotifier {
           result != ConnectivityResult.other &&
           result != ConnectivityResult.vpn,
     );
-    checkConnection(context, anything);
+    checkConnection(anything);
     // if (anything) {
     //   var auth = AuthService();
     //   User? user = auth.currentUserAuth;

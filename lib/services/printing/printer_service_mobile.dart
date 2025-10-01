@@ -328,9 +328,11 @@ void scanBluetoothPrinters({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
+  print('Main Bluetooth Scanning Started');
   var safeContext = context;
   var isTurnedOn =
       await FlutterThermalPrinter.instance.isBleTurnedOn();
+  print('Bluetooth is Turned on');
   if (!isTurnedOn) {
     await FlutterThermalPrinter.instance.turnOnBluetooth();
   }
@@ -348,9 +350,29 @@ void scanBluetoothPrinters({
   ) async {
     FlutterThermalPrinter.instance.stopScan();
     subscription.cancel();
+    if (printers.isEmpty) {
+      print('⚠️ No Bluetooth printers found.');
+      if (safeContext.mounted) {
+        ScaffoldMessenger.of(safeContext).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No printers found. Please check your printer.',
+            ),
+          ),
+        );
+      }
+      if (safeContext.mounted) {
+        returnReceiptProvider(
+          safeContext,
+          listen: false,
+        ).toggleIsLoading(false);
+      }
+      return;
+    }
     var printer = printers.first;
     var isConnected = await FlutterThermalPrinter.instance
         .connect(printers.first);
+    print('print is $isConnected');
     if (isConnected == true && context.mounted) {
       connectToPrinter(
         isConnected: true,
@@ -363,276 +385,276 @@ void scanBluetoothPrinters({
       print('Bluetooth: ${printer.name} already connected');
       return;
     } else {
-      showDialog(
-        context: context,
-        builder: (context) {
-          var theme = returnTheme(context, listen: false);
-          return GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: Material(
-              color: const Color.fromARGB(63, 0, 0, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 30,
-                      horizontal: 20,
-                    ),
-                    height:
-                        MediaQuery.of(context).size.height -
-                        200,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Opacity(
-                              opacity: 0,
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  size: 18,
-                                  Icons.clear,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Available Devices',
-                            ),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      30,
-                                    ),
-                                onTap: () {
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(
-                                    10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    size: 18,
-                                    Icons.clear,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+      // showDialog(
+      //   context: context,
+      //   builder: (context) {
+      //     var theme = returnTheme(context, listen: false);
+      //     return GestureDetector(
+      //       onTap: () {
+      //         Navigator.of(context).pop();
+      //       },
+      //       child: Material(
+      //         color: const Color.fromARGB(63, 0, 0, 0),
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           mainAxisSize: MainAxisSize.min,
+      //           children: [
+      //             Container(
+      //               padding: EdgeInsets.symmetric(
+      //                 vertical: 30,
+      //                 horizontal: 20,
+      //               ),
+      //               height:
+      //                   MediaQuery.of(context).size.height -
+      //                   200,
+      //               width: 300,
+      //               decoration: BoxDecoration(
+      //                 borderRadius: BorderRadius.circular(
+      //                   10,
+      //                 ),
+      //                 color: Colors.white,
+      //               ),
+      //               child: Column(
+      //                 mainAxisSize: MainAxisSize.min,
+      //                 children: [
+      //                   Row(
+      //                     mainAxisAlignment:
+      //                         MainAxisAlignment
+      //                             .spaceBetween,
+      //                     children: [
+      //                       Opacity(
+      //                         opacity: 0,
+      //                         child: Container(
+      //                           padding: EdgeInsets.all(10),
+      //                           decoration: BoxDecoration(
+      //                             shape: BoxShape.circle,
+      //                           ),
+      //                           child: Icon(
+      //                             size: 18,
+      //                             Icons.clear,
+      //                           ),
+      //                         ),
+      //                       ),
+      //                       Text(
+      //                         style: TextStyle(
+      //                           fontSize:
+      //                               theme
+      //                                   .mobileTexts
+      //                                   .h4
+      //                                   .fontSize,
+      //                           fontWeight: FontWeight.bold,
+      //                         ),
+      //                         'Available Devices',
+      //                       ),
+      //                       Material(
+      //                         color: Colors.transparent,
+      //                         child: InkWell(
+      //                           borderRadius:
+      //                               BorderRadius.circular(
+      //                                 30,
+      //                               ),
+      //                           onTap: () {
+      //                             Navigator.of(
+      //                               context,
+      //                             ).pop();
+      //                           },
+      //                           child: Container(
+      //                             padding: EdgeInsets.all(
+      //                               10,
+      //                             ),
+      //                             decoration: BoxDecoration(
+      //                               shape: BoxShape.circle,
+      //                             ),
+      //                             child: Icon(
+      //                               size: 18,
+      //                               Icons.clear,
+      //                             ),
+      //                           ),
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
 
-                        Divider(
-                          color: Colors.grey.shade400,
-                          height: 30,
-                        ),
-                        Builder(
-                          builder: (context) {
-                            if (printers.isEmpty) {
-                              return Expanded(
-                                child: Center(
-                                  child: Column(
-                                    spacing: 10,
-                                    mainAxisSize:
-                                        MainAxisSize.max,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    children: [
-                                      Icon(
-                                        size: 25,
-                                        Icons
-                                            .print_disabled_rounded,
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .h4
-                                                  .fontSize,
-                                        ),
-                                        'No Printer Found',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Expanded(
-                                child: ListView(
-                                  children:
-                                      printers
-                                          .map(
-                                            (
-                                              printer,
-                                            ) => Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: ListTile(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          5,
-                                                      horizontal:
-                                                          10,
-                                                    ),
-                                                shape: Border(
-                                                  top: BorderSide(
-                                                    color:
-                                                        Colors.grey.shade200,
-                                                  ),
-                                                ),
-                                                title: Row(
-                                                  spacing:
-                                                      10,
-                                                  children: [
-                                                    Icon(
-                                                      size:
-                                                          17,
-                                                      printer.connectionType ==
-                                                              ConnectionType.BLE
-                                                          ? Icons.bluetooth
-                                                          : printer.connectionType ==
-                                                              ConnectionType.USB
-                                                          ? Icons.usb_rounded
-                                                          : Icons.print,
-                                                    ),
-                                                    Flexible(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.start,
-                                                        spacing:
-                                                            5,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                              fontSize:
-                                                                  returnTheme(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).mobileTexts.b1.fontSize,
-                                                            ),
-                                                            printer.name ??
-                                                                'Unnamed',
-                                                          ),
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                              fontSize:
-                                                                  theme.mobileTexts.b4.fontSize,
-                                                            ),
-                                                            printer.connectionType ==
-                                                                    ConnectionType.BLE
-                                                                ? 'BlueTooth'
-                                                                : printer.connectionType ==
-                                                                    ConnectionType.USB
-                                                                ? 'Usb'
-                                                                : 'Printer Type',
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                trailing: Visibility(
-                                                  visible:
-                                                      printer.isConnected !=
-                                                          null &&
-                                                      printer
-                                                          .isConnected!,
-                                                  child: Icon(
-                                                    color:
-                                                        printer.isConnected !=
-                                                                    null &&
-                                                                printer.isConnected!
-                                                            ? Colors.amber
-                                                            : Colors.grey,
-                                                    Icons
-                                                        .check,
-                                                  ),
-                                                ),
-                                                onTap: () {
-                                                  Navigator.pop(
-                                                    context,
-                                                  );
-                                                  connectToPrinter(
-                                                    printer:
-                                                        printer,
-                                                    safeContext:
-                                                        safeContext,
-                                                    receipt:
-                                                        receipt,
-                                                    records:
-                                                        records,
-                                                    shop:
-                                                        shop,
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        if (safeContext.mounted) {
-          returnReceiptProvider(
-            safeContext,
-            listen: false,
-          ).toggleIsLoading(false);
-        }
-      });
+      //                   Divider(
+      //                     color: Colors.grey.shade400,
+      //                     height: 30,
+      //                   ),
+      //                   Builder(
+      //                     builder: (context) {
+      //                       if (printers.isEmpty) {
+      //                         return Expanded(
+      //                           child: Center(
+      //                             child: Column(
+      //                               spacing: 10,
+      //                               mainAxisSize:
+      //                                   MainAxisSize.max,
+      //                               mainAxisAlignment:
+      //                                   MainAxisAlignment
+      //                                       .center,
+      //                               children: [
+      //                                 Icon(
+      //                                   size: 25,
+      //                                   Icons
+      //                                       .print_disabled_rounded,
+      //                                 ),
+      //                                 Text(
+      //                                   style: TextStyle(
+      //                                     fontWeight:
+      //                                         FontWeight
+      //                                             .bold,
+      //                                     fontSize:
+      //                                         theme
+      //                                             .mobileTexts
+      //                                             .h4
+      //                                             .fontSize,
+      //                                   ),
+      //                                   'No Printer Found',
+      //                                 ),
+      //                               ],
+      //                             ),
+      //                           ),
+      //                         );
+      //                       } else {
+      //                         return Expanded(
+      //                           child: ListView(
+      //                             children:
+      //                                 printers
+      //                                     .map(
+      //                                       (
+      //                                         printer,
+      //                                       ) => Material(
+      //                                         color:
+      //                                             Colors
+      //                                                 .transparent,
+      //                                         child: ListTile(
+      //                                           contentPadding:
+      //                                               EdgeInsets.symmetric(
+      //                                                 vertical:
+      //                                                     5,
+      //                                                 horizontal:
+      //                                                     10,
+      //                                               ),
+      //                                           shape: Border(
+      //                                             top: BorderSide(
+      //                                               color:
+      //                                                   Colors.grey.shade200,
+      //                                             ),
+      //                                           ),
+      //                                           title: Row(
+      //                                             spacing:
+      //                                                 10,
+      //                                             children: [
+      //                                               Icon(
+      //                                                 size:
+      //                                                     17,
+      //                                                 printer.connectionType ==
+      //                                                         ConnectionType.BLE
+      //                                                     ? Icons.bluetooth
+      //                                                     : printer.connectionType ==
+      //                                                         ConnectionType.USB
+      //                                                     ? Icons.usb_rounded
+      //                                                     : Icons.print,
+      //                                               ),
+      //                                               Flexible(
+      //                                                 child: Column(
+      //                                                   crossAxisAlignment:
+      //                                                       CrossAxisAlignment.start,
+      //                                                   spacing:
+      //                                                       5,
+      //                                                   children: [
+      //                                                     Text(
+      //                                                       style: TextStyle(
+      //                                                         fontWeight:
+      //                                                             FontWeight.bold,
+      //                                                         fontSize:
+      //                                                             returnTheme(
+      //                                                               context,
+      //                                                               listen:
+      //                                                                   false,
+      //                                                             ).mobileTexts.b1.fontSize,
+      //                                                       ),
+      //                                                       printer.name ??
+      //                                                           'Unnamed',
+      //                                                     ),
+      //                                                     Text(
+      //                                                       style: TextStyle(
+      //                                                         fontWeight:
+      //                                                             FontWeight.bold,
+      //                                                         fontSize:
+      //                                                             theme.mobileTexts.b4.fontSize,
+      //                                                       ),
+      //                                                       printer.connectionType ==
+      //                                                               ConnectionType.BLE
+      //                                                           ? 'BlueTooth'
+      //                                                           : printer.connectionType ==
+      //                                                               ConnectionType.USB
+      //                                                           ? 'Usb'
+      //                                                           : 'Printer Type',
+      //                                                     ),
+      //                                                   ],
+      //                                                 ),
+      //                                               ),
+      //                                             ],
+      //                                           ),
+      //                                           trailing: Visibility(
+      //                                             visible:
+      //                                                 printer.isConnected !=
+      //                                                     null &&
+      //                                                 printer
+      //                                                     .isConnected!,
+      //                                             child: Icon(
+      //                                               color:
+      //                                                   printer.isConnected !=
+      //                                                               null &&
+      //                                                           printer.isConnected!
+      //                                                       ? Colors.amber
+      //                                                       : Colors.grey,
+      //                                               Icons
+      //                                                   .check,
+      //                                             ),
+      //                                           ),
+      //                                           onTap: () {
+      //                                             Navigator.pop(
+      //                                               context,
+      //                                             );
+      //                                             connectToPrinter(
+      //                                               printer:
+      //                                                   printer,
+      //                                               safeContext:
+      //                                                   safeContext,
+      //                                               receipt:
+      //                                                   receipt,
+      //                                               records:
+      //                                                   records,
+      //                                               shop:
+      //                                                   shop,
+      //                                             );
+      //                                           },
+      //                                         ),
+      //                                       ),
+      //                                     )
+      //                                     .toList(),
+      //                           ),
+      //                         );
+      //                       }
+      //                     },
+      //                   ),
+      //                 ],
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // ).then((_) {
+      //   if (safeContext.mounted) {
+      //     returnReceiptProvider(
+      //       safeContext,
+      //       listen: false,
+      //     ).toggleIsLoading(false);
+      //   }
+      // });
     }
   });
 }

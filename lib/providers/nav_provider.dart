@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/restricted_page/restricted_page.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -107,18 +108,28 @@ class NavProvider extends ChangeNotifier {
         },
       );
       return;
-    }
-    // else if (userShop.plan == 0) {
-    //   Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => RestrictedPage(),
-    //     ),
-    //     (route) => false,
-    //   );
-    //   return;
-    // }
-    else {
+    } else if (userShop.nextPayment == null) {
+      await shopProvider.makePayment(
+        DateTime.now().add(Duration(days: 30)),
+        3,
+      );
+    } else if (userShop.plan != 0 &&
+        (userShop.nextPayment != null &&
+            (DateTime.now().isAfter(
+                  userShop.nextPayment!,
+                ) ||
+                DateTime.now().isAtSameMomentAs(
+                  userShop.nextPayment!,
+                )))) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RestrictedPage(),
+        ),
+        (route) => false,
+      );
+      return;
+    } else {
       await userProvider.fetchCurrentUser(context);
       if (dataProvider.isSynced() == 0 && isOnline) {
         if (!dataProvider.isSyncing) {

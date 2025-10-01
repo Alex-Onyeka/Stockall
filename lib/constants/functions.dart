@@ -1052,9 +1052,9 @@ Future<Uint8List> _buildPdfRoll(
               ? PdfPageFormat.roll57
               : PdfPageFormat.roll80,
       margin: const pw.EdgeInsets.only(
-        left: 15,
+        left: 0,
         top: 15,
-        right: 15,
+        right: 20,
         bottom: 10,
       ),
 

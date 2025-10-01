@@ -12,6 +12,7 @@ import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -54,6 +55,12 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
       context,
       listen: false,
     ).clearExpenseDate();
+  }
+
+  Future<void> getExpenses() async {
+    await RefreshFunctions(
+      context,
+    ).refreshExpenses(context);
   }
 
   @override
@@ -258,6 +265,10 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                 ).clearExpenseDate();
                                               },
                                               child: ItemsSummary(
+                                                refreshAction:
+                                                    () async {
+                                                      await getExpenses();
+                                                    },
                                                 isFilter: authorization(
                                                   authorized:
                                                       Authorizations()

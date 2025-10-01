@@ -19,7 +19,7 @@ DefaultGroupName=Stockall
 
 ; Where compiled installer exe will be placed (relative or absolute)
 OutputDir=output
-OutputBaseFilename=StockallSetup
+OutputBaseFilename=StockallSetupNew
 
 ; Compression settings (good defaults)
 Compression=lzma

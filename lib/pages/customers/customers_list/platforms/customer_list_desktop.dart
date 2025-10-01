@@ -10,6 +10,7 @@ import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/add_customer/add_customer.dart';
 import 'package:stockall/pages/customers/components/customer_main_tile.dart';
@@ -54,18 +55,10 @@ class _CustomerListDesktopState
   TextEditingController searchController =
       TextEditingController();
 
-  Future<List<TempCustomersClass>> getCustomerList(
-    BuildContext context,
-  ) async {
-    return await returnCustomers(
+  Future<void> getCustomerList(BuildContext context) async {
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).fetchCustomers(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+    ).refreshCustomers(context);
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =

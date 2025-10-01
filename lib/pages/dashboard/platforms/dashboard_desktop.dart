@@ -195,13 +195,10 @@ class _DashboardDesktopState
       context,
       listen: false,
     ).isLoaded) {
-      mainReceiptFuture = getMainReceipts();
-      getProdutRecordsFuture = getProductSalesRecord();
-      expensesFuture = getExpenses();
-      productsFuture = getProducts();
-      employeesFuture = getEmployees();
-      customerFuture = getCustomers();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((
+        _,
+      ) async {
+        await RefreshFunctions(context).refreshAll(context);
         returnReceiptProvider(
           context,
           listen: false,
@@ -246,61 +243,6 @@ class _DashboardDesktopState
   //     AuthService().currentUser!,
   //   );
   // }
-
-  Future<void> refreshAll(BuildContext context) async {
-    // int isSynced =
-    //     returnData(context, listen: false).isSynced();
-    // bool isOnline = await ConnectivityProvider().isOnline();
-    // if (isSynced == 0 && context.mounted && isOnline) {
-    //   showDialog(
-    //     context: context,
-    //     builder: (context) {
-    //       return ConfirmationAlert(
-    //         theme: returnTheme(context, listen: false),
-    //         message:
-    //             'You have unsynced Records, are you sure you want to proceed?',
-    //         title: 'Unsynced Records Detected',
-    //         action: () async {
-    //           Navigator.of(context).pop();
-    //           await returnData(
-    //             context,
-    //             listen: false,
-    //           ).syncData(safeContext);
-    //           await getUserShop();
-    //           await getMainReceipts(safeContext);
-    //           // await getProductSalesRecord();
-    //           await getExpenses();
-    //           await getEmployees();
-    //           await returnUserProvider(
-    //             context,
-    //             listen: false,
-    //           ).fetchCurrentUser(safeContext);
-    //           // await getProducts();
-    //           await fetchNotifications();
-    //         },
-    //       );
-    //     },
-    //   );
-    // } else {
-    // await getUserShop();
-    // await getMainReceipts(safeContext);
-    print(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop?.name,
-    );
-    // await getProductSalesRecord();
-    // await getExpenses();
-    // await getEmployees();
-    // await returnUserProvider(
-    //   context,
-    //   listen: false,
-    // ).fetchCurrentUser(safeContext);
-    // await getProducts();
-    // await fetchNotifications();
-    // }
-  }
 
   //
   //

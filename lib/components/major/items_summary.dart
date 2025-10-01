@@ -174,103 +174,105 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                       ),
                     ],
                   ),
-                  Stack(
+                  Row(
+                    spacing: 0,
+                    mainAxisAlignment:
+                        MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Visibility(
-                        visible: widget.isFilter ?? false,
-                        child: MaterialButton(
-                          onPressed: widget.filterAction,
-                          child: Row(
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color:
-                                      Colors.grey.shade700,
-                                ),
-                                (widget.isDateSet != null &&
-                                            widget
-                                                .isDateSet!) ||
-                                        (widget.setDate !=
-                                                null &&
-                                            widget.setDate!)
-                                    ? 'Clear Date'
-                                    : 'Set Date',
+                        visible:
+                            widget.refreshAction != null,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            onTap: widget.refreshAction,
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                10,
                               ),
-                              Icon(
-                                size: 20,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor100,
-                                (widget.isDateSet != null &&
-                                            widget
-                                                .isDateSet!) ||
-                                        (widget.setDate !=
-                                                null &&
-                                            widget.setDate!)
-                                    ? Icons.clear
-                                    : Icons
-                                        .date_range_outlined,
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Refresh',
+                                  ),
+                                  Icon(
+                                    size: 18,
+                                    Icons.refresh_rounded,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                      Row(
-                        spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
+                      Stack(
                         children: [
                           Visibility(
                             visible:
-                                widget.refreshAction !=
-                                null,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      10,
+                                widget.isFilter ?? false,
+                            child: MaterialButton(
+                              onPressed:
+                                  widget.filterAction,
+                              child: Row(
+                                spacing: 3,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade700,
                                     ),
-                                onTap: widget.refreshAction,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.all(
-                                        10,
-                                      ),
-                                  child: Row(
-                                    spacing: 5,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Refresh',
-                                      ),
-                                      Icon(
-                                        size: 18,
-                                        Icons
-                                            .refresh_rounded,
-                                      ),
-                                    ],
+                                    (widget.isDateSet !=
+                                                    null &&
+                                                widget
+                                                    .isDateSet!) ||
+                                            (widget.setDate !=
+                                                    null &&
+                                                widget
+                                                    .setDate!)
+                                        ? 'Clear Date'
+                                        : 'Set Date',
                                   ),
-                                ),
+                                  Icon(
+                                    size: 20,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor100,
+                                    (widget.isDateSet !=
+                                                    null &&
+                                                widget
+                                                    .isDateSet!) ||
+                                            (widget.setDate !=
+                                                    null &&
+                                                widget
+                                                    .setDate!)
+                                        ? Icons.clear
+                                        : Icons
+                                            .date_range_outlined,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -334,59 +336,6 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                               ),
                             ),
                           ),
-                          // Visibility(
-                          //   visible:
-                          //       widget.isProduct != null &&
-                          //               authorization(
-                          //                 authorized:
-                          //                     Authorizations()
-                          //                         .addProduct,
-                          //                 context: context,
-                          //               )
-                          //           ? true
-                          //           : false,
-                          //   child: MaterialButton(
-                          //     onPressed: () {
-                          //       Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(
-                          //           builder: (context) {
-                          //             return AddProduct();
-                          //           },
-                          //         ),
-                          //       );
-                          //     },
-                          //     child: Row(
-                          //       spacing: 3,
-                          //       children: [
-                          //         Text(
-                          //           style: TextStyle(
-                          //             fontSize:
-                          //                 theme
-                          //                     .mobileTexts
-                          //                     .b2
-                          //                     .fontSize,
-                          //             fontWeight:
-                          //                 FontWeight.normal,
-                          //             color:
-                          //                 Colors
-                          //                     .grey
-                          //                     .shade700,
-                          //           ),
-                          //           'Add Item',
-                          //         ),
-                          //         Icon(
-                          //           size: 20,
-                          //           color:
-                          //               theme
-                          //                   .lightModeColor
-                          //                   .secColor100,
-                          //           Icons.add,
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ],

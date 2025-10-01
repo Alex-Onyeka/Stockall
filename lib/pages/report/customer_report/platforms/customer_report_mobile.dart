@@ -6,6 +6,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -342,14 +343,10 @@ class _CustomerReportMobileState
                                 } else {
                                   return RefreshIndicator(
                                     onRefresh: () {
-                                      return returnReceiptProvider(
+                                      return RefreshFunctions(
                                         context,
-                                        listen: false,
-                                      ).loadProductSalesRecord(
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).userShop!.shopId!,
+                                      ).refreshProductSalesRecord(
+                                        context,
                                       );
                                     },
                                     backgroundColor:

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -8,6 +7,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -21,39 +21,24 @@ class CustomerReportDesktop extends StatefulWidget {
 
 class _CustomerReportDesktopState
     extends State<CustomerReportDesktop> {
-  late Future<List<TempProductSaleRecord>>
-  productRecordFuture;
-  Future<List<TempProductSaleRecord>>
-  getProductRecord() async {
-    var tempEx = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
+  // late Future<List<TempProductSaleRecord>>
+  // productRecordFuture;
+  // Future<List<TempProductSaleRecord>>
+  // getProductRecord() async {
+  //   var tempEx = await returnReceiptProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadProductSalesRecord(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
 
-    return tempEx;
-  }
+  //   return tempEx;
+  // }
 
   int sortIndex = 1;
-
-  late Future<List<TempProductClass>> productsFuture;
-  Future<List<TempProductClass>> getProducts() async {
-    var tempEx = await returnData(
-      context,
-      listen: false,
-    ).getProducts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-
-    return tempEx;
-  }
 
   @override
   void initState() {
@@ -64,7 +49,6 @@ class _CustomerReportDesktopState
         listen: false,
       ).clearDate(context);
     });
-    productRecordFuture = getProductRecord();
   }
 
   @override
@@ -340,17 +324,10 @@ class _CustomerReportDesktopState
                                   } else {
                                     return RefreshIndicator(
                                       onRefresh: () {
-                                        return returnReceiptProvider(
+                                        return RefreshFunctions(
                                           context,
-                                          listen: false,
-                                        ).loadProductSalesRecord(
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .userShop!
-                                              .shopId!,
+                                        ).refreshProductSalesRecord(
+                                          context,
                                         );
                                       },
                                       backgroundColor:

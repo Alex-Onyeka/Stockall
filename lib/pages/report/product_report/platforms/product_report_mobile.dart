@@ -7,6 +7,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -22,19 +23,11 @@ class _ProductReportMobileState
     extends State<ProductReportMobile> {
   int sortIndex = 1;
 
-  late Future<List<TempProductClass>> productsFuture;
-  Future<List<TempProductClass>> getProducts() async {
-    var tempEx = await returnData(
+  late Future<void> productsFuture;
+  Future<void> getProducts() async {
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).getProducts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-
-    return tempEx;
+    ).refreshProducts(context);
   }
 
   @override
@@ -326,15 +319,7 @@ class _ProductReportMobileState
                                   ).size.width,
                           child: RefreshIndicator(
                             onRefresh: () {
-                              return returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).loadProductSalesRecord(
-                                returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).userShop!.shopId!,
-                              );
+                              return getProducts();
                             },
                             backgroundColor: Colors.white,
                             color:
@@ -363,18 +348,7 @@ class _ProductReportMobileState
                                     } else {
                                       return RefreshIndicator(
                                         onRefresh: () {
-                                          return returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).loadProductSalesRecord(
-                                            returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                )
-                                                .userShop!
-                                                .shopId!,
-                                          );
+                                          return getProducts();
                                         },
                                         backgroundColor:
                                             Colors.white,

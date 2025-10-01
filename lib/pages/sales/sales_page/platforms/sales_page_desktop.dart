@@ -14,6 +14,7 @@ import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -31,16 +32,9 @@ class SalesPageDesktop extends StatefulWidget {
 class _SalesPageDesktopState
     extends State<SalesPageDesktop> {
   Future<void> getMainReceipts() async {
-    await returnReceiptProvider(
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-      context,
-    );
+    ).refreshReceipts(context);
     setState(() {});
   }
 
@@ -215,6 +209,10 @@ class _SalesPageDesktopState
                                             ).clearReceiptDate();
                                           },
                                           child: ItemsSummary(
+                                            refreshAction:
+                                                () async {
+                                                  await getMainReceipts();
+                                                },
                                             isFilter: authorization(
                                               authorized:
                                                   Authorizations()

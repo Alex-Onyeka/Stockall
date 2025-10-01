@@ -51,6 +51,55 @@ class ShopProvider extends ChangeNotifier {
     return userShop;
   }
 
+  Future<void> makePayment(DateTime date, int plan) async {
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      await supabase
+          .from('shops')
+          .update({
+            'next_payment': date.toIso8601String(),
+            'plan': plan,
+          })
+          .eq('shop_id', userShop!.shopId!)
+          .maybeSingle();
+      print(
+        'Shop Next Payment date Set: ${date.toString()} and Plan Set: $plan',
+      );
+
+      final response = await getUserShop(
+        AuthService().currentUser!,
+      );
+      if (response != null) {
+        setShop(response);
+        notifyListeners();
+      }
+    } else {
+      print('Next Payment cant be set offline');
+    }
+  }
+
+  // Future<void> setShopPaymentPlan(int plan) async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   if (isOnline) {
+  //     await supabase
+  //         .from('shops')
+  //         .update({'plan': plan})
+  //         .eq('shop_id', userShop!.shopId!)
+  //         .maybeSingle();
+  //     print('Shop Payment Plan Set: $plan');
+
+  //     final response = await getUserShop(
+  //       AuthService().currentUser!,
+  //     );
+  //     if (response != null) {
+  //       setShop(response);
+  //       notifyListeners();
+  //     }
+  //   } else {
+  //     print('Next Payment cant be set offline');
+  //   }
+  // }
+
   Future<void> updatePrintType({
     required int shopId,
     required int? type,

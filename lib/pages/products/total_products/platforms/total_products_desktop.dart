@@ -11,6 +11,7 @@ import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -77,10 +78,9 @@ class _TotalProductsDesktopState
   }
 
   Future<void> getProductList() async {
-    await returnData(
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).getProducts(shopId(context));
+    ).refreshProducts(context);
     setState(() {});
   }
 

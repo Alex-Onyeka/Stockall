@@ -10,7 +10,9 @@ import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -37,16 +39,9 @@ class TotalSalesDesktop extends StatefulWidget {
 class _TotalSalesDesktopState
     extends State<TotalSalesDesktop> {
   Future<void> getMainReceipts() async {
-    await returnReceiptProvider(
+    await RefreshFunctions(
       context,
-      listen: false,
-    ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-      context,
-    );
+    ).refreshReceipts(context);
     setState(() {});
   }
 
@@ -201,109 +196,166 @@ class _TotalSalesDesktopState
                                 ).returnInvoice
                                 ? 'All Sales'
                                 : 'All Invoices',
-                        widget: Padding(
-                          padding: const EdgeInsets.only(
-                            right: 15.0,
-                          ),
-                          child: PopupMenuButton(
-                            offset: Offset(-20, 30),
-                            color: Colors.white,
-                            itemBuilder: (context) {
-                              return [
-                                PopupMenuItem(
-                                  onTap: () {
-                                    returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).switchReturnInvoice(
-                                      false,
-                                    );
+                        widget: Row(
+                          spacing: 15,
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment:
+                              MainAxisAlignment.end,
+                          children: [
+                            Visibility(
+                              visible:
+                                  screenWidth(context) >
+                                  mobileScreen,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
+                                  onTap: () async {
+                                    getMainReceipts();
                                   },
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          !returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).returnInvoice
-                                              ? FontWeight
-                                                  .bold
-                                              : null,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(
+                                          10,
+                                        ),
+                                    child: Row(
+                                      spacing: 5,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Refresh',
+                                        ),
+                                        Icon(
+                                          size: 18,
+                                          Icons
+                                              .refresh_rounded,
+                                        ),
+                                      ],
                                     ),
-                                    'Receipts',
                                   ),
                                 ),
-                                PopupMenuItem(
-                                  onTap: () {
-                                    returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).switchReturnInvoice(
-                                      true,
-                                    );
-                                    returnData(
-                                      context,
-                                      listen: false,
-                                    ).toggleFloatingAction(
-                                      context,
-                                    );
-                                  },
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          returnReceiptProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).returnInvoice
-                                              ? FontWeight
-                                                  .bold
-                                              : null,
-                                    ),
-                                    'Invoices',
-                                  ),
-                                ),
-                              ];
-                            },
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              mainAxisSize:
-                                  MainAxisSize.min,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  !returnReceiptProvider(
-                                        context,
-                                      ).returnInvoice
-                                      ? 'Receipts'
-                                      : 'Invoices',
-                                ),
-                                Icon(
-                                  Icons.more_vert_rounded,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                    right: 15.0,
+                                  ),
+                              child: PopupMenuButton(
+                                offset: Offset(-20, 30),
+                                color: Colors.white,
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                      onTap: () {
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).switchReturnInvoice(
+                                          false,
+                                        );
+                                      },
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              !returnReceiptProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).returnInvoice
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                        'Receipts',
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      onTap: () {
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).switchReturnInvoice(
+                                          true,
+                                        );
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).toggleFloatingAction(
+                                          context,
+                                        );
+                                      },
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              returnReceiptProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).returnInvoice
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                        'Invoices',
+                                      ),
+                                    ),
+                                  ];
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      !returnReceiptProvider(
+                                            context,
+                                          ).returnInvoice
+                                          ? 'Receipts'
+                                          : 'Invoices',
+                                    ),
+                                    Icon(
+                                      Icons
+                                          .more_vert_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       floatingActionButton: Visibility(

@@ -10,6 +10,7 @@ import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockall/pages/employees/components/employee_tile_main.dart';
@@ -42,14 +43,10 @@ class _EmployeeListDesktopState
     }
   }
 
-  Future<List<TempUserClass>> getEmployees() async {
-    var tempEmp =
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchUsers();
-
-    return tempEmp;
+  Future<void> getEmployees() async {
+    await RefreshFunctions(
+      context,
+    ).refreshEmployees(context);
   }
 
   bool isLoading = false;
