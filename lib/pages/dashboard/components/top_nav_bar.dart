@@ -9,7 +9,10 @@ import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/c
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
+import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/created_products%20copy/sales_product_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
@@ -207,16 +210,40 @@ class _TopNavBarState extends State<TopNavBar> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: () async {
-                      await CreatedExpensesFunc()
-                          .clearExpenses();
-                      await UpdatedExpensesFunc()
-                          .clearupdatedExpenses();
-                      await DeletedExpensesFunc()
-                          .clearDeletedExpenses();
-                      await CreatedReceiptsFunc()
-                          .clearReceipts();
-                      await CreatedRecordsFunc()
-                          .clearRecords();
+                      // print(
+                      //   CreatedRecordsFunc()
+                      //       .getRecords()
+                      //       .length,
+                      // );
+                      // print(
+                      //   CreatedReceiptsFunc()
+                      //       .getReceipts()
+                      //       .length,
+                      // );
+                      // print(
+                      //   SalesProductFunc()
+                      //       .getProducts()
+                      //       .first
+                      //       .quantity,
+                      // );
+                      // await CreatedExpensesFunc()
+                      //     .clearExpenses();
+                      // await UpdatedExpensesFunc()
+                      //     .clearupdatedExpenses();
+                      // await DeletedExpensesFunc()
+                      //     .clearDeletedExpenses();
+                      // await CreatedReceiptsFunc()
+                      //     .clearReceipts();
+                      // await CreatedRecordsFunc()
+                      //     .clearRecords();
+                      // await CreatedProductFunc()
+                      //     .clearProducts();
+                      // await UpdatedProductsFunc()
+                      //     .clearupdatedProducts();
+                      // await DeletedReceiptsFunc()
+                      //     .clearDeletedReceipts();
+                      // await SalesProductFunc()
+                      //     .clearProducts();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10),

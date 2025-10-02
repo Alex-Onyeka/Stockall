@@ -130,6 +130,7 @@ class SalesProvider extends ChangeNotifier {
             departmentName: cartItem.item.departmentName,
             departmentId: cartItem.item.departmentId,
             uuid: uuidGen(),
+            isProductManaged: cartItem.item.isManaged,
           );
         }).toList();
 
@@ -146,7 +147,8 @@ class SalesProvider extends ChangeNotifier {
 
     // Step 3: Decrement quantity via RPC
     for (final cartItem in cartItems) {
-      if ((cartItem.item.quantity ?? 0) > 0) {
+      if (((cartItem.item.quantity ?? 0) > 0) &&
+          cartItem.item.isManaged) {
         if (isOnline) {
           await supabase.rpc(
             'decrement_product_quantity_new',
@@ -155,12 +157,14 @@ class SalesProvider extends ChangeNotifier {
               'p_quantity': cartItem.quantity.toInt(),
             },
           );
-          await ProductsFunc().deductQuantity(
-            quantity: cartItem.quantity,
-            uuid: cartItem.item.uuid!,
-          );
+          // await ProductsFunc().deductQuantity(
+          //   isOnline: isOnline,
+          //   quantity: cartItem.quantity,
+          //   uuid: cartItem.item.uuid!,
+          // );
         } else {
           await ProductsFunc().deductQuantity(
+            isOnline: isOnline,
             quantity: cartItem.quantity,
             uuid: cartItem.item.uuid!,
           );

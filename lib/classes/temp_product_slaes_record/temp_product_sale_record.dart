@@ -76,6 +76,9 @@ class TempProductSaleRecord {
   @HiveField(23)
   String? receiptUuid;
 
+  @HiveField(24)
+  bool? isProductManaged;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -101,6 +104,7 @@ class TempProductSaleRecord {
     this.productUuid,
     this.customerUuid,
     this.receiptUuid,
+    required this.isProductManaged,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -134,6 +138,7 @@ class TempProductSaleRecord {
       productUuid: json['product_uuid'] as String?,
       customerUuid: json['customer_uuid'] as String?,
       receiptUuid: json['receipt_uuid'] as String?,
+      isProductManaged: json['is_product_managed'] as bool?,
     );
   }
 
@@ -161,6 +166,7 @@ class TempProductSaleRecord {
       'product_uuid': productUuid,
       'receipt_uuid': receiptUuid,
       'customer_uuid': customerUuid,
+      'is_product_managed': isProductManaged,
     };
   }
 }

@@ -103,10 +103,12 @@ class CreatedReceiptsFunc {
         createdReceiptsBox.containsKey(uuid).toString(),
       );
       await createdReceiptsBox.delete(uuid);
-      print('Receipts Deleted');
+      print('Created eceipts Deleted');
       return 1;
     } catch (e) {
-      print('Receipts Delete Failed: ${e.toString()}');
+      print(
+        'Created Receipts Delete Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

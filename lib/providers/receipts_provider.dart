@@ -248,6 +248,14 @@ class ReceiptsProvider extends ChangeNotifier {
         'delete_receipt_and_update_inventory_new',
         params: {'target_receipt_uuid': uuid},
       );
+      var containsUpdate = UpdatedReceiptsFunc()
+          .getReceiptIds()
+          .where((rec) => rec.receiptUuid == uuid);
+      if (containsUpdate.isNotEmpty) {
+        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+          uuid,
+        );
+      }
     } else {
       await MainReceiptFunc().deleteReceipt(uuid);
       var containsCreated =
@@ -279,7 +287,10 @@ class ReceiptsProvider extends ChangeNotifier {
 
     if (context.mounted) {
       await loadReceipts(
-        returnShopProvider(context).userShop!.shopId!,
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
         context,
       );
     }
@@ -417,7 +428,10 @@ class ReceiptsProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
-            returnShopProvider(context).userShop!.shopId!,
+            returnShopProvider(
+              context,
+              listen: false,
+            ).userShop!.shopId!,
             context,
           );
         }
@@ -463,7 +477,10 @@ class ReceiptsProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
-            returnShopProvider(context).userShop!.shopId!,
+            returnShopProvider(
+              context,
+              listen: false,
+            ).userShop!.shopId!,
             context,
           );
         }
@@ -652,59 +669,62 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  List<TempProductSaleRecord> productSaleRecords = [
-    TempProductSaleRecord(
-      customPriceSet: false,
-      discount: 10,
-      discountedAmount: 3000,
-      originalCost: 5000,
-      productRecordId: 1,
-      createdAt: DateTime(2025, 5, 1, 10, 30),
-      productId: 1,
-      productName: '',
-      shopId: 1,
-      staffId: 'staff001',
-      customerId: 1,
-      staffName: 'Alice Johnson',
-      recepitId: 2,
-      quantity: 3,
-      revenue: 4500.0,
-    ),
-    TempProductSaleRecord(
-      customPriceSet: false,
-      discount: 10,
-      discountedAmount: 2100,
-      originalCost: 4000,
-      productRecordId: 2,
-      createdAt: DateTime(2025, 5, 3, 14, 15),
-      productId: 2,
-      productName: '',
-      shopId: 1,
-      staffId: 'staff002',
-      customerId: 1,
-      staffName: 'Bob Smith',
-      recepitId: 1,
-      quantity: 2,
-      revenue: 3000.0,
-    ),
-    TempProductSaleRecord(
-      customPriceSet: false,
-      discount: 10,
-      discountedAmount: 5000,
-      originalCost: 2500,
-      productRecordId: 3,
-      createdAt: DateTime(2025, 5, 5, 9, 0),
-      productId: 3,
-      productName: '',
-      shopId: 2,
-      staffId: 'staff003',
-      customerId: 2,
-      staffName: 'Chinwe Okafor',
-      recepitId: 3,
-      quantity: 5,
-      revenue: 7500.0,
-    ),
-  ];
+  // List<TempProductSaleRecord> productSaleRecords = [
+  //   TempProductSaleRecord(
+  //     customPriceSet: false,
+  //     discount: 10,
+  //     discountedAmount: 3000,
+  //     originalCost: 5000,
+  //     productRecordId: 1,
+  //     createdAt: DateTime(2025, 5, 1, 10, 30),
+  //     productId: 1,
+  //     productName: '',
+  //     shopId: 1,
+  //     staffId: 'staff001',
+  //     customerId: 1,
+  //     staffName: 'Alice Johnson',
+  //     recepitId: 2,
+  //     quantity: 3,
+  //     revenue: 4500.0,
+  //     isProductManaged: true,
+  //   ),
+  //   TempProductSaleRecord(
+  //     customPriceSet: false,
+  //     discount: 10,
+  //     discountedAmount: 2100,
+  //     originalCost: 4000,
+  //     productRecordId: 2,
+  //     createdAt: DateTime(2025, 5, 3, 14, 15),
+  //     productId: 2,
+  //     productName: '',
+  //     shopId: 1,
+  //     staffId: 'staff002',
+  //     customerId: 1,
+  //     staffName: 'Bob Smith',
+  //     recepitId: 1,
+  //     quantity: 2,
+  //     revenue: 3000.0,
+  //     isProductManaged: true,
+  //   ),
+  //   TempProductSaleRecord(
+  //     customPriceSet: false,
+  //     discount: 10,
+  //     discountedAmount: 5000,
+  //     originalCost: 2500,
+  //     productRecordId: 3,
+  //     createdAt: DateTime(2025, 5, 5, 9, 0),
+  //     productId: 3,
+  //     productName: '',
+  //     shopId: 2,
+  //     staffId: 'staff003',
+  //     customerId: 2,
+  //     staffName: 'Chinwe Okafor',
+  //     recepitId: 3,
+  //     quantity: 5,
+  //     revenue: 7500.0,
+  //     isProductManaged: true,
+  //   ),
+  // ];
 
   // List<TempProductSaleRecord> getOwnProductSalesRecord(
   //   BuildContext context,
@@ -721,14 +741,14 @@ class ReceiptsProvider extends ChangeNotifier {
   //       .toList();
   // }
 
-  List<TempProductSaleRecord>
-  returnProductSalesRecordsByDate(BuildContext context) {
-    final sortedList =
-        productSaleRecords.toList()..sort(
-          (a, b) => b.createdAt.compareTo(a.createdAt),
-        );
-    return sortedList;
-  }
+  // List<TempProductSaleRecord>
+  // returnProductSalesRecordsByDate(BuildContext context) {
+  //   final sortedList =
+  //       productSaleRecords.toList()..sort(
+  //         (a, b) => b.createdAt.compareTo(a.createdAt),
+  //       );
+  //   return sortedList;
+  // }
 
   // List<TempProductSaleRecord> getProductRecordsByReceiptId(
   //   int receiptId,
@@ -739,42 +759,43 @@ class ReceiptsProvider extends ChangeNotifier {
   //       .toList();
   // }
 
-  void createProductSalesRecord(
-    BuildContext context,
-    int newReceiptId,
-    String newReceiptUuid,
-    String? customerUuid,
-  ) {
-    for (var item
-        in returnSalesProvider(
-          context,
-          listen: false,
-        ).cartItems) {
-      productSaleRecords.add(
-        TempProductSaleRecord(
-          customPriceSet: item.item.setCustomPrice,
-          productName: '',
-          discount: item.discount,
-          originalCost: item.totalCost(),
-          customerUuid: customerUuid,
-          discountedAmount: item.discountCost(),
-          productRecordId: productSaleRecords.length + 1,
-          createdAt: DateTime.now(),
-          productId: item.item.id!,
-          productUuid: item.item.uuid!,
-          receiptUuid: newReceiptUuid,
-          shopId: item.item.shopId,
-          staffId: 'staffId',
-          staffName: 'staffName',
-          recepitId: newReceiptId,
-          quantity: item.quantity,
-          revenue: item.revenue(),
-        ),
-      );
-    }
+  // void createProductSalesRecord(
+  //   BuildContext context,
+  //   int newReceiptId,
+  //   String newReceiptUuid,
+  //   String? customerUuid,
+  // ) {
+  //   for (var item
+  //       in returnSalesProvider(
+  //         context,
+  //         listen: false,
+  //       ).cartItems) {
+  //     productSaleRecords.add(
+  //       TempProductSaleRecord(
+  //         customPriceSet: item.item.setCustomPrice,
+  //         productName: '',
+  //         discount: item.discount,
+  //         originalCost: item.totalCost(),
+  //         customerUuid: customerUuid,
+  //         discountedAmount: item.discountCost(),
+  //         productRecordId: productSaleRecords.length + 1,
+  //         createdAt: DateTime.now(),
+  //         productId: item.item.id!,
+  //         productUuid: item.item.uuid!,
+  //         receiptUuid: newReceiptUuid,
+  //         shopId: item.item.shopId,
+  //         staffId: 'staffId',
+  //         staffName: 'staffName',
+  //         recepitId: newReceiptId,
+  //         quantity: item.quantity,
+  //         revenue: item.revenue(),
+  //         isProductManaged: true,
+  //       ),
+  //     );
+  //   }
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
   bool returnInvoice = false;
 

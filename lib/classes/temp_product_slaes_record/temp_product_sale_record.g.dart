@@ -41,13 +41,14 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       productUuid: fields[21] as String?,
       customerUuid: fields[22] as String?,
       receiptUuid: fields[23] as String?,
+      isProductManaged: fields[24] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductSaleRecord obj) {
     writer
-      ..writeByte(24)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -95,7 +96,9 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(22)
       ..write(obj.customerUuid)
       ..writeByte(23)
-      ..write(obj.receiptUuid);
+      ..write(obj.receiptUuid)
+      ..writeByte(24)
+      ..write(obj.isProductManaged);
   }
 
   @override
