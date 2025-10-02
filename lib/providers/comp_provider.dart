@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -75,42 +74,25 @@ class CompProvider extends ChangeNotifier {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 60.0,
                         ),
-                        child: Column(
-                          children: [
-                            Text(
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color:
-                                    themeProvider
-                                        .lightModeColor
-                                        .prColor300,
-                                fontSize:
-                                    themeProvider
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight:
-                                    themeProvider
-                                        .mobileTexts
-                                        .h2
-                                        .fontWeightBold,
-                              ),
-                              message,
-                            ),
-                            Visibility(
-                              visible: action != null,
-                              child: MainButtonTransparent(
-                                themeProvider:
-                                    themeProvider,
-                                constraints:
-                                    BoxConstraints(),
-                                text: 'LogOut',
-                                action: () async {
-                                  await action!();
-                                },
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                themeProvider
+                                    .lightModeColor
+                                    .prColor300,
+                            fontSize:
+                                themeProvider
+                                    .mobileTexts
+                                    .h4
+                                    .fontSize,
+                            fontWeight:
+                                themeProvider
+                                    .mobileTexts
+                                    .h2
+                                    .fontWeightBold,
+                          ),
+                          message,
                         ),
                       ),
                     ),
