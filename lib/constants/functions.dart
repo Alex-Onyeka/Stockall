@@ -3750,7 +3750,7 @@ void downloadPdfWebSalesSummary({
 
 Future<void> downloadApkFromApp() async {
   final url = Uri.parse(
-    'https://stockallapp.com/downloads/stockall.apk',
+    'https://github.com/Alex-Onyeka/Stockall/releases/download/v1.0.1/stockall.apk',
   );
 
   if (await canLaunchUrl(url)) {
