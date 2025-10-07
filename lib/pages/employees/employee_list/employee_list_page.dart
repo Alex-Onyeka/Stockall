@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/employees/employee_list/platforms/employee_list_desktop.dart';
+import 'package:stockall/pages/employees/employee_list/platforms/employee_list_mobile.dart';
+
+class EmployeeListPage extends StatefulWidget {
+  final String empId;
+  const EmployeeListPage({super.key, required this.empId});
+
+  @override
+  State<EmployeeListPage> createState() =>
+      _EmployeeListPageState();
+}
+
+class _EmployeeListPageState
+    extends State<EmployeeListPage> {
+  @override
+  void initState() {
+    super.initState();
+    returnNavProvider(context, listen: false).navigate(7);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await returnNavProvider(
+        context,
+        listen: false,
+      ).validate(context);
+
+      setState(() {
+        // stillLoading = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < mobileScreen) {
+          return EmployeeListMobile();
+        } else {
+          return EmployeeListDesktop();
+        }
+      },
+    );
+  }
+}

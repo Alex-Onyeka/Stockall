@@ -1,0 +1,780 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/major/top_banner.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
+import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
+import 'package:stockall/providers/comp_provider.dart';
+import 'package:stockall/providers/theme_provider.dart';
+
+class EmployeePageDesktop extends StatefulWidget {
+  final String employeeId;
+  const EmployeePageDesktop({
+    super.key,
+    required this.employeeId,
+  });
+
+  @override
+  State<EmployeePageDesktop> createState() =>
+      _EmployeePageDesktopState();
+}
+
+class _EmployeePageDesktopState
+    extends State<EmployeePageDesktop> {
+  @override
+  void initState() {
+    super.initState();
+
+    returnData(
+      context,
+      listen: false,
+    ).toggleFloatingAction(context);
+  }
+
+  bool isLoading = false;
+  bool showSuccess = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return SafeArea(
+      child: Stack(
+        children: [
+          Scaffold(
+            body: Column(
+              children: [
+                SizedBox(
+                  height:
+                      MediaQuery.of(context).size.height -
+                      50,
+                  child: Stack(
+                    alignment: Alignment(0, 1),
+                    children: [
+                      Align(
+                        alignment: Alignment(0, -1),
+                        child: TopBanner(
+                          turnOn: true,
+                          isMain: false,
+                          subTitle:
+                              'Full Details about employee',
+                          title: 'Employee Details',
+                          theme: theme,
+                          bottomSpace: 100,
+                          topSpace: 30,
+                          iconData: Icons.person,
+                        ),
+                      ),
+                      Builder(
+                        builder: (context) {
+                          TempUserClass employee =
+                              returnUserProvider(
+                                context,
+                              ).usersMain.firstWhere(
+                                (user) =>
+                                    user.userId ==
+                                    widget.employeeId,
+                              );
+                          return Positioned(
+                            top: 90,
+                            child: DetailsPageContainer(
+                              editAction: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return AddEmployeePage(
+                                        employee: employee,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  setState(() {});
+                                });
+                              },
+                              deleteAction: () {
+                                final safeContext = context;
+                                final userProvider =
+                                    returnUserProvider(
+                                      context,
+                                      listen: false,
+                                    );
+                                final shopProvider =
+                                    returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    );
+                                showDialog(
+                                  context: safeContext,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to delete your staff, are you sure to proceed?',
+                                      title:
+                                          'Are you sure?',
+                                      action: () async {
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+
+                                        await shopProvider.removeEmployeeFromShop(
+                                          employeeIdToRemove:
+                                              widget
+                                                  .employeeId,
+                                          shopId:
+                                              returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .userShop!
+                                                  .shopId!,
+                                        );
+                                        await userProvider
+                                            .updateEmployeeRole(
+                                              authUserId:
+                                                  widget
+                                                      .employeeId,
+                                              newRole: '',
+                                              userId:
+                                                  widget
+                                                      .employeeId,
+                                            );
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess =
+                                              true;
+                                        });
+
+                                        await Future.delayed(
+                                          Duration(
+                                            seconds: 2,
+                                          ),
+                                        );
+
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              theme: theme,
+                              employee: employee,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Visibility(
+            visible: isLoading,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader(message: 'Loading'),
+          ),
+          Visibility(
+            visible: showSuccess,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showSuccess('Deleted Successfully'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DetailsPageContainer extends StatefulWidget {
+  final ThemeProvider theme;
+  final Function() deleteAction;
+  final Function() editAction;
+  final TempUserClass employee;
+  const DetailsPageContainer({
+    super.key,
+    required this.theme,
+    required this.employee,
+    required this.deleteAction,
+    required this.editAction,
+  });
+
+  @override
+  State<DetailsPageContainer> createState() =>
+      _DetailsPageContainerState();
+}
+
+class _DetailsPageContainerState
+    extends State<DetailsPageContainer> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    compProvider = returnCompProvider(
+      context,
+      listen: false,
+    );
+  }
+
+  late CompProvider compProvider;
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      compProvider.swtichTab(0);
+    });
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width - 20,
+      height: MediaQuery.of(context).size.height - 150,
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(32, 0, 0, 0),
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    spacing: 10,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade200,
+                        ),
+                        child: SvgPicture.asset(
+                          customersIconSvg,
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            widget.employee.name,
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            widget.employee.email,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          color:
+                              widget
+                                  .theme
+                                  .lightModeColor
+                                  .secColor200,
+                        ),
+                        'Employee',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 20,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color: Colors.grey.shade200,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TabBarTabButton(
+                          index: 0,
+                          text: 'Basic Info',
+                          theme: widget.theme,
+                        ),
+                      ),
+                      Expanded(
+                        child: TabBarTabButton(
+                          index: 1,
+                          text: 'View Sales',
+                          theme: widget.theme,
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return TotalSalesPage(
+                                    id:
+                                        widget
+                                            .employee
+                                            .userId!,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  EmployeeDetailsContainer(
+                    employee: widget.employee,
+                    theme: widget.theme,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            spacing: 15,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Visibility(
+                visible: true,
+                child: CustomerActionButton(
+                  icon: Icons.delete_outline_rounded,
+                  color:
+                      widget
+                          .theme
+                          .lightModeColor
+                          .errorColor200,
+                  iconSize: 18,
+                  text: 'Delete',
+                  action: widget.deleteAction,
+                  theme: widget.theme,
+                ),
+              ),
+              CustomerActionButton(
+                svg: editIconSvg,
+                color: Colors.grey,
+                iconSize: 15,
+                text: 'Edit',
+                action: widget.editAction,
+                theme: widget.theme,
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+}
+
+class EmployeeDetailsContainer extends StatelessWidget {
+  const EmployeeDetailsContainer({
+    super.key,
+    required this.employee,
+    required this.theme,
+  });
+
+  final TempUserClass employee;
+  final ThemeProvider theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 450,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText: employee.name,
+                    text: 'Name',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText: formatDateTime(
+                      employee.createdAt!,
+                    ),
+                    text: 'Date Added',
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      screenWidth(context) > tabletScreen,
+                  child: Expanded(
+                    flex: 5,
+                    child: TabBarUserInfoSection(
+                      mainText: 'Not Set',
+                      text: 'Address',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
+            Row(
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText: employee.email,
+                    text: 'Email',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        employee.phone == null
+                            ? 'Not Set'
+                            : employee.phone!,
+                    text: 'Phone Number',
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      screenWidth(context) > tabletScreen,
+                  child: Expanded(
+                    flex: 5,
+                    child: TabBarUserInfoSection(
+                      mainText: employee.role,
+
+                      text: 'Role',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 40),
+            Visibility(
+              visible: screenWidth(context) <= tabletScreen,
+              child: Row(
+                spacing: 15,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'OTHER DETAILS:',
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: screenWidth(context) <= tabletScreen,
+              child: SizedBox(height: 5),
+            ),
+            Visibility(
+              visible: screenWidth(context) <= tabletScreen,
+              child: Divider(),
+            ),
+            Visibility(
+              visible: screenWidth(context) <= tabletScreen,
+              child: SizedBox(height: 10),
+            ),
+            Visibility(
+              visible: screenWidth(context) <= tabletScreen,
+              child: Row(
+                spacing: 15,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: TabBarUserInfoSection(
+                      mainText: 'Not Set',
+                      text: 'Address',
+                    ),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: TabBarUserInfoSection(
+                      mainText: employee.role,
+
+                      text: 'Role',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomerActionButton extends StatelessWidget {
+  final String text;
+  final Function()? action;
+  final IconData? icon;
+  final Color color;
+  final double iconSize;
+  final ThemeProvider theme;
+  final String? svg;
+
+  const CustomerActionButton({
+    super.key,
+    required this.text,
+    this.action,
+    this.icon,
+    required this.color,
+    required this.iconSize,
+    required this.theme,
+    this.svg,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: action,
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          height: 35,
+          width: 100,
+          padding: EdgeInsets.symmetric(
+            vertical: 7,
+            horizontal: 10,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: Colors.grey.shade400),
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                  ),
+                  text,
+                ),
+                Stack(
+                  children: [
+                    Visibility(
+                      visible: icon != null,
+                      child: Icon(
+                        size: iconSize,
+                        color: color,
+                        icon ??
+                            Icons.delete_outline_rounded,
+                      ),
+                    ),
+                    Visibility(
+                      visible: svg != null,
+                      child: SvgPicture.asset(
+                        svg ?? '',
+                        height: iconSize,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TabBarUserInfoSection extends StatelessWidget {
+  final String text;
+  final String mainText;
+  const TabBarUserInfoSection({
+    super.key,
+    required this.text,
+    required this.mainText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return SizedBox(
+      child: Column(
+        spacing: 8,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(text),
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b2.fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  mainText,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TabBarTabButton extends StatelessWidget {
+  final String text;
+  final int index;
+  final Function()? action;
+  const TabBarTabButton({
+    super.key,
+    required this.theme,
+    required this.index,
+    required this.text,
+    this.action,
+  });
+
+  final ThemeProvider theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color:
+              returnCompProvider(context).activeTab == index
+                  ? const Color.fromARGB(50, 255, 193, 7)
+                  : Colors.transparent,
+          border: Border(
+            bottom: BorderSide(
+              color:
+                  returnCompProvider(context).activeTab ==
+                          index
+                      ? theme.lightModeColor.secColor200
+                      : Colors.grey.shade400,
+              width: 3,
+            ),
+          ),
+        ),
+        child: InkWell(
+          onTap: () {
+            action!();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10),
+
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  fontWeight:
+                      returnCompProvider(
+                                context,
+                              ).activeTab ==
+                              index
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                ),
+                text,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

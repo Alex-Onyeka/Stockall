@@ -1,0 +1,152 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:stockall/providers/theme_provider.dart';
+
+class NumberTextfield extends StatefulWidget {
+  final String title;
+  final String hint;
+  final TextEditingController controller;
+  final Function(String)? onChanged;
+  final ThemeProvider theme;
+
+  const NumberTextfield({
+    super.key,
+    required this.title,
+    required this.hint,
+    required this.controller,
+    required this.theme,
+    this.onChanged,
+  });
+
+  @override
+  State<NumberTextfield> createState() =>
+      _NumberTextfieldState();
+}
+
+class _NumberTextfieldState extends State<NumberTextfield> {
+  final NumberFormat _formatter =
+      NumberFormat.decimalPattern('en_NG');
+
+  String _rawValue = '';
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.controller.addListener(() {
+      if (_isEditing) return;
+
+      // Keep only digits
+      final rawText = widget.controller.text.replaceAll(
+        RegExp(r'[^0-9]'),
+        '',
+      );
+
+      // Remove leading zeros (but leave a single zero if the field is empty)
+      final cleaned = rawText.replaceFirst(
+        RegExp(r'^0+'),
+        '',
+      );
+
+      if (cleaned != _rawValue) {
+        _rawValue = cleaned;
+
+        final int amount =
+            int.tryParse(
+              _rawValue.isEmpty ? '0' : _rawValue,
+            ) ??
+            0;
+        final formatted =
+            amount == 0 ? '' : _formatter.format(amount);
+
+        _isEditing = true;
+        widget.controller.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(
+            offset: formatted.length,
+          ),
+        );
+        _isEditing = false;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          widget.title,
+          style: widget.theme.mobileTexts.b3.textStyleBold,
+        ),
+        SizedBox(height: 5),
+        TextFormField(
+          onChanged: widget.onChanged,
+          style: TextStyle(
+            fontSize: widget.theme.mobileTexts.b2.fontSize,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade700,
+          ),
+          keyboardType: TextInputType.number,
+          autocorrect: false,
+          enableSuggestions: false,
+          decoration: InputDecoration(
+            isCollapsed: true,
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(
+                left: 15.0,
+                right: 5,
+              ),
+              child: Text(
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+                '#',
+              ),
+            ),
+
+            prefixIconConstraints: BoxConstraints(
+              minHeight: 0,
+              minWidth: 0,
+            ),
+
+            contentPadding: EdgeInsets.only(
+              right: 20,
+              left: 15,
+              top: 12,
+              bottom: 12,
+            ),
+            hintText: widget.hint,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.normal,
+              fontSize:
+                  widget.theme.mobileTexts.b2.fontSize,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color:
+                    widget.theme.lightModeColor.prColor300,
+                width: 1.3,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          controller: widget.controller,
+        ),
+      ],
+    );
+  }
+}

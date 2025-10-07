@@ -1,0 +1,327 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:stockall/components/major/desktop_center_container.dart';
+import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/play_sounds.dart';
+
+class BarcodeScanner extends StatelessWidget {
+  const BarcodeScanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= 700) {
+          return BarcodeScannerMobile();
+        } else {
+          return BarcodeScannerDesktop();
+        }
+      },
+    );
+  }
+}
+
+class BarcodeScannerMobile extends StatefulWidget {
+  const BarcodeScannerMobile({super.key});
+
+  @override
+  State<BarcodeScannerMobile> createState() =>
+      _BarcodeScannerMobileState();
+}
+
+class _BarcodeScannerMobileState
+    extends State<BarcodeScannerMobile> {
+  String? scannedCode;
+  bool isScanning = true;
+
+  final MobileScannerController cameraController =
+      MobileScannerController(facing: CameraFacing.back);
+
+  void _onDetectNative(BarcodeCapture capture) async {
+    if (!isScanning) return;
+    // Prevent repeated scans
+    var safeContext = context;
+    final Barcode? barcode = capture.barcodes.first;
+    final String? value = barcode?.rawValue;
+
+    if (value != null && value.isNotEmpty) {
+      setState(() {
+        scannedCode = value;
+        isScanning = false;
+      });
+
+      // Stop scanning after first successful scan
+      cameraController.stop();
+      if (kIsWeb &&
+          Theme.of(context).platform ==
+              TargetPlatform.iOS) {
+        // Optional: Show result in dialog
+        if (safeContext.mounted) {
+          Navigator.of(safeContext).pop(value);
+        }
+      } else {
+        await playBeep();
+        // Optional: Show result in dialog
+        if (safeContext.mounted) {
+          Navigator.of(safeContext).pop(value);
+        }
+      }
+    }
+  }
+
+  // void _onDetectWeb(BarcodeCapture capture) {
+  //   if (!isScanning) return;
+  //   // Prevent repeated scans
+  //   final Barcode? barcode = capture.barcodes.first;
+  //   final String? value = barcode?.rawValue;
+
+  //   if (value != null && value.isNotEmpty) {
+  //     setState(() {
+  //       scannedCode = value;
+  //       isScanning = false;
+  //     });
+
+  //     // Stop scanning after first successful scan
+  //     cameraController.stop();
+  //     // Optional: Show result in dialog
+  //     Navigator.of(context).pop(value);
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appBar(
+        context: context,
+        title: 'Scan Barcode',
+        widget: Row(
+          children: [
+            Visibility(
+              visible: !kIsWeb,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.flash_on),
+                    onPressed:
+                        () =>
+                            cameraController.toggleTorch(),
+                  ),
+                  if (!kIsWeb)
+                    IconButton(
+                      icon: const Icon(Icons.cameraswitch),
+                      onPressed:
+                          () =>
+                              cameraController
+                                  .switchCamera(),
+                    ),
+                  SizedBox(width: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        color: Colors.grey.shade100,
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment(0, -0.8),
+              child: LottieBuilder.asset(
+                searchingAnim2,
+                height: 200,
+              ),
+            ),
+            Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.lightBlue,
+                    width: 2.5,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                height: 200,
+                width: 300,
+                child: MobileScanner(
+                  // fit: BoxFit.contain,
+                  controller: cameraController,
+                  onDetect: _onDetectNative,
+                  onDetectError: (error, stackTrace) {
+                    print(error.toString());
+                    print(
+                      'Error: ${stackTrace.toString()}',
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BarcodeScannerDesktop extends StatefulWidget {
+  const BarcodeScannerDesktop({super.key});
+
+  @override
+  State<BarcodeScannerDesktop> createState() =>
+      _BarcodeScannerDesktopState();
+}
+
+class _BarcodeScannerDesktopState
+    extends State<BarcodeScannerDesktop> {
+  String? scannedCode;
+  bool isScanning = true;
+
+  final MobileScannerController cameraController =
+      MobileScannerController(facing: CameraFacing.back);
+
+  void _onDetectNative(BarcodeCapture capture) async {
+    if (!isScanning) return;
+    // Prevent repeated scans
+    var safeContext = context;
+    final Barcode? barcode = capture.barcodes.first;
+    final String? value = barcode?.rawValue;
+
+    if (value != null && value.isNotEmpty) {
+      setState(() {
+        scannedCode = value;
+        isScanning = false;
+      });
+
+      // Stop scanning after first successful scan
+      cameraController.stop();
+      if (kIsWeb &&
+          Theme.of(context).platform ==
+              TargetPlatform.iOS) {
+        // Optional: Show result in dialog
+        if (safeContext.mounted) {
+          Navigator.of(safeContext).pop(value);
+        }
+      } else {
+        await playBeep();
+        // Optional: Show result in dialog
+        if (safeContext.mounted) {
+          Navigator.of(safeContext).pop(value);
+        }
+      }
+    }
+  }
+
+  // void _onDetectWeb(BarcodeCapture capture) {
+  //   if (!isScanning) return;
+  //   // Prevent repeated scans
+  //   final Barcode? barcode = capture.barcodes.first;
+  //   final String? value = barcode?.rawValue;
+
+  //   if (value != null && value.isNotEmpty) {
+  //     setState(() {
+  //       scannedCode = value;
+  //       isScanning = false;
+  //     });
+
+  //     // Stop scanning after first successful scan
+  //     cameraController.stop();
+  //     // Optional: Show result in dialog
+  //     Navigator.of(context).pop(value);
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DesktopCenterContainer(
+      mainWidget: Scaffold(
+        appBar: appBar(
+          context: context,
+          title: 'Scan Barcode',
+          widget: Row(
+            children: [
+              Visibility(
+                visible: !kIsWeb,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.flash_on),
+                      onPressed:
+                          () =>
+                              cameraController
+                                  .toggleTorch(),
+                    ),
+                    if (!kIsWeb)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.cameraswitch,
+                        ),
+                        onPressed:
+                            () =>
+                                cameraController
+                                    .switchCamera(),
+                      ),
+                    SizedBox(width: 10),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        body: SizedBox(
+          // color: Colors.grey.shade100,
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment(0, -0.9),
+                child: LottieBuilder.asset(
+                  searchingAnim2,
+                  height: 200,
+                ),
+              ),
+              Align(
+                alignment: Alignment(0, 0.2),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.lightBlue,
+                      width: 2.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  height: 200,
+                  width: 300,
+                  child: MobileScanner(
+                    // fit: BoxFit.contain,
+                    controller: cameraController,
+                    onDetect: _onDetectNative,
+                    onDetectError: (error, stackTrace) {
+                      print(error.toString());
+                      print(
+                        'Error: ${stackTrace.toString()}',
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
