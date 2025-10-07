@@ -1218,21 +1218,29 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 ),
                                 'New Update is Available. Please Click the button below to download the updated version.',
                               ),
-                              SizedBox(height: 10),
-                              Text(
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .secColor100,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
+                              Visibility(
+                                visible: kIsWeb,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 10),
+                                    Text(
+                                      textAlign:
+                                          TextAlign.center,
+                                      style: TextStyle(
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor100,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
+                                    ),
+                                  ],
                                 ),
-                                'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
                               ),
                               SizedBox(height: 15),
                               Row(

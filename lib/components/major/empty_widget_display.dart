@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class EmptyWidgetDisplay extends StatelessWidget {
   final String title;
@@ -135,6 +136,47 @@ class EmptyWidgetDisplay extends StatelessWidget {
                             Icon(
                               size: 18,
                               altIcon ?? Icons.refresh,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: altAction == null,
+                child: Column(
+                  children: [
+                    SizedBox(height: 10),
+                    InkWell(
+                      onTap: () {
+                        AuthService().signOut(context);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 50,
+                          vertical: 15,
+                        ),
+                        child: Row(
+                          spacing: 5,
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              'Logout Now',
+                            ),
+                            Icon(
+                              color: Colors.redAccent,
+                              size: 18,
+                              Icons.logout,
                             ),
                           ],
                         ),

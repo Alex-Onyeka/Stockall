@@ -5,14 +5,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
-import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
-import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
-import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
-import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
-import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/created_products%20copy/sales_product_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
@@ -226,80 +218,14 @@ class _TopNavBarState extends State<TopNavBar> {
                       //       .first
                       //       .quantity,
                       // );
-                      // await CreatedExpensesFunc()
-                      //     .clearExpenses();
-                      // await UpdatedExpensesFunc()
-                      //     .clearupdatedExpenses();
-                      // await DeletedExpensesFunc()
-                      //     .clearDeletedExpenses();
-                      // await CreatedReceiptsFunc()
-                      //     .clearReceipts();
-                      // await CreatedRecordsFunc()
-                      //     .clearRecords();
-                      // await CreatedProductFunc()
-                      //     .clearProducts();
-                      // await UpdatedProductsFunc()
-                      //     .clearupdatedProducts();
-                      // await DeletedReceiptsFunc()
-                      //     .clearDeletedReceipts();
-                      // await SalesProductFunc()
-                      //     .clearProducts();
+                      // await returnData(
+                      //   context,
+                      //   listen: false,
+                      // ).clearTotalCache();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child:
-                      // StreamBuilder(
-                      //   stream:
-                      //       ConnectivityProvider()
-                      //           .connectivityStream,
-                      //   builder: (context, snapshot) {
-                      //     return Row(
-                      //       spacing: 5,
-                      //       children: [
-                      //         Text(
-                      //           style: TextStyle(
-                      //             fontSize:
-                      //                 theme
-                      //                     .mobileTexts
-                      //                     .b3
-                      //                     .fontSize,
-                      //             fontWeight:
-                      //                 FontWeight.bold,
-                      //           ),
-                      //           snapshot.connectionState ==
-                      //                   ConnectionState
-                      //                       .waiting
-                      //               ? 'Checking'
-                      //               : snapshot.hasError
-                      //               ? 'Error'
-                      //               : snapshot.data!.isEmpty
-                      //               ? 'Not Connected'
-                      //               : 'Connected',
-                      //         ),
-                      //         Container(
-                      //           padding: EdgeInsets.all(3),
-                      //           decoration: BoxDecoration(
-                      //             shape: BoxShape.circle,
-                      //             color:
-                      //                 snapshot.connectionState ==
-                      //                         ConnectionState
-                      //                             .waiting
-                      //                     ? Colors.amber
-                      //                     : snapshot
-                      //                         .hasError
-                      //                     ? Colors.grey
-                      //                     : snapshot
-                      //                         .data!
-                      //                         .isEmpty
-                      //                     ? Colors.grey
-                      //                     : Colors.green,
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     );
-                      //   },
-                      // ),
-                      Row(
+                      child: Row(
                         spacing: 5,
                         children: [
                           Text(
@@ -329,18 +255,6 @@ class _TopNavBarState extends State<TopNavBar> {
                                 ? Icons.wifi
                                 : Icons.wifi_off_sharp,
                           ),
-                          // Container(
-                          //   padding: EdgeInsets.all(3),
-                          //   decoration: BoxDecoration(
-                          //     shape: BoxShape.circle,
-                          //     color:
-                          //         returnConnectivityProvider(
-                          //               context,
-                          //             ).isConnected
-                          //             ? Colors.green
-                          //             : Colors.grey,
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
@@ -601,8 +515,8 @@ class _TopNavBarState extends State<TopNavBar> {
                                                   )
                                                   .length ==
                                               2
-                                          ? 12
-                                          : 14,
+                                          ? 9
+                                          : 11,
                                   color: Colors.white,
                                 ),
                                 '${widget.notifications.where((notif) => !notif.isViewed).length}',

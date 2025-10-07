@@ -662,7 +662,7 @@ class _MyDrawerWidgetDesktopMainState
                                                               fontWeight:
                                                                   FontWeight.bold,
                                                               fontSize:
-                                                                  12,
+                                                                  10,
                                                               color:
                                                                   Colors.white,
                                                             ),

@@ -4,7 +4,8 @@ import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart'
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stockall/services/auth_service.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -12,7 +13,8 @@ class UserProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient _supabase = Supabase.instance.client;
+  // final SupabaseClient _supabase = Supabase.instance.client;
+  final AuthService _supabase = AuthService();
 
   List<TempUserClass> _users = [];
   List<TempUserClass> get usersMain => _users;
@@ -25,15 +27,15 @@ class UserProvider extends ChangeNotifier {
   bool isLoading = false;
 
   Future<List<TempUserClass>> fetchUsers() async {
-    final authUser = _supabase.auth.currentUser;
+    final authUser = _supabase.currentUser;
     isLoading = true;
     bool isOnline = await ConnectivityProvider().isOnline();
 
     if (isOnline) {
-      final data = await _supabase
+      final data = await _supabase.client
           .from('users')
           .select()
-          .eq('auth_user_id', authUser?.id ?? '');
+          .eq('auth_user_id', authUser ?? '');
 
       _users =
           data
@@ -69,17 +71,34 @@ class UserProvider extends ChangeNotifier {
           context,
           listen: false,
         ).syncData(context);
+        final authUser = _supabase.currentUser;
+        if (authUser == null) {
+          _currentUser = null;
+          print('No User Found');
+          return null;
+        }
+        final data =
+            await _supabase.client
+                .from('users')
+                .select()
+                .eq('user_id', authUser)
+                .single();
+
+        _currentUser = TempUserClass.fromJson(data);
+        // notifyListeners();
+        print('User Found: ${_currentUser?.name}');
+        await UserFunc().insertUser(_currentUser!);
       } else {
-        final authUser = _supabase.auth.currentUser;
+        final authUser = _supabase.currentUser;
         if (authUser == null) {
           _currentUser = null;
           return null;
         }
         final data =
-            await _supabase
+            await _supabase.client
                 .from('users')
                 .select()
-                .eq('user_id', authUser.id)
+                .eq('user_id', authUser)
                 .single();
 
         _currentUser = TempUserClass.fromJson(data);
@@ -100,7 +119,7 @@ class UserProvider extends ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       final data =
-          await _supabase
+          await _supabase.client
               .from('users')
               .select()
               .eq('user_id', userId)
@@ -119,7 +138,7 @@ class UserProvider extends ChangeNotifier {
     required String newPassword,
   }) async {
     try {
-      await _supabase
+      await _supabase.client
           .from('users')
           .update({'password': newPassword})
           .eq('user_id', userId);
@@ -135,7 +154,7 @@ class UserProvider extends ChangeNotifier {
     required String newPin,
   }) async {
     try {
-      await _supabase
+      await _supabase.client
           .from('users')
           .update({'pin': newPin})
           .eq('user_id', userId);
@@ -154,7 +173,7 @@ class UserProvider extends ChangeNotifier {
     if (isOnline) {
       try {
         final data =
-            await _supabase
+            await _supabase.client
                 .from('users')
                 .select()
                 .eq('email', email.toLowerCase())
@@ -186,7 +205,7 @@ class UserProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     try {
-      await _supabase
+      await _supabase.client
           .from('users')
           .insert(user.toJson(includeUserId: true));
       await fetchUsers();
@@ -200,7 +219,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> addEmployee(TempUserClass employee) async {
     try {
-      await _supabase
+      await _supabase.client
           .from('users')
           .insert(employee.toJson(includeUserId: false));
       await fetchUsers();
@@ -218,7 +237,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     final updatedRows =
-        await _supabase
+        await _supabase.client
             .from('users')
             .update({
               'name': user.name,
@@ -251,7 +270,7 @@ class UserProvider extends ChangeNotifier {
 
       // Check if auth user exists
       final authUserResponse =
-          await _supabase
+          await _supabase.client
               .from(
                 'users',
               ) // Adjust if your actual auth table is different
@@ -264,7 +283,7 @@ class UserProvider extends ChangeNotifier {
       }
 
       // Proceed with updating the role
-      await _supabase
+      await _supabase.client
           .from('users')
           .update({
             'role': newRole,
@@ -286,7 +305,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> deleteUser(String userId) async {
-    await _supabase
+    await _supabase.client
         .from('users')
         .delete()
         .eq('user_id', userId);

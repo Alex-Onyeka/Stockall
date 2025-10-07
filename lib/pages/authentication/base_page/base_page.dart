@@ -39,11 +39,6 @@ class _BasePageState extends State<BasePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       switchLoading();
-      // var userOffline = AuthService().currentUserOffline;
-      // var userAuth = AuthService().currentUserAuth;
-      // if (condition) {
-
-      // }
       returnCompProvider(
         context,
         listen: false,
@@ -60,12 +55,7 @@ class _BasePageState extends State<BasePage> {
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader(
-          message: General().loadingText,
-          action: () async {
-            AuthService().signOut(context);
-          },
-        ),
+        ).showLoader(message: General().loadingText),
       );
     } else {
       if (userAuthId != null) {

@@ -21,7 +21,6 @@ import 'package:stockall/local_database/products/unsync_funcs/created_products%2
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
-import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
@@ -476,7 +475,6 @@ class DataProvider extends ChangeNotifier {
                     .isNotEmpty &&
                 context.mounted &&
                 isOnline) {
-              // await decrementProductsQuantitySync(context);
               print(
                 'Finished Syncing Products Decrementiation',
               );
@@ -545,13 +543,23 @@ class DataProvider extends ChangeNotifier {
               print('Finished Syncing Created Receipts');
               setSyncProgress(16);
             }
+            await clearTotalCache();
             toggleSyncing(false);
           }
         }
       } else {
-        await ShopFunc().clearShop();
+        // await ShopFunc().clearShop();
         if (context.mounted) {
-          Navigator.pushReplacementNamed(context, '/');
+          returnNavProvider(
+            context,
+            listen: false,
+          ).nullShop(
+            logoutAction:
+                () => returnNavProvider(
+                  context,
+                  listen: false,
+                ).navPush(context),
+          );
         }
       }
     } else {
@@ -619,6 +627,26 @@ class DataProvider extends ChangeNotifier {
         return 0;
       }
     }
+  }
+
+  Future<void> clearTotalCache() async {
+    await CreatedExpensesFunc().clearExpenses();
+    await UpdatedExpensesFunc().clearupdatedExpenses();
+    await DeletedExpensesFunc().clearDeletedExpenses();
+    await CreatedReceiptsFunc().clearReceipts();
+    await CreatedRecordsFunc().clearRecords();
+    await CreatedProductFunc().clearProducts();
+    await UpdatedProductsFunc().clearupdatedProducts();
+    await DeletedProductsFunc().clearDeletedProducts();
+    await DeletedReceiptsFunc().clearDeletedReceipts();
+    await SalesProductFunc().clearProducts();
+    await SalesProductFunc().clearProducts();
+    await CreatedCustomersFunc().clearCustomers();
+    await UpdatedCustomersFunc().clearupdatedCustomers();
+    await DeletedCustomersFunc().clearDeletedCustomers();
+    await UpdatedReceiptsFunc().clearUpdatedReceipts();
+    await UpdatedShopFunc().clearUpdatedShop();
+    await SalesProductFunc().clearProducts();
   }
 
   DateTime? expiryDate;

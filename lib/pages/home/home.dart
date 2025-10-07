@@ -25,13 +25,6 @@ class _HomeState extends State<Home> {
 
   TempUserClass? user;
 
-  @override
-  void initState() {
-    super.initState();
-    shopFuture = getUserShop();
-    userFuture = getUser();
-  }
-
   late Future<TempUserClass?> userFuture;
   Future<TempUserClass?> getUser() async {
     var user = await returnUserProvider(
@@ -56,6 +49,13 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    shopFuture = getUserShop();
+    userFuture = getUser();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final navProv = Provider.of<NavProvider>(context);
     final theme = returnTheme(context);
@@ -68,20 +68,20 @@ class _HomeState extends State<Home> {
         shop(context) == null) {
       return FutureBuilder(
         future: userFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
+        builder: (context, userSnapshot) {
+          if (userSnapshot.connectionState ==
               ConnectionState.waiting) {
             return returnCompProvider(
               context,
               listen: false,
             ).showLoader(message: 'Loading...');
-          } else if (snapshot.hasError) {
+          } else if (userSnapshot.hasError) {
             return Scaffold(
               body: Center(
                 child: EmptyWidgetDisplay(
                   title: 'An Error Occurred',
                   subText:
-                      'We couldn\'t load your data. Check your internet.',
+                      'We couldn\'t load your data. Please Check your internet.',
                   icon: Icons.clear,
                   theme: theme,
                   height: 30,
@@ -100,14 +100,14 @@ class _HomeState extends State<Home> {
               ),
             );
           } else {
-            if (snapshot.data != null &&
-                snapshot.data!.pin == null) {
+            if (userSnapshot.data != null &&
+                userSnapshot.data!.pin == null) {
               return Edit(
-                user: snapshot.data!,
+                user: userSnapshot.data!,
                 action: 'PIN',
                 main: true,
               );
-            } else if (snapshot.data == null) {
+            } else if (userSnapshot.data == null) {
               return Scaffold(
                 body: Center(
                   child: EmptyWidgetDisplay(
