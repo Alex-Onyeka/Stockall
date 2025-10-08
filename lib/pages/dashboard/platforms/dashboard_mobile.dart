@@ -1351,6 +1351,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                     true;
                                               });
                                               downloadApkFromApp();
+                                              setState(() {
+                                                isUpdateLodaingMobile =
+                                                    false;
+                                              });
                                             },
                                             child: Container(
                                               padding:

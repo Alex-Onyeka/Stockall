@@ -1411,6 +1411,12 @@ class _DashboardDesktopState
                                                               },
                                                             );
                                                             downloadApkFromApp();
+                                                            setState(
+                                                              () {
+                                                                isUpdateLodaingMobile =
+                                                                    false;
+                                                              },
+                                                            );
                                                           },
                                                           child: Container(
                                                             padding: EdgeInsets.symmetric(
