@@ -1280,25 +1280,28 @@ class _DashboardDesktopState
                                               ),
                                               'New Update is Available. Please Click the button below to download the updated version.',
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              textAlign:
-                                                  TextAlign
-                                                      .center,
-                                              style: TextStyle(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor100,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
+                                            Visibility(
+                                              visible:
+                                                  kIsWeb,
+                                              child: Column(
+                                                children: [
+                                                  SizedBox(
+                                                    height:
+                                                        10,
+                                                  ),
+                                                  Text(
+                                                    textAlign:
+                                                        TextAlign.center,
+                                                    style: TextStyle(
+                                                      color:
+                                                          theme.lightModeColor.secColor100,
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                    ),
+                                                    'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
+                                                  ),
+                                                ],
                                               ),
-                                              'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
                                             ),
                                             SizedBox(
                                               height: 15,
@@ -1379,8 +1382,8 @@ class _DashboardDesktopState
                                                   visible:
                                                       !kIsWeb ||
                                                       (kIsWeb &&
-                                                          Theme.of(context).platform ==
-                                                              TargetPlatform.android),
+                                                          Theme.of(context).platform !=
+                                                              TargetPlatform.iOS),
                                                   child: Expanded(
                                                     child: Material(
                                                       color:
@@ -1436,8 +1439,8 @@ class _DashboardDesktopState
                                                                               : kIsWeb &&
                                                                                   Theme.of(
                                                                                         context,
-                                                                                      ).platform ==
-                                                                                      TargetPlatform.android
+                                                                                      ).platform !=
+                                                                                      TargetPlatform.iOS
                                                                               ? 'Download App'
                                                                               : '',
                                                                         ),
@@ -1452,8 +1455,8 @@ class _DashboardDesktopState
                                                 Visibility(
                                                   visible:
                                                       (kIsWeb &&
-                                                          Theme.of(context).platform ==
-                                                              TargetPlatform.android),
+                                                          Theme.of(context).platform !=
+                                                              TargetPlatform.iOS),
                                                   child: SizedBox(
                                                     width:
                                                         10,
@@ -1464,8 +1467,8 @@ class _DashboardDesktopState
                                                       kIsWeb &&
                                                       Theme.of(
                                                             context,
-                                                          ).platform ==
-                                                          TargetPlatform.android,
+                                                          ).platform !=
+                                                          TargetPlatform.iOS,
                                                   child: Expanded(
                                                     child: Material(
                                                       color:
