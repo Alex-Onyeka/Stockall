@@ -531,7 +531,10 @@ class _MyDrawerWidgetMobileState
                                           Navigator.of(
                                             context,
                                           ).pop();
-                                          await downloadApkFromApp();
+                                          await downloadApkFromApp(
+                                            context:
+                                                context,
+                                          );
                                         },
                                       );
                                     },

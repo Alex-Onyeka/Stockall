@@ -3748,10 +3748,17 @@ void downloadPdfWebSalesSummary({
 //
 //
 
-Future<void> downloadApkFromApp() async {
-  final url = Uri.parse(
-    'https://github.com/Alex-Onyeka/Stockall/releases/download/v1.0.1/stockall.apk',
-  );
+Future<void> downloadApkFromApp({
+  required BuildContext context,
+}) async {
+  final url =
+      screenWidth(context) > tabletScreen
+          ? Uri.parse(
+            'https://github.com/Alex-Onyeka/Stockall/releases/download/desktop-v1.0.1/StockallDesktop.exe',
+          )
+          : Uri.parse(
+            'https://github.com/Alex-Onyeka/Stockall/releases/download/mobile-v1.0.1/stockall.apk',
+          );
 
   if (await canLaunchUrl(url)) {
     await launchUrl(

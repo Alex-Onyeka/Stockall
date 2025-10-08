@@ -1350,7 +1350,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 isUpdateLodaingMobile =
                                                     true;
                                               });
-                                              downloadApkFromApp();
+                                              downloadApkFromApp(
+                                                context:
+                                                    context,
+                                              );
                                               setState(() {
                                                 isUpdateLodaingMobile =
                                                     false;

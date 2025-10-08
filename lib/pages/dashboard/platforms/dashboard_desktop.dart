@@ -1410,7 +1410,10 @@ class _DashboardDesktopState
                                                                     true;
                                                               },
                                                             );
-                                                            downloadApkFromApp();
+                                                            downloadApkFromApp(
+                                                              context:
+                                                                  context,
+                                                            );
                                                             setState(
                                                               () {
                                                                 isUpdateLodaingMobile =

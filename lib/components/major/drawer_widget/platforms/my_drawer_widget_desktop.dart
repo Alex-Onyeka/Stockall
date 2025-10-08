@@ -763,8 +763,11 @@ class _MyDrawerWidgetDesktopMainState
                                             ).platform ==
                                             TargetPlatform
                                                 .android ||
-                                    screenWidth(context) >
-                                        tabletScreen,
+                                    kIsWeb &&
+                                        screenWidth(
+                                              context,
+                                            ) >
+                                            tabletScreen,
                                 child: NavListTileDesktopAlt(
                                   height: 18,
                                   action: () {
@@ -775,26 +778,38 @@ class _MyDrawerWidgetDesktopMainState
                                           theme:
                                               widget.theme,
                                           message:
-                                              'You are about to download and install our official mobile application, for better experience.',
+                                              'You are about to download and install our official Native application, for better experience.',
                                           title:
-                                              'Proceed to Download Mobile App',
+                                              screenWidth(
+                                                        context,
+                                                      ) >
+                                                      tabletScreen
+                                                  ? 'Proceed to Download Desktop App'
+                                                  : 'Proceed to Download Mobile App',
                                           action: () async {
                                             Navigator.of(
                                               context,
                                             ).pop();
-                                            await downloadApkFromApp();
+                                            await downloadApkFromApp(
+                                              context:
+                                                  context,
+                                            );
                                           },
                                         );
                                       },
                                     );
                                   },
                                   title:
-                                      'Download Mobile App',
+                                      screenWidth(context) >
+                                              tabletScreen
+                                          ? 'Download Desktop App'
+                                          : 'Download Mobile App',
                                   icon:
                                       Icons
                                           .download_outlined,
                                 ),
                               ),
+
                               // NavListTileDesktopAlt(
                               //   height: 20,
                               //   action: () {

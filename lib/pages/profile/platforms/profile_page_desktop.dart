@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -219,21 +220,40 @@ class ProfilePageDesktopState
                             MainButtonTransparent(
                               themeProvider: theme,
                               action: () {
-                                Navigator.push(
+                                if (returnConnectivityProvider(
                                   context,
-                                  MaterialPageRoute(
+                                  listen: false,
+                                ).isConnected) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return Edit(
+                                          user: user,
+                                          action: 'normal',
+                                        );
+                                      },
+                                    ),
+                                  ).then((context) {
+                                    setState(() {
+                                      userFuture =
+                                          getUser();
+                                    });
+                                  });
+                                } else {
+                                  showDialog(
+                                    context: context,
                                     builder: (context) {
-                                      return Edit(
-                                        user: user,
-                                        action: 'normal',
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Please Turn on your internet connection to edit your profile info.',
+                                        title:
+                                            'No Internet',
                                       );
                                     },
-                                  ),
-                                ).then((context) {
-                                  setState(() {
-                                    userFuture = getUser();
-                                  });
-                                });
+                                  );
+                                }
                               },
                               text: 'Edit Profile Info',
                               constraints: BoxConstraints(),
@@ -241,21 +261,41 @@ class ProfilePageDesktopState
                             MainButtonTransparent(
                               themeProvider: theme,
                               action: () {
-                                Navigator.push(
+                                if (returnConnectivityProvider(
                                   context,
-                                  MaterialPageRoute(
+                                  listen: false,
+                                ).isConnected) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return Edit(
+                                          user: user,
+                                          action:
+                                              'password',
+                                        );
+                                      },
+                                    ),
+                                  ).then((context) {
+                                    setState(() {
+                                      userFuture =
+                                          getUser();
+                                    });
+                                  });
+                                } else {
+                                  showDialog(
+                                    context: context,
                                     builder: (context) {
-                                      return Edit(
-                                        user: user,
-                                        action: 'password',
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Please Turn on your internet connection to edit your profile info.',
+                                        title:
+                                            'No Internet',
                                       );
                                     },
-                                  ),
-                                ).then((context) {
-                                  setState(() {
-                                    userFuture = getUser();
-                                  });
-                                });
+                                  );
+                                }
                               },
                               text: 'Change Password',
                               constraints: BoxConstraints(),
@@ -263,21 +303,40 @@ class ProfilePageDesktopState
                             MainButtonTransparent(
                               themeProvider: theme,
                               action: () {
-                                Navigator.push(
+                                if (returnConnectivityProvider(
                                   context,
-                                  MaterialPageRoute(
+                                  listen: false,
+                                ).isConnected) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return Edit(
+                                          user: user,
+                                          action: 'PIN',
+                                        );
+                                      },
+                                    ),
+                                  ).then((context) {
+                                    setState(() {
+                                      userFuture =
+                                          getUser();
+                                    });
+                                  });
+                                } else {
+                                  showDialog(
+                                    context: context,
                                     builder: (context) {
-                                      return Edit(
-                                        user: user,
-                                        action: 'PIN',
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Please Turn on your internet connection to edit your profile info.',
+                                        title:
+                                            'No Internet',
                                       );
                                     },
-                                  ),
-                                ).then((context) {
-                                  setState(() {
-                                    userFuture = getUser();
-                                  });
-                                });
+                                  );
+                                }
                               },
                               text: 'Change PIN',
                               constraints: BoxConstraints(),
