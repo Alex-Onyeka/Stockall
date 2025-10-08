@@ -3759,6 +3759,6 @@ Future<void> downloadApkFromApp() async {
       mode: LaunchMode.externalApplication,
     );
   } else {
-    throw 'Could not launch $url';
+    throw 'Could not launch. $url. Please Try Again';
   }
 }
