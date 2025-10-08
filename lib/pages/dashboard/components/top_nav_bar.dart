@@ -192,7 +192,10 @@ class _TopNavBarState extends State<TopNavBar> {
             ),
           ),
           Row(
-            spacing: 10,
+            spacing:
+                screenWidth(context) > tabletScreen
+                    ? 10
+                    : 2,
             children: [
               Visibility(
                 visible:
@@ -228,20 +231,25 @@ class _TopNavBarState extends State<TopNavBar> {
                       child: Row(
                         spacing: 5,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Visibility(
+                            visible:
+                                screenWidth(context) >
+                                tabletScreen,
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
 
-                            returnConnectivityProvider(
-                              context,
-                            ).connectedText(),
+                              returnConnectivityProvider(
+                                context,
+                              ).connectedText(),
+                            ),
                           ),
                           Icon(
                             size: 17,
@@ -285,27 +293,32 @@ class _TopNavBarState extends State<TopNavBar> {
                       child: Row(
                         spacing: 5,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
+                          Visibility(
+                            visible:
+                                screenWidth(context) >
+                                tabletScreen,
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              returnData(
+                                        context,
+                                      ).isSynced() ==
+                                      1
+                                  ? 'Synced'
+                                  : returnData(
+                                        context,
+                                      ).isSynced() ==
+                                      0
+                                  ? 'Unsynced'
+                                  : 'Syncing',
                             ),
-                            returnData(
-                                      context,
-                                    ).isSynced() ==
-                                    1
-                                ? 'Synced'
-                                : returnData(
-                                      context,
-                                    ).isSynced() ==
-                                    0
-                                ? 'Unsynced'
-                                : 'Syncing',
                           ),
                           Stack(
                             children: [

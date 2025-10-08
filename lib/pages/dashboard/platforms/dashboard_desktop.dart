@@ -1186,7 +1186,13 @@ class _DashboardDesktopState
                                           Colors
                                               .transparent,
                                       child: Container(
-                                        width: 320,
+                                        width:
+                                            screenWidth(
+                                                      context,
+                                                    ) >
+                                                    mobileScreen
+                                                ? 450
+                                                : 320,
                                         padding:
                                             EdgeInsets.fromLTRB(
                                               15,
@@ -1441,7 +1447,7 @@ class _DashboardDesktopState
                                                                                         context,
                                                                                       ).platform !=
                                                                                       TargetPlatform.iOS
-                                                                              ? 'Download App'
+                                                                              ? 'Download ${screenWidth(context) > tabletScreenSmall ? 'Desktop' : ''} App'
                                                                               : '',
                                                                         ),
                                                               ),
