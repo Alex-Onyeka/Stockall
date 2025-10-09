@@ -854,6 +854,23 @@ class _EditDesktopState extends State<EditDesktop> {
                               },
                             ),
                           ),
+                          SizedBox(height: 5),
+                          Visibility(
+                            visible:
+                                widget.action == 'PIN' &&
+                                (widget.main != null &&
+                                    widget.main == true),
+                            child: MainButtonTransparent(
+                              themeProvider: theme,
+                              constraints: BoxConstraints(),
+                              text: 'Logout',
+                              action: () async {
+                                await AuthService().signOut(
+                                  context,
+                                );
+                              },
+                            ),
+                          ),
                           SizedBox(height: 10),
                         ],
                       ),

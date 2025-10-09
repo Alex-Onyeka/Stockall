@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -407,14 +406,6 @@ class _ShopSetupTwoDesktopState
   @override
   void initState() {
     super.initState();
-    bool isOnline =
-        returnConnectivityProvider(
-          context,
-          listen: false,
-        ).isConnected;
-    if (isOnline) {
-      countriesFuture = fetchCountries();
-    }
     if (widget.shop != null) {
       selectedCurrency = widget.shop!.currency;
       displayCurrency =
@@ -428,13 +419,14 @@ class _ShopSetupTwoDesktopState
         _,
       ) async {
         bool isOnline =
-            returnConnectivityProvider(
+            await returnConnectivityProvider(
               context,
               listen: false,
-            ).isConnected;
+            ).isOnline();
+        print(isOnline ? 'Its Online' : 'Its Offline');
         if (isOnline) {
-          await fetchCountries();
           countriesFuture = fetchCountries();
+          await fetchCountries();
           final selectedCountry = countriesCodes.firstWhere(
             (country) =>
                 country['name'] == widget.shop!.country,
@@ -474,6 +466,19 @@ class _ShopSetupTwoDesktopState
           () {},
         ); // Single setState to update the widget once
       });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((
+        _,
+      ) async {
+        bool isOnline =
+            await returnConnectivityProvider(
+              context,
+              listen: false,
+            ).isOnline();
+        print(isOnline ? 'Its Online' : 'Its Offline');
+        countriesFuture = fetchCountries();
+        await fetchCountries();
+      });
     }
   }
 
@@ -510,9 +515,12 @@ class _ShopSetupTwoDesktopState
                                       .h3
                                       .fontWeightBold,
                             ),
-                            widget.shop != null
-                                ? 'Update Shop Address'
-                                : 'Set Shop Address',
+                            // widget.shop != null
+                            //     ? 'Update Shop Address'
+                            //     : 'Set Shop Address',
+                            returnConnectivityProvider(
+                              context,
+                            ).isConnected.toString(),
                           ),
                         ],
                       ),
@@ -564,12 +572,12 @@ class _ShopSetupTwoDesktopState
                                   'Select Your Country',
                               theme: theme,
                               isOpen: false,
-                              onTap: () {
+                              onTap: () async {
                                 bool isOnline =
-                                    returnConnectivityProvider(
+                                    await returnConnectivityProvider(
                                       context,
                                       listen: false,
-                                    ).isConnected;
+                                    ).isOnline();
                                 if (isOnline) {
                                   showGeneralDialog(
                                     context: context,
@@ -2104,13 +2112,13 @@ class _ShopSetupTwoDesktopState
                                             'State',
                                         theme: theme,
                                         isOpen: false,
-                                        onTap: () {
+                                        onTap: () async {
                                           bool isOnline =
-                                              returnConnectivityProvider(
+                                              await returnConnectivityProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).isConnected;
+                                              ).isOnline();
                                           if (isOnline) {
                                             if (widget.shop !=
                                                     null
@@ -2690,13 +2698,13 @@ class _ShopSetupTwoDesktopState
                                             'City',
                                         theme: theme,
                                         isOpen: false,
-                                        onTap: () {
+                                        onTap: () async {
                                           bool isOnline =
-                                              returnConnectivityProvider(
+                                              await returnConnectivityProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).isConnected;
+                                              ).isOnline();
                                           if (isOnline) {
                                             if (widget.shop !=
                                                     null

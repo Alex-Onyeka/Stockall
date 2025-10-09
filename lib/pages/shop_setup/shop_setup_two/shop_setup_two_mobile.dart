@@ -395,14 +395,7 @@ class _ShopSetupTwoMobileState
   @override
   void initState() {
     super.initState();
-    bool isOnline =
-        returnConnectivityProvider(
-          context,
-          listen: false,
-        ).isConnected;
-    if (isOnline) {
-      countriesFuture = fetchCountries();
-    }
+
     if (widget.shop != null) {
       selectedCurrency = widget.shop!.currency;
       displayCurrency =
@@ -416,10 +409,10 @@ class _ShopSetupTwoMobileState
         _,
       ) async {
         bool isOnline =
-            returnConnectivityProvider(
+            await returnConnectivityProvider(
               context,
               listen: false,
-            ).isConnected;
+            ).isOnline();
         if (isOnline) {
           await fetchCountries();
           countriesFuture = fetchCountries();
@@ -461,6 +454,19 @@ class _ShopSetupTwoMobileState
         setState(
           () {},
         ); // Single setState to update the widget once
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((
+        _,
+      ) async {
+        bool isOnline =
+            await returnConnectivityProvider(
+              context,
+              listen: false,
+            ).isOnline();
+        print(isOnline ? 'Its Online' : 'Its Offline');
+        countriesFuture = fetchCountries();
+        await fetchCountries();
       });
     }
   }
