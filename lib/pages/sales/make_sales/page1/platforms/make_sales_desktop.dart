@@ -1078,9 +1078,11 @@ class _MakeSalesDesktopState
                                   });
                                   var cartItems =
                                       returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).cartItems;
+                                            context,
+                                            listen: false,
+                                          )
+                                          .currentCart()
+                                          .cartItems;
                                   final index = cartItems
                                       .indexWhere((item) {
                                         return item
@@ -1597,7 +1599,7 @@ class _MakeSalesDesktopState
           returnSalesProvider(
             context,
             listen: false,
-          ).cartItems.isEmpty) {
+          ).currentCart().cartItems.isEmpty) {
         returnSalesProvider(
           context,
           listen: false,
@@ -1606,7 +1608,7 @@ class _MakeSalesDesktopState
           returnSalesProvider(
             context,
             listen: false,
-          ).cartItems.isEmpty) {
+          ).currentCart().cartItems.isEmpty) {
         returnSalesProvider(
           context,
           listen: false,
@@ -1698,8 +1700,10 @@ class _MakeSalesDesktopState
                                 context: context,
                                 title:
                                     returnSalesProvider(
-                                          context,
-                                        ).isInvoice
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .isInvoice
                                         ? 'Credit Sale'
                                         : 'Cart Items',
                                 widget: Stack(
@@ -1709,6 +1713,7 @@ class _MakeSalesDesktopState
                                           returnSalesProvider(
                                                 context,
                                               )
+                                              .currentCart()
                                               .cartItems
                                               .isNotEmpty,
                                       child: InkWell(
@@ -1797,6 +1802,7 @@ class _MakeSalesDesktopState
                                           returnSalesProvider(
                                                 context,
                                               )
+                                              .currentCart()
                                               .cartItems
                                               .isEmpty,
                                       child: InkWell(
@@ -1840,14 +1846,14 @@ class _MakeSalesDesktopState
                                                     color:
                                                         returnSalesProvider(
                                                               context,
-                                                            ).isInvoice
+                                                            ).currentCart().isInvoice
                                                             ? theme.lightModeColor.prColor250
                                                             : null,
                                                     border: Border.all(
                                                       color:
                                                           returnSalesProvider(
                                                                 context,
-                                                              ).isInvoice
+                                                              ).currentCart().isInvoice
                                                               ? theme.lightModeColor.prColor250
                                                               : Colors.grey,
                                                     ),
@@ -1858,7 +1864,7 @@ class _MakeSalesDesktopState
                                                     color:
                                                         returnSalesProvider(
                                                               context,
-                                                            ).isInvoice
+                                                            ).currentCart().isInvoice
                                                             ? Colors.white
                                                             : Colors.grey.shade400,
                                                     Icons
@@ -1878,8 +1884,11 @@ class _MakeSalesDesktopState
                                 builder: (context) {
                                   if (products.isEmpty &&
                                       returnSalesProvider(
-                                        context,
-                                      ).cartItems.isEmpty) {
+                                            context,
+                                          )
+                                          .currentCart()
+                                          .cartItems
+                                          .isEmpty) {
                                     if (!authorization(
                                       authorized:
                                           Authorizations()
@@ -1887,7 +1896,8 @@ class _MakeSalesDesktopState
                                       context: context,
                                     )) {
                                       return EmptyWidgetDisplayOnly(
-                                        title: 'No Items',
+                                        title:
+                                            'No Products',
                                         subText:
                                             'No Items have been added to your stock.',
                                         theme: theme,
@@ -2107,7 +2117,7 @@ class _MakeSalesDesktopState
                                                             items =
                                                                 returnSalesProvider(
                                                                   context,
-                                                                ).cartItems.reversed.toList();
+                                                                ).currentCart().cartItems.reversed.toList();
 
                                                             if (items.isEmpty) {
                                                               return Row(
@@ -2225,7 +2235,7 @@ class _MakeSalesDesktopState
                                                                 itemCount:
                                                                     returnSalesProvider(
                                                                       context,
-                                                                    ).cartItems.length,
+                                                                    ).currentCart().cartItems.length,
                                                                 itemBuilder: (
                                                                   context,
                                                                   index,
@@ -2355,6 +2365,7 @@ class _MakeSalesDesktopState
                                               returnSalesProvider(
                                                     context,
                                                   )
+                                                  .currentCart()
                                                   .cartItems
                                                   .isNotEmpty &&
                                               screenWidth(
@@ -2475,7 +2486,7 @@ class _MakeSalesDesktopState
                               padding:
                                   const EdgeInsets.fromLTRB(
                                     15,
-                                    50,
+                                    20,
                                     15,
                                     15,
                                   ),
@@ -2483,6 +2494,273 @@ class _MakeSalesDesktopState
                                 mainAxisAlignment:
                                     MainAxisAlignment.start,
                                 children: [
+                                  Container(
+                                    height: 40,
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 7,
+                                          vertical: 5,
+                                        ),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            8,
+                                          ),
+                                      color: Colors.white,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: ListView.builder(
+                                            shrinkWrap:
+                                                true,
+                                            scrollDirection:
+                                                Axis.horizontal,
+                                            itemCount:
+                                                returnSalesProvider(
+                                                      context,
+                                                    )
+                                                    .cartQueue
+                                                    .length,
+                                            itemBuilder: (
+                                              context,
+                                              index,
+                                            ) {
+                                              var salesP =
+                                                  returnSalesProvider(
+                                                    context,
+                                                  );
+                                              // var cart =
+                                              //     salesP
+                                              //         .cartQueue[index];
+                                              // return Container();
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.only(
+                                                      right:
+                                                          8.0,
+                                                    ),
+                                                child: Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  child: Ink(
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          salesP.cartIndex ==
+                                                                      index &&
+                                                                  salesP.cartQueue.length >
+                                                                      1
+                                                              ? Colors.grey.shade100
+                                                              : const Color.fromARGB(
+                                                                167,
+                                                                250,
+                                                                250,
+                                                                250,
+                                                              ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            3,
+                                                          ),
+                                                    ),
+                                                    child: InkWell(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            3,
+                                                          ),
+                                                      onTap: () {
+                                                        returnSalesProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).selectCart(
+                                                          index,
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        padding: EdgeInsets.symmetric(
+                                                          horizontal:
+                                                              salesP.cartIndex ==
+                                                                          index &&
+                                                                      salesP.cartQueue.length >
+                                                                          1
+                                                                  ? 8
+                                                                  : 12,
+                                                          vertical:
+                                                              5,
+                                                        ),
+
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          // spacing:
+                                                          //     10,
+                                                          mainAxisAlignment:
+                                                              salesP.cartIndex ==
+                                                                          index &&
+                                                                      salesP.cartQueue.length >
+                                                                          1
+                                                                  ? MainAxisAlignment.spaceBetween
+                                                                  : MainAxisAlignment.center,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    theme.mobileTexts.b4.fontSize,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              'Cart ${index + 1}',
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  salesP.cartIndex ==
+                                                                      index &&
+                                                                  salesP.cartQueue.length >
+                                                                      1,
+                                                              child: SizedBox(
+                                                                width:
+                                                                    10,
+                                                              ),
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  salesP.cartIndex ==
+                                                                      index &&
+                                                                  salesP.cartQueue.length >
+                                                                      1,
+                                                              child: Material(
+                                                                color:
+                                                                    Colors.transparent,
+                                                                child: Ink(
+                                                                  decoration: BoxDecoration(
+                                                                    shape:
+                                                                        BoxShape.circle,
+                                                                    color:
+                                                                        theme.lightModeColor.secColor200,
+                                                                  ),
+                                                                  child: InkWell(
+                                                                    onTap: () {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (
+                                                                          context,
+                                                                        ) {
+                                                                          return ConfirmationAlert(
+                                                                            theme:
+                                                                                theme,
+                                                                            message:
+                                                                                'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
+                                                                            title:
+                                                                                'Are you sure?',
+                                                                            action: () {
+                                                                              returnSalesProvider(
+                                                                                context,
+                                                                                listen:
+                                                                                    false,
+                                                                              ).deleteCart(
+                                                                                index,
+                                                                              );
+                                                                              Navigator.of(
+                                                                                context,
+                                                                              ).pop();
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    child: Container(
+                                                                      padding: EdgeInsets.all(
+                                                                        4,
+                                                                      ),
+                                                                      decoration: BoxDecoration(
+                                                                        shape:
+                                                                            BoxShape.circle,
+                                                                      ),
+                                                                      child: Icon(
+                                                                        color:
+                                                                            Colors.white,
+                                                                        size:
+                                                                            9,
+                                                                        Icons.clear,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Visibility(
+                                          visible:
+                                              returnSalesProvider(
+                                                    context,
+                                                  )
+                                                  .cartQueue
+                                                  .length <=
+                                              3,
+                                          child: Material(
+                                            color:
+                                                Colors
+                                                    .transparent,
+                                            child: Ink(
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .prColor300,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      5,
+                                                    ),
+                                              ),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).addNewCart();
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        4,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                  ),
+                                                  child: Icon(
+                                                    color:
+                                                        Colors.white,
+                                                    size:
+                                                        15,
+                                                    Icons
+                                                        .add,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
                                   Material(
                                     color:
                                         Colors.transparent,
@@ -2674,8 +2952,10 @@ class _MakeSalesDesktopState
                                             context,
                                           ).calcTotalMain(
                                             returnSalesProvider(
-                                              context,
-                                            ).cartItems,
+                                                  context,
+                                                )
+                                                .currentCart()
+                                                .cartItems,
                                           ),
                                           context: context,
                                         ),
@@ -2708,7 +2988,7 @@ class _MakeSalesDesktopState
                                                   .fontSize,
                                           // fontWeight: FontWeight.bold,
                                         ),
-                                        '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).cartItems), context)}',
+                                        '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).currentCart().cartItems), context)}',
                                       ),
                                     ],
                                   ),
@@ -2747,8 +3027,10 @@ class _MakeSalesDesktopState
                                             context,
                                           ).calcFinalTotalMain(
                                             returnSalesProvider(
-                                              context,
-                                            ).cartItems,
+                                                  context,
+                                                )
+                                                .currentCart()
+                                                .cartItems,
                                           ),
                                           context: context,
                                         ),
@@ -2763,6 +3045,7 @@ class _MakeSalesDesktopState
                                             context,
                                             listen: false,
                                           )
+                                          .currentCart()
                                           .cartItems
                                           .isNotEmpty) {
                                         Navigator.push(
@@ -2777,7 +3060,7 @@ class _MakeSalesDesktopState
                                                 ).calcFinalTotalMain(
                                                   returnSalesProvider(
                                                     context,
-                                                  ).cartItems,
+                                                  ).currentCart().cartItems,
                                                 ),
                                               );
                                             },

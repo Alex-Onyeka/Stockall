@@ -20,7 +20,7 @@ class PaymentTypeButton extends StatelessWidget {
             if (returnSalesProvider(
               context,
               listen: false,
-            ).isInvoice) {
+            ).currentCart().isInvoice) {
               return;
             } else {
               returnSalesProvider(
@@ -53,7 +53,7 @@ class PaymentTypeButton extends StatelessWidget {
                           color:
                               !returnSalesProvider(
                                     context,
-                                  ).isInvoice
+                                  ).currentCart().isInvoice
                                   ? null
                                   : Colors.grey,
                         ),
@@ -69,7 +69,7 @@ class PaymentTypeButton extends StatelessWidget {
                           color:
                               !returnSalesProvider(
                                     context,
-                                  ).isInvoice
+                                  ).currentCart().isInvoice
                                   ? theme
                                       .lightModeColor
                                       .secColor200
@@ -85,7 +85,7 @@ class PaymentTypeButton extends StatelessWidget {
                     activeColor:
                         returnSalesProvider(
                               context,
-                            ).isInvoice
+                            ).currentCart().isInvoice
                             ? Colors.grey
                             : theme
                                 .lightModeColor
@@ -105,7 +105,7 @@ class PaymentTypeButton extends StatelessWidget {
                       if (returnSalesProvider(
                         context,
                         listen: false,
-                      ).isInvoice) {
+                      ).currentCart().isInvoice) {
                         return;
                       } else {
                         returnSalesProvider(

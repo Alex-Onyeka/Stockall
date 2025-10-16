@@ -2201,6 +2201,7 @@ class _CustomBottomPanelState
                                                       listen:
                                                           false,
                                                     )
+                                                    .currentCart()
                                                     .cartItems
                                                     .where(
                                                       (
@@ -2231,7 +2232,9 @@ class _CustomBottomPanelState
                                                                 context,
                                                                 listen:
                                                                     false,
-                                                              ).cartItems
+                                                              )
+                                                              .currentCart()
+                                                              .cartItems
                                                               .firstWhere(
                                                                 (
                                                                   item,
@@ -2310,6 +2313,7 @@ class _CustomBottomPanelState
                                                       listen:
                                                           false,
                                                     )
+                                                    .currentCart()
                                                     .cartItems
                                                     .where(
                                                       (
@@ -2340,7 +2344,9 @@ class _CustomBottomPanelState
                                                                 context,
                                                                 listen:
                                                                     false,
-                                                              ).cartItems
+                                                              )
+                                                              .currentCart()
+                                                              .cartItems
                                                               .firstWhere(
                                                                 (
                                                                   item,
@@ -2478,6 +2484,7 @@ class _CustomBottomPanelState
                                                       listen:
                                                           false,
                                                     )
+                                                    .currentCart()
                                                     .cartItems
                                                     .where(
                                                       (
@@ -2508,7 +2515,9 @@ class _CustomBottomPanelState
                                                                 context,
                                                                 listen:
                                                                     false,
-                                                              ).cartItems
+                                                              )
+                                                              .currentCart()
+                                                              .cartItems
                                                               .firstWhere(
                                                                 (
                                                                   item,
@@ -2587,6 +2596,7 @@ class _CustomBottomPanelState
                                                       listen:
                                                           false,
                                                     )
+                                                    .currentCart()
                                                     .cartItems
                                                     .where(
                                                       (
@@ -2617,7 +2627,9 @@ class _CustomBottomPanelState
                                                                 context,
                                                                 listen:
                                                                     false,
-                                                              ).cartItems
+                                                              )
+                                                              .currentCart()
+                                                              .cartItems
                                                               .firstWhere(
                                                                 (
                                                                   item,

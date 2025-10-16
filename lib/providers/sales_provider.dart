@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -22,11 +23,41 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TempCartItem> cartItems = [];
-  bool isInvoice = false;
+  List<TempCart> cartQueue = [
+    TempCart(cartItems: [], isInvoice: false),
+  ];
+  int cartIndex = 0;
+  TempCart currentCart() {
+    return cartQueue[cartIndex];
+  }
+
+  void addNewCart() {
+    cartQueue.add(
+      TempCart(cartItems: [], isInvoice: false),
+    );
+    cartIndex == cartQueue.length + 1;
+    notifyListeners();
+  }
+
+  void deleteCart(int index) {
+    cartQueue.removeWhere(
+      (cart) => cartQueue.indexOf(cart) == index,
+    );
+    index == 0 ? cartIndex = 0 : cartIndex = index - 1;
+    notifyListeners();
+  }
+
+  void selectCart(int index) {
+    cartIndex = index;
+    notifyListeners();
+  }
+
+  // List<List<TempCartItem>> cartQueue = [];
+  // bool isInvoice = false;
 
   void switchInvoiceSale() {
-    isInvoice = !isInvoice;
+    currentCart().isInvoice = !currentCart().isInvoice;
+    // currentCart().
     notifyListeners();
   }
 
@@ -37,12 +68,12 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void offInvoice() {
-    isInvoice = false;
+    currentCart().isInvoice = false;
     notifyListeners();
   }
 
   void onInvoice() {
-    isInvoice = true;
+    currentCart().isInvoice = true;
     notifyListeners();
   }
 
@@ -56,14 +87,14 @@ class SalesProvider extends ChangeNotifier {
 
   Future<TempMainReceipt> checkoutMain({
     required BuildContext context,
-    required List<TempCartItem> cartItems,
+    required TempCart salesCartItem,
     required String staffId,
     required String staffName,
     required int shopId,
     required String paymentMethod,
     required double cashAlt,
     required double bank,
-    int? customerId,
+    // int? customerId,
     String? customerUuid,
     String? customerName,
   }) async {
@@ -80,8 +111,8 @@ class SalesProvider extends ChangeNotifier {
       paymentMethod: paymentMethod,
       bank: bank,
       cashAlt: cashAlt,
-      isInvoice: isInvoice,
-      customerId: customerId,
+      isInvoice: salesCartItem.isInvoice,
+      // customerId: customerId,
       customerName: customerName,
       customerUuid: customerUuid,
       uuid: uuid,
@@ -103,7 +134,7 @@ class SalesProvider extends ChangeNotifier {
 
     // Step 2: Create product sale records
     final productSaleRecords =
-        cartItems.map((cartItem) {
+        salesCartItem.cartItems.map((cartItem) {
           final product = cartItem.item;
           print('Sales Record about to be Created');
           return TempProductSaleRecord(
@@ -114,7 +145,7 @@ class SalesProvider extends ChangeNotifier {
             productName: product.name,
             shopId: product.shopId,
             staffId: staffId,
-            customerId: customerId,
+            // customerId: customerId,
             customerUuid: customerUuid,
             customerName: customerName,
             staffName: staffName,
@@ -146,7 +177,7 @@ class SalesProvider extends ChangeNotifier {
     print('Sales Record Inserted');
 
     // Step 3: Decrement quantity via RPC
-    for (final cartItem in cartItems) {
+    for (final cartItem in salesCartItem.cartItems) {
       if (((cartItem.item.quantity ?? 0) > 0) &&
           cartItem.item.isManaged) {
         if (isOnline) {
@@ -228,7 +259,9 @@ class SalesProvider extends ChangeNotifier {
 
     // Step 5: Reset state
     resetPaymentMethod();
-    clearCart();
+    cartQueue.length > 1
+        ? deleteCart(cartIndex)
+        : clearCart();
 
     if (context.mounted) {
       returnCustomers(
@@ -252,7 +285,7 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void clearCart() {
-    cartItems.clear();
+    currentCart().cartItems.clear();
     print('Cart Cleared');
     notifyListeners();
   }
@@ -310,37 +343,44 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String addItemToCartMain(TempCartItem newItem) {
-    String result = '';
-    final index = cartItems.indexWhere(
-      (item) => item.item.uuid == newItem.item.uuid,
-    );
+  // String addItemToCartMain(TempCartItem newItem) {
+  //   String result = '';
+  //   final index = currentCart().indexWhere(
+  //     (item) => item.item.uuid == newItem.item.uuid,
+  //   );
 
-    if (index != -1) {
-      // Item exists
-      cartItems[index].quantity += newItem.quantity;
-      result = 'Item Updated Successfully';
-    } else {
-      cartItems.add(newItem);
-      result = 'Item Added Successfully';
-    }
+  //   if (index != -1) {
+  //     // Item exists
+  //     currentCart()[index].quantity += newItem.quantity;
+  //     result = 'Item Updated Successfully';
+  //   } else {
+  //     currentCart().add(newItem);
+  //     print(cartItems.length);
+  //     print(currentCart().length);
+  //     result = 'Item Added Successfully';
+  //   }
 
-    notifyListeners();
-    return result;
-  }
+  //   notifyListeners();
+  //   return result;
+  // }
 
   String addItemToCart(TempCartItem newItem) {
     String result = '';
-    final index = cartItems.indexWhere(
+    final index = currentCart().cartItems.indexWhere(
       (item) => item.item.uuid == newItem.item.uuid,
     );
 
     if (index != -1) {
       // Item exists
-      cartItems[index].quantity += newItem.quantity;
+      currentCart().cartItems[index].quantity +=
+          newItem.quantity;
       result = 'Item Updated Successfully';
     } else {
-      cartItems.add(newItem);
+      currentCart().cartItems.add(newItem);
+      print("Main Carts Length: ${cartQueue.length}");
+      print(
+        "Current Cart Length: ${currentCart().cartItems.length}",
+      );
       result = 'Item Added Successfully';
     }
 
@@ -363,7 +403,11 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void removeItemFromCart(TempCartItem item) {
-    cartItems.remove(item);
+    currentCart().cartItems.remove(item);
+    print("Main Carts Length: ${cartQueue.length}");
+    print(
+      "Current Cart Length: ${currentCart().cartItems.length}",
+    );
     notifyListeners();
   }
 
