@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -84,6 +85,9 @@ class _NumberTextfieldState extends State<NumberTextfield> {
         ),
         SizedBox(height: 5),
         TextFormField(
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
           onChanged: widget.onChanged,
           style: TextStyle(
             fontSize: widget.theme.mobileTexts.b2.fontSize,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class EditCartTextField extends StatefulWidget {
@@ -44,7 +45,9 @@ class _EditCartTextFieldState
         SizedBox(height: 5),
         TextFormField(
           onChanged: widget.onChanged,
-
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
           keyboardType: TextInputType.number,
           autocorrect: false,
           enableSuggestions: false,

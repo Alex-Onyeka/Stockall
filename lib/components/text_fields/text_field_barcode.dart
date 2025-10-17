@@ -9,6 +9,7 @@ class TextFieldBarcode extends StatefulWidget {
   final Function() clearTextField;
   final Function(String)? onChanged;
   final Function()? onPressedScan;
+  final String? hintText;
 
   const TextFieldBarcode({
     super.key,
@@ -16,6 +17,7 @@ class TextFieldBarcode extends StatefulWidget {
     required this.onChanged,
     required this.onPressedScan,
     required this.clearTextField,
+    this.hintText,
   });
 
   @override
@@ -164,7 +166,9 @@ class _TextFieldBarcodeState
           minWidth: 0,
           minHeight: 0,
         ),
-        hintText: 'Search Name or Scan Barcode',
+        hintText:
+            widget.hintText ??
+            'Search Name or Scan Barcode',
         hintStyle: TextStyle(
           color: Colors.grey,
           fontSize: 13,

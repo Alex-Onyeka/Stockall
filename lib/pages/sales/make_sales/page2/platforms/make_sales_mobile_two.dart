@@ -272,7 +272,7 @@ class _MakeSalesMobileTwoState
                                     returnSalesProvider(
                                       context,
                                     ).cartQueue.length <=
-                                    3,
+                                    4,
                                 child: Material(
                                   color: Colors.transparent,
                                   child: Ink(
@@ -322,9 +322,9 @@ class _MakeSalesMobileTwoState
                         SizedBox(height: 13),
                         Builder(
                           builder: (context) {
-                            if (returnCustomers(
-                                  context,
-                                ).selectedCustomerId ==
+                            if (returnSalesProvider(context)
+                                    .currentCart()
+                                    .selectedCustomer ==
                                 null) {
                               return Material(
                                 color: Colors.transparent,
@@ -355,7 +355,9 @@ class _MakeSalesMobileTwoState
                                             );
                                           },
                                         ),
-                                      );
+                                      ).then((_) {
+                                        setState(() {});
+                                      });
                                     },
                                     borderRadius:
                                         BorderRadius.circular(
@@ -458,9 +460,9 @@ class _MakeSalesMobileTwoState
                                                         false,
                                                   )
                                                   .getCustomerByIdMain(
-                                                    returnCustomers(
+                                                    returnSalesProvider(
                                                           context,
-                                                        ).selectedCustomerId ??
+                                                        ).currentCart().selectedCustomer ??
                                                         '',
                                                   )!
                                                   .name,
@@ -474,7 +476,10 @@ class _MakeSalesMobileTwoState
                                         returnCustomers(
                                           context,
                                           listen: false,
-                                        ).clearSelectedCustomer();
+                                        ).clearSelectedCustomer(
+                                          context,
+                                        );
+                                        setState(() {});
                                       },
                                       icon: Icon(
                                         Icons.clear,
@@ -641,9 +646,9 @@ class _MakeSalesMobileTwoState
                         SizedBox(height: 20),
                         Visibility(
                           visible:
-                              returnSalesProvider(
-                                context,
-                              ).currentPayment ==
+                              returnSalesProvider(context)
+                                  .currentCart()
+                                  .paymentMethod ==
                               2,
                           child: SizedBox(
                             // width: 300,
@@ -942,11 +947,11 @@ class _MakeSalesMobileTwoState
                         child: MainButtonP(
                           themeProvider: theme,
                           action: () {
-                            var suggP =
-                                returnSuggestionProvider(
-                                  context,
-                                  listen: false,
-                                );
+                            // var suggP =
+                            //     returnSuggestionProvider(
+                            //       context,
+                            //       listen: false,
+                            //     );
                             BuildContext safeContext =
                                 context;
                             showDialog(
@@ -1081,22 +1086,24 @@ class _MakeSalesMobileTwoState
                                             listen: false,
                                           ).returnPaymentMethod(),
                                       customerUuid:
-                                          returnCustomers(
-                                            context,
-                                            listen: false,
-                                          ).selectedCustomerId,
+                                          returnSalesProvider(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .selectedCustomer,
 
                                       customerName:
-                                          returnCustomers(
-                                            context,
-                                            listen: false,
-                                          ).selectedCustomerName,
+                                          returnSalesProvider(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .selectedCustomerName,
                                     );
 
-                                    await suggP
-                                        .createSuggestions();
-                                    suggP
-                                        .clearSuggestions();
+                                    // await suggP
+                                    //     .createSuggestions();
+                                    // suggP
+                                    //     .clearSuggestions();
                                     setState(() {
                                       isLoading = false;
                                       showSuccess = true;

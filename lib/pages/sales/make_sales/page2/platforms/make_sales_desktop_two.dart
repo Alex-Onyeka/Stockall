@@ -141,9 +141,11 @@ class _MakeSalesDesktopTwoState
                                           builder: (
                                             context,
                                           ) {
-                                            if (returnCustomers(
-                                                  context,
-                                                ).selectedCustomerId ==
+                                            if (returnSalesProvider(
+                                                      context,
+                                                    )
+                                                    .currentCart()
+                                                    .selectedCustomer ==
                                                 null) {
                                               return Material(
                                                 color:
@@ -176,7 +178,13 @@ class _MakeSalesDesktopTwoState
                                                             );
                                                           },
                                                         ),
-                                                      );
+                                                      ).then((
+                                                        _,
+                                                      ) {
+                                                        setState(
+                                                          () {},
+                                                        );
+                                                      });
                                                     },
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -278,9 +286,9 @@ class _MakeSalesDesktopTwoState
                                                                         false,
                                                                   )
                                                                   .getCustomerByIdMain(
-                                                                    returnCustomers(
+                                                                    returnSalesProvider(
                                                                           context,
-                                                                        ).selectedCustomerId ??
+                                                                        ).currentCart().selectedCustomer ??
                                                                         '',
                                                                   )!
                                                                   .name,
@@ -295,7 +303,12 @@ class _MakeSalesDesktopTwoState
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).clearSelectedCustomer();
+                                                        ).clearSelectedCustomer(
+                                                          context,
+                                                        );
+                                                        setState(
+                                                          () {},
+                                                        );
                                                       },
                                                       icon: Icon(
                                                         Icons.clear,
@@ -475,8 +488,10 @@ class _MakeSalesDesktopTwoState
                                         Visibility(
                                           visible:
                                               returnSalesProvider(
-                                                context,
-                                              ).currentPayment ==
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .paymentMethod ==
                                               2,
                                           child: SizedBox(
                                             // width: 300,
@@ -880,7 +895,7 @@ class _MakeSalesDesktopTwoState
                                               )
                                               .cartQueue
                                               .length <=
-                                          3,
+                                          4,
                                       child: Material(
                                         color:
                                             Colors
@@ -1055,11 +1070,11 @@ class _MakeSalesDesktopTwoState
                                 child: MainButtonP(
                                   themeProvider: theme,
                                   action: () {
-                                    var suggP =
-                                        returnSuggestionProvider(
-                                          context,
-                                          listen: false,
-                                        );
+                                    // var suggP =
+                                    //     returnSuggestionProvider(
+                                    //       context,
+                                    //       listen: false,
+                                    //     );
                                     BuildContext
                                     safeContext = context;
                                     showDialog(
@@ -1187,24 +1202,20 @@ class _MakeSalesDesktopTwoState
                                                         false,
                                                   ).returnPaymentMethod(),
                                               customerUuid:
-                                                  returnCustomers(
+                                                  returnSalesProvider(
                                                     context,
-                                                    listen:
-                                                        false,
-                                                  ).selectedCustomerId,
+                                                  ).currentCart().selectedCustomer,
 
                                               customerName:
-                                                  returnCustomers(
+                                                  returnSalesProvider(
                                                     context,
-                                                    listen:
-                                                        false,
-                                                  ).selectedCustomerName,
+                                                  ).currentCart().selectedCustomerName,
                                             );
 
-                                            await suggP
-                                                .createSuggestions();
-                                            suggP
-                                                .clearSuggestions();
+                                            // await suggP
+                                            //     .createSuggestions();
+                                            // suggP
+                                            //     .clearSuggestions();
                                             setState(() {
                                               isLoading =
                                                   false;

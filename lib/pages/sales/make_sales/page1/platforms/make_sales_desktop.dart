@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/product_suggestions/product_suggestion.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -16,6 +15,7 @@ import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
+import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -49,6 +49,7 @@ class _MakeSalesDesktopState
       TextEditingController();
   TextEditingController priceController =
       TextEditingController();
+  // final nameController = TextEditingController();
 
   String formatSellingPriceEdit(TempCartItem cartItem) {
     if (priceController.text.isNotEmpty) {
@@ -120,428 +121,451 @@ class _MakeSalesDesktopState
                   ),
                 ),
                 content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Visibility(
-                        visible:
-                            (returnSalesProvider(
-                                      context,
-                                    ).isSetCustomPrice ||
-                                    cartItem
-                                        .setCustomPrice) &&
-                                cartItem
-                                    .item
-                                    .setCustomPrice ||
-                            cartItem.item.sellingPrice ==
-                                null,
-                        child: Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.end,
-                          spacing: 10,
-                          children: [
-                            Expanded(
-                              child: ToggleTotalPriceWidget(
-                                theme: theme,
+                  child: SizedBox(
+                    width:
+                        screenWidth(context) > 450
+                            ? 450
+                            : null,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Visibility(
+                        //   visible:
+                        //       returnData(context).productList
+                        //           .where(
+                        //             (product) =>
+                        //                 product.uuid ==
+                        //                 cartItem.item.uuid,
+                        //           )
+                        //           .isEmpty,
+                        //   child: Column(
+                        //     mainAxisSize: MainAxisSize.min,
+                        //     children: [
+                        //       GeneralTextField(
+                        //         lines: 1,
+                        //         title: 'Enter Item Name',
+                        //         hint: 'Item Name',
+                        //         controller: nameController,
+                        //         theme: theme,
+                        //       ),
+                        //       SizedBox(height: 10),
+                        //     ],
+                        //   ),
+                        // ),
+                        Visibility(
+                          visible:
+                              (returnSalesProvider(
+                                        context,
+                                      ).isSetCustomPrice ||
+                                      cartItem
+                                          .setCustomPrice) &&
+                                  cartItem
+                                      .item
+                                      .setCustomPrice ||
+                              cartItem.item.sellingPrice ==
+                                  null,
+                          child: Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end,
+                            spacing: 10,
+                            children: [
+                              Expanded(
+                                child:
+                                    ToggleTotalPriceWidget(
+                                      theme: theme,
+                                    ),
                               ),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                width: 450,
-                                child: MoneyTextfield(
-                                  title:
-                                      returnSalesProvider(
-                                            context,
-                                          ).setTotalPrice
-                                          ? 'Total Price'
-                                          : 'Individual Price',
-                                  hint: 'Enter Price',
-                                  controller:
-                                      priceController,
-                                  theme: theme,
-                                  onChanged: (p0) {
-                                    setState(() {});
-                                  },
+                              Expanded(
+                                child: SizedBox(
+                                  width: 450,
+                                  child: MoneyTextfield(
+                                    title:
+                                        returnSalesProvider(
+                                              context,
+                                            ).setTotalPrice
+                                            ? 'Total Price'
+                                            : 'Individual Price',
+                                    hint: 'Enter Price',
+                                    controller:
+                                        priceController,
+                                    theme: theme,
+                                    onChanged: (p0) {
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      SizedBox(
-                        width: 450,
-                        child: EditCartTextField(
-                          onChanged: (value) {
-                            final parsedValue =
-                                double.tryParse(value) ?? 0;
-                            if (cartItem.item.isManaged) {
-                              if (parsedValue >
-                                  (cartItem.item.quantity ??
-                                      0)) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          "Only (${cartItem.item.quantity}) items available in stock.",
-                                      title:
-                                          'Quantity Limit Reached',
-                                    );
-                                  },
-                                );
-                                // Optionally reset to max or previous value
-                                setState(() {
-                                  quantityController.text =
-                                      qqty.toString();
-                                });
+                        SizedBox(height: 20),
+                        SizedBox(
+                          width: 450,
+                          child: EditCartTextField(
+                            onChanged: (value) {
+                              final parsedValue =
+                                  double.tryParse(value) ??
+                                  0;
+                              if (cartItem.item.isManaged) {
+                                if (parsedValue >
+                                    (cartItem
+                                            .item
+                                            .quantity ??
+                                        0)) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            "Only (${cartItem.item.quantity}) items available in stock.",
+                                        title:
+                                            'Quantity Limit Reached',
+                                      );
+                                    },
+                                  );
+                                  // Optionally reset to max or previous value
+                                  setState(() {
+                                    quantityController
+                                            .text =
+                                        qqty.toString();
+                                  });
+                                } else {
+                                  setState(() {
+                                    qqty = parsedValue;
+                                  });
+                                }
                               } else {
                                 setState(() {
                                   qqty = parsedValue;
                                 });
                               }
-                            } else {
-                              setState(() {
-                                qqty = parsedValue;
-                              });
-                            }
-                          },
+                            },
 
-                          title: 'Enter Item Quantity',
-                          hint: 'Quantity',
-                          controller: quantityController,
-                          theme: theme,
+                            title: 'Enter Item Quantity',
+                            hint: 'Quantity',
+                            controller: quantityController,
+                            theme: theme,
+                          ),
                         ),
-                      ),
-                      Visibility(
-                        visible:
-                            !cartItem.setCustomPrice &&
-                            cartItem.item.setCustomPrice,
-                        child: Column(
-                          children: [
-                            SizedBox(height: 20),
-                            InkWell(
-                              onTap: () {
-                                returnSalesProvider(
-                                  context,
-                                  listen: false,
-                                ).toggleSetCustomPrice();
-                                priceController.clear();
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 5,
-                                      horizontal: 10,
-                                    ),
-                                child: Row(
-                                  mainAxisSize:
-                                      MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                        Visibility(
+                          visible:
+                              !cartItem.setCustomPrice &&
+                              cartItem.item.setCustomPrice,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
+                              InkWell(
+                                onTap: () {
+                                  returnSalesProvider(
+                                    context,
+                                    listen: false,
+                                  ).toggleSetCustomPrice();
+                                  priceController.clear();
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10,
                                       ),
-                                      returnSalesProvider(
-                                            context,
-                                          ).isSetCustomPrice
-                                          ? 'Cancel Custom Price'
-                                          : 'Set Custom Price',
-                                    ),
-                                    Stack(
-                                      children: [
-                                        Visibility(
-                                          visible:
-                                              returnSalesProvider(
-                                                context,
-                                              ).isSetCustomPrice ==
-                                              false,
-                                          child:
-                                              SvgPicture.asset(
-                                                editIconSvg,
-                                                height: 20,
-                                              ),
+                                  child: Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
                                         ),
-                                        Visibility(
-                                          visible:
-                                              returnSalesProvider(
-                                                context,
-                                              ).isSetCustomPrice ==
-                                              true,
-                                          child: Icon(
-                                            Icons.clear,
+                                        returnSalesProvider(
+                                              context,
+                                            ).isSetCustomPrice
+                                            ? 'Cancel Custom Price'
+                                            : 'Set Custom Price',
+                                      ),
+                                      Stack(
+                                        children: [
+                                          Visibility(
+                                            visible:
+                                                returnSalesProvider(
+                                                  context,
+                                                ).isSetCustomPrice ==
+                                                false,
+                                            child:
+                                                SvgPicture.asset(
+                                                  editIconSvg,
+                                                  height:
+                                                      20,
+                                                ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          color: Colors.grey.shade100,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                              ),
-                              'Total',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontWeightBold,
-                              ),
-                              formatMoneyMid(
-                                amount: double.parse(
-                                  priceController
-                                          .text
-                                          .isNotEmpty
-                                      ? returnSalesProvider(
-                                            context,
-                                          ).setTotalPrice
-                                          ? priceController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              )
-                                          : (int.parse(
-                                                    priceController.text.isNotEmpty
-                                                        ? priceController.text.replaceAll(
-                                                          ',',
-                                                          '',
-                                                        )
-                                                        : '0',
-                                                  ) *
-                                                  qqty.toInt())
-                                              .toString()
-                                      : (qqty *
-                                              (cartItem
-                                                      .item
-                                                      .sellingPrice ??
-                                                  0))
-                                          .toString(),
-                                ),
-                                context: context,
-                              ),
-
-                              // priceController.text.isEmpty
-                              //     ? formatMoneyMid(
-                              //       qqty *
-                              //           (returnSalesProvider(
-                              //             context,
-                              //             listen: false,
-                              //           ).discountCheck(
-                              //             cartItem.item,
-                              //           )),
-                              //       context,
-                              //     )
-                              //     : formatMoneyMid(
-                              //       double.tryParse(
-                              //             priceController.text
-                              //                 .replaceAll(
-                              //                   ',',
-                              //                   '',
-                              //                 ),
-                              //           ) ??
-                              //           0,
-                              //       context,
-                              //     ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          spacing: 15,
-                          children: [
-                            Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: () {
-                                  setState(() {
-                                    if (qqty > 0) qqty--;
-                                    quantityController
-                                            .text =
-                                        qqty.toString();
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 50,
-                                  child: Icon(Icons.remove),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              qqty.toString(),
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: () {
-                                  if (cartItem
-                                      .item
-                                      .isManaged) {
-                                    if (qqty >=
-                                        (cartItem
-                                                .item
-                                                .quantity ??
-                                            0)) {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (
-                                              _,
-                                            ) => InfoAlert(
-                                              title:
-                                                  "Quantity Limit Reached",
-                                              message:
-                                                  "Only (${cartItem.item.quantity}) items available in stock.",
-                                              theme: theme,
+                                          Visibility(
+                                            visible:
+                                                returnSalesProvider(
+                                                  context,
+                                                ).isSetCustomPrice ==
+                                                true,
+                                            child: Icon(
+                                              Icons.clear,
                                             ),
-                                      );
-                                      return;
-                                    }
-                                  }
-                                  setState(() {
-                                    qqty++;
-                                    quantityController
-                                            .text =
-                                        qqty.toString();
-                                  });
-                                },
-
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 50,
-                                  child: Center(
-                                    child: Icon(Icons.add),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            color: Colors.grey.shade100,
+                          ),
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                                vertical: 10,
+                              ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                ),
+                                'Total',
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontSize,
+                                  fontWeight:
+                                      theme
+                                          .mobileTexts
+                                          .b1
+                                          .fontWeightBold,
+                                ),
+                                formatMoneyMid(
+                                  amount: double.parse(
+                                    priceController
+                                            .text
+                                            .isNotEmpty
+                                        ? returnSalesProvider(
+                                              context,
+                                            ).setTotalPrice
+                                            ? priceController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )
+                                            : (int.parse(
+                                                      priceController.text.isNotEmpty
+                                                          ? priceController.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          )
+                                                          : '0',
+                                                    ) *
+                                                    qqty.toInt())
+                                                .toString()
+                                        : (qqty *
+                                                (cartItem
+                                                        .item
+                                                        .sellingPrice ??
+                                                    0))
+                                            .toString(),
+                                  ),
+                                  context: context,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 15,
+                            children: [
+                              Ink(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  color:
+                                      Colors.grey.shade100,
+                                ),
+                                child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  onTap: () {
+                                    setState(() {
+                                      if (qqty > 0) qqty--;
+                                      quantityController
+                                              .text =
+                                          qqty.toString();
+                                    });
+                                  },
+                                  child: SizedBox(
+                                    height: 30,
+                                    width: 50,
+                                    child: Icon(
+                                      Icons.remove,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                qqty.toString(),
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+                              Ink(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  color:
+                                      Colors.grey.shade100,
+                                ),
+                                child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  onTap: () {
+                                    if (cartItem
+                                        .item
+                                        .isManaged) {
+                                      if (qqty >=
+                                          (cartItem
+                                                  .item
+                                                  .quantity ??
+                                              0)) {
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (
+                                                _,
+                                              ) => InfoAlert(
+                                                title:
+                                                    "Quantity Limit Reached",
+                                                message:
+                                                    "Only (${cartItem.item.quantity}) items available in stock.",
+                                                theme:
+                                                    theme,
+                                              ),
+                                        );
+                                        return;
+                                      }
+                                    }
+                                    setState(() {
+                                      qqty++;
+                                      quantityController
+                                              .text =
+                                          qqty.toString();
+                                    });
+                                  },
+
+                                  child: SizedBox(
+                                    height: 30,
+                                    width: 50,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.add,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          spacing: 5,
+                          children: [
+                            MaterialButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                quantityController.clear();
+                                qqty = 0;
+                              },
+                              child: Text('Cancel'),
+                            ),
+                            SmallButtonMain(
+                              theme: theme,
+                              action: () {
+                                if (quantityController
+                                        .text
+                                        .isEmpty ||
+                                    qqty == 0) {
+                                  // Navigator.of(context).pop();
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'Item quantity cannot be set to (0)',
+                                        title:
+                                            'Invalid Quantity',
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  updateAction!();
+                                }
+                              },
+                              buttonText: 'Update Item',
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        spacing: 5,
-                        children: [
-                          MaterialButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              quantityController.clear();
-                              qqty = 0;
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          SmallButtonMain(
-                            theme: theme,
-                            action: () {
-                              if (quantityController
-                                      .text
-                                      .isEmpty ||
-                                  qqty == 0) {
-                                // Navigator.of(context).pop();
-
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'Item quantity cannot be set to (0)',
-                                      title:
-                                          'Invalid Quantity',
-                                    );
-                                  },
-                                );
-                              } else {
-                                updateAction!();
-                              }
-                            },
-                            buttonText: 'Update Item',
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -552,6 +576,7 @@ class _MakeSalesDesktopState
     ).then((value) {
       qqty = 0;
       quantityController.text = '';
+      // nameController.text = '';
       priceController.text = '';
       if (context.mounted) {
         returnSalesProvider(
@@ -596,11 +621,42 @@ class _MakeSalesDesktopState
     }
   }
 
+  bool isNormalEdit = true;
+
   void makeCustomSale({
     required TempCartItem cartItem,
     required Function() closeAction,
   }) {
     var theme = returnTheme(context, listen: false);
+    if (returnData(context, listen: false).productList
+            .where(
+              (product) =>
+                  product.uuid == cartItem.item.uuid,
+            )
+            .isEmpty &&
+        returnSalesProvider(context, listen: false)
+            .currentCart()
+            .cartItems
+            .where(
+              (item) =>
+                  item.item.uuid == cartItem.item.uuid,
+            )
+            .isNotEmpty) {
+      isNormalEdit = false;
+      nameC.text = cartItem.item.name;
+      qqty = cartItem.quantity;
+      pQuantity.text = cartItem.quantity.toString();
+      sellingPriceC.text =
+          (cartItem.customPrice ?? 0).toString();
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).toggleAddToStock(cartItem.addToStock);
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).toggleSetTotalPrice(cartItem.setTotalPrice);
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -651,34 +707,34 @@ class _MakeSalesDesktopState
                                 lines: 1,
                                 theme: theme,
                                 onChanged: (value) {
-                                  final suggestions =
-                                      returnSuggestionProvider(
-                                        context,
-                                        listen: false,
-                                      ).suggestions;
+                                  // final suggestions =
+                                  //     returnSuggestionProvider(
+                                  //       context,
+                                  //       listen: false,
+                                  //     ).suggestions;
 
-                                  if (nameC
-                                      .text
-                                      .isNotEmpty) {
-                                    final hasMatch =
-                                        suggestions.any(
-                                          (item) => item
-                                              .name!
-                                              .toLowerCase()
-                                              .contains(
-                                                value
-                                                    .toLowerCase(),
-                                              ),
-                                        );
+                                  // if (nameC
+                                  //     .text
+                                  //     .isNotEmpty) {
+                                  //   final hasMatch =
+                                  //       suggestions.any(
+                                  //         (item) => item
+                                  //             .name!
+                                  //             .toLowerCase()
+                                  //             .contains(
+                                  //               value
+                                  //                   .toLowerCase(),
+                                  //             ),
+                                  //       );
 
-                                    setState(() {
-                                      resultOn = hasMatch;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      resultOn = false;
-                                    });
-                                  }
+                                  //   setState(() {
+                                  //     resultOn = hasMatch;
+                                  //   });
+                                  // } else {
+                                  //   setState(() {
+                                  //     resultOn = false;
+                                  //   });
+                                  // }
                                 },
                               ),
 
@@ -688,19 +744,6 @@ class _MakeSalesDesktopState
                                     CrossAxisAlignment.end,
                                 spacing: 10,
                                 children: [
-                                  // Expanded(
-                                  //   child: MoneyTextfield(
-                                  //     title:
-                                  //         'Cost Price (Optional)',
-                                  //     hint: 'Enter Price',
-                                  //     controller:
-                                  //         costPriceC,
-                                  //     theme: theme,
-                                  //     onChanged: (p0) {
-                                  //       setState(() {});
-                                  //     },
-                                  //   ),
-                                  // ),
                                   Expanded(
                                     child:
                                         ToggleTotalPriceWidget(
@@ -1060,11 +1103,11 @@ class _MakeSalesDesktopState
                               SmallButtonMain(
                                 theme: theme,
                                 action: () {
-                                  var sugP =
-                                      returnSuggestionProvider(
-                                        context,
-                                        listen: false,
-                                      );
+                                  // var sugP =
+                                  //     returnSuggestionProvider(
+                                  //       context,
+                                  //       listen: false,
+                                  //     );
                                   var productIndex = returnData(
                                     context,
                                     listen: false,
@@ -1105,7 +1148,9 @@ class _MakeSalesDesktopState
                                         );
                                       },
                                     );
-                                  } else if (index != -1) {
+                                  } else if (index != -1 &&
+                                      isNormalEdit ==
+                                          true) {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -1137,7 +1182,9 @@ class _MakeSalesDesktopState
                                       },
                                     );
                                   } else if (productIndex !=
-                                      -1) {
+                                          -1 &&
+                                      isNormalEdit ==
+                                          true) {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -1199,48 +1246,8 @@ class _MakeSalesDesktopState
                                                     ),
                                               ) ??
                                               0);
-                                      cartItem.item.uuid =
-                                          uuidGen();
-                                      // returnSalesProvider(
-                                      //           context,
-                                      //           listen:
-                                      //               false,
-                                      //         )
-                                      //         .cartItems
-                                      //         .isNotEmpty
-                                      //     ? returnSalesProvider(
-                                      //               context,
-                                      //               listen:
-                                      //                   false,
-                                      //             )
-                                      //             .cartItems
-                                      //             .where(
-                                      //               (
-                                      //                 item,
-                                      //               ) =>
-                                      //                   item.item.id! <
-                                      //                   100,
-                                      //             )
-                                      //             .isNotEmpty
-                                      //         ? returnSalesProvider(
-                                      //                   context,
-                                      //                   listen:
-                                      //                       false,
-                                      //                 )
-                                      //                 .cartItems
-                                      //                 .where(
-                                      //                   (
-                                      //                     item,
-                                      //                   ) =>
-                                      //                       item.item.id! <
-                                      //                       100,
-                                      //                 )
-                                      //                 .last
-                                      //                 .item
-                                      //                 .id! +
-                                      //             1
-                                      //         : 1
-                                      //     : 1;
+                                      // cartItem.item.uuid =
+                                      //     uuidGen();
                                       cartItem.addToStock =
                                           returnSalesProvider(
                                             context,
@@ -1251,309 +1258,330 @@ class _MakeSalesDesktopState
                                         context,
                                         listen: false,
                                       ).addItemToCart(
-                                        cartItem,
+                                        newItem: cartItem,
+                                        isCustomEdit:
+                                            returnData(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .productList
+                                                .where(
+                                                  (
+                                                    product,
+                                                  ) =>
+                                                      product
+                                                          .uuid ==
+                                                      cartItem
+                                                          .item
+                                                          .uuid,
+                                                )
+                                                .isEmpty,
                                       );
-                                      sugP.addTempSugg(
-                                        ProductSuggestion(
-                                          createdAt:
-                                              DateTime.now(),
-                                          shopId: shopId(
-                                            context,
-                                          ),
-                                          costPrice:
-                                              double.tryParse(
-                                                costPriceC
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ),
-                                          name: nameC.text,
-                                          uuid:
-                                              cartItem
-                                                  .item
-                                                  .uuid,
-                                        ),
-                                      );
+                                      // sugP.addTempSugg(
+                                      //   ProductSuggestion(
+                                      //     createdAt:
+                                      //         DateTime.now(),
+                                      //     shopId: shopId(
+                                      //       context,
+                                      //     ),
+                                      //     costPrice:
+                                      //         double.tryParse(
+                                      //           costPriceC
+                                      //               .text
+                                      //               .replaceAll(
+                                      //                 ',',
+                                      //                 '',
+                                      //               ),
+                                      //         ),
+                                      //     name: nameC.text,
+                                      //     uuid:
+                                      //         cartItem
+                                      //             .item
+                                      //             .uuid,
+                                      //   ),
+                                      // );
                                       closeAction();
                                     }
                                   }
                                 },
-                                buttonText: 'Add To Cart',
+                                buttonText:
+                                    isNormalEdit == true
+                                        ? 'Add To Cart'
+                                        : 'Update Item',
                               ),
                             ],
                           ),
                         ],
                       ),
-                      Visibility(
-                        visible: resultOn,
-                        child: Positioned(
-                          top: 80,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              // width: double.infinity,
-                              width: 450,
-                              padding: EdgeInsets.fromLTRB(
-                                20,
-                                5,
-                                20,
-                                20,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 5,
-                                    color:
-                                        const Color.fromARGB(
-                                          27,
-                                          0,
-                                          0,
-                                          0,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                // crossAxisAlignment:
-                                //     CrossAxisAlignment.end,
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                        ),
-                                        'Suggestion Results',
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            resultOn =
-                                                false;
-                                          });
-                                        },
-                                        icon: Icon(
-                                          Icons.clear,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 180,
-                                    child: ListView.builder(
-                                      itemCount:
-                                          returnSuggestionProvider(
-                                                context,
-                                              ).suggestions
-                                              .where(
-                                                (
-                                                  sugg,
-                                                ) => sugg
-                                                    .name!
-                                                    .toLowerCase()
-                                                    .contains(
-                                                      nameC
-                                                          .text
-                                                          .toLowerCase(),
-                                                    ),
-                                              )
-                                              .length,
-                                      itemBuilder: (
-                                        context,
-                                        index,
-                                      ) {
-                                        var suggestions =
-                                            returnSuggestionProvider(
-                                                  context,
-                                                )
-                                                .suggestions
-                                                .where(
-                                                  (
-                                                    sugg,
-                                                  ) => sugg
-                                                      .name!
-                                                      .toLowerCase()
-                                                      .contains(
-                                                        nameC.text.toLowerCase(),
-                                                      ),
-                                                )
-                                                .toList();
+                      // Visibility(
+                      //   visible: resultOn,
+                      //   child: Positioned(
+                      //     top: 80,
+                      //     child: Material(
+                      //       color: Colors.transparent,
+                      //       child: Container(
+                      //         // width: double.infinity,
+                      //         width: 450,
+                      //         padding: EdgeInsets.fromLTRB(
+                      //           20,
+                      //           5,
+                      //           20,
+                      //           20,
+                      //         ),
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.white,
+                      //           borderRadius:
+                      //               BorderRadius.circular(
+                      //                 5,
+                      //               ),
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               blurRadius: 5,
+                      //               color:
+                      //                   const Color.fromARGB(
+                      //                     27,
+                      //                     0,
+                      //                     0,
+                      //                     0,
+                      //                   ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         child: Column(
+                      //           // crossAxisAlignment:
+                      //           //     CrossAxisAlignment.end,
+                      //           mainAxisSize:
+                      //               MainAxisSize.min,
+                      //           children: [
+                      //             Row(
+                      //               mainAxisAlignment:
+                      //                   MainAxisAlignment
+                      //                       .spaceBetween,
+                      //               children: [
+                      //                 Text(
+                      //                   style: TextStyle(
+                      //                     fontSize:
+                      //                         theme
+                      //                             .mobileTexts
+                      //                             .b2
+                      //                             .fontSize,
+                      //                   ),
+                      //                   'Suggestion Results',
+                      //                 ),
+                      //                 IconButton(
+                      //                   onPressed: () {
+                      //                     setState(() {
+                      //                       resultOn =
+                      //                           false;
+                      //                     });
+                      //                   },
+                      //                   icon: Icon(
+                      //                     Icons.clear,
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //             SizedBox(
+                      //               height: 180,
+                      //               child: ListView.builder(
+                      //                 itemCount:
+                      //                     returnSuggestionProvider(
+                      //                           context,
+                      //                         ).suggestions
+                      //                         .where(
+                      //                           (
+                      //                             sugg,
+                      //                           ) => sugg
+                      //                               .name!
+                      //                               .toLowerCase()
+                      //                               .contains(
+                      //                                 nameC
+                      //                                     .text
+                      //                                     .toLowerCase(),
+                      //                               ),
+                      //                         )
+                      //                         .length,
+                      //                 itemBuilder: (
+                      //                   context,
+                      //                   index,
+                      //                 ) {
+                      //                   var suggestions =
+                      //                       returnSuggestionProvider(
+                      //                             context,
+                      //                           )
+                      //                           .suggestions
+                      //                           .where(
+                      //                             (
+                      //                               sugg,
+                      //                             ) => sugg
+                      //                                 .name!
+                      //                                 .toLowerCase()
+                      //                                 .contains(
+                      //                                   nameC.text.toLowerCase(),
+                      //                                 ),
+                      //                           )
+                      //                           .toList();
 
-                                        var suggestion =
-                                            suggestions[index];
-                                        return Material(
-                                          color:
-                                              Colors
-                                                  .transparent,
-                                          child: Ink(
-                                            child: InkWell(
-                                              onTap: () {
-                                                nameC.text =
-                                                    suggestion
-                                                        .name!;
-                                                costPriceC
-                                                        .text =
-                                                    suggestion.costPrice ==
-                                                            null
-                                                        ? '0'
-                                                        : suggestion.costPrice.toString().split(
-                                                          '.',
-                                                        )[0];
+                      //                   var suggestion =
+                      //                       suggestions[index];
+                      //                   return Material(
+                      //                     color:
+                      //                         Colors
+                      //                             .transparent,
+                      //                     child: Ink(
+                      //                       child: InkWell(
+                      //                         onTap: () {
+                      //                           nameC.text =
+                      //                               suggestion
+                      //                                   .name!;
+                      //                           costPriceC
+                      //                                   .text =
+                      //                               suggestion.costPrice ==
+                      //                                       null
+                      //                                   ? '0'
+                      //                                   : suggestion.costPrice.toString().split(
+                      //                                     '.',
+                      //                                   )[0];
 
-                                                setState(() {
-                                                  resultOn =
-                                                      false;
-                                                });
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                    ),
-                                                  ),
-                                                ),
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          10,
-                                                    ),
+                      //                           setState(() {
+                      //                             resultOn =
+                      //                                 false;
+                      //                           });
+                      //                         },
+                      //                         child: Container(
+                      //                           decoration: BoxDecoration(
+                      //                             border: Border(
+                      //                               bottom: BorderSide(
+                      //                                 color:
+                      //                                     Colors.grey.shade400,
+                      //                               ),
+                      //                             ),
+                      //                           ),
+                      //                           padding:
+                      //                               EdgeInsets.symmetric(
+                      //                                 vertical:
+                      //                                     10,
+                      //                               ),
 
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      suggestion.name ??
-                                                          '',
-                                                    ),
-                                                    Row(
-                                                      spacing:
-                                                          5,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          '${currencySymbol(context: context)} ${suggestion.costPrice ?? 0}',
-                                                        ),
-                                                        Icon(
-                                                          size:
-                                                              20,
-                                                          Icons.add,
-                                                        ),
-                                                        IconButton(
-                                                          onPressed: () {
-                                                            var sugP = returnSuggestionProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            );
-                                                            var safeContext =
-                                                                context;
-                                                            showDialog(
-                                                              context:
-                                                                  context,
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                return ConfirmationAlert(
-                                                                  theme:
-                                                                      theme,
-                                                                  message:
-                                                                      'Are you sure you want to delete your item suggestion?',
-                                                                  title:
-                                                                      isLoading
-                                                                          ? 'Deleting'
-                                                                          : 'Are you sure?',
-                                                                  action: () async {
-                                                                    Navigator.of(
-                                                                      safeContext,
-                                                                    ).pop();
-                                                                    setState(
-                                                                      () {
-                                                                        isLoading =
-                                                                            true;
-                                                                      },
-                                                                    );
-                                                                    await sugP.deleteSuggestion(
-                                                                      suggestion.uuid!,
-                                                                    );
-                                                                    setState(
-                                                                      () {
-                                                                        isLoading =
-                                                                            false;
-                                                                      },
-                                                                    );
+                      //                           child: Row(
+                      //                             mainAxisAlignment:
+                      //                                 MainAxisAlignment
+                      //                                     .spaceBetween,
+                      //                             children: [
+                      //                               Text(
+                      //                                 style: TextStyle(
+                      //                                   fontSize:
+                      //                                       theme.mobileTexts.b2.fontSize,
+                      //                                   fontWeight:
+                      //                                       FontWeight.bold,
+                      //                                 ),
+                      //                                 suggestion.name ??
+                      //                                     '',
+                      //                               ),
+                      //                               Row(
+                      //                                 spacing:
+                      //                                     5,
+                      //                                 mainAxisSize:
+                      //                                     MainAxisSize.min,
+                      //                                 children: [
+                      //                                   Text(
+                      //                                     style: TextStyle(
+                      //                                       fontSize:
+                      //                                           theme.mobileTexts.b1.fontSize,
+                      //                                       fontWeight:
+                      //                                           FontWeight.bold,
+                      //                                     ),
+                      //                                     '${currencySymbol(context: context)} ${suggestion.costPrice ?? 0}',
+                      //                                   ),
+                      //                                   Icon(
+                      //                                     size:
+                      //                                         20,
+                      //                                     Icons.add,
+                      //                                   ),
+                      //                                   IconButton(
+                      //                                     onPressed: () {
+                      //                                       var sugP = returnSuggestionProvider(
+                      //                                         context,
+                      //                                         listen:
+                      //                                             false,
+                      //                                       );
+                      //                                       var safeContext =
+                      //                                           context;
+                      //                                       showDialog(
+                      //                                         context:
+                      //                                             context,
+                      //                                         builder: (
+                      //                                           context,
+                      //                                         ) {
+                      //                                           return ConfirmationAlert(
+                      //                                             theme:
+                      //                                                 theme,
+                      //                                             message:
+                      //                                                 'Are you sure you want to delete your item suggestion?',
+                      //                                             title:
+                      //                                                 isLoading
+                      //                                                     ? 'Deleting'
+                      //                                                     : 'Are you sure?',
+                      //                                             action: () async {
+                      //                                               Navigator.of(
+                      //                                                 safeContext,
+                      //                                               ).pop();
+                      //                                               setState(
+                      //                                                 () {
+                      //                                                   isLoading =
+                      //                                                       true;
+                      //                                                 },
+                      //                                               );
+                      //                                               await sugP.deleteSuggestion(
+                      //                                                 suggestion.uuid!,
+                      //                                               );
+                      //                                               setState(
+                      //                                                 () {
+                      //                                                   isLoading =
+                      //                                                       false;
+                      //                                                 },
+                      //                                               );
 
-                                                                    if (context.mounted) {
-                                                                      Navigator.of(
-                                                                        context,
-                                                                      ).pop();
-                                                                    }
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                          icon: Icon(
-                                                            size:
-                                                                20,
-                                                            color: const Color.fromARGB(
-                                                              255,
-                                                              191,
-                                                              76,
-                                                              67,
-                                                            ),
-                                                            Icons.delete_outline_rounded,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      //                                               if (context.mounted) {
+                      //                                                 Navigator.of(
+                      //                                                   context,
+                      //                                                 ).pop();
+                      //                                               }
+                      //                                             },
+                      //                                           );
+                      //                                         },
+                      //                                       );
+                      //                                     },
+                      //                                     icon: Icon(
+                      //                                       size:
+                      //                                           20,
+                      //                                       color: const Color.fromARGB(
+                      //                                         255,
+                      //                                         191,
+                      //                                         76,
+                      //                                         67,
+                      //                                       ),
+                      //                                       Icons.delete_outline_rounded,
+                      //                                     ),
+                      //                                   ),
+                      //                                 ],
+                      //                               ),
+                      //                             ],
+                      //                           ),
+                      //                         ),
+                      //                       ),
+                      //                     ),
+                      //                   );
+                      //                 },
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -1564,6 +1592,7 @@ class _MakeSalesDesktopState
       },
     ).then((value) {
       qqty = 0;
+
       nameC.clear();
       pQuantity.clear();
       costPriceC.clear();
@@ -1571,6 +1600,7 @@ class _MakeSalesDesktopState
       if (context.mounted) {
         setState(() {
           resultOn = false;
+          isNormalEdit = true;
         });
         returnSalesProvider(
           context,
@@ -1737,11 +1767,11 @@ class _MakeSalesDesktopState
                                                     listen:
                                                         false,
                                                   ).clearCart();
-                                                  returnSuggestionProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).clearSuggestions();
+                                                  // returnSuggestionProvider(
+                                                  //   context,
+                                                  //   listen:
+                                                  //       false,
+                                                  // ).clearSuggestions();
                                                   Navigator.of(
                                                     context,
                                                   ).pop();
@@ -2266,13 +2296,13 @@ class _MakeSalesDesktopState
                                                                               ).removeItemFromCart(
                                                                                 items[index],
                                                                               );
-                                                                              returnSuggestionProvider(
-                                                                                context,
-                                                                                listen:
-                                                                                    false,
-                                                                              ).deleteTempSugg(
-                                                                                items[index].item.uuid!,
-                                                                              );
+                                                                              // returnSuggestionProvider(
+                                                                              //   context,
+                                                                              //   listen:
+                                                                              //       false,
+                                                                              // ).deleteTempSugg(
+                                                                              //   items[index].item.uuid!,
+                                                                              // );
                                                                             },
                                                                           );
                                                                         },
@@ -2285,43 +2315,71 @@ class _MakeSalesDesktopState
                                                                             false,
                                                                       );
 
-                                                                      editCartItem(
-                                                                        productQuantity:
-                                                                            items[index].quantity,
-                                                                        context:
+                                                                      if (returnData(
                                                                             context,
-                                                                        updateAction: () {
-                                                                          salesProvider.editCartItemQuantity(
-                                                                            setTotalPrice:
-                                                                                returnSalesProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).setTotalPrice,
-                                                                            cartItem:
-                                                                                items[index],
-                                                                            number: double.parse(
-                                                                              quantityController.text,
-                                                                            ),
-                                                                            customPrice: double.tryParse(
-                                                                              priceController.text.replaceAll(
-                                                                                ',',
-                                                                                '',
+                                                                            listen:
+                                                                                false,
+                                                                          ).productList
+                                                                          .where(
+                                                                            (
+                                                                              product,
+                                                                            ) =>
+                                                                                product.uuid ==
+                                                                                items[index].item.uuid,
+                                                                          )
+                                                                          .isNotEmpty) {
+                                                                        editCartItem(
+                                                                          productQuantity:
+                                                                              items[index].quantity,
+                                                                          context:
+                                                                              context,
+                                                                          updateAction: () {
+                                                                            salesProvider.editCartItemQuantity(
+                                                                              setTotalPrice:
+                                                                                  returnSalesProvider(
+                                                                                    context,
+                                                                                    listen:
+                                                                                        false,
+                                                                                  ).setTotalPrice,
+                                                                              cartItem:
+                                                                                  items[index],
+                                                                              number: double.parse(
+                                                                                quantityController.text,
                                                                               ),
-                                                                            ),
-                                                                            setCustomPrice:
-                                                                                priceController.text.isNotEmpty,
-                                                                          );
-
-                                                                          // Delay pop to avoid context issues
-
-                                                                          Navigator.of(
-                                                                            context,
-                                                                          ).pop();
-                                                                        },
-                                                                        cartItem:
-                                                                            items[index],
-                                                                      );
+                                                                              customPrice: double.tryParse(
+                                                                                priceController.text.replaceAll(
+                                                                                  ',',
+                                                                                  '',
+                                                                                ),
+                                                                              ),
+                                                                              setCustomPrice:
+                                                                                  priceController.text.isNotEmpty,
+                                                                            );
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
+                                                                          },
+                                                                          cartItem:
+                                                                              items[index],
+                                                                        );
+                                                                      } else {
+                                                                        returnSalesProvider(
+                                                                          context,
+                                                                          listen:
+                                                                              false,
+                                                                        ).toggleAddToStock(
+                                                                          true,
+                                                                        );
+                                                                        makeCustomSale(
+                                                                          closeAction: () {
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
+                                                                          },
+                                                                          cartItem:
+                                                                              items[index],
+                                                                        );
+                                                                      }
                                                                     },
                                                                     theme:
                                                                         theme,
@@ -2702,6 +2760,7 @@ class _MakeSalesDesktopState
                                           ),
                                         ),
                                         SizedBox(width: 10),
+
                                         Visibility(
                                           visible:
                                               returnSalesProvider(
@@ -2709,7 +2768,7 @@ class _MakeSalesDesktopState
                                                   )
                                                   .cartQueue
                                                   .length <=
-                                              3,
+                                              4,
                                           child: Material(
                                             color:
                                                 Colors
@@ -2759,6 +2818,64 @@ class _MakeSalesDesktopState
                                         ),
                                       ],
                                     ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  TextFieldBarcode(
+                                    hintText:
+                                        'Scan Barcode',
+                                    clearTextField: () {
+                                      setState(() {});
+                                    },
+                                    searchController:
+                                        widget
+                                            .searchController,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        // scanResult = null;
+                                        // productResults.clear();
+                                        if (value
+                                            .isNotEmpty) {
+                                          var items = returnData(
+                                            context,
+                                            listen: false,
+                                          ).productList.where(
+                                            (product) =>
+                                                product.barcode ==
+                                                    value ||
+                                                product.name
+                                                        .toLowerCase() ==
+                                                    value
+                                                        .toLowerCase(),
+                                          );
+                                          if (items
+                                              .isNotEmpty) {
+                                            returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).addItemToCart(
+                                              newItem: TempCartItem(
+                                                setCustomPrice:
+                                                    false,
+                                                item:
+                                                    items
+                                                        .first,
+                                                quantity: 1,
+                                                discount:
+                                                    null,
+                                                addToStock:
+                                                    false,
+                                                setTotalPrice:
+                                                    false,
+                                              ),
+                                              isCustomEdit:
+                                                  false,
+                                            );
+                                          }
+                                        }
+                                      });
+                                    },
+                                    onPressedScan:
+                                        () async {},
                                   ),
                                   SizedBox(height: 10),
                                   Material(

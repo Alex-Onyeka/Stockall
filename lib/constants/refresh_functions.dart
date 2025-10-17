@@ -472,17 +472,17 @@ class RefreshFunctions {
   //
   //
 
-  Future<void> loadSuggestions() async {
-    await returnSuggestionProvider(
-      context,
-      listen: false,
-    ).loadSuggestions(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-  }
+  // Future<void> loadSuggestions() async {
+  //   await returnSuggestionProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadSuggestions(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
+  // }
 
   //
   //
@@ -506,13 +506,13 @@ class RefreshFunctions {
                 context,
                 listen: false,
               ).syncData(safeContext);
-              await loadSuggestions();
+              // await loadSuggestions();
             },
           );
         },
       );
     } else {
-      await loadSuggestions();
+      // await loadSuggestions();
     }
   }
 
@@ -564,7 +564,7 @@ class RefreshFunctions {
                 // await getProducts();
                 await fetchNotifications();
                 await getCustomers();
-                await loadSuggestions();
+                // await loadSuggestions();
               },
             );
           },
@@ -583,7 +583,7 @@ class RefreshFunctions {
         // await getProducts();
         await fetchNotifications();
         await getCustomers();
-        await loadSuggestions();
+        // await loadSuggestions();
       }
     }
   }

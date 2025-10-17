@@ -2,7 +2,7 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 
 class TempCartItem {
   final TempProductClass item;
-  final double? discount;
+  double? discount;
   double quantity;
   double? customPrice;
   bool setCustomPrice;

@@ -225,9 +225,14 @@ class _CustomerListMobileState
                                               context,
                                               listen: false,
                                             ).selectCustomer(
-                                              customer
-                                                  .uuid!,
-                                              customer.name,
+                                              id:
+                                                  customer
+                                                      .uuid!,
+                                              name:
+                                                  customer
+                                                      .name,
+                                              context:
+                                                  context,
                                             );
                                             Navigator.of(
                                               context,
@@ -301,8 +306,9 @@ class _CustomerListMobileState
                                         context,
                                         listen: false,
                                       ).selectCustomer(
-                                        customer.uuid!,
-                                        customer.name,
+                                        id: customer.uuid!,
+                                        name: customer.name,
+                                        context: context,
                                       );
                                       Navigator.of(
                                         context,

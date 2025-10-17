@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/product_suggestions/product_suggestion.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -593,11 +592,42 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
     }
   }
 
+  bool isNormalEdit = true;
+
   void makeCustomSale({
     required TempCartItem cartItem,
     required Function() closeAction,
   }) {
     var theme = returnTheme(context, listen: false);
+    if (returnData(context, listen: false).productList
+            .where(
+              (product) =>
+                  product.uuid == cartItem.item.uuid,
+            )
+            .isEmpty &&
+        returnSalesProvider(context, listen: false)
+            .currentCart()
+            .cartItems
+            .where(
+              (item) =>
+                  item.item.uuid == cartItem.item.uuid,
+            )
+            .isNotEmpty) {
+      isNormalEdit = false;
+      nameC.text = cartItem.item.name;
+      qqty = cartItem.quantity;
+      pQuantity.text = cartItem.quantity.toString();
+      sellingPriceC.text =
+          (cartItem.customPrice ?? 0).toString();
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).toggleAddToStock(cartItem.addToStock);
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).toggleSetTotalPrice(cartItem.setTotalPrice);
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -648,34 +678,34 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 lines: 1,
                                 theme: theme,
                                 onChanged: (value) {
-                                  final suggestions =
-                                      returnSuggestionProvider(
-                                        context,
-                                        listen: false,
-                                      ).suggestions;
+                                  // final suggestions =
+                                  //     returnSuggestionProvider(
+                                  //       context,
+                                  //       listen: false,
+                                  //     ).suggestions;
 
-                                  if (nameC
-                                      .text
-                                      .isNotEmpty) {
-                                    final hasMatch =
-                                        suggestions.any(
-                                          (item) => item
-                                              .name!
-                                              .toLowerCase()
-                                              .contains(
-                                                value
-                                                    .toLowerCase(),
-                                              ),
-                                        );
+                                  // if (nameC
+                                  //     .text
+                                  //     .isNotEmpty) {
+                                  //   final hasMatch =
+                                  //       suggestions.any(
+                                  //         (item) => item
+                                  //             .name!
+                                  //             .toLowerCase()
+                                  //             .contains(
+                                  //               value
+                                  //                   .toLowerCase(),
+                                  //             ),
+                                  //       );
 
-                                    setState(() {
-                                      resultOn = hasMatch;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      resultOn = false;
-                                    });
-                                  }
+                                  //   setState(() {
+                                  //     resultOn = hasMatch;
+                                  //   });
+                                  // } else {
+                                  //   setState(() {
+                                  //     resultOn = false;
+                                  //   });
+                                  // }
                                 },
                               ),
 
@@ -1057,11 +1087,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               SmallButtonMain(
                                 theme: theme,
                                 action: () {
-                                  var sugP =
-                                      returnSuggestionProvider(
-                                        context,
-                                        listen: false,
-                                      );
+                                  // var sugP =
+                                  //     returnSuggestionProvider(
+                                  //       context,
+                                  //       listen: false,
+                                  //     );
                                   var productIndex = returnData(
                                     context,
                                     listen: false,
@@ -1102,7 +1132,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         );
                                       },
                                     );
-                                  } else if (index != -1) {
+                                  } else if (index != -1 &&
+                                      isNormalEdit ==
+                                          true) {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -1134,7 +1166,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       },
                                     );
                                   } else if (productIndex !=
-                                      -1) {
+                                          -1 &&
+                                      isNormalEdit ==
+                                          true) {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -1196,8 +1230,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     ),
                                               ) ??
                                               0);
-                                      cartItem.item.uuid =
-                                          uuidGen();
+                                      // cartItem.item.uuid =
+                                      //     uuidGen();
                                       // returnSalesProvider(
                                       //           context,
                                       //           listen:
@@ -1248,312 +1282,333 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         context,
                                         listen: false,
                                       ).addItemToCart(
-                                        cartItem,
+                                        newItem: cartItem,
+                                        isCustomEdit:
+                                            returnData(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .productList
+                                                .where(
+                                                  (
+                                                    product,
+                                                  ) =>
+                                                      product
+                                                          .uuid ==
+                                                      cartItem
+                                                          .item
+                                                          .uuid,
+                                                )
+                                                .isEmpty,
                                       );
-                                      sugP.addTempSugg(
-                                        ProductSuggestion(
-                                          createdAt:
-                                              DateTime.now(),
-                                          shopId: shopId(
-                                            context,
-                                          ),
-                                          costPrice:
-                                              double.tryParse(
-                                                costPriceC
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ),
-                                          name: nameC.text,
-                                          uuid:
-                                              cartItem
-                                                  .item
-                                                  .uuid,
-                                        ),
-                                      );
+                                      // sugP.addTempSugg(
+                                      //   ProductSuggestion(
+                                      //     createdAt:
+                                      //         DateTime.now(),
+                                      //     shopId: shopId(
+                                      //       context,
+                                      //     ),
+                                      //     costPrice:
+                                      //         double.tryParse(
+                                      //           costPriceC
+                                      //               .text
+                                      //               .replaceAll(
+                                      //                 ',',
+                                      //                 '',
+                                      //               ),
+                                      //         ),
+                                      //     name: nameC.text,
+                                      //     uuid:
+                                      //         cartItem
+                                      //             .item
+                                      //             .uuid,
+                                      //   ),
+                                      // );
                                       closeAction();
                                     }
                                   }
                                 },
-                                buttonText: 'Add To Cart',
+                                buttonText:
+                                    isNormalEdit == true
+                                        ? 'Add To Cart'
+                                        : 'Update Item',
                               ),
                             ],
                           ),
                         ],
                       ),
-                      Visibility(
-                        visible: resultOn,
-                        child: Positioned(
-                          top: 80,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              width:
-                                  MediaQuery.of(
-                                    context,
-                                  ).size.width -
-                                  60,
-                              padding: EdgeInsets.fromLTRB(
-                                20,
-                                5,
-                                20,
-                                20,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 5,
-                                    color:
-                                        const Color.fromARGB(
-                                          27,
-                                          0,
-                                          0,
-                                          0,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                // crossAxisAlignment:
-                                //     CrossAxisAlignment.end,
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                        ),
-                                        'Suggestion Results',
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            resultOn =
-                                                false;
-                                          });
-                                        },
-                                        icon: Icon(
-                                          Icons.clear,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 180,
-                                    child: ListView.builder(
-                                      itemCount:
-                                          returnSuggestionProvider(
-                                                context,
-                                              ).suggestions
-                                              .where(
-                                                (
-                                                  sugg,
-                                                ) => sugg
-                                                    .name!
-                                                    .toLowerCase()
-                                                    .contains(
-                                                      nameC
-                                                          .text
-                                                          .toLowerCase(),
-                                                    ),
-                                              )
-                                              .length,
-                                      itemBuilder: (
-                                        context,
-                                        index,
-                                      ) {
-                                        var suggestions =
-                                            returnSuggestionProvider(
-                                                  context,
-                                                )
-                                                .suggestions
-                                                .where(
-                                                  (
-                                                    sugg,
-                                                  ) => sugg
-                                                      .name!
-                                                      .toLowerCase()
-                                                      .contains(
-                                                        nameC.text.toLowerCase(),
-                                                      ),
-                                                )
-                                                .toList();
+                      // Visibility(
+                      //   visible: resultOn,
+                      //   child: Positioned(
+                      //     top: 80,
+                      //     child: Material(
+                      //       color: Colors.transparent,
+                      //       child: Container(
+                      //         width:
+                      //             MediaQuery.of(
+                      //               context,
+                      //             ).size.width -
+                      //             60,
+                      //         padding: EdgeInsets.fromLTRB(
+                      //           20,
+                      //           5,
+                      //           20,
+                      //           20,
+                      //         ),
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.white,
+                      //           borderRadius:
+                      //               BorderRadius.circular(
+                      //                 5,
+                      //               ),
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               blurRadius: 5,
+                      //               color:
+                      //                   const Color.fromARGB(
+                      //                     27,
+                      //                     0,
+                      //                     0,
+                      //                     0,
+                      //                   ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         child: Column(
+                      //           // crossAxisAlignment:
+                      //           //     CrossAxisAlignment.end,
+                      //           mainAxisSize:
+                      //               MainAxisSize.min,
+                      //           children: [
+                      //             Row(
+                      //               mainAxisAlignment:
+                      //                   MainAxisAlignment
+                      //                       .spaceBetween,
+                      //               children: [
+                      //                 Text(
+                      //                   style: TextStyle(
+                      //                     fontSize:
+                      //                         theme
+                      //                             .mobileTexts
+                      //                             .b2
+                      //                             .fontSize,
+                      //                   ),
+                      //                   'Suggestion Results',
+                      //                 ),
+                      //                 IconButton(
+                      //                   onPressed: () {
+                      //                     setState(() {
+                      //                       resultOn =
+                      //                           false;
+                      //                     });
+                      //                   },
+                      //                   icon: Icon(
+                      //                     Icons.clear,
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //             SizedBox(
+                      //               height: 180,
+                      //               child: ListView.builder(
+                      //                 itemCount:
+                      //                     returnSuggestionProvider(
+                      //                           context,
+                      //                         ).suggestions
+                      //                         .where(
+                      //                           (
+                      //                             sugg,
+                      //                           ) => sugg
+                      //                               .name!
+                      //                               .toLowerCase()
+                      //                               .contains(
+                      //                                 nameC
+                      //                                     .text
+                      //                                     .toLowerCase(),
+                      //                               ),
+                      //                         )
+                      //                         .length,
+                      //                 itemBuilder: (
+                      //                   context,
+                      //                   index,
+                      //                 ) {
+                      //                   var suggestions =
+                      //                       returnSuggestionProvider(
+                      //                             context,
+                      //                           )
+                      //                           .suggestions
+                      //                           .where(
+                      //                             (
+                      //                               sugg,
+                      //                             ) => sugg
+                      //                                 .name!
+                      //                                 .toLowerCase()
+                      //                                 .contains(
+                      //                                   nameC.text.toLowerCase(),
+                      //                                 ),
+                      //                           )
+                      //                           .toList();
 
-                                        var suggestion =
-                                            suggestions[index];
-                                        return Material(
-                                          color:
-                                              Colors
-                                                  .transparent,
-                                          child: Ink(
-                                            child: InkWell(
-                                              onTap: () {
-                                                nameC.text =
-                                                    suggestion
-                                                        .name!;
-                                                costPriceC
-                                                        .text =
-                                                    suggestion.costPrice ==
-                                                            null
-                                                        ? '0'
-                                                        : suggestion.costPrice.toString().split(
-                                                          '.',
-                                                        )[0];
+                      //                   var suggestion =
+                      //                       suggestions[index];
+                      //                   return Material(
+                      //                     color:
+                      //                         Colors
+                      //                             .transparent,
+                      //                     child: Ink(
+                      //                       child: InkWell(
+                      //                         onTap: () {
+                      //                           nameC.text =
+                      //                               suggestion
+                      //                                   .name!;
+                      //                           costPriceC
+                      //                                   .text =
+                      //                               suggestion.costPrice ==
+                      //                                       null
+                      //                                   ? '0'
+                      //                                   : suggestion.costPrice.toString().split(
+                      //                                     '.',
+                      //                                   )[0];
 
-                                                setState(() {
-                                                  resultOn =
-                                                      false;
-                                                });
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                    ),
-                                                  ),
-                                                ),
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          10,
-                                                    ),
+                      //                           setState(() {
+                      //                             resultOn =
+                      //                                 false;
+                      //                           });
+                      //                         },
+                      //                         child: Container(
+                      //                           decoration: BoxDecoration(
+                      //                             border: Border(
+                      //                               bottom: BorderSide(
+                      //                                 color:
+                      //                                     Colors.grey.shade400,
+                      //                               ),
+                      //                             ),
+                      //                           ),
+                      //                           padding:
+                      //                               EdgeInsets.symmetric(
+                      //                                 vertical:
+                      //                                     10,
+                      //                               ),
 
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      suggestion
-                                                          .name!,
-                                                    ),
-                                                    Row(
-                                                      spacing:
-                                                          5,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          '${currencySymbol(context: context)} ${suggestion.costPrice ?? 0}',
-                                                        ),
-                                                        Icon(
-                                                          size:
-                                                              20,
-                                                          Icons.add,
-                                                        ),
-                                                        IconButton(
-                                                          onPressed: () {
-                                                            var sugP = returnSuggestionProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            );
-                                                            var safeContext =
-                                                                context;
-                                                            showDialog(
-                                                              context:
-                                                                  context,
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                return ConfirmationAlert(
-                                                                  theme:
-                                                                      theme,
-                                                                  message:
-                                                                      'Are you sure you want to delete your item suggestion?',
-                                                                  title:
-                                                                      isLoading
-                                                                          ? 'Deleting'
-                                                                          : 'Are you sure?',
-                                                                  action: () async {
-                                                                    Navigator.of(
-                                                                      safeContext,
-                                                                    ).pop();
-                                                                    setState(
-                                                                      () {
-                                                                        isLoading =
-                                                                            true;
-                                                                      },
-                                                                    );
-                                                                    await sugP.deleteSuggestion(
-                                                                      suggestion.uuid!,
-                                                                    );
-                                                                    setState(
-                                                                      () {
-                                                                        isLoading =
-                                                                            false;
-                                                                      },
-                                                                    );
+                      //                           child: Row(
+                      //                             mainAxisAlignment:
+                      //                                 MainAxisAlignment
+                      //                                     .spaceBetween,
+                      //                             children: [
+                      //                               Text(
+                      //                                 style: TextStyle(
+                      //                                   fontSize:
+                      //                                       theme.mobileTexts.b2.fontSize,
+                      //                                   fontWeight:
+                      //                                       FontWeight.bold,
+                      //                                 ),
+                      //                                 suggestion
+                      //                                     .name!,
+                      //                               ),
+                      //                               Row(
+                      //                                 spacing:
+                      //                                     5,
+                      //                                 mainAxisSize:
+                      //                                     MainAxisSize.min,
+                      //                                 children: [
+                      //                                   Text(
+                      //                                     style: TextStyle(
+                      //                                       fontSize:
+                      //                                           theme.mobileTexts.b1.fontSize,
+                      //                                       fontWeight:
+                      //                                           FontWeight.bold,
+                      //                                     ),
+                      //                                     '${currencySymbol(context: context)} ${suggestion.costPrice ?? 0}',
+                      //                                   ),
+                      //                                   Icon(
+                      //                                     size:
+                      //                                         20,
+                      //                                     Icons.add,
+                      //                                   ),
+                      //                                   IconButton(
+                      //                                     onPressed: () {
+                      //                                       var sugP = returnSuggestionProvider(
+                      //                                         context,
+                      //                                         listen:
+                      //                                             false,
+                      //                                       );
+                      //                                       var safeContext =
+                      //                                           context;
+                      //                                       showDialog(
+                      //                                         context:
+                      //                                             context,
+                      //                                         builder: (
+                      //                                           context,
+                      //                                         ) {
+                      //                                           return ConfirmationAlert(
+                      //                                             theme:
+                      //                                                 theme,
+                      //                                             message:
+                      //                                                 'Are you sure you want to delete your item suggestion?',
+                      //                                             title:
+                      //                                                 isLoading
+                      //                                                     ? 'Deleting'
+                      //                                                     : 'Are you sure?',
+                      //                                             action: () async {
+                      //                                               Navigator.of(
+                      //                                                 safeContext,
+                      //                                               ).pop();
+                      //                                               setState(
+                      //                                                 () {
+                      //                                                   isLoading =
+                      //                                                       true;
+                      //                                                 },
+                      //                                               );
+                      //                                               await sugP.deleteSuggestion(
+                      //                                                 suggestion.uuid!,
+                      //                                               );
+                      //                                               setState(
+                      //                                                 () {
+                      //                                                   isLoading =
+                      //                                                       false;
+                      //                                                 },
+                      //                                               );
 
-                                                                    if (context.mounted) {
-                                                                      Navigator.of(
-                                                                        context,
-                                                                      ).pop();
-                                                                    }
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                          icon: Icon(
-                                                            size:
-                                                                20,
-                                                            color: const Color.fromARGB(
-                                                              255,
-                                                              191,
-                                                              76,
-                                                              67,
-                                                            ),
-                                                            Icons.delete_outline_rounded,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      //                                               if (context.mounted) {
+                      //                                                 Navigator.of(
+                      //                                                   context,
+                      //                                                 ).pop();
+                      //                                               }
+                      //                                             },
+                      //                                           );
+                      //                                         },
+                      //                                       );
+                      //                                     },
+                      //                                     icon: Icon(
+                      //                                       size:
+                      //                                           20,
+                      //                                       color: const Color.fromARGB(
+                      //                                         255,
+                      //                                         191,
+                      //                                         76,
+                      //                                         67,
+                      //                                       ),
+                      //                                       Icons.delete_outline_rounded,
+                      //                                     ),
+                      //                                   ),
+                      //                                 ],
+                      //                               ),
+                      //                             ],
+                      //                           ),
+                      //                         ),
+                      //                       ),
+                      //                     ),
+                      //                   );
+                      //                 },
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -1571,6 +1626,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       if (context.mounted) {
         setState(() {
           resultOn = false;
+          isNormalEdit = true;
         });
         returnSalesProvider(
           context,
@@ -1660,10 +1716,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 context,
                                 listen: false,
                               ).clearCart();
-                              returnSuggestionProvider(
-                                context,
-                                listen: false,
-                              ).clearSuggestions();
+                              // returnSuggestionProvider(
+                              //   context,
+                              //   listen: false,
+                              // ).clearSuggestions();
                               Navigator.of(context).pop();
                             },
                           );
@@ -2139,13 +2195,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).removeItemFromCart(
                                                                 items[index],
                                                               );
-                                                              returnSuggestionProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).deleteTempSugg(
-                                                                items[index].item.uuid!,
-                                                              );
+                                                              // returnSuggestionProvider(
+                                                              //   context,
+                                                              //   listen:
+                                                              //       false,
+                                                              // ).deleteTempSugg(
+                                                              //   items[index].item.uuid!,
+                                                              // );
                                                             },
                                                           );
                                                         },
@@ -2158,43 +2214,72 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             false,
                                                       );
 
-                                                      editCartItem(
-                                                        productQuantity:
-                                                            items[index].quantity,
-                                                        context:
+                                                      if (returnData(
                                                             context,
-                                                        updateAction: () {
-                                                          salesProvider.editCartItemQuantity(
-                                                            setTotalPrice:
-                                                                returnSalesProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).setTotalPrice,
-                                                            cartItem:
-                                                                items[index],
-                                                            number: double.parse(
-                                                              quantityController.text,
-                                                            ),
-                                                            customPrice: double.tryParse(
-                                                              priceController.text.replaceAll(
-                                                                ',',
-                                                                '',
+                                                            listen:
+                                                                false,
+                                                          )
+                                                          .productList
+                                                          .where(
+                                                            (
+                                                              product,
+                                                            ) =>
+                                                                product.uuid ==
+                                                                items[index].item.uuid,
+                                                          )
+                                                          .isNotEmpty) {
+                                                        editCartItem(
+                                                          productQuantity:
+                                                              items[index].quantity,
+                                                          context:
+                                                              context,
+                                                          updateAction: () {
+                                                            salesProvider.editCartItemQuantity(
+                                                              setTotalPrice:
+                                                                  returnSalesProvider(
+                                                                    context,
+                                                                    listen:
+                                                                        false,
+                                                                  ).setTotalPrice,
+                                                              cartItem:
+                                                                  items[index],
+                                                              number: double.parse(
+                                                                quantityController.text,
                                                               ),
-                                                            ),
-                                                            setCustomPrice:
-                                                                priceController.text.isNotEmpty,
-                                                          );
-
-                                                          // Delay pop to avoid context issues
-
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                        },
-                                                        cartItem:
-                                                            items[index],
-                                                      );
+                                                              customPrice: double.tryParse(
+                                                                priceController.text.replaceAll(
+                                                                  ',',
+                                                                  '',
+                                                                ),
+                                                              ),
+                                                              setCustomPrice:
+                                                                  priceController.text.isNotEmpty,
+                                                            );
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop();
+                                                          },
+                                                          cartItem:
+                                                              items[index],
+                                                        );
+                                                      } else {
+                                                        returnSalesProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).toggleAddToStock(
+                                                          true,
+                                                        );
+                                                        makeCustomSale(
+                                                          closeAction: () {
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop();
+                                                          },
+                                                          cartItem:
+                                                              items[index],
+                                                        );
+                                                      }
                                                     },
                                                     theme:
                                                         theme,
@@ -2454,7 +2539,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     returnSalesProvider(
                                                       context,
                                                     ).cartQueue.length <=
-                                                    3,
+                                                    4,
                                                 child: Material(
                                                   color:
                                                       Colors
@@ -2525,20 +2610,30 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   ),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      CustomBottomPanel(
-                                                        searchController:
-                                                            widget.searchController,
-                                                        close: () {
-                                                          Navigator.of(
+                                                      showGeneralDialog(
+                                                        context:
                                                             context,
-                                                          ).pop();
+                                                        pageBuilder: (
+                                                          context,
+                                                          animation,
+                                                          secondaryAnimation,
+                                                        ) {
+                                                          return CustomBottomPanel(
+                                                            searchController:
+                                                                widget.searchController,
+                                                            close: () {
+                                                              Navigator.of(
+                                                                context,
+                                                              ).pop();
+                                                            },
+                                                          );
                                                         },
                                                       );
                                                     },
                                                     child: Container(
                                                       padding: EdgeInsets.symmetric(
                                                         vertical:
-                                                            6,
+                                                            8,
                                                       ),
 
                                                       child: Row(

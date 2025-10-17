@@ -41,17 +41,17 @@ class DashboardMobile extends StatefulWidget {
 }
 
 class _DashboardMobileState extends State<DashboardMobile> {
-  Future<void> loadSuggestions() async {
-    await returnSuggestionProvider(
-      context,
-      listen: false,
-    ).loadSuggestions(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-  }
+  // Future<void> loadSuggestions() async {
+  //   await returnSuggestionProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadSuggestions(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
+  // }
 
   bool isFloatOpen = false;
   bool isUpdateLodaingWeb = false;
@@ -195,7 +195,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
         print('Data Loaded');
       });
     }
-    loadSuggestions();
+    // loadSuggestions();
     notificationsFuture = fetchNotifications();
   }
 

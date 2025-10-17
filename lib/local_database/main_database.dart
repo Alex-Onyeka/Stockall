@@ -6,7 +6,6 @@ import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart'
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
-import 'package:stockall/local_database/product_suggestion/product_suggestion_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
@@ -28,7 +27,7 @@ class MainDatabase extends ChangeNotifier {
     await NotificationFunc().init();
     await ProductsFunc().init();
     await ProductRecordFunc().init();
-    await ProductSuggestionFunc().init();
+    // await ProductSuggestionFunc().init();
     await MainReceiptFunc().init();
     await LoggedInUserFunc().init();
     print('init Complete');

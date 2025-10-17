@@ -382,8 +382,12 @@ class _CustomerListDesktopState
                                                             listen:
                                                                 false,
                                                           ).selectCustomer(
-                                                            customer.uuid!,
-                                                            customer.name,
+                                                            id:
+                                                                customer.uuid!,
+                                                            name:
+                                                                customer.name,
+                                                            context:
+                                                                context,
                                                           );
                                                           Navigator.of(
                                                             context,
@@ -462,10 +466,12 @@ class _CustomerListDesktopState
                                                       listen:
                                                           false,
                                                     ).selectCustomer(
-                                                      customer
-                                                          .uuid!,
-                                                      customer
-                                                          .name,
+                                                      id:
+                                                          customer.uuid!,
+                                                      name:
+                                                          customer.name,
+                                                      context:
+                                                          context,
                                                     );
                                                     Navigator.of(
                                                       context,

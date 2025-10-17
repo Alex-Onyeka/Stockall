@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/cart/temp_cart.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -51,9 +51,6 @@ class SalesProvider extends ChangeNotifier {
     cartIndex = index;
     notifyListeners();
   }
-
-  // List<List<TempCartItem>> cartQueue = [];
-  // bool isInvoice = false;
 
   void switchInvoiceSale() {
     currentCart().isInvoice = !currentCart().isInvoice;
@@ -188,11 +185,6 @@ class SalesProvider extends ChangeNotifier {
               'p_quantity': cartItem.quantity.toInt(),
             },
           );
-          // await ProductsFunc().deductQuantity(
-          //   isOnline: isOnline,
-          //   quantity: cartItem.quantity,
-          //   uuid: cartItem.item.uuid!,
-          // );
         } else {
           await ProductsFunc().deductQuantity(
             isOnline: isOnline,
@@ -258,16 +250,16 @@ class SalesProvider extends ChangeNotifier {
     }
 
     // Step 5: Reset state
-    resetPaymentMethod();
+    // resetPaymentMethod();
     cartQueue.length > 1
         ? deleteCart(cartIndex)
         : clearCart();
 
     if (context.mounted) {
-      returnCustomers(
-        context,
-        listen: false,
-      ).clearSelectedCustomer();
+      // returnCustomers(
+      //   context,
+      //   listen: false,
+      // ).clearSelectedCustomer(context);
       await returnReceiptProvider(
         context,
         listen: false,
@@ -286,6 +278,10 @@ class SalesProvider extends ChangeNotifier {
 
   void clearCart() {
     currentCart().cartItems.clear();
+    currentCart().isInvoice = false;
+    currentCart().selectedCustomer = null;
+    currentCart().selectedCustomerName = null;
+    currentCart().paymentMethod = 0;
     print('Cart Cleared');
     notifyListeners();
   }
@@ -343,45 +339,46 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // String addItemToCartMain(TempCartItem newItem) {
-  //   String result = '';
-  //   final index = currentCart().indexWhere(
-  //     (item) => item.item.uuid == newItem.item.uuid,
-  //   );
-
-  //   if (index != -1) {
-  //     // Item exists
-  //     currentCart()[index].quantity += newItem.quantity;
-  //     result = 'Item Updated Successfully';
-  //   } else {
-  //     currentCart().add(newItem);
-  //     print(cartItems.length);
-  //     print(currentCart().length);
-  //     result = 'Item Added Successfully';
-  //   }
-
-  //   notifyListeners();
-  //   return result;
-  // }
-
-  String addItemToCart(TempCartItem newItem) {
+  String addItemToCart({
+    required TempCartItem newItem,
+    required bool isCustomEdit,
+  }) {
     String result = '';
     final index = currentCart().cartItems.indexWhere(
       (item) => item.item.uuid == newItem.item.uuid,
     );
+    var items = currentCart().cartItems.where(
+      (item) => item.item.uuid == newItem.item.uuid,
+    );
 
-    if (index != -1) {
-      // Item exists
-      currentCart().cartItems[index].quantity +=
-          newItem.quantity;
-      result = 'Item Updated Successfully';
+    if (isCustomEdit && index != -1) {
+      var item = items.first;
+      item.item.name = newItem.item.name;
+      item.item.sellingPrice = newItem.item.sellingPrice;
+      item.item.costPrice = newItem.item.costPrice;
+      item.item.setCustomPrice =
+          newItem.item.setCustomPrice;
+      item.addToStock = newItem.addToStock;
+      item.customPrice = newItem.customPrice;
+      item.discount = newItem.discount;
+      item.quantity = newItem.quantity;
+      item.setCustomPrice = newItem.setCustomPrice;
+      item.setTotalPrice = newItem.setTotalPrice;
+      notifyListeners();
     } else {
-      currentCart().cartItems.add(newItem);
-      print("Main Carts Length: ${cartQueue.length}");
-      print(
-        "Current Cart Length: ${currentCart().cartItems.length}",
-      );
-      result = 'Item Added Successfully';
+      if (index != -1) {
+        // Item exists
+        currentCart().cartItems[index].quantity +=
+            newItem.quantity;
+        result = 'Item Updated Successfully';
+      } else {
+        currentCart().cartItems.add(newItem);
+        print("Main Carts Length: ${cartQueue.length}");
+        print(
+          "Current Cart Length: ${currentCart().cartItems.length}",
+        );
+        result = 'Item Added Successfully';
+      }
     }
 
     notifyListeners();
@@ -412,11 +409,10 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void resetPaymentMethod() {
-    currentPayment = 0;
+    currentCart().paymentMethod = 0;
     notifyListeners();
   }
 
-  int currentPayment = 0;
   List<Map<String, dynamic>> paymentMethods = [
     {
       'number': 0,
@@ -436,12 +432,12 @@ class SalesProvider extends ChangeNotifier {
   ];
 
   void changeMethod(int index) {
-    currentPayment = index;
+    currentCart().paymentMethod = index;
     notifyListeners();
   }
 
   String returnPaymentMethod() {
-    switch (currentPayment) {
+    switch (currentCart().paymentMethod) {
       case 0:
         return 'Cash';
       case 1:

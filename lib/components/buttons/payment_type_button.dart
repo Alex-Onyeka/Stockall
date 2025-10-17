@@ -99,7 +99,7 @@ class PaymentTypeButton extends StatelessWidget {
                     value:
                         returnSalesProvider(
                           context,
-                        ).currentPayment ==
+                        ).currentCart().paymentMethod ==
                         index,
                     onChanged: (value) {
                       if (returnSalesProvider(

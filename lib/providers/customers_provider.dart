@@ -217,18 +217,31 @@ class CustomersProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  String? selectedCustomerId;
-  String? selectedCustomerName;
+  // String? selectedCustomerId;
+  // String? selectedCustomerName;
+  // SalesProvider salesProvider = SalesProvider();
 
-  void clearSelectedCustomer() {
-    selectedCustomerId = null;
-    selectedCustomerName = null;
+  void clearSelectedCustomer(BuildContext context) {
+    returnSalesProvider(context, listen: false)
+        .currentCart()
+        .selectedCustomer = null;
+    returnSalesProvider(context, listen: false)
+        .currentCart()
+        .selectedCustomerName = null;
     notifyListeners();
   }
 
-  void selectCustomer(String id, String name) {
-    selectedCustomerId = id;
-    selectedCustomerName = name;
+  void selectCustomer({
+    required String id,
+    required String name,
+    required BuildContext context,
+  }) {
+    returnSalesProvider(context, listen: false)
+        .currentCart()
+        .selectedCustomer = id;
+    returnSalesProvider(context, listen: false)
+        .currentCart()
+        .selectedCustomerName = name;
     notifyListeners();
   }
 

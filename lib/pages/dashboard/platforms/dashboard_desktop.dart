@@ -45,17 +45,17 @@ class DashboardDesktop extends StatefulWidget {
 
 class _DashboardDesktopState
     extends State<DashboardDesktop> {
-  Future<void> loadSuggestions() async {
-    await returnSuggestionProvider(
-      context,
-      listen: false,
-    ).loadSuggestions(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop!.shopId!,
-    );
-  }
+  // Future<void> loadSuggestions() async {
+  //   await returnSuggestionProvider(
+  //     context,
+  //     listen: false,
+  //   ).loadSuggestions(
+  //     returnShopProvider(
+  //       context,
+  //       listen: false,
+  //     ).userShop!.shopId!,
+  //   );
+  // }
 
   bool isFloatOpen = false;
   bool isUpdateLodaingWeb = false;
@@ -206,7 +206,7 @@ class _DashboardDesktopState
         print('Data Loaded');
       });
     }
-    loadSuggestions();
+    // loadSuggestions();
     notificationsFuture = fetchNotifications();
   }
 

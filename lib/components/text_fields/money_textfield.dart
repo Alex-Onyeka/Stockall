@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -85,6 +86,9 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         ),
         SizedBox(height: 5),
         TextFormField(
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
           onChanged: widget.onChanged,
           keyboardType: TextInputType.number,
           autocorrect: false,

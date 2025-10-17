@@ -1770,7 +1770,23 @@ class _CustomBottomPanelState
                                   returnSalesProvider(
                                     context,
                                     listen: false,
-                                  ).addItemToCart(cartItem);
+                                  ).addItemToCart(
+                                    newItem: cartItem,
+                                    isCustomEdit:
+                                        returnData(
+                                              context,
+                                              listen: false,
+                                            ).productList
+                                            .where(
+                                              (product) =>
+                                                  product
+                                                      .uuid ==
+                                                  cartItem
+                                                      .item
+                                                      .uuid,
+                                            )
+                                            .isEmpty,
+                                  );
                                   Navigator.of(
                                     context,
                                   ).pop();
@@ -3141,7 +3157,18 @@ void selectProduct(
                     String result = returnSalesProvider(
                       context,
                       listen: false,
-                    ).addItemToCart(cartItem);
+                    ).addItemToCart(
+                      newItem: cartItem,
+                      isCustomEdit:
+                          returnData(context, listen: false)
+                              .productList
+                              .where(
+                                (product) =>
+                                    product.uuid ==
+                                    cartItem.item.uuid,
+                              )
+                              .isEmpty,
+                    );
                     Navigator.of(context).pop();
                     closeAction();
                     ScaffoldMessenger.of(

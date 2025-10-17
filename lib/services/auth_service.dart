@@ -242,10 +242,10 @@ class AuthService extends ChangeNotifier {
       context,
       listen: false,
     ).clearNotifications();
-    returnSuggestionProvider(
-      context,
-      listen: false,
-    ).clearSuggestionsMain();
+    // returnSuggestionProvider(
+    //   context,
+    //   listen: false,
+    // ).clearSuggestionsMain();
     returnReceiptProvider(
       context,
       listen: false,

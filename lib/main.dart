@@ -19,7 +19,7 @@ import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
-import 'package:stockall/providers/product_suggestions_provider.dart';
+// import 'package:stockall/providers/product_suggestions_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
@@ -240,15 +240,15 @@ SalesProvider returnSalesProvider(
   );
 }
 
-ProductSuggestionProvider returnSuggestionProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<ProductSuggestionProvider>(
-    context,
-    listen: listen,
-  );
-}
+// ProductSuggestionProvider returnSuggestionProvider(
+//   BuildContext context, {
+//   bool listen = true,
+// }) {
+//   return Provider.of<ProductSuggestionProvider>(
+//     context,
+//     listen: listen,
+//   );
+// }
 
 TranslationProvider returnTranslationProvider(
   BuildContext context, {
@@ -378,9 +378,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => ProductSuggestionProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (_) => ProductSuggestionProvider(),
+        // ),
         ChangeNotifierProvider(
           create: (_) => SalesProvider(),
         ),
