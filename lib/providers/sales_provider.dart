@@ -74,13 +74,43 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addGeneralDiscount(double? discount) {
+    currentCart().discount = discount;
+    for (var item in currentCart().cartItems) {
+      item.discount = discount;
+      print("${item.item.name}: ${item.discount}");
+    }
+    notifyListeners();
+  }
+
+  List<double> discounts = [
+    1,
+    2,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    50,
+  ];
+
+  List<double> returnSomeDiscounts(
+    int startAmount,
+    int end,
+  ) {
+    return discounts.getRange(startAmount, end).toList();
+  }
+
+  void toggleSetDiscount(bool value) {
+    currentCart().isSettingDiscountOpen = value;
+    print(currentCart().isSettingDiscountOpen);
+    notifyListeners();
+  }
+
   final SupabaseClient supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
-
-  // final ReceiptsProvider receiptsProvider =
-  //     ReceiptsProvider();
-  // final DataProvider dataProvider = DataProvider();
 
   Future<TempMainReceipt> checkoutMain({
     required BuildContext context,
@@ -109,10 +139,10 @@ class SalesProvider extends ChangeNotifier {
       bank: bank,
       cashAlt: cashAlt,
       isInvoice: salesCartItem.isInvoice,
-      // customerId: customerId,
       customerName: customerName,
       customerUuid: customerUuid,
       uuid: uuid,
+      generalDiscount: currentCart().discount,
     );
     final receiptRes = await returnReceiptProvider(
       context,
@@ -149,8 +179,12 @@ class SalesProvider extends ChangeNotifier {
             recepitId: receiptId ?? 0,
             receiptUuid: receiptUuid,
             quantity: cartItem.quantity,
-            revenue: cartItem.revenue(),
-            discountedAmount: cartItem.discountCost(),
+            revenue: cartItem.revenue(
+              currentCart().discount,
+            ),
+            discountedAmount: cartItem.discountCost(
+              currentCart().discount,
+            ),
             originalCost: cartItem.totalCost(),
             discount: cartItem.discount,
             costPrice: cartItem.costPrice(),
@@ -282,6 +316,7 @@ class SalesProvider extends ChangeNotifier {
     currentCart().selectedCustomer = null;
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
+    currentCart().discount = null;
     print('Cart Cleared');
     notifyListeners();
   }
@@ -309,18 +344,24 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcDiscountMain(List<TempCartItem> items) {
-    double tempTotalDiscount = 0;
-    for (var item in items) {
-      if (item.item.discount != null &&
-          item.customPrice == null) {
-        double discountPerUnit =
-            item.item.sellingPrice ??
-            0 * (item.item.discount! / 100);
-        tempTotalDiscount +=
-            discountPerUnit * item.quantity;
+    if (currentCart().discount != null) {
+      // print(calcTotalMain(items));
+      return calcTotalMain(items) *
+          ((currentCart().discount ?? 0) / 100);
+    } else {
+      double tempTotalDiscount = 0;
+      for (var item in items) {
+        if (item.item.discount != null &&
+            item.customPrice == null) {
+          double discountPerUnit =
+              item.item.sellingPrice ??
+              0 * (item.item.discount! / 100);
+          tempTotalDiscount +=
+              discountPerUnit * item.quantity;
+        }
       }
+      return tempTotalDiscount;
     }
-    return tempTotalDiscount;
   }
 
   double calcFinalTotalMain(List<TempCartItem> items) {
@@ -360,7 +401,8 @@ class SalesProvider extends ChangeNotifier {
           newItem.item.setCustomPrice;
       item.addToStock = newItem.addToStock;
       item.customPrice = newItem.customPrice;
-      item.discount = newItem.discount;
+      item.discount =
+          currentCart().discount ?? newItem.discount;
       item.quantity = newItem.quantity;
       item.setCustomPrice = newItem.setCustomPrice;
       item.setTotalPrice = newItem.setTotalPrice;
@@ -368,14 +410,22 @@ class SalesProvider extends ChangeNotifier {
     } else {
       if (index != -1) {
         // Item exists
+        currentCart().cartItems[index].discount =
+            currentCart().discount ??
+            currentCart().cartItems[index].discount;
         currentCart().cartItems[index].quantity +=
             newItem.quantity;
         result = 'Item Updated Successfully';
       } else {
+        newItem.discount =
+            currentCart().discount ?? newItem.discount;
         currentCart().cartItems.add(newItem);
         print("Main Carts Length: ${cartQueue.length}");
         print(
           "Current Cart Length: ${currentCart().cartItems.length}",
+        );
+        print(
+          "Current Item Discount: ${newItem.discount ?? 'No Discount'}",
         );
         result = 'Item Added Successfully';
       }

@@ -19,13 +19,17 @@ class TempCartItem {
     required this.setTotalPrice,
   });
 
-  double discountCost() {
-    if (item.discount != null) {
-      return (item.sellingPrice ??
-              0 * (item.discount! / 100)) *
-          quantity;
+  double? returnDiscount(double? generalDiscount) {
+    return generalDiscount ?? item.discount;
+  }
+
+  double discountCost(double? generalDiscount) {
+    if (returnDiscount(generalDiscount) != null) {
+      return (totalCost() *
+          (returnDiscount(generalDiscount)! / 100));
+    } else {
+      return 0;
     }
-    return 0;
   }
 
   double totalCost() {
@@ -42,16 +46,8 @@ class TempCartItem {
     }
   }
 
-  double revenue() {
-    if (customPrice != null) {
-      if (setTotalPrice) {
-        return customPrice!;
-      } else {
-        return customPrice! * quantity;
-      }
-    } else {
-      return totalCost() - discountCost();
-    }
+  double revenue(double? generalDiscount) {
+    return totalCost() - discountCost(generalDiscount);
   }
 
   double? costPrice() {

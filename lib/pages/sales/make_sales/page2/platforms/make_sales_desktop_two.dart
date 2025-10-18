@@ -4,6 +4,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
@@ -42,6 +43,7 @@ class _MakeSalesDesktopTwoState
   bool isUpdating = false;
   bool isLoading = false;
   bool showSuccess = false;
+  final discountPercentController = TextEditingController();
 
   @override
   void initState() {
@@ -991,16 +993,43 @@ class _MakeSalesDesktopTwoState
                                     MainAxisAlignment
                                         .spaceBetween,
                                 children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                    'Discount',
+                                  Row(
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          // fontWeight: FontWeight.bold,
+                                        ),
+                                        'Discount',
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            returnSalesProvider(
+                                                  context,
+                                                )
+                                                .currentCart()
+                                                .discount !=
+                                            null,
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          ' (${returnSalesProvider(context).currentCart().discount}%)',
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   Text(
                                     style: TextStyle(
@@ -1058,7 +1087,13 @@ class _MakeSalesDesktopTwoState
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              SizedBox(height: 5),
+
+                              DiscountSetterWidget(
+                                discountPercentController:
+                                    discountPercentController,
+                              ),
+                              SizedBox(height: 10),
                               Visibility(
                                 visible:
                                     returnSalesProvider(
@@ -1070,11 +1105,6 @@ class _MakeSalesDesktopTwoState
                                 child: MainButtonP(
                                   themeProvider: theme,
                                   action: () {
-                                    // var suggP =
-                                    //     returnSuggestionProvider(
-                                    //       context,
-                                    //       listen: false,
-                                    //     );
                                     BuildContext
                                     safeContext = context;
                                     showDialog(
@@ -1204,11 +1234,15 @@ class _MakeSalesDesktopTwoState
                                               customerUuid:
                                                   returnSalesProvider(
                                                     context,
+                                                    listen:
+                                                        false,
                                                   ).currentCart().selectedCustomer,
 
                                               customerName:
                                                   returnSalesProvider(
                                                     context,
+                                                    listen:
+                                                        false,
                                                   ).currentCart().selectedCustomerName,
                                             );
 

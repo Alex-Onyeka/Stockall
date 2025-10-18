@@ -800,7 +800,9 @@ Uint8List generateStyledReceipt({
     ),
   );
   builder.addLeftRight(
-    'Discount:',
+    receipt.generalDiscount != null
+        ? "Discount: (${receipt.generalDiscount}%)"
+        : 'Discount:',
     formatMoneyMid(
       amount: discount,
       context: context,

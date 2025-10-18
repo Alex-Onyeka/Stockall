@@ -837,6 +837,9 @@ Future<Uint8List> _buildPdf(
                           pw.Expanded(
                             flex: 1,
                             child: pw.Text(
+                              style: pw.TextStyle(
+                                fontSize: 8,
+                              ),
                               '( ${record.quantity.toStringAsFixed(0)} ) ',
                             ),
                           ),
@@ -870,7 +873,7 @@ Future<Uint8List> _buildPdf(
                         child: pw.Text(
                           style: pw.TextStyle(
                             font: fontRegular,
-                            fontSize: 9,
+                            fontSize: 8,
                           ),
                           'Subtotal:',
                         ),
@@ -880,7 +883,7 @@ Future<Uint8List> _buildPdf(
                         child: pw.Text(
                           style: pw.TextStyle(
                             font: fontRegular,
-                            fontSize: 10,
+                            fontSize: 9,
                           ),
                           formatMoneyMid(
                             amount: returnReceiptProvider(
@@ -903,12 +906,26 @@ Future<Uint8List> _buildPdf(
                     children: [
                       pw.Expanded(
                         flex: 2,
-                        child: pw.Text(
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 9,
-                          ),
-                          'Discount:',
+                        child: pw.Row(
+                          children: [
+                            pw.Text(
+                              style: pw.TextStyle(
+                                font: fontRegular,
+                                fontSize: 8,
+                              ),
+                              'Discount:',
+                            ),
+                            pw.Text(
+                              style: pw.TextStyle(
+                                font: fontRegular,
+                                fontSize: 8,
+                              ),
+                              receipt.generalDiscount !=
+                                      null
+                                  ? " (${receipt.generalDiscount}%)"
+                                  : '',
+                            ),
+                          ],
                         ),
                       ),
                       pw.Expanded(
@@ -1379,7 +1396,7 @@ Future<Uint8List> _buildPdfRoll(
                           flex: 1,
                           child: pw.Text(
                             style: pw.TextStyle(
-                              fontSize: parText,
+                              fontSize: parTextAlt,
                             ),
                             '( ${record.quantity.toStringAsFixed(0)} ) ',
                           ),
@@ -1413,7 +1430,7 @@ Future<Uint8List> _buildPdfRoll(
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
-                          fontSize: parText,
+                          fontSize: parTextAlt,
                         ),
                         'Subtotal:',
                       ),
@@ -1446,12 +1463,25 @@ Future<Uint8List> _buildPdfRoll(
                   children: [
                     pw.Expanded(
                       flex: 9,
-                      child: pw.Text(
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize: parText,
-                        ),
-                        'Discount:',
+                      child: pw.Row(
+                        children: [
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: parTextAlt,
+                            ),
+                            'Discount:',
+                          ),
+                          pw.Text(
+                            style: pw.TextStyle(
+                              font: fontRegular,
+                              fontSize: parTextAlt,
+                            ),
+                            receipt.generalDiscount != null
+                                ? " (${receipt.generalDiscount}%)"
+                                : '',
+                          ),
+                        ],
                       ),
                     ),
                     pw.Expanded(
@@ -2910,6 +2940,9 @@ Future<Uint8List> _buildPdfSales(
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
+                                      style: pw.TextStyle(
+                                        fontSize: 8,
+                                      ),
                                       (record.quantity)
                                           .toStringAsFixed(
                                             0,

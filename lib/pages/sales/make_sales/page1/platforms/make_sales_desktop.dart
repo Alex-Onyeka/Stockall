@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -7,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -21,6 +23,7 @@ import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
@@ -48,6 +51,8 @@ class _MakeSalesDesktopState
   TextEditingController quantityController =
       TextEditingController();
   TextEditingController priceController =
+      TextEditingController();
+  TextEditingController discountPercentController =
       TextEditingController();
   // final nameController = TextEditingController();
 
@@ -2530,6 +2535,7 @@ class _MakeSalesDesktopState
                                   ? 6
                                   : 5,
                           child: Container(
+                            height: double.infinity,
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               borderRadius:
@@ -2548,291 +2554,289 @@ class _MakeSalesDesktopState
                                     15,
                                     15,
                                   ),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 7,
-                                          vertical: 5,
-                                        ),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            8,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .start,
+                                  children: [
+                                    Container(
+                                      height: 40,
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            horizontal: 7,
+                                            vertical: 5,
                                           ),
-                                      color: Colors.white,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: ListView.builder(
-                                            shrinkWrap:
-                                                true,
-                                            scrollDirection:
-                                                Axis.horizontal,
-                                            itemCount:
-                                                returnSalesProvider(
-                                                      context,
-                                                    )
-                                                    .cartQueue
-                                                    .length,
-                                            itemBuilder: (
-                                              context,
-                                              index,
-                                            ) {
-                                              var salesP =
+                                      width:
+                                          double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              8,
+                                            ),
+                                        color: Colors.white,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: ListView.builder(
+                                              shrinkWrap:
+                                                  true,
+                                              scrollDirection:
+                                                  Axis.horizontal,
+                                              itemCount:
                                                   returnSalesProvider(
                                                     context,
-                                                  );
-                                              // var cart =
-                                              //     salesP
-                                              //         .cartQueue[index];
-                                              // return Container();
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      right:
-                                                          8.0,
-                                                    ),
-                                                child: Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
-                                                  child: Ink(
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          salesP.cartIndex ==
-                                                                      index &&
-                                                                  salesP.cartQueue.length >
-                                                                      1
-                                                              ? Colors.grey.shade100
-                                                              : const Color.fromARGB(
-                                                                167,
-                                                                250,
-                                                                250,
-                                                                250,
-                                                              ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            3,
-                                                          ),
-                                                    ),
-                                                    child: InkWell(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            3,
-                                                          ),
-                                                      onTap: () {
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).selectCart(
-                                                          index,
-                                                        );
-                                                      },
-                                                      child: Container(
-                                                        padding: EdgeInsets.symmetric(
-                                                          horizontal:
-                                                              salesP.cartIndex ==
-                                                                          index &&
-                                                                      salesP.cartQueue.length >
-                                                                          1
-                                                                  ? 8
-                                                                  : 12,
-                                                          vertical:
-                                                              5,
+                                                  ).cartQueue.length,
+                                              itemBuilder: (
+                                                context,
+                                                index,
+                                              ) {
+                                                var salesP =
+                                                    returnSalesProvider(
+                                                      context,
+                                                    );
+                                                // var cart =
+                                                //     salesP
+                                                //         .cartQueue[index];
+                                                // return Container();
+                                                return Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    right:
+                                                        8.0,
+                                                  ),
+                                                  child: Material(
+                                                    color:
+                                                        Colors.transparent,
+                                                    child: Ink(
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            salesP.cartIndex ==
+                                                                        index &&
+                                                                    salesP.cartQueue.length >
+                                                                        1
+                                                                ? Colors.grey.shade100
+                                                                : const Color.fromARGB(
+                                                                  167,
+                                                                  250,
+                                                                  250,
+                                                                  250,
+                                                                ),
+                                                        borderRadius: BorderRadius.circular(
+                                                          3,
                                                         ),
+                                                      ),
+                                                      child: InkWell(
+                                                        borderRadius: BorderRadius.circular(
+                                                          3,
+                                                        ),
+                                                        onTap: () {
+                                                          returnSalesProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).selectCart(
+                                                            index,
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding: EdgeInsets.symmetric(
+                                                            horizontal:
+                                                                salesP.cartIndex ==
+                                                                            index &&
+                                                                        salesP.cartQueue.length >
+                                                                            1
+                                                                    ? 8
+                                                                    : 12,
+                                                            vertical:
+                                                                5,
+                                                          ),
 
-                                                        child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          // spacing:
-                                                          //     10,
-                                                          mainAxisAlignment:
-                                                              salesP.cartIndex ==
-                                                                          index &&
-                                                                      salesP.cartQueue.length >
-                                                                          1
-                                                                  ? MainAxisAlignment.spaceBetween
-                                                                  : MainAxisAlignment.center,
-                                                          children: [
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize.min,
+                                                            // spacing:
+                                                            //     10,
+                                                            mainAxisAlignment:
+                                                                salesP.cartIndex ==
+                                                                            index &&
+                                                                        salesP.cartQueue.length >
+                                                                            1
+                                                                    ? MainAxisAlignment.spaceBetween
+                                                                    : MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b4.fontSize,
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                ),
+                                                                'Cart ${index + 1}',
                                                               ),
-                                                              'Cart ${index + 1}',
-                                                            ),
-                                                            Visibility(
-                                                              visible:
-                                                                  salesP.cartIndex ==
-                                                                      index &&
-                                                                  salesP.cartQueue.length >
-                                                                      1,
-                                                              child: SizedBox(
-                                                                width:
-                                                                    10,
+                                                              Visibility(
+                                                                visible:
+                                                                    salesP.cartIndex ==
+                                                                        index &&
+                                                                    salesP.cartQueue.length >
+                                                                        1,
+                                                                child: SizedBox(
+                                                                  width:
+                                                                      10,
+                                                                ),
                                                               ),
-                                                            ),
-                                                            Visibility(
-                                                              visible:
-                                                                  salesP.cartIndex ==
-                                                                      index &&
-                                                                  salesP.cartQueue.length >
-                                                                      1,
-                                                              child: Material(
-                                                                color:
-                                                                    Colors.transparent,
-                                                                child: Ink(
-                                                                  decoration: BoxDecoration(
-                                                                    shape:
-                                                                        BoxShape.circle,
-                                                                    color:
-                                                                        theme.lightModeColor.secColor200,
-                                                                  ),
-                                                                  child: InkWell(
-                                                                    onTap: () {
-                                                                      showDialog(
-                                                                        context:
+                                                              Visibility(
+                                                                visible:
+                                                                    salesP.cartIndex ==
+                                                                        index &&
+                                                                    salesP.cartQueue.length >
+                                                                        1,
+                                                                child: Material(
+                                                                  color:
+                                                                      Colors.transparent,
+                                                                  child: Ink(
+                                                                    decoration: BoxDecoration(
+                                                                      shape:
+                                                                          BoxShape.circle,
+                                                                      color:
+                                                                          theme.lightModeColor.secColor200,
+                                                                    ),
+                                                                    child: InkWell(
+                                                                      onTap: () {
+                                                                        showDialog(
+                                                                          context:
+                                                                              context,
+                                                                          builder: (
                                                                             context,
-                                                                        builder: (
-                                                                          context,
-                                                                        ) {
-                                                                          return ConfirmationAlert(
-                                                                            theme:
-                                                                                theme,
-                                                                            message:
-                                                                                'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
-                                                                            title:
-                                                                                'Are you sure?',
-                                                                            action: () {
-                                                                              returnSalesProvider(
-                                                                                context,
-                                                                                listen:
-                                                                                    false,
-                                                                              ).deleteCart(
-                                                                                index,
-                                                                              );
-                                                                              Navigator.of(
-                                                                                context,
-                                                                              ).pop();
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                    child: Container(
-                                                                      padding: EdgeInsets.all(
-                                                                        4,
-                                                                      ),
-                                                                      decoration: BoxDecoration(
-                                                                        shape:
-                                                                            BoxShape.circle,
-                                                                      ),
-                                                                      child: Icon(
-                                                                        color:
-                                                                            Colors.white,
-                                                                        size:
-                                                                            9,
-                                                                        Icons.clear,
+                                                                          ) {
+                                                                            return ConfirmationAlert(
+                                                                              theme:
+                                                                                  theme,
+                                                                              message:
+                                                                                  'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
+                                                                              title:
+                                                                                  'Are you sure?',
+                                                                              action: () {
+                                                                                returnSalesProvider(
+                                                                                  context,
+                                                                                  listen:
+                                                                                      false,
+                                                                                ).deleteCart(
+                                                                                  index,
+                                                                                );
+                                                                                Navigator.of(
+                                                                                  context,
+                                                                                ).pop();
+                                                                              },
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                      child: Container(
+                                                                        padding: EdgeInsets.all(
+                                                                          4,
+                                                                        ),
+                                                                        decoration: BoxDecoration(
+                                                                          shape:
+                                                                              BoxShape.circle,
+                                                                        ),
+                                                                        child: Icon(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          size:
+                                                                              9,
+                                                                          Icons.clear,
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                              );
-                                            },
+                                                );
+                                              },
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: 10),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
 
-                                        Visibility(
-                                          visible:
-                                              returnSalesProvider(
-                                                    context,
-                                                  )
-                                                  .cartQueue
-                                                  .length <=
-                                              4,
-                                          child: Material(
-                                            color:
-                                                Colors
-                                                    .transparent,
-                                            child: Ink(
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .prColor300,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      5,
-                                                    ),
-                                              ),
-                                              child: InkWell(
-                                                onTap: () {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).addNewCart();
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        4,
+                                          Visibility(
+                                            visible:
+                                                returnSalesProvider(
+                                                      context,
+                                                    )
+                                                    .cartQueue
+                                                    .length <=
+                                                4,
+                                            child: Material(
+                                              color:
+                                                  Colors
+                                                      .transparent,
+                                              child: Ink(
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .prColor300,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        5,
                                                       ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          5,
+                                                ),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    returnSalesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).addNewCart();
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          4,
                                                         ),
-                                                  ),
-                                                  child: Icon(
-                                                    color:
-                                                        Colors.white,
-                                                    size:
-                                                        15,
-                                                    Icons
-                                                        .add,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            5,
+                                                          ),
+                                                    ),
+                                                    child: Icon(
+                                                      color:
+                                                          Colors.white,
+                                                      size:
+                                                          15,
+                                                      Icons
+                                                          .add,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  TextFieldBarcode(
-                                    hintText:
-                                        'Scan Barcode',
-                                    clearTextField: () {
-                                      setState(() {});
-                                    },
-                                    searchController:
-                                        widget
-                                            .searchController,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        // scanResult = null;
-                                        // productResults.clear();
+                                    SizedBox(height: 10),
+                                    TextFieldBarcode(
+                                      hintText:
+                                          'Scan Barcode',
+                                      clearTextField: () {
+                                        setState(() {});
+                                      },
+                                      searchController:
+                                          widget
+                                              .searchController,
+                                      onChanged: (
+                                        value,
+                                      ) async {
                                         if (value
                                             .isNotEmpty) {
                                           var items = returnData(
@@ -2870,325 +2874,365 @@ class _MakeSalesDesktopState
                                               isCustomEdit:
                                                   false,
                                             );
+
+                                            widget
+                                                .searchController
+                                                .clear();
+                                            await playBeep();
+                                            setState(() {});
                                           }
                                         }
-                                      });
-                                    },
-                                    onPressedScan:
-                                        () async {},
-                                  ),
-                                  SizedBox(height: 10),
-                                  Material(
-                                    color:
-                                        Colors.transparent,
-                                    child: Column(
-                                      mainAxisSize:
-                                          MainAxisSize.min,
-                                      spacing: 10,
-                                      children: [
-                                        Ink(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  5,
-                                                ),
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .prColor300,
-                                          ),
-                                          child: InkWell(
-                                            onTap: () {
-                                              showGeneralDialog(
-                                                context:
-                                                    context,
-                                                pageBuilder: (
-                                                  context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                ) {
-                                                  return CustomBottomPanel(
-                                                    searchController:
-                                                        widget.searchController,
-                                                    close: () {
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    },
-                                                    // products:
-                                                    //     products,
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        11,
+                                      },
+                                      onPressedScan:
+                                          () async {},
+                                    ),
+                                    SizedBox(height: 10),
+                                    Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: Column(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        spacing: 10,
+                                        children: [
+                                          Ink(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    5,
                                                   ),
-                                              child: Center(
-                                                child: Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                    color:
-                                                        Colors.white,
-                                                  ),
-                                                  'Add Item',
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Ink(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  5,
-                                                ),
-                                            border: Border.all(
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
                                             ),
-                                          ),
-                                          child: InkWell(
-                                            onTap: () {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).toggleAddToStock(
-                                                true,
-                                              );
-                                              makeCustomSale(
-                                                closeAction: () {
-                                                  Navigator.of(
+                                            child: InkWell(
+                                              onTap: () {
+                                                showGeneralDialog(
+                                                  context:
+                                                      context,
+                                                  pageBuilder: (
                                                     context,
-                                                  ).pop();
-                                                },
-                                                cartItem: TempCartItem(
-                                                  setTotalPrice:
-                                                      returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).setTotalPrice,
-                                                  item: TempProductClass(
-                                                    isManaged:
-                                                        false,
-                                                    uuid:
-                                                        uuidGen(),
-                                                    name:
-                                                        nameC.text,
-                                                    unit:
-                                                        'Others',
-                                                    isRefundable:
-                                                        false,
-                                                    costPrice:
-                                                        double.tryParse(
-                                                          costPriceC.text,
-                                                        ) ??
-                                                        0,
-                                                    sellingPrice: double.tryParse(
-                                                      sellingPriceC
-                                                          .text,
-                                                    ),
-                                                    quantity:
-                                                        0,
-                                                    shopId:
-                                                        returnShopProvider(
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) {
+                                                    return CustomBottomPanel(
+                                                      searchController:
+                                                          widget.searchController,
+                                                      close: () {
+                                                        Navigator.of(
                                                           context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop!.shopId!,
-                                                    setCustomPrice:
-                                                        true,
+                                                        ).pop();
+                                                      },
+                                                      // products:
+                                                      //     products,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          11,
+                                                    ),
+                                                child: Center(
+                                                  child: Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      color:
+                                                          Colors.white,
+                                                    ),
+                                                    'Add Item',
                                                   ),
-                                                  addToStock:
-                                                      true,
-                                                  quantity:
-                                                      0,
-                                                  discount:
-                                                      null,
-                                                  setCustomPrice:
-                                                      true,
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsets.symmetric(
-                                                    vertical:
-                                                        9,
-                                                  ),
-                                              child: Center(
-                                                child: Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                  ),
-                                                  'Add Custom Item',
                                                 ),
                                               ),
                                             ),
                                           ),
+                                          Ink(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    5,
+                                                  ),
+                                              border: Border.all(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .prColor300,
+                                              ),
+                                            ),
+                                            child: InkWell(
+                                              onTap: () {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleAddToStock(
+                                                  true,
+                                                );
+                                                makeCustomSale(
+                                                  closeAction: () {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  },
+                                                  cartItem: TempCartItem(
+                                                    setTotalPrice:
+                                                        returnSalesProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).setTotalPrice,
+                                                    item: TempProductClass(
+                                                      isManaged:
+                                                          false,
+                                                      uuid:
+                                                          uuidGen(),
+                                                      name:
+                                                          nameC.text,
+                                                      unit:
+                                                          'Others',
+                                                      isRefundable:
+                                                          false,
+                                                      costPrice:
+                                                          double.tryParse(
+                                                            costPriceC.text,
+                                                          ) ??
+                                                          0,
+                                                      sellingPrice: double.tryParse(
+                                                        sellingPriceC.text,
+                                                      ),
+                                                      quantity:
+                                                          0,
+                                                      shopId:
+                                                          returnShopProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).userShop!.shopId!,
+                                                      setCustomPrice:
+                                                          true,
+                                                    ),
+                                                    addToStock:
+                                                        true,
+                                                    quantity:
+                                                        0,
+                                                    discount:
+                                                        null,
+                                                    setCustomPrice:
+                                                        true,
+                                                  ),
+                                                );
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          9,
+                                                    ),
+                                                child: Center(
+                                                  child: Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                    ),
+                                                    'Add Custom Item',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                          ),
+                                          'Subtotal',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          formatMoneyBig(
+                                            amount: returnSalesProvider(
+                                              context,
+                                            ).calcTotalMain(
+                                              returnSalesProvider(
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .cartItems,
+                                            ),
+                                            context:
+                                                context,
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                        ),
-                                        'Subtotal',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                        formatMoneyBig(
-                                          amount: returnSalesProvider(
-                                            context,
-                                          ).calcTotalMain(
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .cartItems,
-                                          ),
-                                          context: context,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                        'Discount',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                        '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).currentCart().cartItems), context)}',
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Total',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        formatMoneyBig(
-                                          amount: returnSalesProvider(
-                                            context,
-                                          ).calcFinalTotalMain(
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .cartItems,
-                                          ),
-                                          context: context,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 20),
-                                  MainButtonP(
-                                    themeProvider: theme,
-                                    action: () {
-                                      if (returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .currentCart()
-                                          .cartItems
-                                          .isNotEmpty) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return MakeSalesTwo(
-                                                totalAmount: returnSalesProvider(
-                                                  context,
-                                                ).calcFinalTotalMain(
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                // fontWeight: FontWeight.bold,
+                                              ),
+                                              'Discount',
+                                            ),
+                                            Visibility(
+                                              visible:
                                                   returnSalesProvider(
                                                     context,
-                                                  ).currentCart().cartItems,
+                                                  ).currentCart().discount !=
+                                                  null,
+                                              child: Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  // fontWeight: FontWeight.bold,
                                                 ),
-                                              );
-                                            },
+                                                ' (${returnSalesProvider(context).currentCart().discount}%)',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
                                           ),
-                                        );
-                                      }
-                                    },
-                                    text: 'Proceed',
-                                  ),
-                                  SizedBox(height: 20),
-                                ],
+                                          '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).currentCart().cartItems), context)}',
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Total',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          formatMoneyBig(
+                                            amount: returnSalesProvider(
+                                              context,
+                                            ).calcFinalTotalMain(
+                                              returnSalesProvider(
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .cartItems,
+                                            ),
+                                            context:
+                                                context,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+
+                                    DiscountSetterWidget(
+                                      discountPercentController:
+                                          discountPercentController,
+                                    ),
+                                    SizedBox(height: 10),
+                                    MainButtonP(
+                                      themeProvider: theme,
+                                      action: () {
+                                        if (returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            )
+                                            .currentCart()
+                                            .cartItems
+                                            .isNotEmpty) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return MakeSalesTwo(
+                                                  totalAmount: returnSalesProvider(
+                                                    context,
+                                                  ).calcFinalTotalMain(
+                                                    returnSalesProvider(
+                                                      context,
+                                                    ).currentCart().cartItems,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      text: 'Proceed',
+                                    ),
+                                    SizedBox(height: 20),
+                                  ],
+                                ),
                               ),
                             ),
                           ),

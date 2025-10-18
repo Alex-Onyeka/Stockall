@@ -1028,7 +1028,7 @@ class _ReceiptDetailsContainerState
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b1
+                                          .b3
                                           .fontSize,
                                 ),
                                 'Subtotal',
@@ -1070,16 +1070,38 @@ class _ReceiptDetailsContainerState
                           children: [
                             Expanded(
                               flex: 4,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                ),
-                                'Discount',
+                              child: Row(
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                    ),
+                                    'Discount',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    widget
+                                                .mainReceipt
+                                                .generalDiscount !=
+                                            null
+                                        ? ' (${widget.mainReceipt.generalDiscount}%)'
+                                        : '',
+                                  ),
+                                ],
                               ),
                             ),
 

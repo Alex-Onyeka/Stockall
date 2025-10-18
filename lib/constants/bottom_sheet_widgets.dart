@@ -16,6 +16,7 @@ import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
@@ -2033,17 +2034,32 @@ class _CustomBottomPanelState
                               },
                               searchController:
                                   widget.searchController,
-                              onChanged: (value) {
+                              onChanged: (value) async {
                                 setState(() {
                                   scanResult = null;
                                   productResults.clear();
-                                  if (value == '') {
+                                });
+                                if (value == '') {
+                                  setState(() {
                                     searchResult = null;
-                                  } else {
+                                  });
+                                } else {
+                                  setState(() {
                                     searchResult =
                                         value.toLowerCase();
+                                  });
+                                  var items = returnData(
+                                    context,
+                                    listen: false,
+                                  ).productList.where(
+                                    (product) =>
+                                        product.barcode ==
+                                        value,
+                                  );
+                                  if (items.isNotEmpty) {
+                                    await playBeep();
                                   }
-                                });
+                                }
                               },
                               onPressedScan: () async {
                                 productResults.clear();
@@ -2059,19 +2075,23 @@ class _CustomBottomPanelState
                                       .searchController
                                       .text = result;
                                 }
-                                setState(() {
-                                  scanResult = result;
-                                  productResults.addAll(
-                                    returnData(
-                                      context,
-                                      listen: false,
-                                    ).productList.where(
-                                      (product) =>
-                                          product.barcode ==
-                                          result,
-                                    ),
-                                  );
-                                });
+                                var items = returnData(
+                                  context,
+                                  listen: false,
+                                ).productList.where(
+                                  (product) =>
+                                      product.barcode ==
+                                      result,
+                                );
+                                if (items.isNotEmpty) {
+                                  setState(() {
+                                    scanResult = result;
+                                    productResults.addAll(
+                                      items,
+                                    );
+                                  });
+                                  await playBeep();
+                                }
                                 setState(() {});
                               },
                             ),

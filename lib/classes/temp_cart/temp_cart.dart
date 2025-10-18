@@ -6,11 +6,15 @@ class TempCart {
   String? selectedCustomer;
   String? selectedCustomerName;
   int paymentMethod;
+  double? discount;
+  bool isSettingDiscountOpen;
   TempCart({
     required this.cartItems,
     required this.isInvoice,
     this.selectedCustomer,
     this.selectedCustomerName,
     this.paymentMethod = 0,
+    this.discount,
+    this.isSettingDiscountOpen = false,
   });
 }
