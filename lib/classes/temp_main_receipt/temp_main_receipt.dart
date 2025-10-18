@@ -96,7 +96,8 @@ class TempMainReceipt extends HiveObject {
       isInvoice: json['is_invoice'],
       uuid: json['uuid'] as String?,
       customerUuid: json['customer_uuid'] as String?,
-      generalDiscount: json['general_discount'] as double?,
+      generalDiscount:
+          (json['general_discount'] as num?)?.toDouble(),
     );
   }
 

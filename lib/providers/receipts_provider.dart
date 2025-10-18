@@ -59,24 +59,30 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   // CREATE a new receipt
-  Future<TempMainReceipt> createReceipt(
+  Future<TempMainReceipt?> createReceipt(
     TempMainReceipt receipt,
     BuildContext context,
   ) async {
+    print('Inner Receipt Creation Started');
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
+      print('Inner Receipt Online Started');
       final res =
           await supabase
               .from('receipts')
               .insert(receipt.toJson())
               .select()
               .single();
-
-      final newReceipt = TempMainReceipt.fromJson(res);
-
-      // _receipts.add(newReceipt);
-      notifyListeners();
-      return newReceipt;
+      print('Inner Receipt Online Finished');
+      print('Casting Started');
+      try {
+        final newReceipt = TempMainReceipt.fromJson(res);
+        notifyListeners();
+        return newReceipt;
+      } catch (e) {
+        print('Error: ${e.toString()}');
+        return null;
+      }
     } else {
       await MainReceiptFunc().createReceipt(receipt);
       await CreatedReceiptsFunc().createReceipts(

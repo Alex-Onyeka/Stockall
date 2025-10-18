@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -134,29 +133,6 @@ class _MakeSalesDesktopState
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Visibility(
-                        //   visible:
-                        //       returnData(context).productList
-                        //           .where(
-                        //             (product) =>
-                        //                 product.uuid ==
-                        //                 cartItem.item.uuid,
-                        //           )
-                        //           .isEmpty,
-                        //   child: Column(
-                        //     mainAxisSize: MainAxisSize.min,
-                        //     children: [
-                        //       GeneralTextField(
-                        //         lines: 1,
-                        //         title: 'Enter Item Name',
-                        //         hint: 'Item Name',
-                        //         controller: nameController,
-                        //         theme: theme,
-                        //       ),
-                        //       SizedBox(height: 10),
-                        //     ],
-                        //   ),
-                        // ),
                         Visibility(
                           visible:
                               (returnSalesProvider(
@@ -3127,7 +3103,7 @@ class _MakeSalesDesktopState
                                                           .bold,
                                                   // fontWeight: FontWeight.bold,
                                                 ),
-                                                ' (${returnSalesProvider(context).currentCart().discount}%)',
+                                                ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
                                               ),
                                             ),
                                           ],

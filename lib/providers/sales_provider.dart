@@ -95,11 +95,14 @@ class SalesProvider extends ChangeNotifier {
     50,
   ];
 
-  List<double> returnSomeDiscounts(
+  List<String> returnSomeDiscounts(
     int startAmount,
     int end,
   ) {
-    return discounts.getRange(startAmount, end).toList();
+    return discounts
+        .getRange(startAmount, end)
+        .map((m) => m.toStringAsFixed(0))
+        .toList();
   }
 
   void toggleSetDiscount(bool value) {
@@ -154,7 +157,7 @@ class SalesProvider extends ChangeNotifier {
     );
     print('Receipt Created');
 
-    final receiptId = receiptRes.id;
+    final receiptId = receiptRes!.id;
     final receiptUuid = receiptRes.uuid;
     print(receiptId);
     print(receiptUuid);

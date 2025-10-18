@@ -7,6 +7,8 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
+import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
@@ -45,6 +47,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       TextEditingController();
   TextEditingController priceController =
       TextEditingController();
+  final discountPercentController = TextEditingController();
 
   String formatSellingPriceEdit(TempCartItem cartItem) {
     if (priceController.text.isNotEmpty) {
@@ -360,29 +363,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 ),
                                 context: context,
                               ),
-
-                              // priceController.text.isEmpty
-                              //     ? formatMoneyMid(
-                              //       qqty *
-                              //           (returnSalesProvider(
-                              //             context,
-                              //             listen: false,
-                              //           ).discountCheck(
-                              //             cartItem.item,
-                              //           )),
-                              //       context,
-                              //     )
-                              //     : formatMoneyMid(
-                              //       double.tryParse(
-                              //             priceController.text
-                              //                 .replaceAll(
-                              //                   ',',
-                              //                   '',
-                              //                 ),
-                              //           ) ??
-                              //           0,
-                              //       context,
-                              //     ),
                             ),
                           ],
                         ),
@@ -617,8 +597,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       nameC.text = cartItem.item.name;
       qqty = cartItem.quantity;
       pQuantity.text = cartItem.quantity.toString();
-      sellingPriceC.text =
-          (cartItem.customPrice ?? 0).toString();
+      sellingPriceC.text = (cartItem.customPrice ?? 0)
+          .toStringAsFixed(0);
       returnSalesProvider(
         context,
         listen: false,
@@ -715,19 +695,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     CrossAxisAlignment.end,
                                 spacing: 10,
                                 children: [
-                                  // Expanded(
-                                  //   child: MoneyTextfield(
-                                  //     title:
-                                  //         'Cost Price (Optional)',
-                                  //     hint: 'Enter Price',
-                                  //     controller:
-                                  //         costPriceC,
-                                  //     theme: theme,
-                                  //     onChanged: (p0) {
-                                  //       setState(() {});
-                                  //     },
-                                  //   ),
-                                  // ),
                                   Expanded(
                                     child:
                                         ToggleTotalPriceWidget(
@@ -1232,46 +1199,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               0);
                                       // cartItem.item.uuid =
                                       //     uuidGen();
-                                      // returnSalesProvider(
-                                      //           context,
-                                      //           listen:
-                                      //               false,
-                                      //         )
-                                      //         .cartItems
-                                      //         .isNotEmpty
-                                      //     ? returnSalesProvider(
-                                      //               context,
-                                      //               listen:
-                                      //                   false,
-                                      //             )
-                                      //             .cartItems
-                                      //             .where(
-                                      //               (
-                                      //                 item,
-                                      //               ) =>
-                                      //                   item.item.id! <
-                                      //                   100,
-                                      //             )
-                                      //             .isNotEmpty
-                                      //         ? returnSalesProvider(
-                                      //                   context,
-                                      //                   listen:
-                                      //                       false,
-                                      //                 )
-                                      //                 .cartItems
-                                      //                 .where(
-                                      //                   (
-                                      //                     item,
-                                      //                   ) =>
-                                      //                       item.item.id! <
-                                      //                       100,
-                                      //                 )
-                                      //                 .last
-                                      //                 .item
-                                      //                 .id! +
-                                      //             1
-                                      //         : 1
-                                      //     : 1;
                                       cartItem.addToStock =
                                           returnSalesProvider(
                                             context,
@@ -1345,11 +1272,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       //     child: Material(
                       //       color: Colors.transparent,
                       //       child: Container(
-                      //         width:
-                      //             MediaQuery.of(
-                      //               context,
-                      //             ).size.width -
-                      //             60,
+                      //         // width: double.infinity,
+                      //         width: 450,
                       //         padding: EdgeInsets.fromLTRB(
                       //           20,
                       //           5,
@@ -1503,8 +1427,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       //                                   fontWeight:
                       //                                       FontWeight.bold,
                       //                                 ),
-                      //                                 suggestion
-                      //                                     .name!,
+                      //                                 suggestion.name ??
+                      //                                     '',
                       //                               ),
                       //                               Row(
                       //                                 spacing:
@@ -1619,6 +1543,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       },
     ).then((value) {
       qqty = 0;
+
       nameC.clear();
       pQuantity.clear();
       costPriceC.clear();
@@ -2323,270 +2248,20 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     padding:
                                         const EdgeInsets.fromLTRB(
                                           30,
-                                          15,
+                                          10,
                                           30,
                                           0,
                                         ),
                                     child: Column(
                                       children: [
-                                        Container(
-                                          height: 40,
-                                          padding:
-                                              EdgeInsets.symmetric(
-                                                horizontal:
-                                                    7,
-                                                vertical: 5,
-                                              ),
-                                          width:
-                                              double
-                                                  .infinity,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  8,
-                                                ),
-                                            color:
-                                                Colors
-                                                    .white,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: ListView.builder(
-                                                  shrinkWrap:
-                                                      true,
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  itemCount:
-                                                      returnSalesProvider(
-                                                        context,
-                                                      ).cartQueue.length,
-                                                  itemBuilder: (
-                                                    context,
-                                                    index,
-                                                  ) {
-                                                    var salesP =
-                                                        returnSalesProvider(
-                                                          context,
-                                                        );
-                                                    return Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        right:
-                                                            8.0,
-                                                      ),
-                                                      child: Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: Ink(
-                                                          decoration: BoxDecoration(
-                                                            color:
-                                                                salesP.cartIndex ==
-                                                                            index &&
-                                                                        salesP.cartQueue.length >
-                                                                            1
-                                                                    ? Colors.grey.shade100
-                                                                    : const Color.fromARGB(
-                                                                      167,
-                                                                      250,
-                                                                      250,
-                                                                      250,
-                                                                    ),
-                                                            borderRadius: BorderRadius.circular(
-                                                              3,
-                                                            ),
-                                                          ),
-                                                          child: InkWell(
-                                                            borderRadius: BorderRadius.circular(
-                                                              3,
-                                                            ),
-                                                            onTap: () {
-                                                              returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).selectCart(
-                                                                index,
-                                                              );
-                                                            },
-                                                            child: Container(
-                                                              padding: EdgeInsets.symmetric(
-                                                                horizontal:
-                                                                    salesP.cartIndex ==
-                                                                                index &&
-                                                                            salesP.cartQueue.length >
-                                                                                1
-                                                                        ? 8
-                                                                        : 12,
-                                                                vertical:
-                                                                    5,
-                                                              ),
-
-                                                              child: Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize.min,
-                                                                // spacing:
-                                                                //     10,
-                                                                mainAxisAlignment:
-                                                                    salesP.cartIndex ==
-                                                                                index &&
-                                                                            salesP.cartQueue.length >
-                                                                                1
-                                                                        ? MainAxisAlignment.spaceBetween
-                                                                        : MainAxisAlignment.center,
-                                                                children: [
-                                                                  Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b4.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.bold,
-                                                                    ),
-                                                                    'Cart ${index + 1}',
-                                                                  ),
-                                                                  Visibility(
-                                                                    visible:
-                                                                        salesP.cartIndex ==
-                                                                            index &&
-                                                                        salesP.cartQueue.length >
-                                                                            1,
-                                                                    child: SizedBox(
-                                                                      width:
-                                                                          10,
-                                                                    ),
-                                                                  ),
-                                                                  Visibility(
-                                                                    visible:
-                                                                        salesP.cartIndex ==
-                                                                            index &&
-                                                                        salesP.cartQueue.length >
-                                                                            1,
-                                                                    child: Material(
-                                                                      color:
-                                                                          Colors.transparent,
-                                                                      child: Ink(
-                                                                        decoration: BoxDecoration(
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                          color:
-                                                                              theme.lightModeColor.secColor200,
-                                                                        ),
-                                                                        child: InkWell(
-                                                                          onTap: () {
-                                                                            showDialog(
-                                                                              context:
-                                                                                  context,
-                                                                              builder: (
-                                                                                context,
-                                                                              ) {
-                                                                                return ConfirmationAlert(
-                                                                                  theme:
-                                                                                      theme,
-                                                                                  message:
-                                                                                      'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
-                                                                                  title:
-                                                                                      'Are you sure?',
-                                                                                  action: () {
-                                                                                    returnSalesProvider(
-                                                                                      context,
-                                                                                      listen:
-                                                                                          false,
-                                                                                    ).deleteCart(
-                                                                                      index,
-                                                                                    );
-                                                                                    Navigator.of(
-                                                                                      context,
-                                                                                    ).pop();
-                                                                                  },
-                                                                                );
-                                                                              },
-                                                                            );
-                                                                          },
-                                                                          child: Container(
-                                                                            padding: EdgeInsets.all(
-                                                                              4,
-                                                                            ),
-                                                                            decoration: BoxDecoration(
-                                                                              shape:
-                                                                                  BoxShape.circle,
-                                                                            ),
-                                                                            child: Icon(
-                                                                              color:
-                                                                                  Colors.white,
-                                                                              size:
-                                                                                  9,
-                                                                              Icons.clear,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    returnSalesProvider(
-                                                      context,
-                                                    ).cartQueue.length <=
-                                                    4,
-                                                child: Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
-                                                  child: Ink(
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          theme.lightModeColor.prColor300,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            5,
-                                                          ),
-                                                    ),
-                                                    child: InkWell(
-                                                      onTap: () {
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).addNewCart();
-                                                      },
-                                                      child: Container(
-                                                        padding: EdgeInsets.all(
-                                                          4,
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
-                                                        ),
-                                                        child: Icon(
-                                                          color:
-                                                              Colors.white,
-                                                          size:
-                                                              15,
-                                                          Icons.add,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                        DiscountSetterWidget(
+                                          discountPercentController:
+                                              discountPercentController,
                                         ),
+                                        SizedBox(height: 3),
+                                        CartQueueMobile(),
                                         SizedBox(
-                                          height: 13,
+                                          height: 10,
                                         ),
                                         Material(
                                           color:
@@ -2596,7 +2271,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment
                                                     .spaceBetween,
-                                            spacing: 15,
+                                            spacing: 10,
                                             children: [
                                               Expanded(
                                                 child: Ink(
@@ -2753,7 +2428,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     child: Container(
                                                       padding: EdgeInsets.symmetric(
                                                         vertical:
-                                                            6,
+                                                            7,
                                                       ),
                                                       child: Center(
                                                         child: Text(
@@ -2784,7 +2459,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b2
                                                         .fontSize,
                                                 // fontWeight: FontWeight.bold,
                                               ),
@@ -2813,29 +2488,47 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 5),
+                                        // SizedBox(height: 0),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
                                                   .spaceBetween,
                                           children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                // fontWeight: FontWeight.bold,
-                                              ),
-                                              'Discount',
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b2.fontSize,
+                                                    // fontWeight: FontWeight.bold,
+                                                  ),
+                                                  'Discount',
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      returnSalesProvider(
+                                                        context,
+                                                      ).currentCart().discount !=
+                                                      null,
+                                                  child: Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      // fontWeight: FontWeight.bold,
+                                                    ),
+                                                    ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                             Text(
                                               style: TextStyle(
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b2
                                                         .fontSize,
                                                 // fontWeight: FontWeight.bold,
                                               ),
@@ -2843,7 +2536,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 5),
+                                        // SizedBox(height: 0),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
@@ -2888,7 +2581,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           ],
                                         ),
                                         SizedBox(
-                                          height: 20,
+                                          height: 10,
                                         ),
                                         MainButtonP(
                                           themeProvider:
