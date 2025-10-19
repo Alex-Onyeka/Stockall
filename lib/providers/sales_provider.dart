@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
@@ -236,7 +237,13 @@ class SalesProvider extends ChangeNotifier {
 
     // Step 4: Create new product for items with addToStock == true
     for (final record in productSaleRecords) {
-      if (record.addToStock == true) {
+      // ignore: use_build_context_synchronously
+      if (record.addToStock == true &&
+          returnData(context, listen: false).productList
+              .where(
+                (pro) => pro.name == record.productName,
+              )
+              .isEmpty) {
         final double costPrice =
             (record.costPrice == null ||
                     record.costPrice == 0)
@@ -383,59 +390,112 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //
+  //
+  //
+  //
+
+  bool canAddProductToCart({
+    required TempProductClass product,
+    required double quantityToAdd,
+    required BuildContext context,
+  }) {
+    double totalInAllCarts = 0;
+    for (final cart in cartQueue) {
+      for (final cartItem in cart.cartItems) {
+        if (cartItem.item.uuid == product.uuid) {
+          totalInAllCarts += cartItem.quantity;
+        }
+      }
+    }
+    double newTotal = totalInAllCarts + quantityToAdd;
+    double availableQty = product.quantity ?? 0;
+    if (newTotal > availableQty &&
+        returnData(
+          context,
+          listen: false,
+        ).productList.contains(product) &&
+        product.isManaged) {
+      print(
+        'Cannot add — total ($newTotal) exceeds available stock ($availableQty)',
+      );
+      return false;
+    }
+    return true;
+  }
+
   String addItemToCart({
+    required BuildContext context,
     required TempCartItem newItem,
     required bool isCustomEdit,
   }) {
-    String result = '';
-    final index = currentCart().cartItems.indexWhere(
-      (item) => item.item.uuid == newItem.item.uuid,
-    );
-    var items = currentCart().cartItems.where(
-      (item) => item.item.uuid == newItem.item.uuid,
-    );
+    if (canAddProductToCart(
+      context: context,
+      product: newItem.item,
+      quantityToAdd: newItem.quantity,
+    )) {
+      String result = '';
+      final index = currentCart().cartItems.indexWhere(
+        (item) => item.item.uuid == newItem.item.uuid,
+      );
+      var items = currentCart().cartItems.where(
+        (item) => item.item.uuid == newItem.item.uuid,
+      );
 
-    if (isCustomEdit && index != -1) {
-      var item = items.first;
-      item.item.name = newItem.item.name;
-      item.item.sellingPrice = newItem.item.sellingPrice;
-      item.item.costPrice = newItem.item.costPrice;
-      item.item.setCustomPrice =
-          newItem.item.setCustomPrice;
-      item.addToStock = newItem.addToStock;
-      item.customPrice = newItem.customPrice;
-      item.discount =
-          currentCart().discount ?? newItem.discount;
-      item.quantity = newItem.quantity;
-      item.setCustomPrice = newItem.setCustomPrice;
-      item.setTotalPrice = newItem.setTotalPrice;
-      notifyListeners();
-    } else {
-      if (index != -1) {
-        // Item exists
-        currentCart().cartItems[index].discount =
-            currentCart().discount ??
-            currentCart().cartItems[index].discount;
-        currentCart().cartItems[index].quantity +=
-            newItem.quantity;
-        result = 'Item Updated Successfully';
-      } else {
-        newItem.discount =
+      if (isCustomEdit && index != -1) {
+        var item = items.first;
+        item.item.name = newItem.item.name;
+        item.item.sellingPrice = newItem.item.sellingPrice;
+        item.item.costPrice = newItem.item.costPrice;
+        item.item.setCustomPrice =
+            newItem.item.setCustomPrice;
+        item.addToStock = newItem.addToStock;
+        item.customPrice = newItem.customPrice;
+        item.discount =
             currentCart().discount ?? newItem.discount;
-        currentCart().cartItems.add(newItem);
-        print("Main Carts Length: ${cartQueue.length}");
-        print(
-          "Current Cart Length: ${currentCart().cartItems.length}",
-        );
-        print(
-          "Current Item Discount: ${newItem.discount ?? 'No Discount'}",
-        );
-        result = 'Item Added Successfully';
+        item.quantity = newItem.quantity;
+        item.setCustomPrice = newItem.setCustomPrice;
+        item.setTotalPrice = newItem.setTotalPrice;
+        notifyListeners();
+      } else {
+        if (index != -1) {
+          // Item exists
+          currentCart().cartItems[index].discount =
+              currentCart().discount ??
+              currentCart().cartItems[index].discount;
+          currentCart().cartItems[index].quantity +=
+              newItem.quantity;
+          result = 'Item Updated Successfully';
+        } else {
+          newItem.discount =
+              currentCart().discount ?? newItem.discount;
+          currentCart().cartItems.add(newItem);
+          // print("Main Carts Length: ${cartQueue.length}");
+          // print(
+          //   "Current Cart Length: ${currentCart().cartItems.length}",
+          // );
+          // print(
+          //   "Current Item Discount: ${newItem.discount ?? 'No Discount'}",
+          // );
+          result = 'Item Added Successfully';
+        }
       }
-    }
 
-    notifyListeners();
-    return result;
+      notifyListeners();
+      return result;
+    } else {
+      showDialog(
+        context: context,
+        builder:
+            (_) => InfoAlert(
+              title: "Quantity Limit Reached",
+              message:
+                  "Only ${newItem.item.quantity} available in stock.",
+              theme: returnTheme(context, listen: false),
+            ),
+      );
+      return "Quantity Limit Exceeded!❌";
+    }
   }
 
   void editCartItemQuantity({

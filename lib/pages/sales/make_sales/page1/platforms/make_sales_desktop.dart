@@ -1239,6 +1239,7 @@ class _MakeSalesDesktopState
                                         context,
                                         listen: false,
                                       ).addItemToCart(
+                                        context: context,
                                         newItem: cartItem,
                                         isCustomEdit:
                                             returnData(
@@ -2833,6 +2834,8 @@ class _MakeSalesDesktopState
                                               context,
                                               listen: false,
                                             ).addItemToCart(
+                                              context:
+                                                  context,
                                               newItem: TempCartItem(
                                                 setCustomPrice:
                                                     false,

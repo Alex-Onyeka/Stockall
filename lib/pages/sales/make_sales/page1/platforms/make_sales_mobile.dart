@@ -20,6 +20,7 @@ import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
@@ -1209,6 +1210,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         context,
                                         listen: false,
                                       ).addItemToCart(
+                                        context: context,
                                         newItem: cartItem,
                                         isCustomEdit:
                                             returnData(
@@ -2254,9 +2256,130 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ),
                                     child: Column(
                                       children: [
-                                        DiscountSetterWidget(
-                                          discountPercentController:
-                                              discountPercentController,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          children: [
+                                            Material(
+                                              color:
+                                                  Colors
+                                                      .transparent,
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  String?
+                                                  result = await scanCode(
+                                                    context,
+                                                    'Failed',
+                                                  );
+                                                  if (result !=
+                                                      null) {
+                                                    var prod =
+                                                        returnData(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).productList
+                                                            .where(
+                                                              (
+                                                                pro,
+                                                              ) =>
+                                                                  pro.barcode ==
+                                                                  result,
+                                                            )
+                                                            .toList();
+                                                    if (prod
+                                                        .isNotEmpty) {
+                                                      var pro =
+                                                          prod.first;
+                                                      returnSalesProvider(
+                                                        // ignore: use_build_context_synchronously
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).addItemToCart(
+                                                        // ignore: use_build_context_synchronously
+                                                        context:
+                                                            context,
+                                                        newItem: TempCartItem(
+                                                          setCustomPrice:
+                                                              false,
+                                                          item:
+                                                              pro,
+                                                          quantity:
+                                                              1,
+                                                          discount:
+                                                              null,
+                                                          addToStock:
+                                                              false,
+                                                          setTotalPrice:
+                                                              false,
+                                                        ),
+                                                        isCustomEdit:
+                                                            false,
+                                                      );
+
+                                                      setState(
+                                                        () {},
+                                                      );
+                                                    } else {
+                                                      showDialog(
+                                                        // ignore: use_build_context_synchronously
+                                                        context:
+                                                            context,
+                                                        builder:
+                                                            (_) => InfoAlert(
+                                                              title:
+                                                                  "Item Not Registered",
+                                                              message:
+                                                                  "No Item is registered with this barcode on your inventory.",
+                                                              theme: returnTheme(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                                child: Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        6,
+                                                    horizontal:
+                                                        10,
+                                                  ),
+                                                  child: Row(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Scan Barcode',
+                                                      ),
+                                                      Icon(
+                                                        size:
+                                                            20,
+                                                        color:
+                                                            theme.lightModeColor.secColor200,
+                                                        Icons.qr_code_scanner,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            DiscountSetterWidget(
+                                              discountPercentController:
+                                                  discountPercentController,
+                                            ),
+                                          ],
                                         ),
                                         SizedBox(height: 3),
                                         CartQueueMobile(),
@@ -2610,7 +2733,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               'Proceed to Check Out',
                                         ),
                                         SizedBox(
-                                          height: 20,
+                                          height: 10,
                                         ),
                                       ],
                                     ),
@@ -2641,12 +2764,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                 },
               ),
               Visibility(
-                visible:
-                    returnSalesProvider(
-                      context,
-                    ).currentCart().cartItems.isNotEmpty,
+                visible: false,
+                // returnSalesProvider(
+                //   context,
+                // ).currentCart().cartItems.isNotEmpty,
                 child: Align(
-                  alignment: Alignment(0.9, 0.1),
+                  alignment: Alignment(0.9, 0.06),
                   child: Material(
                     color: Colors.transparent,
                     child: Ink(

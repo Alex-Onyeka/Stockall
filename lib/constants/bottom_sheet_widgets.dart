@@ -1398,9 +1398,16 @@ class _CustomBottomPanelState
                             double entered =
                                 double.tryParse(value) ?? 0;
                             if (cartItem.item.isManaged) {
-                              if ((entered +
-                                      cartItem.quantity) >
-                                  cartItem.item.quantity!) {
+                              if (!returnSalesProvider(
+                                context,
+                                listen: false,
+                              ).canAddProductToCart(
+                                product: cartItem.item,
+                                quantityToAdd:
+                                    entered +
+                                    cartItem.quantity,
+                                context: context,
+                              )) {
                                 showDialog(
                                   context: context,
                                   builder:
@@ -1641,12 +1648,16 @@ class _CustomBottomPanelState
                                   if (cartItem
                                       .item
                                       .isManaged) {
-                                    if (qqty +
-                                            cartItem
-                                                .quantity >=
-                                        cartItem
-                                            .item
-                                            .quantity!) {
+                                    if (!returnSalesProvider(
+                                      context,
+                                      listen: false,
+                                    ).canAddProductToCart(
+                                      product:
+                                          cartItem.item,
+                                      quantityToAdd:
+                                          qqty + 1,
+                                      context: context,
+                                    )) {
                                       showDialog(
                                         context: context,
                                         builder:
@@ -1772,6 +1783,7 @@ class _CustomBottomPanelState
                                     context,
                                     listen: false,
                                   ).addItemToCart(
+                                    context: context,
                                     newItem: cartItem,
                                     isCustomEdit:
                                         returnData(
@@ -1811,6 +1823,7 @@ class _CustomBottomPanelState
       qqty = 0;
       quantityController.text = '';
       priceController.clear();
+      widget.searchController.clear();
       if (context.mounted) {
         returnSalesProvider(
           context,
@@ -1997,6 +2010,8 @@ class _CustomBottomPanelState
                                 InkWell(
                                   onTap: () {
                                     widget.close();
+                                    widget.searchController
+                                        .clear();
                                     clear();
                                   },
                                   child: Container(
@@ -3178,6 +3193,7 @@ void selectProduct(
                       context,
                       listen: false,
                     ).addItemToCart(
+                      context: context,
                       newItem: cartItem,
                       isCustomEdit:
                           returnData(context, listen: false)

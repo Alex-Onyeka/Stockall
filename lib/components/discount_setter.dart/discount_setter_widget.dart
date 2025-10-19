@@ -112,6 +112,53 @@ class _DiscountSetterWidgetState
                             ? 'Remove Discount'
                             : 'Add Discount:',
                       ),
+                      Visibility(
+                        visible:
+                            returnSalesProvider(
+                              context,
+                            ).currentCart().discount !=
+                            null,
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(
+                            7,
+                            3,
+                            4,
+                            3,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(2),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(
+                                  17,
+                                  0,
+                                  0,
+                                  0,
+                                ),
+                                blurRadius: 5,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                            '${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0) ?? ''}%',
+                          ),
+                        ),
+                      ),
                       Stack(
                         children: [
                           Visibility(
@@ -433,36 +480,36 @@ class _DiscountSetterBodyState
                           left: 20.0,
                         ),
                         child: TextFormField(
-                          // inputFormatters: [
-                          //   FilteringTextInputFormatter
-                          //       .digitsOnly,
-                          // ],
-                          onChanged: (value) {
-                            if (value != '') {
-                              if (value == '.') {
-                                widget
-                                    .discountPercentController
-                                    .text = '100';
-                              } else {
-                                if (value
-                                    .toString()
-                                    .contains('..')) {
-                                  widget
-                                      .discountPercentController
-                                      .text = '100';
-                                } else {
-                                  if (double.parse(value) >
-                                      100) {
-                                    setState(() {
-                                      widget
-                                          .discountPercentController
-                                          .text = '100';
-                                    });
-                                  }
-                                }
-                              }
-                            }
-                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly,
+                          ],
+                          // onChanged: (value) {
+                          //   if (value != '') {
+                          //     if (value == '.') {
+                          //       widget
+                          //           .discountPercentController
+                          //           .text = '100';
+                          //     } else {
+                          //       if (value
+                          //           .toString()
+                          //           .contains('..')) {
+                          //         widget
+                          //             .discountPercentController
+                          //             .text = '100';
+                          //       } else {
+                          //         if (double.parse(value) >
+                          //             100) {
+                          //           setState(() {
+                          //             widget
+                          //                 .discountPercentController
+                          //                 .text = '100';
+                          //           });
+                          //         }
+                          //       }
+                          //     }
+                          //   }
+                          // },
                           style: TextStyle(
                             fontSize:
                                 theme
