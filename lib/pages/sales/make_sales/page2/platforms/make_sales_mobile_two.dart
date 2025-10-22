@@ -853,15 +853,10 @@ class _MakeSalesMobileTwoState
                                       // fontWeight: FontWeight.bold,
                                     ),
                                     formatMoneyBig(
-                                      amount: returnSalesProvider(
-                                        context,
-                                      ).calcTotalMain(
-                                        returnSalesProvider(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .cartItems,
-                                      ),
+                                      amount:
+                                          returnSalesProvider(
+                                            context,
+                                          ).calcTotalMain(),
                                       context: context,
                                     ),
                                   ),
@@ -920,7 +915,7 @@ class _MakeSalesMobileTwoState
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
-                                    '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).currentCart().cartItems), context)}',
+                                    '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
                                   ),
                                 ],
                               ),
@@ -953,15 +948,10 @@ class _MakeSalesMobileTwoState
                                           FontWeight.bold,
                                     ),
                                     formatMoneyMid(
-                                      amount: returnSalesProvider(
-                                        context,
-                                      ).calcFinalTotalMain(
-                                        returnSalesProvider(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .cartItems,
-                                      ),
+                                      amount:
+                                          returnSalesProvider(
+                                            context,
+                                          ).calcFinalTotalMain(),
                                       context: context,
                                     ),
                                   ),
@@ -1075,13 +1065,7 @@ class _MakeSalesMobileTwoState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).calcFinalTotalMain(
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).currentCart().cartItems,
-                                              )
+                                              ).calcFinalTotalMain()
                                               : 0,
                                       cashAlt:
                                           returnSalesProvider(
@@ -1107,13 +1091,7 @@ class _MakeSalesMobileTwoState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).calcFinalTotalMain(
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).currentCart().cartItems,
-                                              ),
+                                              ).calcFinalTotalMain(),
                                       paymentMethod:
                                           returnSalesProvider(
                                             context,

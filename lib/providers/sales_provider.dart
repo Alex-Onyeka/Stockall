@@ -75,8 +75,41 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<int> fixedDiscounts = [
+    1000,
+    2000,
+    5000,
+    10000,
+    15000,
+    20000,
+    25000,
+    30000,
+    50000,
+  ];
+
+  List<int> returnSomeFixedDiscounts(
+    int startAmount,
+    int end,
+  ) {
+    return fixedDiscounts
+        .getRange(startAmount, end)
+        .toList();
+  }
+
+  void addGeneralFixedDiscount(double? discount) {
+    currentCart().fixedDiscount = discount;
+    currentCart().discount = null;
+    var disc = (((discount ?? 0) / calcTotalMain()) * 100);
+    for (var item in currentCart().cartItems) {
+      item.discount = disc;
+      print("${item.item.name}: ${item.discount}");
+    }
+    notifyListeners();
+  }
+
   void addGeneralDiscount(double? discount) {
     currentCart().discount = discount;
+    currentCart().fixedDiscount = null;
     for (var item in currentCart().cartItems) {
       item.discount = discount;
       print("${item.item.name}: ${item.discount}");
@@ -147,6 +180,7 @@ class SalesProvider extends ChangeNotifier {
       customerUuid: customerUuid,
       uuid: uuid,
       generalDiscount: currentCart().discount,
+      fixedDiscount: currentCart().fixedDiscount,
     );
     final receiptRes = await returnReceiptProvider(
       context,
@@ -183,12 +217,8 @@ class SalesProvider extends ChangeNotifier {
             recepitId: receiptId ?? 0,
             receiptUuid: receiptUuid,
             quantity: cartItem.quantity,
-            revenue: cartItem.revenue(
-              currentCart().discount,
-            ),
-            discountedAmount: cartItem.discountCost(
-              currentCart().discount,
-            ),
+            revenue: cartItem.revenue(),
+            discountedAmount: cartItem.discountCost(),
             originalCost: cartItem.totalCost(),
             discount: cartItem.discount,
             costPrice: cartItem.costPrice(),
@@ -300,10 +330,10 @@ class SalesProvider extends ChangeNotifier {
         : clearCart();
 
     if (context.mounted) {
-      // returnCustomers(
-      //   context,
-      //   listen: false,
-      // ).clearSelectedCustomer(context);
+      returnCustomers(
+        context,
+        listen: false,
+      ).clearSelectedCustomer(context);
       await returnReceiptProvider(
         context,
         listen: false,
@@ -327,6 +357,7 @@ class SalesProvider extends ChangeNotifier {
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
     currentCart().discount = null;
+    currentCart().fixedDiscount = null;
     print('Cart Cleared');
     notifyListeners();
   }
@@ -345,27 +376,29 @@ class SalesProvider extends ChangeNotifier {
     return tempValue;
   }
 
-  double calcTotalMain(List<TempCartItem> items) {
+  double calcTotalMain() {
     double tempTotal = 0;
-    for (var item in items) {
+    for (var item in currentCart().cartItems) {
       tempTotal += item.totalCost();
     }
     return tempTotal;
   }
 
-  double calcDiscountMain(List<TempCartItem> items) {
-    if (currentCart().discount != null) {
+  double calcDiscountMain() {
+    if (currentCart().fixedDiscount != null) {
+      return currentCart().fixedDiscount ?? 0;
+    } else if (currentCart().discount != null) {
       // print(calcTotalMain(items));
-      return calcTotalMain(items) *
+      return calcTotalMain() *
           ((currentCart().discount ?? 0) / 100);
     } else {
       double tempTotalDiscount = 0;
-      for (var item in items) {
+      for (var item in currentCart().cartItems) {
         if (item.item.discount != null &&
             item.customPrice == null) {
           double discountPerUnit =
-              item.item.sellingPrice ??
-              0 * (item.item.discount! / 100);
+              (item.item.sellingPrice ?? 0) *
+              (item.item.discount! / 100);
           tempTotalDiscount +=
               discountPerUnit * item.quantity;
         }
@@ -374,8 +407,8 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  double calcFinalTotalMain(List<TempCartItem> items) {
-    return calcTotalMain(items) - calcDiscountMain(items);
+  double calcFinalTotalMain() {
+    return calcTotalMain() - calcDiscountMain();
   }
 
   bool isSetCustomPrice = false;
@@ -424,6 +457,12 @@ class SalesProvider extends ChangeNotifier {
     return true;
   }
 
+  double? calcFixedDiscountPercent() {
+    return ((currentCart().fixedDiscount ?? 0) /
+            calcTotalMain()) *
+        100;
+  }
+
   String addItemToCart({
     required BuildContext context,
     required TempCartItem newItem,
@@ -452,7 +491,9 @@ class SalesProvider extends ChangeNotifier {
         item.addToStock = newItem.addToStock;
         item.customPrice = newItem.customPrice;
         item.discount =
-            currentCart().discount ?? newItem.discount;
+            currentCart().discount ??
+            calcFixedDiscountPercent() ??
+            newItem.discount;
         item.quantity = newItem.quantity;
         item.setCustomPrice = newItem.setCustomPrice;
         item.setTotalPrice = newItem.setTotalPrice;
@@ -462,13 +503,16 @@ class SalesProvider extends ChangeNotifier {
           // Item exists
           currentCart().cartItems[index].discount =
               currentCart().discount ??
+              calcFixedDiscountPercent() ??
               currentCart().cartItems[index].discount;
           currentCart().cartItems[index].quantity +=
               newItem.quantity;
           result = 'Item Updated Successfully';
         } else {
           newItem.discount =
-              currentCart().discount ?? newItem.discount;
+              currentCart().discount ??
+              calcFixedDiscountPercent() ??
+              newItem.discount;
           currentCart().cartItems.add(newItem);
           // print("Main Carts Length: ${cartQueue.length}");
           // print(

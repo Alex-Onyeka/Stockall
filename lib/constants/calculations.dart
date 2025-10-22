@@ -166,6 +166,16 @@ String formatMoneyBig({
   }
 }
 
+String? formatCompactMoney({
+  double? amount,
+  required BuildContext context,
+}) {
+  final formatter = NumberFormat.compact(locale: 'en');
+  return amount == null
+      ? null
+      : '${currencySymbol(context: context)}${formatter.format(amount)}';
+}
+
 var uuid = Uuid();
 
 String uuidGen() {

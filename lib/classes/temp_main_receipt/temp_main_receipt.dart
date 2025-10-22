@@ -55,6 +55,9 @@ class TempMainReceipt extends HiveObject {
   @HiveField(16)
   double? generalDiscount;
 
+  @HiveField(17)
+  double? fixedDiscount;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -73,6 +76,7 @@ class TempMainReceipt extends HiveObject {
     this.uuid,
     this.customerUuid,
     this.generalDiscount,
+    this.fixedDiscount,
   });
 
   factory TempMainReceipt.fromJson(
@@ -98,6 +102,8 @@ class TempMainReceipt extends HiveObject {
       customerUuid: json['customer_uuid'] as String?,
       generalDiscount:
           (json['general_discount'] as num?)?.toDouble(),
+      fixedDiscount:
+          (json['general_discount'] as num?)?.toDouble(),
     );
   }
 
@@ -120,6 +126,7 @@ class TempMainReceipt extends HiveObject {
       'uuid': uuid,
       'customer_uuid': customerUuid,
       'general_discount': generalDiscount,
+      'fixed_discount': fixedDiscount,
     };
   }
 }

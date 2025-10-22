@@ -973,15 +973,10 @@ class _MakeSalesDesktopTwoState
                                       // fontWeight: FontWeight.bold,
                                     ),
                                     formatMoneyBig(
-                                      amount: returnSalesProvider(
-                                        context,
-                                      ).calcTotalMain(
-                                        returnSalesProvider(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .cartItems,
-                                      ),
+                                      amount:
+                                          returnSalesProvider(
+                                            context,
+                                          ).calcTotalMain(),
                                       context: context,
                                     ),
                                   ),
@@ -1040,7 +1035,7 @@ class _MakeSalesDesktopTwoState
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
-                                    '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(returnSalesProvider(context).currentCart().cartItems), context)}',
+                                    '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
                                   ),
                                 ],
                               ),
@@ -1073,15 +1068,10 @@ class _MakeSalesDesktopTwoState
                                           FontWeight.bold,
                                     ),
                                     formatMoneyBig(
-                                      amount: returnSalesProvider(
-                                        context,
-                                      ).calcFinalTotalMain(
-                                        returnSalesProvider(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .cartItems,
-                                      ),
+                                      amount:
+                                          returnSalesProvider(
+                                            context,
+                                          ).calcFinalTotalMain(),
                                       context: context,
                                     ),
                                   ),
@@ -1187,21 +1177,14 @@ class _MakeSalesDesktopTwoState
                                                         context,
                                                         listen:
                                                             false,
-                                                      ).calcFinalTotalMain(
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).currentCart().cartItems,
-                                                      )
+                                                      ).calcFinalTotalMain()
                                                       : 0,
                                               cashAlt:
                                                   returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              )
-                                                              .returnPaymentMethod() ==
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).returnPaymentMethod() ==
                                                           'Split'
                                                       ? double.tryParse(
                                                             widget.cashController.text,
@@ -1218,13 +1201,7 @@ class _MakeSalesDesktopTwoState
                                                         context,
                                                         listen:
                                                             false,
-                                                      ).calcFinalTotalMain(
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).currentCart().cartItems,
-                                                      ),
+                                                      ).calcFinalTotalMain(),
                                               paymentMethod:
                                                   returnSalesProvider(
                                                     context,

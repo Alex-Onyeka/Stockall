@@ -975,29 +975,29 @@ class _ReceiptDetailsContainerState
                                                       context,
                                                 ),
                                               ),
-                                              Visibility(
-                                                visible:
-                                                    productRecord.discount !=
-                                                        null &&
-                                                    !productRecord
-                                                        .customPriceSet,
-                                                child: Text(
-                                                  style: TextStyle(
-                                                    decoration:
-                                                        TextDecoration.lineThrough,
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b2.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                  formatMoneyMid(
-                                                    amount:
-                                                        productRecord.originalCost!,
-                                                    context:
-                                                        context,
-                                                  ),
-                                                ),
-                                              ),
+                                              // Visibility(
+                                              //   visible:
+                                              //       productRecord.discount !=
+                                              //           null &&
+                                              //       !productRecord
+                                              //           .customPriceSet,
+                                              //   child: Text(
+                                              //     style: TextStyle(
+                                              //       decoration:
+                                              //           TextDecoration.lineThrough,
+                                              //       fontSize:
+                                              //           widget.theme.mobileTexts.b2.fontSize,
+                                              //       fontWeight:
+                                              //           FontWeight.normal,
+                                              //     ),
+                                              //     formatMoneyMid(
+                                              //       amount:
+                                              //           productRecord.originalCost!,
+                                              //       context:
+                                              //           context,
+                                              //     ),
+                                              //   ),
+                                              // ),
                                             ],
                                           ),
                                         ),
@@ -1804,7 +1804,7 @@ class _ReceiptDetailsContainerState
                                     );
                                   }
                                 } else {
-                                  generateAndPreviewPdfRoll(
+                                  await generateAndPreviewPdf(
                                     staffName:
                                         staff?.name ??
                                         widget
@@ -1814,15 +1814,12 @@ class _ReceiptDetailsContainerState
                                     receipt:
                                         widget.mainReceipt,
                                     records: records,
+
                                     shop:
                                         returnShopProvider(
                                           safeContext,
                                           listen: false,
                                         ).userShop!,
-                                    printerType:
-                                        shop(
-                                          context,
-                                        )!.printType!,
                                   );
                                 }
                                 if (safeContext.mounted &&

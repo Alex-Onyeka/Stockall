@@ -890,29 +890,29 @@ class _ReceiptDetailsContainerState
                                                       context,
                                                 ),
                                               ),
-                                              Visibility(
-                                                visible:
-                                                    productRecord.discount !=
-                                                        null &&
-                                                    !productRecord
-                                                        .customPriceSet,
-                                                child: Text(
-                                                  style: TextStyle(
-                                                    decoration:
-                                                        TextDecoration.lineThrough,
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b2.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                  formatMoneyMid(
-                                                    amount:
-                                                        productRecord.originalCost!,
-                                                    context:
-                                                        context,
-                                                  ),
-                                                ),
-                                              ),
+                                              // Visibility(
+                                              //   visible:
+                                              //       productRecord.discount !=
+                                              //           null &&
+                                              //       !productRecord
+                                              //           .customPriceSet,
+                                              //   child: Text(
+                                              //     style: TextStyle(
+                                              //       decoration:
+                                              //           TextDecoration.lineThrough,
+                                              //       fontSize:
+                                              //           widget.theme.mobileTexts.b2.fontSize,
+                                              //       fontWeight:
+                                              //           FontWeight.normal,
+                                              //     ),
+                                              //     formatMoneyMid(
+                                              //       amount:
+                                              //           productRecord.originalCost!,
+                                              //       context:
+                                              //           context,
+                                              //     ),
+                                              //   ),
+                                              // ),
                                             ],
                                           ),
                                         ),

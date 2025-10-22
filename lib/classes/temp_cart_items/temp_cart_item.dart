@@ -19,14 +19,13 @@ class TempCartItem {
     required this.setTotalPrice,
   });
 
-  double? returnDiscount(double? generalDiscount) {
-    return generalDiscount ?? item.discount;
+  double? returnDiscount() {
+    return discount ?? item.discount;
   }
 
-  double discountCost(double? generalDiscount) {
-    if (returnDiscount(generalDiscount) != null) {
-      return (totalCost() *
-          (returnDiscount(generalDiscount)! / 100));
+  double discountCost() {
+    if (returnDiscount() != null) {
+      return (totalCost() * (returnDiscount()! / 100));
     } else {
       return 0;
     }
@@ -46,8 +45,8 @@ class TempCartItem {
     }
   }
 
-  double revenue(double? generalDiscount) {
-    return totalCost() - discountCost(generalDiscount);
+  double revenue() {
+    return totalCost() - discountCost();
   }
 
   double? costPrice() {
