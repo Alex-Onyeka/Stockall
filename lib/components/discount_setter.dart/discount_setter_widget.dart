@@ -794,7 +794,7 @@ class _DiscountSetterBodyState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).addGeneralDiscount(
+                                              ).addGeneralFixedDiscount(
                                                 dis.toDouble(),
                                               );
                                               Navigator.of(
