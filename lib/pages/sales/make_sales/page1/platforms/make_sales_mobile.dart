@@ -1613,6 +1613,18 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
         canPop: false,
         child: Scaffold(
           appBar: appBar(
+            backAction:
+                returnSalesProvider(
+                      context,
+                      // listen: false,
+                    ).currentCart().isReceiptEdit
+                    ? () {
+                      returnSalesProvider(
+                        context,
+                        listen: false,
+                      ).cancelReceiptEdit(context);
+                    }
+                    : null,
             // isMain: widget.isMain,
             context: context,
             title:

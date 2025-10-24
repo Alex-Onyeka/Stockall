@@ -101,20 +101,21 @@ class SalesProvider extends ChangeNotifier {
         .toList();
   }
 
-  // void addGeneralFixedDiscount(double? discount) {
-  //   currentCart().fixedDiscount = discount;
-  //   currentCart().discount = null;
-  //   var disc = (((discount ?? 0) / calcTotalMain()) * 100);
-  //   for (var item in currentCart().cartItems) {
-  //     item.discount = disc;
-  //     print("${item.item.name}: ${item.discount}");
-  //   }
-  //   notifyListeners();
-  // }
+  void addGeneralFixedDiscount(double? discount) {
+    currentCart().fixedDiscount = discount;
+    currentCart().discount = null;
+    var disc = (((discount ?? 0) / calcTotalMain()) * 100);
+    for (var item in currentCart().cartItems) {
+      item.discount = disc;
+      print("${item.item.name}: ${item.discount}");
+    }
+    print(currentCart().fixedDiscount);
+    notifyListeners();
+  }
 
   void addGeneralDiscount(double? discount) {
     currentCart().discount = discount;
-    // currentCart().fixedDiscount = null;
+    currentCart().fixedDiscount = null;
     for (var item in currentCart().cartItems) {
       item.discount = discount;
       print("${item.item.name}: ${item.discount}");
@@ -170,15 +171,19 @@ class SalesProvider extends ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
     if (currentCart().receiptUuidEdit != null) {
       await returnReceiptProvider(
+        // ignore: use_build_context_synchronously
         context,
         listen: false,
       ).deleteReceipt(
         currentCart().receiptUuidEdit!,
+        // ignore: use_build_context_synchronously
         context,
       );
     }
-    final createdAt = DateTime.now().toUtc();
+    final createdAt =
+        currentCart().createdDate ?? DateTime.now().toUtc();
     final uuid = currentCart().receiptUuidEdit ?? uuidGen();
+
     print('Checkout Started');
 
     TempMainReceipt receipt = TempMainReceipt(
@@ -194,7 +199,7 @@ class SalesProvider extends ChangeNotifier {
       customerUuid: customerUuid,
       uuid: uuid,
       generalDiscount: currentCart().discount,
-      // fixedDiscount: currentCart().fixedDiscount,
+      fixedDiscount: currentCart().fixedDiscount,
     );
     final receiptRes = await returnReceiptProvider(
       context,
@@ -376,7 +381,7 @@ class SalesProvider extends ChangeNotifier {
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
     currentCart().discount = null;
-    // currentCart().fixedDiscount = null;
+    currentCart().fixedDiscount = null;
     print('Cart Cleared');
     notifyListeners();
   }
@@ -404,10 +409,9 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcDiscountMain() {
-    // if (currentCart().fixedDiscount != null) {
-    //   return currentCart().fixedDiscount ?? 0;
-    // } else
-    if (currentCart().discount != null) {
+    if (currentCart().fixedDiscount != null) {
+      return currentCart().fixedDiscount ?? 0;
+    } else if (currentCart().discount != null) {
       // print(calcTotalMain(items));
       return calcTotalMain() *
           ((currentCart().discount ?? 0) / 100);
@@ -778,6 +782,8 @@ class SalesProvider extends ChangeNotifier {
         .isEmpty) {
       cartQueue.add(
         TempCart(
+          fixedDiscount: receipt.fixedDiscount,
+          createdDate: receipt.createdAt,
           cartItems: cartItems,
           isInvoice: receipt.isInvoice,
           discount: receipt.generalDiscount,
@@ -833,15 +839,11 @@ class SalesProvider extends ChangeNotifier {
                     context,
                     listen: false,
                   ).currentCart().receiptUuidEdit;
-              returnSalesProvider(
-                context,
-                listen: false,
-              ).deleteCart(
-                returnSalesProvider(
-                  context,
-                  listen: false,
-                ).cartIndex,
-              );
+              if (cartQueue.length == 1) {
+                addNewCart();
+              }
+
+              deleteCart(cartIndex);
               selectCart(0);
               Navigator.push(
                 context,

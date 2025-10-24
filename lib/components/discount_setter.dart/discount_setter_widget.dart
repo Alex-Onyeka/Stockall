@@ -38,13 +38,11 @@ class _DiscountSetterWidgetState
                     listen: false,
                   );
                   if (salesPFalse.currentCart().discount ==
-                      null
-                  //     &&
-                  // salesPFalse
-                  //         .currentCart()
-                  //         .fixedDiscount ==
-                  //     null
-                  ) {
+                          null &&
+                      salesPFalse
+                              .currentCart()
+                              .fixedDiscount ==
+                          null) {
                     if (salesPFalse
                             .currentCart()
                             .isSettingDiscountOpen ==
@@ -117,29 +115,27 @@ class _DiscountSetterWidgetState
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        returnSalesProvider(
-                                  context,
-                                ).currentCart().discount !=
-                                null
-                            //     ||
-                            // returnSalesProvider(context)
-                            //         .currentCart()
-                            //         .fixedDiscount !=
-                            //     null
+                        returnSalesProvider(context)
+                                        .currentCart()
+                                        .discount !=
+                                    null ||
+                                returnSalesProvider(context)
+                                        .currentCart()
+                                        .fixedDiscount !=
+                                    null
                             ? 'Cancel'
                             : 'Add Discount:',
                       ),
                       Visibility(
                         visible:
                             returnSalesProvider(
-                              context,
-                            ).currentCart().discount !=
-                            null,
-                        //     ||
-                        // returnSalesProvider(context)
-                        //         .currentCart()
-                        //         .fixedDiscount !=
-                        //     null,
+                                  context,
+                                ).currentCart().discount !=
+                                null ||
+                            returnSalesProvider(context)
+                                    .currentCart()
+                                    .fixedDiscount !=
+                                null,
                         child: Container(
                           padding: EdgeInsets.fromLTRB(
                             7,
@@ -177,7 +173,7 @@ class _DiscountSetterWidgetState
                                       .lightModeColor
                                       .secColor200,
                             ),
-                            '${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0) ?? ''}${returnSalesProvider(context).currentCart().discount != null ? '%' : ''}',
+                            '${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProvider(context).currentCart().fixedDiscount)}${returnSalesProvider(context).currentCart().discount != null ? '%' : ''}',
                           ),
                         ),
                       ),
@@ -333,16 +329,6 @@ class _DiscountSetterBodyState
                   ),
                 ],
               ),
-              // SizedBox(height: 5),
-              // Container(
-              //   decoration: BoxDecoration(
-              //     border: Border(
-              //       bottom: BorderSide(
-              //         color: Colors.grey.shade100,
-              //       ),
-              //     ),
-              //   ),
-              // ),
               SizedBox(height: 5),
               Builder(
                 builder: (context) {
@@ -779,13 +765,13 @@ class _DiscountSetterBodyState
                                                   context,
                                                 ) >
                                                 mobileScreen) {
-                                              // returnSalesProvider(
-                                              //   context,
-                                              //   listen:
-                                              //       false,
-                                              // ).addGeneralFixedDiscount(
-                                              //   dis.toDouble(),
-                                              // );
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).addGeneralFixedDiscount(
+                                                dis.toDouble(),
+                                              );
                                               returnSalesProvider(
                                                 context,
                                                 listen:
@@ -794,13 +780,13 @@ class _DiscountSetterBodyState
                                                 false,
                                               );
                                             } else {
-                                              // returnSalesProvider(
-                                              //   context,
-                                              //   listen:
-                                              //       false,
-                                              // ).addGeneralFixedDiscount(
-                                              //   dis.toDouble(),
-                                              // );
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).addGeneralFixedDiscount(
+                                                dis.toDouble(),
+                                              );
                                               Navigator.of(
                                                 context,
                                               ).pop();
@@ -871,13 +857,13 @@ class _DiscountSetterBodyState
                                                   context,
                                                 ) >
                                                 mobileScreen) {
-                                              // returnSalesProvider(
-                                              //   context,
-                                              //   listen:
-                                              //       false,
-                                              // ).addGeneralFixedDiscount(
-                                              //   dis.toDouble(),
-                                              // );
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).addGeneralFixedDiscount(
+                                                dis.toDouble(),
+                                              );
                                               returnSalesProvider(
                                                 context,
                                                 listen:
@@ -886,13 +872,13 @@ class _DiscountSetterBodyState
                                                 false,
                                               );
                                             } else {
-                                              // returnSalesProvider(
-                                              //   context,
-                                              //   listen:
-                                              //       false,
-                                              // ).addGeneralFixedDiscount(
-                                              //   dis.toDouble(),
-                                              // );
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).addGeneralFixedDiscount(
+                                                dis.toDouble(),
+                                              );
                                               Navigator.of(
                                                 context,
                                               ).pop();
@@ -1104,16 +1090,16 @@ class _DiscountSetterBodyState
                                             .discountPercentController
                                             .text
                                             .isNotEmpty) {
-                                          // returnSalesProvider(
-                                          //   context,
-                                          //   listen: false,
-                                          // ).addGeneralFixedDiscount(
-                                          //   double.parse(
-                                          //     widget
-                                          //         .discountPercentController
-                                          //         .text,
-                                          //   ),
-                                          // );
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).addGeneralFixedDiscount(
+                                            double.parse(
+                                              widget
+                                                  .discountPercentController
+                                                  .text,
+                                            ),
+                                          );
                                           if (screenWidth(
                                                 context,
                                               ) >

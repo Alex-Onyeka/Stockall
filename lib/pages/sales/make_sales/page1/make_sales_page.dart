@@ -31,15 +31,36 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
         context,
         listen: false,
       ).currentCart().isReceiptEdit) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).addGeneralDiscount(
+        if (returnSalesProvider(
+              context,
+              listen: false,
+            ).currentCart().discount !=
+            null) {
           returnSalesProvider(
             context,
             listen: false,
-          ).currentCart().discount,
-        );
+          ).addGeneralDiscount(
+            returnSalesProvider(
+              context,
+              listen: false,
+            ).currentCart().discount,
+          );
+        }
+        if (returnSalesProvider(
+              context,
+              listen: false,
+            ).currentCart().fixedDiscount !=
+            null) {
+          returnSalesProvider(
+            context,
+            listen: false,
+          ).addGeneralFixedDiscount(
+            returnSalesProvider(
+              context,
+              listen: false,
+            ).currentCart().fixedDiscount,
+          );
+        }
       }
       await returnNavProvider(
         context,

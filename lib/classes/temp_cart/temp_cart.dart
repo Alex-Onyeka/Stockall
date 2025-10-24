@@ -9,8 +9,9 @@ class TempCart {
   double? discount;
   bool isReceiptEdit;
   String? receiptUuidEdit;
+  DateTime? createdDate;
   bool setCustomPrice;
-  // double? fixedDiscount;
+  double? fixedDiscount;
   bool isSettingDiscountOpen;
   TempCart({
     required this.cartItems,
@@ -23,6 +24,7 @@ class TempCart {
     this.isReceiptEdit = false,
     this.receiptUuidEdit,
     this.setCustomPrice = false,
-    // this.fixedDiscount,
+    this.createdDate,
+    this.fixedDiscount,
   });
 }
