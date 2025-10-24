@@ -5,7 +5,7 @@ part 'temp_product_sale_record.g.dart';
 @HiveType(typeId: 6)
 class TempProductSaleRecord {
   @HiveField(0)
-  final int? productRecordId;
+  int? productRecordId;
 
   @HiveField(1)
   final DateTime createdAt;
@@ -14,46 +14,46 @@ class TempProductSaleRecord {
   final int productId;
 
   @HiveField(3)
-  final String productName;
+  String productName;
 
   @HiveField(4)
-  final int shopId;
+  int shopId;
 
   @HiveField(5)
-  final String staffId;
+  String staffId;
 
   @HiveField(6)
-  final int? customerId;
+  int? customerId;
 
   @HiveField(7)
-  final String? customerName;
+  String? customerName;
 
   @HiveField(8)
-  final String staffName;
+  String staffName;
 
   @HiveField(9)
-  final int recepitId;
+  int recepitId;
 
   @HiveField(10)
-  final double? discount;
+  double? discount;
 
   @HiveField(11)
-  final double quantity;
+  double quantity;
 
   @HiveField(12)
-  final double revenue;
+  double revenue;
 
   @HiveField(13)
-  final double? discountedAmount;
+  double? discountedAmount;
 
   @HiveField(14)
-  final double? originalCost;
+  double? originalCost;
 
   @HiveField(15)
-  final double? costPrice;
+  double? costPrice;
 
   @HiveField(16)
-  final bool customPriceSet;
+  bool customPriceSet;
 
   @HiveField(17)
   String? departmentName;
@@ -78,6 +78,8 @@ class TempProductSaleRecord {
 
   @HiveField(24)
   bool? isProductManaged;
+
+  bool? setTotalPrice;
 
   TempProductSaleRecord({
     this.productRecordId,
@@ -105,6 +107,7 @@ class TempProductSaleRecord {
     this.customerUuid,
     this.receiptUuid,
     required this.isProductManaged,
+    this.setTotalPrice,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -139,6 +142,7 @@ class TempProductSaleRecord {
       customerUuid: json['customer_uuid'] as String?,
       receiptUuid: json['receipt_uuid'] as String?,
       isProductManaged: json['is_product_managed'] as bool?,
+      setTotalPrice: json['set_total_price'] as bool?,
     );
   }
 
@@ -167,6 +171,68 @@ class TempProductSaleRecord {
       'receipt_uuid': receiptUuid,
       'customer_uuid': customerUuid,
       'is_product_managed': isProductManaged,
+      'set_total_price': setTotalPrice,
     };
+  }
+
+  TempProductSaleRecord copy({
+    int? productRecordId,
+    DateTime? createdAt,
+    int? productId,
+    String? productName,
+    int? shopId,
+    String? staffId,
+    int? customerId,
+    String? customerName,
+    String? staffName,
+    int? recepitId,
+    double? discount,
+    double? quantity,
+    double? revenue,
+    double? discountedAmount,
+    double? originalCost,
+    double? costPrice,
+    bool? customPriceSet,
+    String? departmentName,
+    int? departmentId,
+    bool? addToStock,
+    String? uuid,
+    String? productUuid,
+    String? customerUuid,
+    String? receiptUuid,
+    bool? isProductManaged,
+    bool? setTotalPrice,
+  }) {
+    return TempProductSaleRecord(
+      productRecordId:
+          productRecordId ?? this.productRecordId,
+      createdAt: createdAt ?? this.createdAt,
+      productId: productId ?? this.productId,
+      productName: productName ?? this.productName,
+      shopId: shopId ?? this.shopId,
+      staffId: staffId ?? this.staffId,
+      customerId: customerId ?? this.customerId,
+      customerName: customerName ?? this.customerName,
+      staffName: staffName ?? this.staffName,
+      recepitId: recepitId ?? this.recepitId,
+      discount: discount ?? this.discount,
+      quantity: quantity ?? this.quantity,
+      revenue: revenue ?? this.revenue,
+      discountedAmount:
+          discountedAmount ?? this.discountedAmount,
+      originalCost: originalCost ?? this.originalCost,
+      costPrice: costPrice ?? this.costPrice,
+      customPriceSet: customPriceSet ?? this.customPriceSet,
+      departmentName: departmentName ?? this.departmentName,
+      departmentId: departmentId ?? this.departmentId,
+      addToStock: addToStock ?? this.addToStock,
+      uuid: uuid ?? this.uuid,
+      productUuid: productUuid ?? this.productUuid,
+      customerUuid: customerUuid ?? this.customerUuid,
+      receiptUuid: receiptUuid ?? this.receiptUuid,
+      isProductManaged:
+          isProductManaged ?? this.isProductManaged,
+      setTotalPrice: setTotalPrice ?? this.setTotalPrice,
+    );
   }
 }

@@ -1354,7 +1354,7 @@ class _CustomBottomPanelState
                         visible:
                             returnSalesProvider(
                                   context,
-                                ).isSetCustomPrice &&
+                                ).isSetCustomPrice() &&
                                 cartItem
                                     .item
                                     .setCustomPrice ||
@@ -1381,7 +1381,17 @@ class _CustomBottomPanelState
                                 hint: 'Enter Price',
                                 controller: priceController,
                                 theme: theme,
-                                onChanged: (p0) {
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    cartItem.setCustomPrice =
+                                        true;
+                                  } else {
+                                    cartItem.setCustomPrice =
+                                        false;
+                                  }
+                                  print(
+                                    cartItem.setCustomPrice,
+                                  );
                                   setState(() {});
                                 },
                               ),
@@ -1496,7 +1506,7 @@ class _CustomBottomPanelState
                                   ),
                                   returnSalesProvider(
                                         context,
-                                      ).isSetCustomPrice
+                                      ).isSetCustomPrice()
                                       ? 'Cancel Custom Price'
                                       : 'Set Custom Price',
                                 ),
@@ -1762,6 +1772,11 @@ class _CustomBottomPanelState
                                                 '',
                                               ),
                                         );
+                                    cartItem.setCustomPrice =
+                                        true;
+                                  } else {
+                                    cartItem.setCustomPrice =
+                                        false;
                                   }
                                   cartItem.setTotalPrice =
                                       returnSalesProvider(
@@ -1770,15 +1785,15 @@ class _CustomBottomPanelState
                                       ).setTotalPrice;
                                   cartItem.quantity =
                                       qqty.toDouble();
-                                  cartItem.setCustomPrice =
-                                      cartItem
-                                              .item
-                                              .sellingPrice ==
-                                          null ||
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).isSetCustomPrice;
+                                  // cartItem.setCustomPrice =
+                                  //     cartItem
+                                  //             .item
+                                  //             .sellingPrice ==
+                                  //         null ||
+                                  //     returnSalesProvider(
+                                  //       context,
+                                  //       listen: false,
+                                  //     ).isSetCustomPrice();
                                   returnSalesProvider(
                                     context,
                                     listen: false,

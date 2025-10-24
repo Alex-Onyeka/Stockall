@@ -4,6 +4,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
+import 'package:stockall/components/cart_queue/cart_queue_desktop.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
@@ -700,194 +701,8 @@ class _MakeSalesDesktopTwoState
                                 ),
                                 child: Row(
                                   children: [
-                                    Expanded(
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        scrollDirection:
-                                            Axis.horizontal,
-                                        itemCount:
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .cartQueue
-                                                .length,
-                                        itemBuilder: (
-                                          context,
-                                          index,
-                                        ) {
-                                          var salesP =
-                                              returnSalesProvider(
-                                                context,
-                                              );
-                                          // var cart =
-                                          //     salesP
-                                          //         .cartQueue[index];
-                                          // return Container();
-                                          return Padding(
-                                            padding:
-                                                const EdgeInsets.only(
-                                                  right:
-                                                      8.0,
-                                                ),
-                                            child: Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: Ink(
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      salesP.cartIndex ==
-                                                                  index &&
-                                                              salesP.cartQueue.length >
-                                                                  1
-                                                          ? Colors.grey.shade100
-                                                          : const Color.fromARGB(
-                                                            167,
-                                                            250,
-                                                            250,
-                                                            250,
-                                                          ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        3,
-                                                      ),
-                                                ),
-                                                child: InkWell(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        3,
-                                                      ),
-                                                  onTap: () {
-                                                    returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).selectCart(
-                                                      index,
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      horizontal:
-                                                          salesP.cartIndex ==
-                                                                      index &&
-                                                                  salesP.cartQueue.length >
-                                                                      1
-                                                              ? 8
-                                                              : 12,
-                                                      vertical:
-                                                          5,
-                                                    ),
-
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      // spacing:
-                                                      //     10,
-                                                      mainAxisAlignment:
-                                                          salesP.cartIndex ==
-                                                                      index &&
-                                                                  salesP.cartQueue.length >
-                                                                      1
-                                                              ? MainAxisAlignment.spaceBetween
-                                                              : MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b4.fontSize,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          'Cart ${index + 1}',
-                                                        ),
-                                                        Visibility(
-                                                          visible:
-                                                              salesP.cartIndex ==
-                                                                  index &&
-                                                              salesP.cartQueue.length >
-                                                                  1,
-                                                          child: SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible:
-                                                              salesP.cartIndex ==
-                                                                  index &&
-                                                              salesP.cartQueue.length >
-                                                                  1,
-                                                          child: Material(
-                                                            color:
-                                                                Colors.transparent,
-                                                            child: Ink(
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                                color:
-                                                                    theme.lightModeColor.secColor200,
-                                                              ),
-                                                              child: InkWell(
-                                                                onTap: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ConfirmationAlert(
-                                                                        theme:
-                                                                            theme,
-                                                                        message:
-                                                                            'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
-                                                                        title:
-                                                                            'Are you sure?',
-                                                                        action: () {
-                                                                          returnSalesProvider(
-                                                                            context,
-                                                                            listen:
-                                                                                false,
-                                                                          ).deleteCart(
-                                                                            index,
-                                                                          );
-                                                                          Navigator.of(
-                                                                            context,
-                                                                          ).pop();
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    4,
-                                                                  ),
-                                                                  decoration: BoxDecoration(
-                                                                    shape:
-                                                                        BoxShape.circle,
-                                                                  ),
-                                                                  child: Icon(
-                                                                    color:
-                                                                        Colors.white,
-                                                                    size:
-                                                                        9,
-                                                                    Icons.clear,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                    CartQueueDesktop(
+                                      theme: theme,
                                     ),
                                     SizedBox(width: 10),
                                     Visibility(
@@ -1105,6 +920,10 @@ class _MakeSalesDesktopTwoState
                                           message:
                                               returnSalesProvider(
                                                     context,
+                                                  ).currentCart().isReceiptEdit
+                                                  ? "You are about to update a sales Receipt, are you sure you want to Proceed?"
+                                                  : returnSalesProvider(
+                                                    context,
                                                     listen:
                                                         false,
                                                   ).currentCart().isInvoice
@@ -1112,6 +931,10 @@ class _MakeSalesDesktopTwoState
                                                   : 'You are about to record a Sale, are you sure you want to proceed?',
                                           title:
                                               returnSalesProvider(
+                                                    context,
+                                                  ).currentCart().isReceiptEdit
+                                                  ? 'Update Receipt?'
+                                                  : returnSalesProvider(
                                                     context,
                                                     listen:
                                                         false,
@@ -1269,7 +1092,14 @@ class _MakeSalesDesktopTwoState
                                       },
                                     );
                                   },
-                                  text: 'Check Out',
+                                  text:
+                                      returnSalesProvider(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .isReceiptEdit
+                                          ? 'Update Receipt'
+                                          : 'Check Out',
                                 ),
                               ),
                               SizedBox(height: 20),

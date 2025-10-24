@@ -1392,6 +1392,29 @@ class _ReceiptDetailsContainerState
                       },
                     ),
                   ),
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().updateSale,
+                      context: context,
+                    ),
+                    child: BottomActionButton(
+                      text: 'Edit',
+                      color: Colors.grey,
+                      iconSize: 20,
+                      theme: widget.theme,
+                      icon: Icons.edit,
+                      action: () {
+                        returnSalesProvider(
+                          context,
+                          listen: false,
+                        ).onEditReceipt(
+                          receipt: widget.mainReceipt,
+                          context: context,
+                        );
+                      },
+                    ),
+                  ),
                   BottomActionButton(
                     action: () {
                       var safeContext = context;
@@ -1929,16 +1952,16 @@ class BottomActionButton extends StatelessWidget {
             ),
             child: Center(
               child: Row(
-                spacing: 5,
+                // spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
-                    ),
-                    text,
-                  ),
+                  // Text(
+                  //   style: TextStyle(
+                  //     fontSize:
+                  //         theme.mobileTexts.b3.fontSize,
+                  //   ),
+                  //   text,
+                  // ),
                   Stack(
                     children: [
                       Visibility(

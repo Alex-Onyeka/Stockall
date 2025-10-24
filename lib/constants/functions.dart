@@ -102,6 +102,7 @@ List<Map<String, dynamic>> employees = [
       'Make Sale',
       'Make Refund',
       'Delete Sales',
+      'Update Sales',
       'Add Employee',
       'Employee Page',
       'Update Employee',
@@ -128,6 +129,7 @@ List<Map<String, dynamic>> employees = [
       'Make Sale',
       'Make Refund',
       'Delete Sales',
+      'Update Sales',
       'Add Employee',
       'Update Employee',
       'Employee Page',
@@ -149,6 +151,7 @@ List<Map<String, dynamic>> employees = [
       'Make Sale',
       'Make Refund',
       'Delete Sales',
+      'Update Sales',
       'Add Expenses',
       'Update Expenses',
       'Notifications Page',
@@ -167,6 +170,7 @@ List<Map<String, dynamic>> employees = [
       'Add Expenses',
       'Update Expenses',
       'Delete Expenses',
+      'Update Sales',
     ],
   },
   {
@@ -178,6 +182,7 @@ List<Map<String, dynamic>> employees = [
       'View Daily Sales',
       'Add Expenses',
       'Update Expenses',
+      'Update Sales',
     ],
   },
 ];
@@ -191,6 +196,7 @@ class Authorizations {
   String deleteCustomer = 'Delete Customers';
   String makeSale = 'Make Sale';
   String deleteSale = 'Delete Sales';
+  String updateSale = 'Update Sales';
   String makeRefund = 'Make Refund';
   String addEmployee = 'Add Employee';
   String updateEmployee = 'Update Employees';

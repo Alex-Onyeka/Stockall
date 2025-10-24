@@ -7,7 +7,10 @@ class TempCart {
   String? selectedCustomerName;
   int paymentMethod;
   double? discount;
-  double? fixedDiscount;
+  bool isReceiptEdit;
+  String? receiptUuidEdit;
+  bool setCustomPrice;
+  // double? fixedDiscount;
   bool isSettingDiscountOpen;
   TempCart({
     required this.cartItems,
@@ -17,6 +20,9 @@ class TempCart {
     this.paymentMethod = 0,
     this.discount,
     this.isSettingDiscountOpen = false,
-    this.fixedDiscount,
+    this.isReceiptEdit = false,
+    this.receiptUuidEdit,
+    this.setCustomPrice = false,
+    // this.fixedDiscount,
   });
 }

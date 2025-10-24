@@ -8,6 +8,7 @@ class TempCartItem {
   bool setCustomPrice;
   bool setTotalPrice;
   bool addToStock;
+  String? salesRecordId;
 
   TempCartItem({
     required this.item,
@@ -17,6 +18,7 @@ class TempCartItem {
     this.setCustomPrice = true,
     required this.addToStock,
     required this.setTotalPrice,
+    this.salesRecordId,
   });
 
   double? returnDiscount() {
@@ -25,7 +27,8 @@ class TempCartItem {
 
   double discountCost() {
     if (returnDiscount() != null) {
-      return (totalCost() * (returnDiscount()! / 100));
+      return (totalCost() *
+          ((returnDiscount() ?? 0) / 100));
     } else {
       return 0;
     }

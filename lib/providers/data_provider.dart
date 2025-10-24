@@ -58,7 +58,7 @@ class DataProvider extends ChangeNotifier {
       var data =
           await supabase
               .from('products')
-              .insert(product.toJson())
+              .upsert(product.toJson(), onConflict: 'uuid')
               .select()
               .single();
       print('Item added successfully');

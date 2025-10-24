@@ -70,9 +70,14 @@ class ReceiptsProvider extends ChangeNotifier {
       final res =
           await supabase
               .from('receipts')
-              .insert(receipt.toJson())
+              .upsert(
+                receipt.toJson(),
+                onConflict:
+                    'uuid', // match existing row by uuid
+              )
               .select()
               .single();
+
       print('Inner Receipt Online Finished');
       print('Casting Started');
       try {
@@ -248,12 +253,15 @@ class ReceiptsProvider extends ChangeNotifier {
     String uuid,
     BuildContext context,
   ) async {
+    print('Deleting Receipt');
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
+      print('Deleting Receipt Online');
       await supabase.rpc(
         'delete_receipt_and_update_inventory_new',
         params: {'target_receipt_uuid': uuid},
       );
+      print('Finished Deleting Receipt Online');
       var containsUpdate = UpdatedReceiptsFunc()
           .getReceiptIds()
           .where((rec) => rec.receiptUuid == uuid);
@@ -263,6 +271,7 @@ class ReceiptsProvider extends ChangeNotifier {
         );
       }
     } else {
+      print('Deleting Receipt Offline');
       await MainReceiptFunc().deleteReceipt(uuid);
       var containsCreated =
           CreatedReceiptsFunc()
@@ -289,7 +298,9 @@ class ReceiptsProvider extends ChangeNotifier {
       );
     }
 
-    print('✅ Receipt and inventory successfully updated.');
+    print(
+      '✅ Receipt and inventory successfully Delete and Updated.',
+    );
 
     if (context.mounted) {
       await loadReceipts(
@@ -300,6 +311,8 @@ class ReceiptsProvider extends ChangeNotifier {
         context,
       );
     }
+
+    print('Totally Finished Deleting Receipt');
     notifyListeners();
   }
 
@@ -518,25 +531,37 @@ class ReceiptsProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    final dataToInsert =
-        records.map((e) => e.toJson()).toList();
+    print('About to Start Mapping');
+    try {
+      final dataToInsert =
+          records.map((e) => e.toJson()).toList();
+      print('Finished Mapping');
 
-    if (isOnline) {
-      await supabase
-          .from('product_sales')
-          .insert(dataToInsert);
-      await ProductRecordFunc().insertSalesProductRecords(
-        records,
-      );
-    } else {
-      await ProductRecordFunc().insertSalesProductRecords(
-        records,
-      );
-      List<CreatedRecords> cRecords =
-          records.map((r) {
-            return CreatedRecords(record: r);
-          }).toList();
-      await CreatedRecordsFunc().insertAllRecords(cRecords);
+      if (isOnline) {
+        print('About to Create Product Sales Online');
+        await supabase
+            .from('product_sales')
+            .upsert(dataToInsert, onConflict: 'uuid');
+        await ProductRecordFunc().insertSalesProductRecords(
+          records,
+        );
+        print('Finished Creating Product Sales Online');
+      } else {
+        print('About to Create Product Sales Offline');
+        await ProductRecordFunc().insertSalesProductRecords(
+          records,
+        );
+        List<CreatedRecords> cRecords =
+            records.map((r) {
+              return CreatedRecords(record: r);
+            }).toList();
+        await CreatedRecordsFunc().insertAllRecords(
+          cRecords,
+        );
+        print('Finished Creating Product Sales Offline');
+      }
+    } catch (e) {
+      print('Error ${e.toString()}');
     }
 
     notifyListeners();

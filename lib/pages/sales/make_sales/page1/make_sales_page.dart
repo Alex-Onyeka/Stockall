@@ -27,6 +27,20 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (returnSalesProvider(
+        context,
+        listen: false,
+      ).currentCart().isReceiptEdit) {
+        returnSalesProvider(
+          context,
+          listen: false,
+        ).addGeneralDiscount(
+          returnSalesProvider(
+            context,
+            listen: false,
+          ).currentCart().discount,
+        );
+      }
       await returnNavProvider(
         context,
         listen: false,

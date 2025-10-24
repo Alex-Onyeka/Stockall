@@ -1117,39 +1117,6 @@ class _ReceiptDetailsContainerState
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 10,
                 children: [
-                  // BottomActionButton(
-                  //   text:
-                  //       widget.isMain
-                  //           ? 'Finish Sale'
-                  //           : 'Go Back',
-                  //   color: Colors.grey.shade600,
-                  //   iconSize: 20,
-                  //   theme: widget.theme,
-                  //   icon:
-                  //       widget.isMain
-                  //           ? Icons.check
-                  //           : Icons
-                  //               .arrow_back_ios_new_rounded,
-                  //   action: () {
-                  //     if (widget.isMain) {
-                  //       Navigator.pushReplacement(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //           builder:
-                  //               (context) => MakeSalesPage(
-                  //                 isMain: true,
-                  //               ),
-                  //         ),
-                  //       );
-                  //       returnNavProvider(
-                  //         context,
-                  //         listen: false,
-                  //       ).navigate(2);
-                  //     } else {
-                  //       Navigator.of(context).pop();
-                  //     }
-                  //   },
-                  // ),
                   Visibility(
                     visible:
                         authorization(
@@ -1304,6 +1271,32 @@ class _ReceiptDetailsContainerState
                             },
                           );
                         }
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().updateSale,
+                      context: context,
+                    ),
+                    child: BottomActionButton(
+                      text:
+                          widget.mainReceipt.isInvoice
+                              ? 'Pay Credit'
+                              : 'Delete',
+                      color: Colors.grey,
+                      iconSize: 20,
+                      theme: widget.theme,
+                      icon: Icons.edit,
+                      action: () {
+                        returnSalesProvider(
+                          context,
+                          listen: false,
+                        ).onEditReceipt(
+                          receipt: widget.mainReceipt,
+                          context: context,
+                        );
                       },
                     ),
                   ),
@@ -1836,13 +1829,13 @@ class BottomActionButton extends StatelessWidget {
                 spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
-                    ),
-                    text,
-                  ),
+                  // Text(
+                  //   style: TextStyle(
+                  //     fontSize:
+                  //         theme.mobileTexts.b3.fontSize,
+                  //   ),
+                  //   text,
+                  // ),
                   Stack(
                     children: [
                       Visibility(

@@ -127,7 +127,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         visible:
                             (returnSalesProvider(
                                       context,
-                                    ).isSetCustomPrice ||
+                                    ).isSetCustomPrice() ||
                                     cartItem
                                         .setCustomPrice) &&
                                 cartItem
@@ -255,7 +255,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       ),
                                       returnSalesProvider(
                                             context,
-                                          ).isSetCustomPrice
+                                          ).isSetCustomPrice()
                                           ? 'Cancel Custom Price'
                                           : 'Set Custom Price',
                                     ),
@@ -1618,6 +1618,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             title:
                 returnSalesProvider(
                       context,
+                    ).currentCart().isReceiptEdit
+                    ? 'Edit Receipt'
+                    : returnSalesProvider(
+                      context,
                     ).currentCart().isInvoice
                     ? 'Credit Sale'
                     : 'Cart Items',
@@ -2382,7 +2386,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           ],
                                         ),
                                         SizedBox(height: 3),
-                                        CartQueueMobile(),
+                                        CartQueueMobile(
+                                          isFirst: true,
+                                        ),
                                         SizedBox(
                                           height: 10,
                                         ),

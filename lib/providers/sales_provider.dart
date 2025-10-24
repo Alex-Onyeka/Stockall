@@ -4,10 +4,13 @@ import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,7 +30,9 @@ class SalesProvider extends ChangeNotifier {
   List<TempCart> cartQueue = [
     TempCart(cartItems: [], isInvoice: false),
   ];
+
   int cartIndex = 0;
+
   TempCart currentCart() {
     return cartQueue[cartIndex];
   }
@@ -96,20 +101,20 @@ class SalesProvider extends ChangeNotifier {
         .toList();
   }
 
-  void addGeneralFixedDiscount(double? discount) {
-    currentCart().fixedDiscount = discount;
-    currentCart().discount = null;
-    var disc = (((discount ?? 0) / calcTotalMain()) * 100);
-    for (var item in currentCart().cartItems) {
-      item.discount = disc;
-      print("${item.item.name}: ${item.discount}");
-    }
-    notifyListeners();
-  }
+  // void addGeneralFixedDiscount(double? discount) {
+  //   currentCart().fixedDiscount = discount;
+  //   currentCart().discount = null;
+  //   var disc = (((discount ?? 0) / calcTotalMain()) * 100);
+  //   for (var item in currentCart().cartItems) {
+  //     item.discount = disc;
+  //     print("${item.item.name}: ${item.discount}");
+  //   }
+  //   notifyListeners();
+  // }
 
   void addGeneralDiscount(double? discount) {
     currentCart().discount = discount;
-    currentCart().fixedDiscount = null;
+    // currentCart().fixedDiscount = null;
     for (var item in currentCart().cartItems) {
       item.discount = discount;
       print("${item.item.name}: ${item.discount}");
@@ -163,8 +168,17 @@ class SalesProvider extends ChangeNotifier {
     String? customerName,
   }) async {
     bool isOnline = await connectivity.isOnline();
+    if (currentCart().receiptUuidEdit != null) {
+      await returnReceiptProvider(
+        context,
+        listen: false,
+      ).deleteReceipt(
+        currentCart().receiptUuidEdit!,
+        context,
+      );
+    }
     final createdAt = DateTime.now().toUtc();
-    final uuid = uuidGen();
+    final uuid = currentCart().receiptUuidEdit ?? uuidGen();
     print('Checkout Started');
 
     TempMainReceipt receipt = TempMainReceipt(
@@ -180,7 +194,7 @@ class SalesProvider extends ChangeNotifier {
       customerUuid: customerUuid,
       uuid: uuid,
       generalDiscount: currentCart().discount,
-      fixedDiscount: currentCart().fixedDiscount,
+      // fixedDiscount: currentCart().fixedDiscount,
     );
     final receiptRes = await returnReceiptProvider(
       context,
@@ -203,7 +217,7 @@ class SalesProvider extends ChangeNotifier {
           final product = cartItem.item;
           print('Sales Record about to be Created');
           return TempProductSaleRecord(
-            customPriceSet: cartItem.item.setCustomPrice,
+            customPriceSet: cartItem.setCustomPrice,
             createdAt: createdAt,
             productId: product.id ?? 0,
             productUuid: product.uuid,
@@ -225,12 +239,14 @@ class SalesProvider extends ChangeNotifier {
             addToStock: cartItem.addToStock,
             departmentName: cartItem.item.departmentName,
             departmentId: cartItem.item.departmentId,
-            uuid: uuidGen(),
+            uuid: cartItem.salesRecordId ?? uuidGen(),
             isProductManaged: cartItem.item.isManaged,
+            setTotalPrice: cartItem.setTotalPrice,
           );
         }).toList();
 
     if (context.mounted) {
+      print('Creating Record Sales About to Start');
       await returnReceiptProvider(
         context,
         listen: false,
@@ -281,7 +297,10 @@ class SalesProvider extends ChangeNotifier {
                 : record.costPrice!;
 
         final double sellingPrice =
-            record.revenue / record.quantity;
+            record.discount == null
+                ? record.revenue / record.quantity
+                : (record.originalCost ?? 0) /
+                    record.quantity;
 
         TempProductClass product = TempProductClass(
           name: record.productName,
@@ -357,7 +376,7 @@ class SalesProvider extends ChangeNotifier {
     currentCart().selectedCustomerName = null;
     currentCart().paymentMethod = 0;
     currentCart().discount = null;
-    currentCart().fixedDiscount = null;
+    // currentCart().fixedDiscount = null;
     print('Cart Cleared');
     notifyListeners();
   }
@@ -385,9 +404,10 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcDiscountMain() {
-    if (currentCart().fixedDiscount != null) {
-      return currentCart().fixedDiscount ?? 0;
-    } else if (currentCart().discount != null) {
+    // if (currentCart().fixedDiscount != null) {
+    //   return currentCart().fixedDiscount ?? 0;
+    // } else
+    if (currentCart().discount != null) {
       // print(calcTotalMain(items));
       return calcTotalMain() *
           ((currentCart().discount ?? 0) / 100);
@@ -411,15 +431,18 @@ class SalesProvider extends ChangeNotifier {
     return calcTotalMain() - calcDiscountMain();
   }
 
-  bool isSetCustomPrice = false;
+  bool isSetCustomPrice() {
+    return currentCart().setCustomPrice;
+  }
 
   void toggleSetCustomPrice() {
-    isSetCustomPrice = !isSetCustomPrice;
+    currentCart().setCustomPrice =
+        !currentCart().setCustomPrice;
     notifyListeners();
   }
 
   void closeCustomPrice() {
-    isSetCustomPrice = false;
+    currentCart().setCustomPrice = false;
     notifyListeners();
   }
 
@@ -457,11 +480,11 @@ class SalesProvider extends ChangeNotifier {
     return true;
   }
 
-  double? calcFixedDiscountPercent() {
-    return ((currentCart().fixedDiscount ?? 0) /
-            calcTotalMain()) *
-        100;
-  }
+  // double? calcFixedDiscountPercent() {
+  //   return ((currentCart().fixedDiscount ?? 0) /
+  //           calcTotalMain()) *
+  //       100;
+  // }
 
   String addItemToCart({
     required BuildContext context,
@@ -492,7 +515,7 @@ class SalesProvider extends ChangeNotifier {
         item.customPrice = newItem.customPrice;
         item.discount =
             currentCart().discount ??
-            calcFixedDiscountPercent() ??
+            // calcFixedDiscountPercent() ??
             newItem.discount;
         item.quantity = newItem.quantity;
         item.setCustomPrice = newItem.setCustomPrice;
@@ -503,7 +526,7 @@ class SalesProvider extends ChangeNotifier {
           // Item exists
           currentCart().cartItems[index].discount =
               currentCart().discount ??
-              calcFixedDiscountPercent() ??
+              // calcFixedDiscountPercent() ??
               currentCart().cartItems[index].discount;
           currentCart().cartItems[index].quantity +=
               newItem.quantity;
@@ -511,7 +534,7 @@ class SalesProvider extends ChangeNotifier {
         } else {
           newItem.discount =
               currentCart().discount ??
-              calcFixedDiscountPercent() ??
+              // calcFixedDiscountPercent() ??
               newItem.discount;
           currentCart().cartItems.add(newItem);
           // print("Main Carts Length: ${cartQueue.length}");
@@ -604,5 +627,239 @@ class SalesProvider extends ChangeNotifier {
       default:
         return 'Cash';
     }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // EDIT RECEIPT
+  TempCartItem saleRecordToCartItem({
+    required TempProductSaleRecord record,
+    required TempProductClass product,
+  }) {
+    double tempRev = 0;
+    if (record.customPriceSet) {
+      if (record.setTotalPrice != null &&
+          record.setTotalPrice == true) {
+        tempRev = record.originalCost ?? 0;
+      } else {
+        tempRev =
+            (record.originalCost ?? 0) / record.quantity;
+      }
+    }
+    return TempCartItem(
+      item: product,
+      quantity: record.quantity,
+      discount: 0,
+      customPrice: record.customPriceSet ? tempRev : null,
+      addToStock: record.addToStock ?? false,
+      setCustomPrice: record.customPriceSet,
+      setTotalPrice: record.setTotalPrice ?? false,
+      salesRecordId: record.uuid,
+    );
+  }
+
+  List<TempCartItem> convertReceiptToCartItems({
+    required TempMainReceipt receipt,
+    required List<TempProductSaleRecord> saleRecords,
+    required BuildContext context,
+  }) {
+    List<TempCartItem> cartItems = [];
+
+    for (var record in saleRecords) {
+      var product = returnData(context, listen: false)
+          .productList
+          .where((p) => p.uuid == record.productUuid);
+
+      if (product.isNotEmpty) {
+        var newRecord = record.copy();
+        if (newRecord.discount != null) {
+          newRecord.revenue = newRecord.originalCost!;
+          // record.discount = 0;
+        }
+        final cartItem = saleRecordToCartItem(
+          record: newRecord,
+          product: product.first,
+        );
+        cartItems.add(cartItem);
+      } else {
+        var newRecord = record.copy();
+        if (newRecord.discount != null) {
+          newRecord.revenue = newRecord.originalCost!;
+          // record.discount = 0;
+        }
+        final double costPrice =
+            (record.costPrice == null ||
+                    record.costPrice == 0)
+                ? 0
+                : record.costPrice!;
+
+        final double sellingPrice =
+            record.discount == null
+                ? record.revenue / record.quantity
+                : (record.originalCost ?? 0) /
+                    record.quantity;
+
+        TempProductClass productNew = TempProductClass(
+          name: record.productName,
+          unit: 'Others',
+          isRefundable: false,
+          costPrice: costPrice,
+          shopId: record.shopId,
+          setCustomPrice: true,
+          isManaged: false,
+          barcode: null,
+          brand: null,
+          category: null,
+          color: null,
+          createdAt: DateTime.now(),
+          departmentId: record.departmentId,
+          departmentName: record.departmentName,
+          discount: null,
+          endDate: null,
+          expiryDate: null,
+          lowQtty: 10,
+          quantity: null,
+          sellingPrice: sellingPrice,
+          size: null,
+          sizeType: null,
+          startDate: null,
+          updatedAt: DateTime.now(),
+          uuid: uuidGen(),
+        );
+        final cartItem = saleRecordToCartItem(
+          record: newRecord,
+          product: productNew,
+        );
+        cartItems.add(cartItem);
+      }
+    }
+
+    return cartItems;
+  }
+
+  onEditReceipt({
+    required TempMainReceipt receipt,
+    required BuildContext context,
+  }) async {
+    // Get all sale records for this receipt
+    final saleRecords =
+        returnReceiptProvider(context, listen: false)
+            .produtRecordSalesMain
+            .where((r) => r.receiptUuid == receipt.uuid)
+            .toList();
+
+    // Convert them back to cart items
+    final cartItems = convertReceiptToCartItems(
+      receipt: receipt,
+      saleRecords: saleRecords,
+      context: context,
+    );
+
+    // Set these as the current cart items in your provider/controller
+    if (cartQueue
+        .where(
+          (cart) =>
+              cart.receiptUuidEdit != null &&
+              cart.receiptUuidEdit == receipt.uuid,
+        )
+        .isEmpty) {
+      cartQueue.add(
+        TempCart(
+          cartItems: cartItems,
+          isInvoice: receipt.isInvoice,
+          discount: receipt.generalDiscount,
+          receiptUuidEdit: receipt.uuid,
+          paymentMethod:
+              receipt.paymentMethod == 'Cash'
+                  ? 0
+                  : receipt.paymentMethod == 'Bank'
+                  ? 1
+                  : 2,
+          selectedCustomer: receipt.customerUuid,
+          selectedCustomerName: receipt.customerName,
+          isReceiptEdit: true,
+        ),
+      );
+      selectCart(cartQueue.indexOf(cartQueue.last));
+      notifyListeners();
+    } else {
+      selectCart(
+        cartQueue.indexOf(
+          cartQueue
+              .where(
+                (cart) =>
+                    cart.receiptUuidEdit == receipt.uuid,
+              )
+              .first,
+        ),
+      );
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return MakeSalesPage(isMain: true);
+        },
+      ),
+    );
+  }
+
+  Future<dynamic> cancelReceiptEdit(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmationAlert(
+          theme: returnTheme(context, listen: false),
+          message:
+              'You are currently editing this receipt, are you sure you want to cancel this edit?',
+          title: 'Cancel Edit?',
+          action: () {
+            if (currentCart().isReceiptEdit) {
+              var recId =
+                  returnSalesProvider(
+                    context,
+                    listen: false,
+                  ).currentCart().receiptUuidEdit;
+              returnSalesProvider(
+                context,
+                listen: false,
+              ).deleteCart(
+                returnSalesProvider(
+                  context,
+                  listen: false,
+                ).cartIndex,
+              );
+              selectCart(0);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ReceiptPage(
+                      receiptUuid: recId!,
+                      isMain: true,
+                    );
+                  },
+                ),
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        );
+      },
+    );
   }
 }

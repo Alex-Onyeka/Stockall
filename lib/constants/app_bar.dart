@@ -5,6 +5,7 @@ import 'package:stockall/pages/home/home.dart';
 PreferredSizeWidget appBar({
   required BuildContext context,
   required String title,
+  Function()? backAction,
   bool? isMain,
   bool? turnOff,
   Widget? widget,
@@ -18,31 +19,35 @@ PreferredSizeWidget appBar({
       opacity: turnOff == null || turnOff == false ? 1 : 0,
       child: IconButton(
         onPressed: () {
-          if (turnOff != null && turnOff) {
-            return;
+          if (backAction != null) {
+            backAction();
           } else {
-            if (isMain != null) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Home();
-                  },
-                ),
-              );
-            } else if (main == true) {
+            if (turnOff != null && turnOff) {
               return;
-            } else if (!Navigator.of(context).canPop()) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Home();
-                  },
-                ),
-              );
             } else {
-              Navigator.of(context).pop();
+              if (isMain != null) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Home();
+                    },
+                  ),
+                );
+              } else if (main == true) {
+                return;
+              } else if (!Navigator.of(context).canPop()) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Home();
+                    },
+                  ),
+                );
+              } else {
+                Navigator.of(context).pop();
+              }
             }
           }
         },

@@ -3,7 +3,8 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/main.dart';
 
 class CartQueueMobile extends StatelessWidget {
-  const CartQueueMobile({super.key});
+  final bool isFirst;
+  const CartQueueMobile({super.key, required this.isFirst});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,8 @@ class CartQueueMobile extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
+        color:
+            isFirst ? Colors.white : Colors.grey.shade100,
       ),
       child: Row(
         children: [
@@ -40,12 +42,17 @@ class CartQueueMobile extends StatelessWidget {
                     child: Ink(
                       decoration: BoxDecoration(
                         color:
-                            salesP.cartIndex == index &&
-                                    salesP
-                                            .cartQueue
-                                            .length >
-                                        1
-                                ? Colors.grey.shade100
+                            isFirst
+                                ? salesP.cartIndex == index
+                                    ? Colors.grey.shade100
+                                    : const Color.fromARGB(
+                                      167,
+                                      250,
+                                      250,
+                                      250,
+                                    )
+                                : salesP.cartIndex == index
+                                ? Colors.white
                                 : const Color.fromARGB(
                                   167,
                                   250,
@@ -104,7 +111,11 @@ class CartQueueMobile extends StatelessWidget {
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                'Cart ${index + 1}',
+                                salesP
+                                        .cartQueue[index]
+                                        .isReceiptEdit
+                                    ? 'Edit ${index + 1}'
+                                    : 'Cart ${index + 1}',
                               ),
                               Visibility(
                                 visible:
@@ -137,32 +148,48 @@ class CartQueueMobile extends StatelessWidget {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (
+                                        if (!returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            )
+                                            .currentCart()
+                                            .isReceiptEdit) {
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ConfirmationAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
+                                                title:
+                                                    'Are you sure?',
+                                                action: () {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).deleteCart(
+                                                    index,
+                                                  );
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          returnSalesProvider(
                                             context,
-                                          ) {
-                                            return ConfirmationAlert(
-                                              theme: theme,
-                                              message:
-                                                  'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
-                                              title:
-                                                  'Are you sure?',
-                                              action: () {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).deleteCart(
-                                                  index,
-                                                );
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                              },
-                                            );
-                                          },
-                                        );
+                                            listen: false,
+                                          ).cancelReceiptEdit(
+                                            context,
+                                          );
+                                        }
                                       },
                                       child: Container(
                                         padding:

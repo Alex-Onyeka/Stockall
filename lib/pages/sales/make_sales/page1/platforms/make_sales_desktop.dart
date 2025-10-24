@@ -7,6 +7,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
+import 'package:stockall/components/cart_queue/cart_queue_desktop.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
@@ -137,7 +138,7 @@ class _MakeSalesDesktopState
                           visible:
                               (returnSalesProvider(
                                         context,
-                                      ).isSetCustomPrice ||
+                                      ).isSetCustomPrice() ||
                                       cartItem
                                           .setCustomPrice) &&
                                   cartItem
@@ -271,7 +272,7 @@ class _MakeSalesDesktopState
                                         ),
                                         returnSalesProvider(
                                               context,
-                                            ).isSetCustomPrice
+                                            ).isSetCustomPrice()
                                             ? 'Cancel Custom Price'
                                             : 'Set Custom Price',
                                       ),
@@ -842,131 +843,135 @@ class _MakeSalesDesktopState
                               theme: theme,
                             ),
                           ),
-                          SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Add Item to your Stock?',
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    var salesProvider =
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        );
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return ConfirmationAlert(
-                                          theme: theme,
-                                          message:
-                                              salesProvider
-                                                      .addToStock
-                                                  ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
-                                                  : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
-                                          title:
-                                              !salesProvider
-                                                      .addToStock
-                                                  ? 'Add to Stock?'
-                                                  : 'Are you Sure?',
-                                          action: () async {
-                                            Navigator.of(
+                          Column(
+                            children: [
+                              SizedBox(height: 20),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 20.0,
+                                    ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Add Item to your Stock?',
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        var salesProvider =
+                                            returnSalesProvider(
                                               context,
-                                            ).pop();
-                                            salesProvider.toggleAddToStock(
-                                              salesProvider
-                                                      .addToStock
-                                                  ? false
-                                                  : true,
+                                              listen: false,
+                                            );
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ConfirmationAlert(
+                                              theme: theme,
+                                              message:
+                                                  salesProvider
+                                                          .addToStock
+                                                      ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
+                                                      : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
+                                              title:
+                                                  !salesProvider
+                                                          .addToStock
+                                                      ? 'Add to Stock?'
+                                                      : 'Are you Sure?',
+                                              action: () async {
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                                salesProvider.toggleAddToStock(
+                                                  salesProvider
+                                                          .addToStock
+                                                      ? false
+                                                      : true,
+                                                );
+                                              },
                                             );
                                           },
                                         );
                                       },
-                                    );
-                                  },
-                                  child: Container(
-                                    width: 50,
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 5,
-                                        ),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            20,
-                                          ),
-                                      border: Border.all(
-                                        color:
-                                            returnSalesProvider(
-                                                  context,
-                                                ).addToStock
-                                                ? theme
-                                                    .lightModeColor
-                                                    .prColor250
-                                                : Colors
-                                                    .grey,
-                                      ),
-                                      color:
-                                          returnSalesProvider(
-                                                context,
-                                              ).addToStock
-                                              ? theme
-                                                  .lightModeColor
-                                                  .prColor250
-                                              : Colors
-                                                  .grey
-                                                  .shade200,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          returnSalesProvider(
-                                                context,
-                                              ).addToStock
-                                              ? MainAxisAlignment
-                                                  .end
-                                              : MainAxisAlignment
-                                                  .start,
-                                      children: [
-                                        Container(
-                                          padding:
-                                              EdgeInsets.all(
-                                                5,
+                                      child: Container(
+                                        width: 50,
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              horizontal:
+                                                  10,
+                                              vertical: 5,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                20,
                                               ),
-                                          decoration: BoxDecoration(
-                                            shape:
-                                                BoxShape
-                                                    .circle,
+                                          border: Border.all(
                                             color:
                                                 returnSalesProvider(
                                                       context,
                                                     ).addToStock
-                                                    ? Colors
-                                                        .white
+                                                    ? theme
+                                                        .lightModeColor
+                                                        .prColor250
                                                     : Colors
-                                                        .grey
-                                                        .shade600,
+                                                        .grey,
                                           ),
+                                          color:
+                                              returnSalesProvider(
+                                                    context,
+                                                  ).addToStock
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .prColor250
+                                                  : Colors
+                                                      .grey
+                                                      .shade200,
                                         ),
-                                      ],
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              returnSalesProvider(
+                                                    context,
+                                                  ).addToStock
+                                                  ? MainAxisAlignment
+                                                      .end
+                                                  : MainAxisAlignment
+                                                      .start,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.all(
+                                                    5,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                shape:
+                                                    BoxShape
+                                                        .circle,
+                                                color:
+                                                    returnSalesProvider(
+                                                          context,
+                                                        ).addToStock
+                                                        ? Colors.white
+                                                        : Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 20),
                           Padding(
@@ -1708,10 +1713,32 @@ class _MakeSalesDesktopState
                           child: DesktopPageContainer(
                             widget: Scaffold(
                               appBar: appBar(
+                                backAction:
+                                    returnSalesProvider(
+                                              context,
+                                              // listen: false,
+                                            )
+                                            .currentCart()
+                                            .isReceiptEdit
+                                        ? () {
+                                          returnSalesProvider(
+                                            context,
+                                            listen: false,
+                                          ).cancelReceiptEdit(
+                                            context,
+                                          );
+                                        }
+                                        : null,
                                 // isMain: widget.isMain,
                                 context: context,
                                 title:
                                     returnSalesProvider(
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .isReceiptEdit
+                                        ? 'Edit Receipt'
+                                        : returnSalesProvider(
                                               context,
                                             )
                                             .currentCart()
@@ -2555,189 +2582,8 @@ class _MakeSalesDesktopState
                                       ),
                                       child: Row(
                                         children: [
-                                          Expanded(
-                                            child: ListView.builder(
-                                              shrinkWrap:
-                                                  true,
-                                              scrollDirection:
-                                                  Axis.horizontal,
-                                              itemCount:
-                                                  returnSalesProvider(
-                                                    context,
-                                                  ).cartQueue.length,
-                                              itemBuilder: (
-                                                context,
-                                                index,
-                                              ) {
-                                                var salesP =
-                                                    returnSalesProvider(
-                                                      context,
-                                                    );
-                                                // var cart =
-                                                //     salesP
-                                                //         .cartQueue[index];
-                                                // return Container();
-                                                return Padding(
-                                                  padding: const EdgeInsets.only(
-                                                    right:
-                                                        8.0,
-                                                  ),
-                                                  child: Material(
-                                                    color:
-                                                        Colors.transparent,
-                                                    child: Ink(
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            salesP.cartIndex ==
-                                                                        index &&
-                                                                    salesP.cartQueue.length >
-                                                                        1
-                                                                ? Colors.grey.shade100
-                                                                : const Color.fromARGB(
-                                                                  167,
-                                                                  250,
-                                                                  250,
-                                                                  250,
-                                                                ),
-                                                        borderRadius: BorderRadius.circular(
-                                                          3,
-                                                        ),
-                                                      ),
-                                                      child: InkWell(
-                                                        borderRadius: BorderRadius.circular(
-                                                          3,
-                                                        ),
-                                                        onTap: () {
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).selectCart(
-                                                            index,
-                                                          );
-                                                        },
-                                                        child: Container(
-                                                          padding: EdgeInsets.symmetric(
-                                                            horizontal:
-                                                                salesP.cartIndex ==
-                                                                            index &&
-                                                                        salesP.cartQueue.length >
-                                                                            1
-                                                                    ? 8
-                                                                    : 12,
-                                                            vertical:
-                                                                5,
-                                                          ),
-
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize.min,
-                                                            // spacing:
-                                                            //     10,
-                                                            mainAxisAlignment:
-                                                                salesP.cartIndex ==
-                                                                            index &&
-                                                                        salesP.cartQueue.length >
-                                                                            1
-                                                                    ? MainAxisAlignment.spaceBetween
-                                                                    : MainAxisAlignment.center,
-                                                            children: [
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b4.fontSize,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                ),
-                                                                'Cart ${index + 1}',
-                                                              ),
-                                                              Visibility(
-                                                                visible:
-                                                                    salesP.cartIndex ==
-                                                                        index &&
-                                                                    salesP.cartQueue.length >
-                                                                        1,
-                                                                child: SizedBox(
-                                                                  width:
-                                                                      10,
-                                                                ),
-                                                              ),
-                                                              Visibility(
-                                                                visible:
-                                                                    salesP.cartIndex ==
-                                                                        index &&
-                                                                    salesP.cartQueue.length >
-                                                                        1,
-                                                                child: Material(
-                                                                  color:
-                                                                      Colors.transparent,
-                                                                  child: Ink(
-                                                                    decoration: BoxDecoration(
-                                                                      shape:
-                                                                          BoxShape.circle,
-                                                                      color:
-                                                                          theme.lightModeColor.secColor200,
-                                                                    ),
-                                                                    child: InkWell(
-                                                                      onTap: () {
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          builder: (
-                                                                            context,
-                                                                          ) {
-                                                                            return ConfirmationAlert(
-                                                                              theme:
-                                                                                  theme,
-                                                                              message:
-                                                                                  'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
-                                                                              title:
-                                                                                  'Are you sure?',
-                                                                              action: () {
-                                                                                returnSalesProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).deleteCart(
-                                                                                  index,
-                                                                                );
-                                                                                Navigator.of(
-                                                                                  context,
-                                                                                ).pop();
-                                                                              },
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      },
-                                                                      child: Container(
-                                                                        padding: EdgeInsets.all(
-                                                                          4,
-                                                                        ),
-                                                                        decoration: BoxDecoration(
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                        ),
-                                                                        child: Icon(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          size:
-                                                                              9,
-                                                                          Icons.clear,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                          CartQueueDesktop(
+                                            theme: theme,
                                           ),
                                           SizedBox(
                                             width: 10,
