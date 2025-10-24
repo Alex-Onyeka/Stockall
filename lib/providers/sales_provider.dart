@@ -123,6 +123,15 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addAnyDiscount() {
+    if (currentCart().discount != null) {
+      addGeneralDiscount(currentCart().discount);
+    }
+    if (currentCart().fixedDiscount != null) {
+      addGeneralFixedDiscount(currentCart().fixedDiscount);
+    }
+  }
+
   List<double> discounts = [
     1,
     2,
@@ -181,7 +190,8 @@ class SalesProvider extends ChangeNotifier {
       );
     }
     final createdAt =
-        currentCart().createdDate ?? DateTime.now().toUtc();
+        currentCart().createdDate?.toUtc() ??
+        DateTime.now().toUtc();
     final uuid = currentCart().receiptUuidEdit ?? uuidGen();
 
     print('Checkout Started');
@@ -517,10 +527,10 @@ class SalesProvider extends ChangeNotifier {
             newItem.item.setCustomPrice;
         item.addToStock = newItem.addToStock;
         item.customPrice = newItem.customPrice;
-        item.discount =
-            currentCart().discount ??
-            // calcFixedDiscountPercent() ??
-            newItem.discount;
+        // item.discount =
+        //     currentCart().discount ??
+        //     // calcFixedDiscountPercent() ??
+        //     newItem.discount;
         item.quantity = newItem.quantity;
         item.setCustomPrice = newItem.setCustomPrice;
         item.setTotalPrice = newItem.setTotalPrice;
@@ -528,18 +538,18 @@ class SalesProvider extends ChangeNotifier {
       } else {
         if (index != -1) {
           // Item exists
-          currentCart().cartItems[index].discount =
-              currentCart().discount ??
-              // calcFixedDiscountPercent() ??
-              currentCart().cartItems[index].discount;
+          // currentCart().cartItems[index].discount =
+          //     currentCart().discount ??
+          //     // calcFixedDiscountPercent() ??
+          currentCart().cartItems[index].discount;
           currentCart().cartItems[index].quantity +=
               newItem.quantity;
           result = 'Item Updated Successfully';
         } else {
-          newItem.discount =
-              currentCart().discount ??
-              // calcFixedDiscountPercent() ??
-              newItem.discount;
+          // newItem.discount =
+          //     currentCart().discount ??
+          //     // calcFixedDiscountPercent() ??
+          //     newItem.discount;
           currentCart().cartItems.add(newItem);
           // print("Main Carts Length: ${cartQueue.length}");
           // print(
@@ -551,6 +561,7 @@ class SalesProvider extends ChangeNotifier {
           result = 'Item Added Successfully';
         }
       }
+      addAnyDiscount();
 
       notifyListeners();
       return result;
@@ -589,6 +600,7 @@ class SalesProvider extends ChangeNotifier {
     print(
       "Current Cart Length: ${currentCart().cartItems.length}",
     );
+    addAnyDiscount();
     notifyListeners();
   }
 

@@ -103,7 +103,7 @@ class TempMainReceipt extends HiveObject {
       generalDiscount:
           (json['general_discount'] as num?)?.toDouble(),
       fixedDiscount:
-          (json['general_discount'] as num?)?.toDouble(),
+          (json['fixed_discount'] as num?)?.toDouble(),
     );
   }
 
