@@ -617,4 +617,167 @@ class ShopProvider extends ChangeNotifier {
       print('Batch update failed ❌: $e');
     }
   }
+
+  void setBottomText(String newText) {
+    userShop!.bottomText = newText;
+    notifyListeners();
+  }
+
+  void resetBottomText() {
+    userShop!.bottomText = null;
+    notifyListeners();
+  }
+
+  void showEmailAction() {
+    userShop!.showEmail = !userShop!.showEmail!;
+    notifyListeners();
+  }
+
+  void showAddressAction() {
+    userShop!.showAddress = !userShop!.showAddress!;
+    notifyListeners();
+  }
+
+  void showPhoneAction() {
+    userShop!.showPhone = !userShop!.showPhone!;
+    notifyListeners();
+  }
+
+  void showFirstSectionAction() {
+    userShop!.showFirst = !userShop!.showFirst!;
+    notifyListeners();
+  }
+
+  void showSecondSectionAction() {
+    userShop!.showSecond = !userShop!.showSecond!;
+    notifyListeners();
+  }
+
+  void showThirdSectionAction() {
+    userShop!.showThird = !userShop!.showThird!;
+    notifyListeners();
+  }
+
+  void showInstaDownAction() {
+    userShop!.showInstaDown = !userShop!.showInstaDown!;
+    notifyListeners();
+  }
+
+  void showInstaTopAction() {
+    userShop!.showInstaTop = !userShop!.showInstaTop!;
+    notifyListeners();
+  }
+
+  void showFacebookDownAction() {
+    userShop!.showFacebookDown =
+        !userShop!.showFacebookDown!;
+    notifyListeners();
+  }
+
+  void showFacebookTopAction() {
+    userShop!.showFacebookTop = !userShop!.showFacebookTop!;
+    notifyListeners();
+  }
+
+  Future<int> updateShopPrintDetails() async {
+    bool isOnline = await connectivity.isOnline();
+
+    if (isOnline) {
+      userShop!.updatedAt = DateTime.now();
+      try {
+        await supabase
+            .from('shops')
+            .update(userShop!.toJson())
+            .eq('shop_id', userShop!.shopId!)
+            .maybeSingle();
+
+        final response = await getUserShop(
+          AuthService().currentUser!,
+        );
+
+        if (response != null) {
+          setShop(response);
+          notifyListeners();
+        }
+        return 1;
+      } catch (e) {
+        print(
+          "❌ Failed to update Print Details details Online: $e",
+        );
+        return 0;
+      }
+    } else {
+      try {
+        TempShopClass? shop = ShopFunc().getShop();
+        if (shop != null) {
+          userShop?.updatedAt = DateTime.now();
+          await ShopFunc().updateShop(userShop);
+        }
+        shop != null
+            ? await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: shop),
+            )
+            : {};
+        return 1;
+      } catch (e) {
+        print(
+          "❌ Failed to update Print Details details Offline: $e",
+        );
+        return 0;
+      }
+    }
+  }
+
+  Future<int> updateShopSocials({
+    required String? face,
+    required String? insta,
+  }) async {
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        final response =
+            await supabase
+                .from('shops')
+                .update({
+                  'insta_handle': insta,
+                  'facebook_handle': face,
+                  'updated_at':
+                      DateTime.now().toIso8601String(),
+                })
+                .eq('shop_id', userShop!.shopId!)
+                .maybeSingle();
+        final shop = await getUserShop(
+          AuthService().currentUser!,
+        );
+
+        if (response != null) {
+          setShop(shop!);
+          notifyListeners();
+        }
+        return 1;
+      } catch (e) {
+        print("❌ Failed to update location Online: $e");
+        return 0;
+      }
+    } else {
+      try {
+        TempShopClass? shop = ShopFunc().getShop();
+        shop?.updatedAt = DateTime.now();
+        shop?.instaHandle = insta;
+        shop?.faceBookHandle = face;
+        await ShopFunc().updateShop(shop);
+        if (shop != null) {
+          await UpdatedShopFunc().createUpdatedShop(
+            UpdatedShop(shop: shop),
+          );
+          setShop(shop);
+          notifyListeners();
+        }
+        return 1;
+      } catch (e) {
+        print("❌ Failed to update location Offline: $e");
+        return 0;
+      }
+    }
+  }
 }

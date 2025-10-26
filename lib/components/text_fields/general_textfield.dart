@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class GeneralTextField extends StatelessWidget {
+class GeneralTextField extends StatefulWidget {
   final String title;
   final String hint;
   final bool? isEmail;
@@ -10,6 +10,7 @@ class GeneralTextField extends StatelessWidget {
   final int lines;
   final bool? isEnabled;
   final ThemeProvider theme;
+  final String? initialValue;
 
   const GeneralTextField({
     super.key,
@@ -21,7 +22,27 @@ class GeneralTextField extends StatelessWidget {
     this.onChanged,
     this.isEmail,
     this.isEnabled,
+    this.initialValue,
   });
+
+  @override
+  State<GeneralTextField> createState() =>
+      _GeneralTextFieldState();
+}
+
+class _GeneralTextFieldState
+    extends State<GeneralTextField> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialValue != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          widget.controller.text = widget.initialValue!;
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,31 +51,33 @@ class GeneralTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          style: theme.mobileTexts.b3.textStyleBold,
-          title,
+          style: widget.theme.mobileTexts.b3.textStyleBold,
+          widget.title,
         ),
         TextFormField(
-          enabled: isEnabled ?? true,
+          enabled: widget.isEnabled ?? true,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade700,
           ),
-          onChanged: onChanged,
-          maxLines: lines,
+          onChanged: widget.onChanged,
+          maxLines: widget.lines,
           keyboardType:
-              isEmail == null
+              widget.isEmail == null
                   ? TextInputType.text
                   : TextInputType.emailAddress,
           textCapitalization:
-              isEmail == null
+              widget.isEmail == null
                   ? TextCapitalization.words
                   : TextCapitalization.none,
-          autocorrect: isEmail == null ? true : false,
-          enableSuggestions: isEmail == null ? true : false,
+          autocorrect:
+              widget.isEmail == null ? true : false,
+          enableSuggestions:
+              widget.isEmail == null ? true : false,
           decoration: InputDecoration(
             isCollapsed: true,
-            labelText: hint,
+            labelText: widget.hint,
             labelStyle: TextStyle(
               fontWeight: FontWeight.normal,
               color: Colors.grey.shade400,
@@ -62,7 +85,7 @@ class GeneralTextField extends StatelessWidget {
             ),
             floatingLabelStyle: TextStyle(
               fontWeight: FontWeight.w600,
-              color: theme.lightModeColor.prColor300,
+              color: widget.theme.lightModeColor.prColor300,
               fontSize: 11,
               letterSpacing: 0.5,
             ),
@@ -86,13 +109,14 @@ class GeneralTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: theme.lightModeColor.prColor300,
+                color:
+                    widget.theme.lightModeColor.prColor300,
                 width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          controller: controller,
+          controller: widget.controller,
         ),
       ],
     );

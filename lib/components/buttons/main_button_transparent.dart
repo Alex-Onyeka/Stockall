@@ -38,7 +38,7 @@ class MainButtonTransparent extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical:
-                  screenWidth(context) < 600 ? 15 : 12,
+                  screenWidth(context) < 600 ? 13 : 12,
             ),
 
             child: Center(

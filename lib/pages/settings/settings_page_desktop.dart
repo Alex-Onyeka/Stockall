@@ -5,6 +5,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 
 class SettingsPageDesktop extends StatelessWidget {
@@ -125,6 +126,28 @@ class SettingsPageDesktop extends StatelessWidget {
                       },
                       title: 'Manage Shop',
                       icon: Icons.home_filled,
+                    ),
+                  ),
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().manageShop,
+                      context: context,
+                    ),
+                    child: NavListTileDesktopAlt(
+                      height: 18,
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return EditReceipt();
+                            },
+                          ),
+                        );
+                      },
+                      title: 'Edit Receipt Template',
+                      icon: Icons.receipt,
                     ),
                   ),
                   Visibility(

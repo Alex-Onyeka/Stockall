@@ -515,12 +515,12 @@ class _ShopSetupTwoDesktopState
                                       .h3
                                       .fontWeightBold,
                             ),
-                            // widget.shop != null
-                            //     ? 'Update Shop Address'
-                            //     : 'Set Shop Address',
-                            returnConnectivityProvider(
-                              context,
-                            ).isConnected.toString(),
+                            widget.shop != null
+                                ? 'Update Shop Address'
+                                : 'Set Shop Address',
+                            // returnConnectivityProvider(
+                            //   context,
+                            // ).isConnected.toString(),
                           ),
                         ],
                       ),

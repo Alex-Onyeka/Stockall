@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
+import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/main_dropdown_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_two/shop_setup_two.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -72,6 +76,8 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
     });
   }
 
+  final instaController = TextEditingController();
+  final faceBookController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -87,7 +93,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
               return Center(
                 child: Column(
                   children: [
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -101,7 +107,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                       ),
                       child: Image.asset(
                         shopIconImage,
-                        height: 110,
+                        height: 80,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -202,13 +208,13 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 50.0,
+                        horizontal: 40.0,
                       ),
                       child: Column(
-                        spacing: 10,
+                        spacing: 5,
                         children: [
                           Row(
                             mainAxisAlignment:
@@ -327,10 +333,127 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                               ),
                             ],
                           ),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text('Address:'),
+                              Shimmer.fromColors(
+                                baseColor:
+                                    Colors.grey.shade300,
+                                highlightColor:
+                                    Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          10,
+                                        ),
+                                  ),
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.normal,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                    ),
+                                    'Not Set',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text('Facebook:'),
+                              Shimmer.fromColors(
+                                baseColor:
+                                    Colors.grey.shade300,
+                                highlightColor:
+                                    Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          10,
+                                        ),
+                                  ),
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.normal,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                    ),
+                                    'Not Set',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text('Instagram:'),
+                              Shimmer.fromColors(
+                                baseColor:
+                                    Colors.grey.shade300,
+                                highlightColor:
+                                    Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          10,
+                                        ),
+                                  ),
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.normal,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                    ),
+                                    'Not Set',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 30.0,
@@ -338,17 +461,56 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                       child: Column(
                         spacing: 10,
                         children: [
-                          MainButtonTransparent(
-                            themeProvider: theme,
-                            action: () {},
-                            text: 'Edit Shop Details',
-                            constraints: BoxConstraints(),
+                          Row(
+                            spacing: 10,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {},
+                                  text: 'Edit Shop Details',
+                                  constraints:
+                                      BoxConstraints(),
+                                ),
+                              ),
+                              Expanded(
+                                child: MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {},
+                                  text: 'Edit Shop Address',
+                                  constraints:
+                                      BoxConstraints(),
+                                ),
+                              ),
+                            ],
                           ),
-                          MainButtonTransparent(
-                            themeProvider: theme,
-                            action: () {},
-                            text: 'Edit Shop Address',
-                            constraints: BoxConstraints(),
+                          Row(
+                            spacing: 10,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {},
+                                  text:
+                                      'Edit Social Details',
+                                  constraints:
+                                      BoxConstraints(),
+                                ),
+                              ),
+                              Expanded(
+                                child: MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {},
+                                  text: 'Printer Settings',
+                                  constraints:
+                                      BoxConstraints(),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -362,7 +524,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                 child: Center(
                   child: Column(
                     children: [
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       Container(
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -376,7 +538,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                         ),
                         child: Image.asset(
                           shopIconImage,
-                          height: 110,
+                          height: 80,
                         ),
                       ),
                       SizedBox(height: 10),
@@ -386,7 +548,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(
-                                  horizontal: 30.0,
+                                  horizontal: 20.0,
                                 ),
                             child: Text(
                               textAlign: TextAlign.center,
@@ -429,14 +591,14 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                             ),
                             shop.email,
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(
-                                  horizontal: 50.0,
+                                  horizontal: 40.0,
                                 ),
                             child: Column(
-                              spacing: 10,
+                              spacing: 5,
                               children: [
                                 Row(
                                   mainAxisAlignment:
@@ -607,6 +769,90 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                     ),
                                   ],
                                 ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        'Facebook:',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Text(
+                                        textAlign:
+                                            TextAlign.right,
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        shop.faceBookHandle ??
+                                            'Not Set',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .normal,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        'Instagram:',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Text(
+                                        textAlign:
+                                            TextAlign.right,
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        shop.instaHandle ??
+                                            'Not Set',
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -618,51 +864,221 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                           horizontal: 30.0,
                         ),
                         child: Column(
-                          spacing: 10,
+                          spacing: 5,
                           children: [
-                            MainButtonTransparent(
-                              themeProvider: theme,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ShopSetupPage(
-                                        shop: shop,
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  child: MainButtonTransparent(
+                                    themeProvider: theme,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ShopSetupPage(
+                                              shop: shop,
+                                            );
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {
+                                          shopFuture =
+                                              getShop();
+                                        });
+                                      });
+                                    },
+                                    text:
+                                        'Edit Shop Details',
+                                    constraints:
+                                        BoxConstraints(),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: MainButtonTransparent(
+                                    themeProvider: theme,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ShopSetupTwo(
+                                              shop: shop,
+                                            );
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {
+                                          shopFuture =
+                                              getShop();
+                                        });
+                                      });
+                                    },
+                                    text:
+                                        'Edit Shop Address',
+                                    constraints:
+                                        BoxConstraints(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // SizedBox(height: 5),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  child: MainButtonTransparent(
+                                    themeProvider: theme,
+                                    action: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return DialogTemplate(
+                                            theme: theme,
+                                            message: '',
+                                            title:
+                                                'Enter Social Details',
+                                            widget: Column(
+                                              mainAxisSize:
+                                                  MainAxisSize
+                                                      .min,
+                                              spacing: 10,
+                                              children: [
+                                                GeneralTextField(
+                                                  initialValue:
+                                                      shop.faceBookHandle,
+                                                  isEmail:
+                                                      false,
+                                                  title:
+                                                      'Facebook Handle (Optional)',
+                                                  isEnabled:
+                                                      true,
+                                                  hint:
+                                                      'Enter Facebook Handle',
+                                                  controller:
+                                                      faceBookController,
+                                                  lines: 1,
+                                                  theme:
+                                                      theme,
+                                                ),
+                                                GeneralTextField(
+                                                  initialValue:
+                                                      shop.instaHandle,
+                                                  isEmail:
+                                                      false,
+                                                  title:
+                                                      'Instagram Handle (Optional)',
+                                                  isEnabled:
+                                                      true,
+                                                  hint:
+                                                      'Enter Instagram Handle',
+                                                  controller:
+                                                      instaController,
+                                                  lines: 1,
+                                                  theme:
+                                                      theme,
+                                                ),
+                                              ],
+                                            ),
+                                            action: () async {
+                                              setState(() {
+                                                isLoading =
+                                                    true;
+                                              });
+                                              var res = await returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).updateShopSocials(
+                                                face:
+                                                    faceBookController.text.isEmpty
+                                                        ? null
+                                                        : faceBookController.text,
+                                                insta:
+                                                    instaController.text.isEmpty
+                                                        ? null
+                                                        : instaController.text,
+                                              );
+                                              if (res ==
+                                                  1) {
+                                                setState(() {
+                                                  isLoading =
+                                                      false;
+                                                });
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                                setState(() {
+                                                  shopFuture =
+                                                      getShop();
+                                                });
+                                              } else {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'The Update was not successful. Please try again.',
+                                                      title:
+                                                          'Update Failed',
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            },
+                                          );
+                                        },
                                       );
                                     },
+                                    text:
+                                        'Edit Social Details',
+                                    constraints:
+                                        BoxConstraints(),
                                   ),
-                                ).then((_) {
-                                  setState(() {
-                                    shopFuture = getShop();
-                                  });
-                                });
-                              },
-                              text: 'Edit Shop Details',
-                              constraints: BoxConstraints(),
-                            ),
-                            MainButtonTransparent(
-                              themeProvider: theme,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ShopSetupTwo(
-                                        shop: shop,
-                                      );
+                                ),
+                                Expanded(
+                                  child: MainButtonTransparent(
+                                    themeProvider: theme,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return EditReceipt();
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {
+                                          shopFuture =
+                                              getShop();
+                                        });
+                                      });
                                     },
+                                    text:
+                                        'Printer Settings',
+                                    constraints:
+                                        BoxConstraints(),
                                   ),
-                                ).then((_) {
-                                  setState(() {
-                                    shopFuture = getShop();
-                                  });
-                                });
-                              },
-                              text: 'Edit Shop Address',
-                              constraints: BoxConstraints(),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 5),
                             Column(
                               crossAxisAlignment:
                                   CrossAxisAlignment.start,

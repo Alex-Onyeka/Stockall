@@ -18,6 +18,7 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -863,8 +864,12 @@ class _MakeSalesDesktopState
                                       ),
                                       'Add Item to your Stock?',
                                     ),
-                                    InkWell(
-                                      onTap: () {
+                                    MyToggleButton(
+                                      boolValue:
+                                          returnSalesProvider(
+                                            context,
+                                          ).addToStock,
+                                      toggle: () {
                                         var salesProvider =
                                             returnSalesProvider(
                                               context,
@@ -902,71 +907,7 @@ class _MakeSalesDesktopState
                                           },
                                         );
                                       },
-                                      child: Container(
-                                        width: 50,
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              horizontal:
-                                                  10,
-                                              vertical: 5,
-                                            ),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(
-                                                20,
-                                              ),
-                                          border: Border.all(
-                                            color:
-                                                returnSalesProvider(
-                                                      context,
-                                                    ).addToStock
-                                                    ? theme
-                                                        .lightModeColor
-                                                        .prColor250
-                                                    : Colors
-                                                        .grey,
-                                          ),
-                                          color:
-                                              returnSalesProvider(
-                                                    context,
-                                                  ).addToStock
-                                                  ? theme
-                                                      .lightModeColor
-                                                      .prColor250
-                                                  : Colors
-                                                      .grey
-                                                      .shade200,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              returnSalesProvider(
-                                                    context,
-                                                  ).addToStock
-                                                  ? MainAxisAlignment
-                                                      .end
-                                                  : MainAxisAlignment
-                                                      .start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  EdgeInsets.all(
-                                                    5,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                shape:
-                                                    BoxShape
-                                                        .circle,
-                                                color:
-                                                    returnSalesProvider(
-                                                          context,
-                                                        ).addToStock
-                                                        ? Colors.white
-                                                        : Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      theme: theme,
                                     ),
                                   ],
                                 ),

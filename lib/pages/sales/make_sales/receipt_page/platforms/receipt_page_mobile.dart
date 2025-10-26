@@ -87,7 +87,7 @@ class _ReceiptPageMobileState
             children: [
               SizedBox(
                 height:
-                    MediaQuery.of(context).size.height - 50,
+                    MediaQuery.of(context).size.height - 10,
                 child: Stack(
                   alignment: Alignment(0, 1),
                   children: [
@@ -272,13 +272,13 @@ class _ReceiptPageMobileState
                       ),
                     ),
                     Positioned(
-                      top: 70,
+                      top: 60,
                       child: SizedBox(
                         height:
                             MediaQuery.of(
                               context,
                             ).size.height -
-                            50,
+                            10,
                         child: ReceiptDetailsContainer(
                           isMain: widget.isMain,
                           shop: shop!,
@@ -322,11 +322,6 @@ class _ReceiptDetailsContainerState
   bool showSuccess = false;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var records =
         returnReceiptProvider(context).produtRecordSalesMain
@@ -367,7 +362,7 @@ class _ReceiptDetailsContainerState
             Container(
               width: MediaQuery.of(context).size.width - 40,
               height:
-                  MediaQuery.of(context).size.height - 180,
+                  MediaQuery.of(context).size.height - 140,
               padding: EdgeInsets.all(25),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
@@ -410,7 +405,7 @@ class _ReceiptDetailsContainerState
                             // ),
                             // SizedBox(height: 15),
                             Column(
-                              spacing: 8,
+                              // spacing: 8,
                               children: [
                                 Text(
                                   textAlign:
@@ -427,267 +422,205 @@ class _ReceiptDetailsContainerState
                                   ),
                                   widget.shop.name,
                                 ),
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade700,
-                                  ),
-                                  widget.shop.email,
-                                ),
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                  ),
-                                  widget.shop.shopAddress ??
-                                      'Address Not Set',
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              spacing: 10,
-                              children: [
-                                Expanded(
-                                  flex: 5,
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showEmail!,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
                                     children: [
+                                      SizedBox(height: 2),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
                                                   .bold,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade700,
                                         ),
-                                        'Cashier',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        staff?.name ??
-                                            widget
-                                                .mainReceipt
-                                                .staffName,
+                                        widget.shop.email,
                                       ),
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 4,
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showAddress!,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
                                     children: [
+                                      SizedBox(height: 2),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Customer Name',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        customer?.name ??
-                                            'Not Saved',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              spacing: 10,
-                              children: [
-                                Expanded(
-                                  flex: 5,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Payment Method',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
                                         ),
                                         widget
-                                            .mainReceipt
-                                            .paymentMethod,
+                                                .shop
+                                                .shopAddress ??
+                                            'Address Not Set',
                                       ),
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 4,
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showPhone!,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
                                     children: [
+                                      SizedBox(height: 2),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
                                         ),
-                                        'Amount(s)',
+                                        widget
+                                                .shop
+                                                .phoneNumber ??
+                                            'Phone Number Not Set',
                                       ),
-                                      Column(
+                                    ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showInstaTop!,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 2),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        // spacing: 10,
                                         children: [
-                                          Visibility(
-                                            visible:
-                                                widget
-                                                        .mainReceipt
-                                                        .paymentMethod ==
-                                                    'Split' ||
-                                                widget
-                                                        .mainReceipt
-                                                        .paymentMethod ==
-                                                    'Cash',
-                                            child: Row(
-                                              spacing: 5,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                  'Cash:',
-                                                ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  formatMoneyMid(
-                                                    amount:
-                                                        widget.mainReceipt.cashAlt,
-                                                    context:
-                                                        context,
-                                                  ),
-                                                ),
-                                              ],
+                                          // Image.asset(
+                                          //   height: 15,
+                                          //   width: 15,
+                                          //   mainLogoIcon,
+                                          // ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade600,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
                                             ),
+                                            "Instagram: ",
                                           ),
-                                          Visibility(
-                                            visible:
-                                                widget
-                                                        .mainReceipt
-                                                        .paymentMethod ==
-                                                    'Split' ||
-                                                widget
-                                                        .mainReceipt
-                                                        .paymentMethod ==
-                                                    'Bank',
-                                            child: Row(
-                                              spacing: 5,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                  'Bank:',
-                                                ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  formatMoneyMid(
-                                                    amount:
-                                                        widget.mainReceipt.bank,
-                                                    context:
-                                                        context,
-                                                  ),
-                                                ),
-                                              ],
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade600,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .normal,
                                             ),
+                                            widget
+                                                    .shop
+                                                    .instaHandle ??
+                                                'Instagram Not Set',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showFacebookTop!,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 2),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        spacing: 0,
+                                        children: [
+                                          // Image.asset(
+                                          //   height: 15,
+                                          //   width: 15,
+                                          //   mainLogoIcon,
+                                          // ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade600,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            "Facebook: ",
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade600,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .normal,
+                                            ),
+                                            widget
+                                                    .shop
+                                                    .faceBookHandle ??
+                                                'FaceBook Not Set',
                                           ),
                                         ],
                                       ),
@@ -697,94 +630,346 @@ class _ReceiptDetailsContainerState
                               ],
                             ),
                             SizedBox(height: 10),
-                            Row(
-                              spacing: 10,
-                              children: [
-                                Expanded(
-                                  flex: 5,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                            Visibility(
+                              visible:
+                                  widget.shop.showFirst!,
+                              child: Row(
+                                spacing: 10,
+                                children: [
+                                  Expanded(
+                                    flex: 5,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Cashier',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .normal,
+                                          ),
+                                          staff?.name ??
+                                              widget
+                                                  .mainReceipt
+                                                  .staffName,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Customer Name',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .normal,
+                                          ),
+                                          customer?.name ??
+                                              'Not Saved',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget.shop.showSecond!,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 5),
+                                  Row(
+                                    spacing: 10,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
+                                      Expanded(
+                                        flex: 5,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Payment Method',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
                                               widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                                  .mainReceipt
+                                                  .paymentMethod,
+                                            ),
+                                          ],
                                         ),
-                                        'Date',
                                       ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        formatDateTime(
-                                          widget
-                                              .mainReceipt
-                                              .createdAt,
+                                      Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Amount(s)',
+                                            ),
+                                            Column(
+                                              children: [
+                                                Visibility(
+                                                  visible:
+                                                      widget.mainReceipt.paymentMethod ==
+                                                          'Split' ||
+                                                      widget.mainReceipt.paymentMethod ==
+                                                          'Cash',
+                                                  child: Row(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                        'Cash:',
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              widget.mainReceipt.cashAlt,
+                                                          context:
+                                                              context,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      widget.mainReceipt.paymentMethod ==
+                                                          'Split' ||
+                                                      widget.mainReceipt.paymentMethod ==
+                                                          'Bank',
+                                                  child: Row(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                        'Bank:',
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              widget.mainReceipt.bank,
+                                                          context:
+                                                              context,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 4,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget.shop.showThird!,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 5),
+                                  Row(
+                                    spacing: 10,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                      Expanded(
+                                        flex: 5,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Date',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              formatDateTime(
+                                                widget
+                                                    .mainReceipt
+                                                    .createdAt,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        'Time',
                                       ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        formatTime(
-                                          widget
-                                              .mainReceipt
-                                              .createdAt,
+                                      Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Time',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              formatTime(
+                                                widget
+                                                    .mainReceipt
+                                                    .createdAt,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             SizedBox(height: 10),
                             Divider(),
@@ -1110,7 +1295,7 @@ class _ReceiptDetailsContainerState
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             SizedBox(
               width: MediaQuery.of(context).size.width - 40,
               child: Row(

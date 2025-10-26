@@ -73,6 +73,45 @@ class TempShopClass {
   @HiveField(22)
   DateTime? nextPayment;
 
+  @HiveField(23)
+  String? instaHandle;
+
+  @HiveField(24)
+  String? faceBookHandle;
+
+  @HiveField(25)
+  bool? showEmail;
+
+  @HiveField(26)
+  bool? showPhone;
+
+  @HiveField(27)
+  bool? showAddress;
+
+  @HiveField(28)
+  bool? showInstaDown;
+
+  @HiveField(29)
+  bool? showFacebookDown;
+
+  @HiveField(30)
+  bool? showFirst;
+
+  @HiveField(31)
+  bool? showSecond;
+
+  @HiveField(32)
+  bool? showThird;
+
+  @HiveField(33)
+  bool? showInstaTop;
+
+  @HiveField(34)
+  bool? showFacebookTop;
+
+  @HiveField(35)
+  String? bottomText;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -97,6 +136,19 @@ class TempShopClass {
     this.updatedAt,
     this.plan,
     this.nextPayment,
+    this.instaHandle,
+    this.faceBookHandle,
+    this.showEmail = false,
+    this.showAddress = false,
+    this.showFacebookDown = true,
+    this.showInstaDown = true,
+    this.showFirst = false,
+    this.showSecond = false,
+    this.showThird = false,
+    this.showPhone = true,
+    this.showFacebookTop = true,
+    this.showInstaTop = true,
+    this.bottomText,
   });
 
   factory TempShopClass.fromJson(
@@ -138,6 +190,19 @@ class TempShopClass {
                 json['next_payment'] as String,
               )
               : null,
+      instaHandle: json['insta_handle'] as String?,
+      faceBookHandle: json['facebook_handle'] as String?,
+      showAddress: json['show_address'] as bool?,
+      showEmail: json['show_email'] as bool?,
+      showPhone: json['show_phone'] as bool?,
+      showFirst: json['show_first'] as bool?,
+      showSecond: json['show_second'] as bool?,
+      showThird: json['show_third'] as bool?,
+      showFacebookDown: json['show_facebook_down'] as bool?,
+      showInstaDown: json['show_insta_down'] as bool?,
+      showFacebookTop: json['show_facebook_top'] as bool?,
+      showInstaTop: json['show_insta_top'] as bool?,
+      bottomText: json['bottom_text'] as String?,
     );
   }
 
@@ -164,7 +229,20 @@ class TempShopClass {
       'language': language,
       'updated_at': updatedAt?.toIso8601String(),
       'plan': plan,
-      'next_payment': nextPayment,
+      'next_payment': nextPayment?.toIso8601String(),
+      'insta_handle': instaHandle,
+      'facebook_handle': faceBookHandle,
+      'show_email': showEmail,
+      'show_phone': showPhone,
+      'show_address': showAddress,
+      'show_insta_down': showInstaDown,
+      'show_facebook_down': showFacebookDown,
+      'show_insta_top': showInstaTop,
+      'show_facebook_top': showFacebookTop,
+      'show_first': showFirst,
+      'show_second': showSecond,
+      'show_third': showThird,
+      'bottom_text': bottomText,
     };
   }
 }
