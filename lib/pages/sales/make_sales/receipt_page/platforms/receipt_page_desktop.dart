@@ -1922,28 +1922,6 @@ class _ReceiptDetailsContainerState
                                             ) ==
                                             TargetPlatform
                                                 .iOS)) {
-                                  // await printWithRawBT(
-                                  //   fileName:
-                                  //       'Alex Printing',
-                                  //   context: safeContext,
-                                  //   receipt:
-                                  //       widget.mainReceipt,
-                                  //   records: records,
-                                  //   printerType:
-                                  //       returnShopProvider(
-                                  //             context,
-                                  //             listen: false,
-                                  //           )
-                                  //           .userShop!
-                                  //           .printType ??
-                                  //       1,
-                                  //   shop:
-                                  //       returnShopProvider(
-                                  //         safeContext,
-                                  //         listen: false,
-                                  //       ).userShop!,
-                                  // );
-
                                   if (returnShopProvider(
                                             context,
                                             listen: false,
@@ -1978,7 +1956,12 @@ class _ReceiptDetailsContainerState
                                     );
                                   }
                                 } else {
-                                  await generateAndPreviewPdf(
+                                  await generateAndPreviewPdfRoll(
+                                    printerType:
+                                        widget
+                                            .shop
+                                            .printType ??
+                                        1,
                                     staffName:
                                         staff?.name ??
                                         widget

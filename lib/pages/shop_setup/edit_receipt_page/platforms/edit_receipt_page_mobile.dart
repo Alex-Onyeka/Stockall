@@ -41,7 +41,7 @@ class _EditReceiptPageMobileState
                       alignment: Alignment(0, -1),
                       child: TopBannerTwo(
                         isMain: false,
-                        title: 'Edit Receipt Template',
+                        title: 'Edit Template',
                         theme: theme,
                         bottomSpace: 200,
                         topSpace: 10,
@@ -488,36 +488,22 @@ class _ReceiptEditContainerState
                                           ? false
                                           : receipP
                                               .showFacebookTop!,
-                                  element: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    spacing: 10,
-                                    children: [
-                                      // Image.asset(
-                                      //   height: 15,
-                                      //   width: 15,
-                                      //   mainLogoIcon,
-                                      // ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade600,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
-                                        ),
-                                        "Facebook: ${widget.shop.faceBookHandle ?? 'FaceBook Not Set'}",
-                                      ),
-                                    ],
+                                  element: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade600,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                    "Facebook: ${widget.shop.faceBookHandle ?? 'FaceBook Not Set'}",
                                   ),
                                   action: () {
                                     if (receiptPFalse
@@ -558,10 +544,10 @@ class _ReceiptEditContainerState
                                     mainAxisAlignment:
                                         MainAxisAlignment
                                             .spaceBetween,
-                                    spacing: 10,
+                                    spacing: 5,
                                     children: [
                                       SizedBox(
-                                        width: 110,
+                                        width: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -593,13 +579,13 @@ class _ReceiptEditContainerState
                                                     FontWeight
                                                         .normal,
                                               ),
-                                              'Staff Name',
+                                              'Name',
                                             ),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        width: 110,
+                                        width: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -617,7 +603,7 @@ class _ReceiptEditContainerState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Customer Name',
+                                              'Customer',
                                             ),
                                             Text(
                                               style: TextStyle(
@@ -632,7 +618,7 @@ class _ReceiptEditContainerState
                                                         .normal,
                                               ),
 
-                                              'Customer Name',
+                                              'Name',
                                             ),
                                           ],
                                         ),
@@ -659,10 +645,10 @@ class _ReceiptEditContainerState
                                     mainAxisAlignment:
                                         MainAxisAlignment
                                             .spaceBetween,
-                                    spacing: 10,
+                                    spacing: 5,
                                     children: [
                                       SizedBox(
-                                        width: 110,
+                                        width: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -680,7 +666,7 @@ class _ReceiptEditContainerState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Payment Method',
+                                              'Payment',
                                             ),
                                             Text(
                                               style: TextStyle(
@@ -694,13 +680,13 @@ class _ReceiptEditContainerState
                                                     FontWeight
                                                         .normal,
                                               ),
-                                              'Payment Method',
+                                              'Method',
                                             ),
                                           ],
                                         ),
                                       ),
                                       SizedBox(
-                                        width: 110,
+                                        width: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -724,7 +710,7 @@ class _ReceiptEditContainerState
                                               children: [
                                                 Row(
                                                   spacing:
-                                                      5,
+                                                      2,
                                                   children: [
                                                     Text(
                                                       style: TextStyle(
@@ -744,7 +730,7 @@ class _ReceiptEditContainerState
                                                       ),
                                                       formatMoneyMid(
                                                         amount:
-                                                            10000,
+                                                            10,
                                                         context:
                                                             context,
                                                       ),
@@ -777,10 +763,10 @@ class _ReceiptEditContainerState
                                     mainAxisAlignment:
                                         MainAxisAlignment
                                             .spaceBetween,
-                                    spacing: 10,
+                                    spacing: 5,
                                     children: [
                                       SizedBox(
-                                        width: 110,
+                                        width: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -820,7 +806,7 @@ class _ReceiptEditContainerState
                                         ),
                                       ),
                                       SizedBox(
-                                        width: 110,
+                                        width: 90,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment

@@ -371,6 +371,7 @@ Future<void> generateAndPreviewPdf({
   if (Platform.isAndroid || Platform.isIOS) {
     await savePdfMobile(bytes, name);
   } else {
+    print('Printing For Desktop');
     await savePdfDesktop(bytes, name);
   }
 
@@ -1321,9 +1322,9 @@ Future<Uint8List> _buildPdfRoll(
               ? PdfPageFormat.roll57
               : PdfPageFormat.roll80,
       margin: const pw.EdgeInsets.only(
-        left: 15,
+        left: 0,
         top: 15,
-        right: 20,
+        right: 15,
         bottom: 10,
       ),
 
@@ -2023,26 +2024,29 @@ Future<Uint8List> _buildPdfRoll(
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 10),
+                pw.SizedBox(height: 5),
                 pw.Divider(),
-                pw.SizedBox(height: 10),
+                pw.SizedBox(height: 5),
                 pw.Row(
                   mainAxisAlignment:
                       pw.MainAxisAlignment.center,
                   children: [
-                    pw.Text(
-                      style: pw.TextStyle(
-                        fontSize: 20,
-                        fontWeight: pw.FontWeight.bold,
-                        color: PdfColor(50, 50, 050),
+                    pw.Flexible(
+                      child: pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        shop.bottomText?.toUpperCase() ??
+                            'Thank you for shopping with us'
+                                .toUpperCase(),
                       ),
-                      shop.bottomText?.toUpperCase() ??
-                          'Thank you for shopping with us'
-                              .toUpperCase(),
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 15),
+                pw.SizedBox(height: 35),
               ],
             ),
           ),
