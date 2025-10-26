@@ -33,7 +33,7 @@ class _EditReceiptPageMobileState
             children: [
               SizedBox(
                 height:
-                    MediaQuery.of(context).size.height - 20,
+                    MediaQuery.of(context).size.height - 40,
                 child: Stack(
                   alignment: Alignment(0, 1),
                   children: [
@@ -215,13 +215,13 @@ class _EditReceiptPageMobileState
                       ),
                     ),
                     Positioned(
-                      top: 60,
+                      top: 55,
                       child: SizedBox(
                         height:
                             MediaQuery.of(
                               context,
                             ).size.height -
-                            20,
+                            40,
                         child: ReceiptEditContainer(
                           isMain: false,
                           shop: shop!,
@@ -1130,7 +1130,7 @@ class _ReceiptEditContainerState
                               spacing: 5,
                               children: [
                                 SizedBox(
-                                  width: 280,
+                                  width: 260,
                                   child: Stack(
                                     alignment: Alignment(
                                       1,

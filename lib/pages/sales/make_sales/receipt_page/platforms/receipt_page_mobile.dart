@@ -87,7 +87,7 @@ class _ReceiptPageMobileState
             children: [
               SizedBox(
                 height:
-                    MediaQuery.of(context).size.height - 10,
+                    MediaQuery.of(context).size.height - 30,
                 child: Stack(
                   alignment: Alignment(0, 1),
                   children: [
@@ -272,13 +272,13 @@ class _ReceiptPageMobileState
                       ),
                     ),
                     Positioned(
-                      top: 60,
+                      top: 55,
                       child: SizedBox(
                         height:
                             MediaQuery.of(
                               context,
                             ).size.height -
-                            10,
+                            25,
                         child: ReceiptDetailsContainer(
                           isMain: widget.isMain,
                           shop: shop!,
@@ -362,7 +362,7 @@ class _ReceiptDetailsContainerState
             Container(
               width: MediaQuery.of(context).size.width - 40,
               height:
-                  MediaQuery.of(context).size.height - 140,
+                  MediaQuery.of(context).size.height - 150,
               padding: EdgeInsets.all(25),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
@@ -1486,72 +1486,69 @@ class _ReceiptDetailsContainerState
                     ),
                   ),
                   BottomActionButton(
-                    action: () {
+                    action: () async {
                       var safeContext = context;
+                      if (!kIsWeb) {
+                        await generateAndPreviewPdf(
+                          staffName:
+                              staff?.name ??
+                              widget.mainReceipt.staffName,
+                          context: safeContext,
+                          receipt: widget.mainReceipt,
+                          records: records,
 
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return ConfirmationAlert(
-                            theme: widget.theme,
-                            message:
-                                'You are about to download This Receipt. Are you sure you want to Proceed?',
-                            title: 'Download Receipt',
-                            action: () async {
-                              returnReceiptProvider(
-                                context,
+                          shop:
+                              returnShopProvider(
+                                safeContext,
                                 listen: false,
-                              ).toggleIsLoading(true);
-                              Navigator.of(context).pop();
-                              if (kIsWeb) {
-                                downloadPdfWeb(
-                                  staffName:
-                                      staff?.name ??
-                                      widget
-                                          .mainReceipt
-                                          .staffName,
-                                  filename:
-                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
-                                  context: safeContext,
-                                  receipt:
-                                      widget.mainReceipt,
-                                  records: records,
-                                  shop:
-                                      returnShopProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).userShop!,
-                                );
-                              }
-                              if (!kIsWeb) {
-                                await generateAndPreviewPdf(
-                                  staffName:
-                                      staff?.name ??
-                                      widget
-                                          .mainReceipt
-                                          .staffName,
-                                  context: safeContext,
-                                  receipt:
-                                      widget.mainReceipt,
-                                  records: records,
-
-                                  shop:
-                                      returnShopProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).userShop!,
-                                );
-                              }
-                              if (safeContext.mounted) {
+                              ).userShop!,
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ConfirmationAlert(
+                              theme: widget.theme,
+                              message:
+                                  'You are about to download This Receipt. Are you sure you want to Proceed?',
+                              title: 'Download Receipt',
+                              action: () async {
                                 returnReceiptProvider(
-                                  safeContext,
+                                  context,
                                   listen: false,
-                                ).toggleIsLoading(false);
-                              }
-                            },
-                          );
-                        },
-                      );
+                                ).toggleIsLoading(true);
+                                Navigator.of(context).pop();
+                                if (kIsWeb) {
+                                  downloadPdfWeb(
+                                    staffName:
+                                        staff?.name ??
+                                        widget
+                                            .mainReceipt
+                                            .staffName,
+                                    filename:
+                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
+                                    context: safeContext,
+                                    receipt:
+                                        widget.mainReceipt,
+                                    records: records,
+                                    shop:
+                                        returnShopProvider(
+                                          safeContext,
+                                          listen: false,
+                                        ).userShop!,
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        );
+                      }
+                      if (safeContext.mounted) {
+                        returnReceiptProvider(
+                          safeContext,
+                          listen: false,
+                        ).toggleIsLoading(false);
+                      }
                     },
                     text:
                         (kIsWeb ||
