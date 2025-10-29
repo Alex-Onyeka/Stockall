@@ -14,7 +14,7 @@ class CreatedShopLogosFunc {
       'createdShopLogosBoxStockall';
 
   Future<void> init() async {
-    await Hive.deleteBoxFromDisk(createdShopLogosBoxName);
+    // await Hive.deleteBoxFromDisk(createdShopLogosBoxName);
     if (!Hive.isAdapterRegistered(
       TempShopLogosAdapter().typeId,
     )) {
