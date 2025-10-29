@@ -13,6 +13,7 @@ class ShopLogosFunc {
   final String shopLogosBoxName = 'shopLogosBoxStockall';
 
   Future<void> init() async {
+    await Hive.deleteBoxFromDisk(shopLogosBoxName);
     Hive.registerAdapter(TempShopLogosAdapter());
     shopLogosBox = await Hive.openBox(shopLogosBoxName);
     await CreatedShopLogosFunc().init();
