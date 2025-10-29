@@ -40,13 +40,30 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       updatedAt: fields[20] as DateTime?,
       plan: fields[21] as int?,
       nextPayment: fields[22] as DateTime?,
+      instaHandle: fields[23] as String?,
+      faceBookHandle: fields[24] as String?,
+      showEmail: fields[25] as bool?,
+      showAddress: fields[27] as bool?,
+      showFacebookDown: fields[29] as bool?,
+      showInstaDown: fields[28] as bool?,
+      showFirst: fields[30] as bool?,
+      showSecond: fields[31] as bool?,
+      showThird: fields[32] as bool?,
+      showPhone: fields[26] as bool?,
+      showFacebookTop: fields[34] as bool?,
+      showInstaTop: fields[33] as bool?,
+      showShopName: fields[36] as bool?,
+      bottomText: fields[35] as String?,
+      logoUrl: fields[37] as String?,
+      imageHeight: fields[38] as int?,
+      imageWidth: fields[39] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(40)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -92,7 +109,41 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(21)
       ..write(obj.plan)
       ..writeByte(22)
-      ..write(obj.nextPayment);
+      ..write(obj.nextPayment)
+      ..writeByte(23)
+      ..write(obj.instaHandle)
+      ..writeByte(24)
+      ..write(obj.faceBookHandle)
+      ..writeByte(25)
+      ..write(obj.showEmail)
+      ..writeByte(26)
+      ..write(obj.showPhone)
+      ..writeByte(27)
+      ..write(obj.showAddress)
+      ..writeByte(28)
+      ..write(obj.showInstaDown)
+      ..writeByte(29)
+      ..write(obj.showFacebookDown)
+      ..writeByte(30)
+      ..write(obj.showFirst)
+      ..writeByte(31)
+      ..write(obj.showSecond)
+      ..writeByte(32)
+      ..write(obj.showThird)
+      ..writeByte(33)
+      ..write(obj.showInstaTop)
+      ..writeByte(34)
+      ..write(obj.showFacebookTop)
+      ..writeByte(35)
+      ..write(obj.bottomText)
+      ..writeByte(36)
+      ..write(obj.showShopName)
+      ..writeByte(37)
+      ..write(obj.logoUrl)
+      ..writeByte(38)
+      ..write(obj.imageHeight)
+      ..writeByte(39)
+      ..write(obj.imageWidth);
   }
 
   @override

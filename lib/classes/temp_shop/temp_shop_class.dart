@@ -112,6 +112,18 @@ class TempShopClass {
   @HiveField(35)
   String? bottomText;
 
+  @HiveField(36)
+  bool? showShopName;
+
+  @HiveField(37)
+  String? logoUrl;
+
+  @HiveField(38)
+  int? imageHeight;
+
+  @HiveField(39)
+  int? imageWidth;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -148,7 +160,11 @@ class TempShopClass {
     this.showPhone = true,
     this.showFacebookTop = true,
     this.showInstaTop = true,
+    this.showShopName = true,
     this.bottomText,
+    this.logoUrl,
+    this.imageHeight,
+    this.imageWidth,
   });
 
   factory TempShopClass.fromJson(
@@ -203,6 +219,10 @@ class TempShopClass {
       showFacebookTop: json['show_facebook_top'] as bool?,
       showInstaTop: json['show_insta_top'] as bool?,
       bottomText: json['bottom_text'] as String?,
+      showShopName: json['show_shop_name'] as bool?,
+      logoUrl: json['logo_url'] as String?,
+      imageHeight: json['image_height'] as int?,
+      imageWidth: json['image_width'] as int?,
     );
   }
 
@@ -232,6 +252,7 @@ class TempShopClass {
       'next_payment': nextPayment?.toIso8601String(),
       'insta_handle': instaHandle,
       'facebook_handle': faceBookHandle,
+      'show_shop_name': showShopName,
       'show_email': showEmail,
       'show_phone': showPhone,
       'show_address': showAddress,
@@ -243,6 +264,9 @@ class TempShopClass {
       'show_second': showSecond,
       'show_third': showThird,
       'bottom_text': bottomText,
+      'logo_url': logoUrl,
+      'image_width': imageWidth,
+      'image_height': imageHeight,
     };
   }
 }

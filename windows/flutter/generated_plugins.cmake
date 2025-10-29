@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   connectivity_plus
   file_saver
+  file_selector_windows
   flutter_thermal_printer
   flutter_usb_thermal_plugin
   permission_handler_windows

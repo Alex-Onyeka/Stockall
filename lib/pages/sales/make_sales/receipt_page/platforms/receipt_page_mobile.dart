@@ -320,6 +320,26 @@ class _ReceiptDetailsContainerState
     extends State<ReceiptDetailsContainer> {
   bool isLoading = false;
   bool showSuccess = false;
+  @override
+  initState() {
+    super.initState();
+    getLogoFuture = getLogo();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      returnShopProvider(
+        context,
+        listen: false,
+      ).switchLogoPicked(false);
+      setState(() {});
+    });
+  }
+
+  late Future<void> getLogoFuture;
+  Future<void> getLogo() async {
+    returnShopProvider(
+      context,
+      listen: false,
+    ).getLogoImage(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -403,25 +423,100 @@ class _ReceiptDetailsContainerState
                             //     height: 40,
                             //   ),
                             // ),
-                            // SizedBox(height: 15),
+                            Builder(
+                              builder: (context) {
+                                if (returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    ).userShop!.logoUrl !=
+                                    null) {
+                                  return Container(
+                                    height:
+                                        returnShopProvider(
+                                                      context,
+                                                    )
+                                                    .userShop!
+                                                    .logoUrl ==
+                                                null
+                                            ? 0
+                                            : returnShopProvider(
+                                                      context,
+                                                    )
+                                                    .userShop!
+                                                    .imageWidth! >
+                                                (2 *
+                                                    returnShopProvider(
+                                                      context,
+                                                    ).userShop!.imageHeight!)
+                                            ? 25
+                                            : 45,
+                                    width: double.infinity,
+                                    decoration:
+                                        BoxDecoration(),
+                                    child: FutureBuilder(
+                                      future: getLogoFuture,
+                                      builder: (
+                                        context,
+                                        snapshot,
+                                      ) {
+                                        if (snapshot
+                                                .connectionState ==
+                                            ConnectionState
+                                                .waiting) {
+                                          return Center(
+                                            child: SizedBox(
+                                              height: 35,
+                                              width: 35,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth:
+                                                    1.2,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Image.memory(
+                                            returnShopProvider(
+                                              context,
+                                            ).selectedLogo!,
+                                            fit:
+                                                BoxFit
+                                                    .contain,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ),
+                            SizedBox(height: 10),
                             Column(
                               // spacing: 8,
                               children: [
-                                Text(
-                                  textAlign:
-                                      TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showShopName!,
+                                  child: Text(
+                                    textAlign:
+                                        TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .h4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    widget.shop.name,
                                   ),
-                                  widget.shop.name,
                                 ),
+
                                 Visibility(
                                   visible:
                                       widget

@@ -365,8 +365,8 @@ Future<void> generateAndPreviewPdf({
   var receiptId = receipt.uuid!.toString().substring(0, 5);
   var name =
       receipt.isInvoice
-          ? "Stockall_Invoice_$receiptId"
-          : "Stockall_Receipt_$receiptId";
+          ? "Stockall_Invoice_$receiptId.${DateTime.now().millisecondsSinceEpoch}"
+          : "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
 
   if (Platform.isAndroid || Platform.isIOS) {
     await savePdfMobile(bytes, name);
@@ -471,7 +471,7 @@ Future<Uint8List> _buildPdf(
       ),
       // 🔹 HEADER
       header:
-          (context) => pw.Column(
+          (pw.Context pdfcontext) => pw.Column(
             crossAxisAlignment:
                 pw.CrossAxisAlignment.center,
             children: [
@@ -483,22 +483,82 @@ Future<Uint8List> _buildPdf(
                     children: [
                       pw.Column(
                         children: [
-                          pw.Container(
-                            width:
-                                PdfPageFormat
-                                    .a5
-                                    .availableWidth -
-                                60, // match margins
-                            alignment: pw.Alignment.center,
-                            child: pw.Text(
-                              shop.name,
-                              textAlign:
-                                  pw.TextAlign.center,
-                              style: pw.TextStyle(
-                                font: fontBold,
-                                fontSize: 16,
-                              ),
-                            ),
+                          pw.Builder(
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
+                              if (returnShopProvider(
+                                    context,
+                                    listen: false,
+                                  ).selectedLogo !=
+                                  null) {
+                                return pw.Container(
+                                  height:
+                                      returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).imageWidth! >
+                                              (2 *
+                                                  returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).imageHeight!)
+                                          ? 20
+                                          : 35,
+                                  width: 150,
+                                  child: pw.Image(
+                                    pw.MemoryImage(
+                                      returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).selectedLogo!,
+                                    ),
+                                    fit: pw.BoxFit.contain,
+                                  ),
+                                );
+                              } else {
+                                return pw.Container();
+                              }
+                            },
+                          ),
+                          pw.Builder(
+                            builder: (
+                              pw.Context pdfContext,
+                            ) {
+                              if (shop.showShopName!) {
+                                return pw.Column(
+                                  children: [
+                                    pw.SizedBox(height: 4),
+                                    pw.Container(
+                                      width:
+                                          PdfPageFormat
+                                              .a5
+                                              .availableWidth -
+                                          60, // match margins
+                                      alignment:
+                                          pw
+                                              .Alignment
+                                              .center,
+                                      child: pw.Text(
+                                        shop.name,
+                                        textAlign:
+                                            pw
+                                                .TextAlign
+                                                .center,
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return pw.Container();
+                              }
+                            },
                           ),
 
                           pw.Builder(
@@ -1324,7 +1384,7 @@ Future<Uint8List> _buildPdfRoll(
       margin: const pw.EdgeInsets.only(
         left: 0,
         top: 15,
-        right: 15,
+        right: 25,
         bottom: 10,
       ),
 
@@ -1344,18 +1404,68 @@ Future<Uint8List> _buildPdfRoll(
                       pw.CrossAxisAlignment.center,
                   children: [
                     pw.Column(
-                      // mainAxisAlignment:
-                      //     pw.MainAxisAlignment.start,
                       children: [
-                        pw.Text(
-                          textAlign: pw.TextAlign.center,
-                          shop.name,
-                          style: pw.TextStyle(
-                            font: fontBold,
-                            fontSize: headingText,
+                        if (returnShopProvider(
+                              context,
+                              listen: false,
+                            ).selectedLogo !=
+                            null)
+                          pw.Container(
+                            height:
+                                returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        ).imageWidth! >
+                                        (2 *
+                                            returnShopProvider(
+                                              context,
+                                              listen: false,
+                                            ).imageHeight!)
+                                    ? 15
+                                    : 30,
+                            width: 100,
+                            child: pw.Image(
+                              pw.MemoryImage(
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).selectedLogo!,
+                              ),
+                              fit: pw.BoxFit.contain,
+                            ),
                           ),
-                          // maxLines: 2,
-                          overflow: pw.TextOverflow.clip,
+                        if (returnShopProvider(
+                              context,
+                              listen: false,
+                            ).selectedLogo !=
+                            null)
+                          pw.SizedBox(height: 2),
+                        pw.Builder(
+                          builder: (pw.Context pdfContext) {
+                            if (shop.showShopName!) {
+                              return pw.Column(
+                                children: [
+                                  pw.SizedBox(height: 1),
+                                  pw.Text(
+                                    textAlign:
+                                        pw.TextAlign.center,
+                                    shop.name,
+                                    style: pw.TextStyle(
+                                      font: fontBold,
+                                      fontSize: headingText,
+                                    ),
+                                    // maxLines: 2,
+                                    overflow:
+                                        pw
+                                            .TextOverflow
+                                            .clip,
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return pw.Container();
+                            }
+                          },
                         ),
                         pw.Builder(
                           builder: (pw.Context pdfContext) {

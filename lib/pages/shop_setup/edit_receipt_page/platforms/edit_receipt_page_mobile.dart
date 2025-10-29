@@ -265,6 +265,27 @@ class _ReceiptEditContainerState
   final bottomTextController = TextEditingController();
 
   @override
+  initState() {
+    super.initState();
+    getLogoFuture = getLogo();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      returnShopProvider(
+        context,
+        listen: false,
+      ).switchLogoPicked(false);
+      setState(() {});
+    });
+  }
+
+  late Future<void> getLogoFuture;
+  Future<void> getLogo() async {
+    returnShopProvider(
+      context,
+      listen: false,
+    ).getLogoImage(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var receipP = returnShopProvider(context).userShop!;
     var receiptPFalse = returnShopProvider(
@@ -306,37 +327,189 @@ class _ReceiptEditContainerState
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            SizedBox(height: 5),
-                            // GestureDetector(
-                            //   onTap: () {
-                            //     returnShopProvider(
-                            //       context,
-                            //       listen: false,
-                            //     ).deletePrinter();
-                            //   },
-                            //   child: Image.asset(
-                            //     mainLogoIcon,
-                            //     height: 40,
-                            //   ),
-                            // ),
-                            // SizedBox(height: 15),
+                            // SizedBox(height: 5),
                             Column(
                               spacing: 3,
                               children: [
-                                Text(
-                                  textAlign:
-                                      TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                Visibility(
+                                  visible:
+                                      returnShopProvider(
+                                        context,
+                                      ).selectedLogo !=
+                                      null,
+                                  child: SizedBox(
+                                    height: 10,
                                   ),
-                                  widget.shop.name,
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    await returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    ).pickLogoImage();
+                                  },
+                                  child: Container(
+                                    height:
+                                        returnShopProvider(
+                                                  context,
+                                                ).imageWidth ==
+                                                null
+                                            ? 50
+                                            : returnShopProvider(
+                                                  context,
+                                                ).imageWidth! >
+                                                (2 *
+                                                    returnShopProvider(
+                                                      context,
+                                                    ).imageHeight!)
+                                            ? 25
+                                            : 50,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            10,
+                                          ),
+                                      border: Border.all(
+                                        color:
+                                            returnShopProvider(
+                                                      context,
+                                                    ).selectedLogo ==
+                                                    null
+                                                ? Colors
+                                                    .grey
+                                                    .shade400
+                                                : Colors
+                                                    .transparent,
+                                      ),
+                                    ),
+                                    child: FutureBuilder(
+                                      future: getLogoFuture,
+                                      builder: (
+                                        context,
+                                        snapshot,
+                                      ) {
+                                        if (snapshot
+                                                .connectionState ==
+                                            ConnectionState
+                                                .waiting) {
+                                          return Center(
+                                            child: SizedBox(
+                                              height: 35,
+                                              width: 35,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth:
+                                                    1.2,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return returnShopProvider(
+                                                    context,
+                                                  ).selectedLogo ==
+                                                  null
+                                              ? Stack(
+                                                alignment:
+                                                    Alignment(
+                                                      0,
+                                                      0,
+                                                    ),
+                                                children: [
+                                                  Icon(
+                                                    size:
+                                                        40,
+                                                    Icons
+                                                        .image_outlined,
+                                                  ),
+                                                  Align(
+                                                    alignment:
+                                                        Alignment(
+                                                          0.1,
+                                                          1,
+                                                        ),
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            2,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.circle,
+                                                        color:
+                                                            widget.theme.lightModeColor.secColor200,
+                                                      ),
+                                                      child: Icon(
+                                                        size:
+                                                            15,
+                                                        Icons.add,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                              : Stack(
+                                                alignment:
+                                                    Alignment(
+                                                      0,
+                                                      0,
+                                                    ),
+                                                children: [
+                                                  Image.memory(
+                                                    returnShopProvider(
+                                                      context,
+                                                    ).selectedLogo!,
+                                                    fit:
+                                                        BoxFit.contain,
+                                                  ),
+                                                  Align(
+                                                    alignment:
+                                                        Alignment(
+                                                          1,
+                                                          1,
+                                                        ),
+                                                    child: IconButton(
+                                                      onPressed: () {
+                                                        returnShopProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).clearImage();
+                                                      },
+                                                      icon: Icon(
+                                                        Icons.clear,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                ToggleElement(
+                                  action: () {
+                                    receiptPFalse
+                                        .showShopNameAction();
+                                  },
+                                  element: Text(
+                                    textAlign:
+                                        TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .h3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    // ",912ms (compile: 153 ms, reload: 1934 ms, reassemble: 1268 ms).",
+                                    widget.shop.name,
+                                  ),
+                                  value:
+                                      receipP.showShopName!,
                                 ),
                                 ToggleElement(
                                   action: () {
@@ -344,6 +517,8 @@ class _ReceiptEditContainerState
                                         .showEmailAction();
                                   },
                                   element: Text(
+                                    textAlign:
+                                        TextAlign.center,
                                     style: TextStyle(
                                       fontSize:
                                           widget
@@ -368,6 +543,8 @@ class _ReceiptEditContainerState
                                         .showAddressAction();
                                   },
                                   element: Text(
+                                    textAlign:
+                                        TextAlign.center,
                                     style: TextStyle(
                                       fontSize:
                                           widget
@@ -397,6 +574,8 @@ class _ReceiptEditContainerState
                                         .showPhoneAction();
                                   },
                                   element: Text(
+                                    textAlign:
+                                        TextAlign.center,
                                     style: TextStyle(
                                       fontSize:
                                           widget
@@ -437,6 +616,9 @@ class _ReceiptEditContainerState
                                       //   mainLogoIcon,
                                       // ),
                                       Text(
+                                        textAlign:
+                                            TextAlign
+                                                .center,
                                         style: TextStyle(
                                           fontSize:
                                               widget
@@ -489,6 +671,8 @@ class _ReceiptEditContainerState
                                           : receipP
                                               .showFacebookTop!,
                                   element: Text(
+                                    textAlign:
+                                        TextAlign.center,
                                     style: TextStyle(
                                       fontSize:
                                           widget
@@ -1276,9 +1460,10 @@ class _ReceiptEditContainerState
                         setState(() {
                           isLoading = true;
                         });
-                        var int =
-                            await receiptPFalse
-                                .updateShopPrintDetails();
+                        var int = await receiptPFalse
+                            .updateShopPrintDetails(
+                              context,
+                            );
                         if (int == 1) {
                           setState(() {
                             isLoading = false;

@@ -405,6 +405,26 @@ class _ReceiptDetailsContainerState
     extends State<ReceiptDetailsContainer> {
   bool isLoading = false;
   bool showSuccess = false;
+  @override
+  initState() {
+    super.initState();
+    getLogoFuture = getLogo();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      returnShopProvider(
+        context,
+        listen: false,
+      ).switchLogoPicked(false);
+      setState(() {});
+    });
+  }
+
+  late Future<void> getLogoFuture;
+  Future<void> getLogo() async {
+    returnShopProvider(
+      context,
+      listen: false,
+    ).getLogoImage(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -475,36 +495,102 @@ class _ReceiptDetailsContainerState
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            SizedBox(height: 5),
-                            // GestureDetector(
-                            //   onTap: () {
-                            //     returnShopProvider(
-                            //       context,
-                            //       listen: false,
-                            //     ).deletePrinter();
-                            //   },
-                            //   child: Image.asset(
-                            //     mainLogoIcon,
-                            //     height: 40,
-                            //   ),
+                            // SizedBox(height: 5),
+                            // Image.network(
+                            //   widget.shop.logoUrl!,
+                            //   height: 40,
                             // ),
-                            // SizedBox(height: 15),
+                            Builder(
+                              builder: (context) {
+                                if (returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    ).userShop!.logoUrl !=
+                                    null) {
+                                  return Container(
+                                    height:
+                                        returnShopProvider(
+                                                      context,
+                                                    )
+                                                    .userShop!
+                                                    .logoUrl ==
+                                                null
+                                            ? 0
+                                            : returnShopProvider(
+                                                      context,
+                                                    )
+                                                    .userShop!
+                                                    .imageWidth! >
+                                                (2 *
+                                                    returnShopProvider(
+                                                      context,
+                                                    ).userShop!.imageHeight!)
+                                            ? 30
+                                            : 60,
+                                    width: 400,
+                                    decoration:
+                                        BoxDecoration(),
+                                    child: FutureBuilder(
+                                      future: getLogoFuture,
+                                      builder: (
+                                        context,
+                                        snapshot,
+                                      ) {
+                                        if (snapshot
+                                                .connectionState ==
+                                            ConnectionState
+                                                .waiting) {
+                                          return Center(
+                                            child: SizedBox(
+                                              height: 35,
+                                              width: 35,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth:
+                                                    1.2,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Image.memory(
+                                            returnShopProvider(
+                                              context,
+                                            ).selectedLogo!,
+                                            fit:
+                                                BoxFit
+                                                    .contain,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ),
+                            SizedBox(height: 5),
                             Column(
                               children: [
-                                Text(
-                                  textAlign:
-                                      TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                Visibility(
+                                  visible:
+                                      widget
+                                          .shop
+                                          .showShopName!,
+                                  child: Text(
+                                    textAlign:
+                                        TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .h4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    widget.shop.name,
                                   ),
-                                  widget.shop.name,
                                 ),
                                 Visibility(
                                   visible:
@@ -1592,7 +1678,7 @@ class _ReceiptDetailsContainerState
                                           .mainReceipt
                                           .staffName,
                                   filename:
-                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
+                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                   context: safeContext,
                                   receipt:
                                       widget.mainReceipt,
@@ -1897,7 +1983,7 @@ class _ReceiptDetailsContainerState
                                             .mainReceipt
                                             .staffName,
                                     filename:
-                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
+                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                     context: safeContext,
                                     receipt:
                                         widget.mainReceipt,

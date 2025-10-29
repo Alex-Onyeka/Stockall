@@ -10,6 +10,7 @@
 #include <audioplayers_windows/audioplayers_windows_plugin.h>
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
 #include <file_saver/file_saver_plugin.h>
+#include <file_selector_windows/file_selector_windows.h>
 #include <flutter_thermal_printer/flutter_thermal_printer_plugin_c_api.h>
 #include <flutter_usb_thermal_plugin/flutter_usb_thermal_plugin_c_api.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
@@ -26,6 +27,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("ConnectivityPlusWindowsPlugin"));
   FileSaverPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FileSaverPlugin"));
+  FileSelectorWindowsRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FileSelectorWindows"));
   FlutterThermalPrinterPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterThermalPrinterPluginCApi"));
   FlutterUsbThermalPluginCApiRegisterWithRegistrar(

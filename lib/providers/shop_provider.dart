@@ -1,11 +1,21 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
+import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
+import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
+import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 
 class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
@@ -633,6 +643,11 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void showShopNameAction() {
+    userShop!.showShopName = !userShop!.showShopName!;
+    notifyListeners();
+  }
+
   void showAddressAction() {
     userShop!.showAddress = !userShop!.showAddress!;
     notifyListeners();
@@ -679,9 +694,25 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int> updateShopPrintDetails() async {
+  Future<int> updateShopPrintDetails(
+    BuildContext context,
+  ) async {
     bool isOnline = await connectivity.isOnline();
-
+    if (logoPicked && selectedLogo != null) {
+      var res = await uploadLogo(
+        image: rawImage!,
+        // ignore: use_build_context_synchronously
+        context: context,
+      );
+      if (res == 0) {
+        return 0;
+      }
+    }
+    if (selectedLogo == null) {
+      userShop?.logoUrl = null;
+      userShop?.imageHeight = null;
+      userShop?.imageWidth = null;
+    }
     if (isOnline) {
       userShop!.updatedAt = DateTime.now();
       try {
@@ -776,6 +807,257 @@ class ShopProvider extends ChangeNotifier {
         return 1;
       } catch (e) {
         print("❌ Failed to update location Offline: $e");
+        return 0;
+      }
+    }
+  }
+
+  Future<Uint8List?> fetchImageBytes(
+    String imageUrl,
+  ) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        print(
+          '⚠️ Failed to load image: ${response.statusCode}',
+        );
+        return null;
+      }
+    } catch (e) {
+      print('❌ Error fetching image bytes: $e');
+      return null;
+    }
+  }
+
+  Future<ui.Image> getImageInfo(
+    Uint8List imageBytes,
+  ) async {
+    final Completer<ui.Image> completer = Completer();
+    ui.decodeImageFromList(imageBytes, (ui.Image img) {
+      completer.complete(img);
+    });
+    return completer.future;
+  }
+
+  final ImagePicker _picker = ImagePicker();
+  Uint8List? selectedLogo;
+  XFile? rawImage;
+  // String? imageName;
+  int? imageWidth;
+  int? imageHeight;
+
+  void clearImage() {
+    selectedLogo = null;
+    imageWidth = null;
+    imageHeight = null;
+    rawImage = null;
+    print('Image Cleared');
+    notifyListeners();
+  }
+
+  bool logoPicked = false;
+
+  void switchLogoPicked(bool value) {
+    logoPicked = value;
+    print(
+      "Logo Picked Value is Now: ${logoPicked.toString()}",
+    );
+    notifyListeners();
+  }
+
+  Future<XFile?> pickLogoImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        imageQuality: 85,
+      );
+
+      if (image == null) {
+        print('No image selected.');
+        return null;
+      }
+
+      final Uint8List imageBytes =
+          await image.readAsBytes();
+
+      final imageSize = await getImageInfo(imageBytes);
+
+      imageWidth = imageSize.width;
+      imageHeight = imageSize.height;
+      selectedLogo = imageBytes;
+      rawImage = image;
+      print(
+        'Image selected: ${image.name} (${imageBytes.length} $imageHeight x $imageWidth bytes)',
+      );
+      switchLogoPicked(true);
+      notifyListeners();
+      return image;
+    } catch (e) {
+      print('Error picking image: $e');
+      return null;
+    }
+  }
+
+  Future<Uint8List?> getLogoImage(
+    BuildContext context,
+  ) async {
+    bool isOnline = await connectivity.isOnline();
+
+    if (isOnline) {
+      try {
+        // final response =
+        //     await Supabase.instance.client
+        //         .from('shops')
+        //         .select()
+        //         .eq('shop_id', userShop!.shopId!)
+        //         .maybeSingle();
+        await getUserShop(AuthService().currentUser!);
+        notifyListeners();
+        final logoUrl = userShop?.logoUrl;
+        if (logoUrl == null ||
+            userShop?.imageHeight == null ||
+            userShop?.imageWidth == null) {
+          clearImage();
+          return null;
+        }
+
+        final onlineBytes = await fetchImageBytes(logoUrl);
+
+        if (onlineBytes != null) {
+          await ShopLogosFunc().createLogo(
+            TempShopLogos(
+              logoPath: base64Encode(onlineBytes),
+              imageName: logoUrl,
+              imageHeight: userShop!.imageHeight!,
+              imageWidth: userShop!.imageWidth!,
+            ),
+            // ignore: use_build_context_synchronously
+            context,
+          );
+        }
+        selectedLogo = onlineBytes;
+        imageHeight = userShop?.imageHeight;
+        imageWidth = userShop?.imageWidth;
+        // imag
+        notifyListeners();
+        return onlineBytes;
+      } catch (e) {
+        print('Error: ${e.toString()}');
+        clearImage();
+        return null;
+      }
+    } else {
+      try {
+        await getUserShop(AuthService().currentUser!);
+        var logo = ShopLogosFunc().getLogo();
+        if (logo == null) {
+          clearImage();
+          notifyListeners();
+          return null;
+        } else {
+          var imageBytes = base64Decode(logo.logoPath);
+          selectedLogo = imageBytes;
+          imageHeight = userShop?.imageHeight;
+          imageWidth = userShop?.imageWidth;
+          notifyListeners();
+          return imageBytes;
+        }
+      } catch (e) {
+        print('Error: ${e.toString()}');
+        clearImage();
+        return null;
+      }
+    }
+  }
+
+  Future<int> uploadLogo({
+    required XFile image,
+    required BuildContext context,
+  }) async {
+    final bool isOnline = await connectivity.isOnline();
+    final imageBytes = await image.readAsBytes();
+    final String ext =
+        image.name.split('.').last.toLowerCase();
+
+    final String mimeType = switch (ext) {
+      'jpg' || 'jpeg' => 'image/jpeg',
+      'png' => 'image/png',
+      'webp' => 'image/webp',
+      _ => 'application/octet-stream',
+    };
+
+    final String filePath =
+        'logos/${userShop!.shopId!}-${DateTime.now().millisecondsSinceEpoch}.$ext';
+    if (isOnline) {
+      try {
+        await supabase.storage
+            .from('logos')
+            .uploadBinary(
+              filePath,
+              imageBytes,
+              fileOptions: FileOptions(
+                contentType: mimeType,
+              ),
+            );
+
+        final String publicUrl = supabase.storage
+            .from('logos')
+            .getPublicUrl(filePath);
+
+        await supabase
+            .from('shops')
+            .update({
+              'logo_url': publicUrl,
+              'image_height': imageHeight,
+              'image_width': imageWidth,
+            })
+            .eq('shop_id', userShop!.shopId!);
+        userShop?.logoUrl = publicUrl;
+        userShop?.imageHeight = imageHeight;
+        userShop?.imageWidth = imageWidth;
+        notifyListeners();
+        print(
+          '✅  Online Logo uploaded and saved successfully!',
+        );
+        return 1;
+      } catch (e) {
+        print('❌ Error uploading logo: $e');
+        return 0;
+      }
+    } else {
+      try {
+        await ShopLogosFunc().createLogo(
+          TempShopLogos(
+            logoPath: base64Encode(imageBytes),
+            imageName: filePath,
+            imageHeight: imageHeight!,
+            imageWidth: imageWidth!,
+          ),
+          // ignore: use_build_context_synchronously
+          context,
+        );
+        await CreatedShopLogosFunc().createCreatedShopLogo(
+          TempShopLogos(
+            logoPath: base64Encode(imageBytes),
+            imageName: filePath,
+            imageHeight: imageHeight!,
+            imageWidth: imageWidth!,
+          ),
+          context,
+        );
+        // userShop?.logoUrl = publicUrl;
+        userShop?.imageHeight = imageHeight;
+        userShop?.imageWidth = imageWidth;
+        notifyListeners();
+        print(
+          '✅  Offline Logo uploaded and saved successfully!',
+        );
+        return 1;
+      } catch (e) {
+        print('Error: ${e.toString()}');
         return 0;
       }
     }
