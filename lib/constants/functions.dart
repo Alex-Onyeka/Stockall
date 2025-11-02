@@ -97,6 +97,7 @@ List<Map<String, dynamic>> employees = [
       'Add Customers',
       'Update Customers',
       'Delete Customers',
+      'Edit Receipt Template',
       'Make Sale',
       'Make Refund',
       'Delete Sales',
@@ -124,6 +125,7 @@ List<Map<String, dynamic>> employees = [
       'Add Customers',
       'Update Customers',
       'Delete Customers',
+      'Edit Receipt Template',
       'Make Sale',
       'Make Refund',
       'Delete Sales',
@@ -195,6 +197,7 @@ class Authorizations {
   String makeSale = 'Make Sale';
   String deleteSale = 'Delete Sales';
   String updateSale = 'Update Sales';
+  String editReceiptTemplate = 'Edit Receipt Template';
   String makeRefund = 'Make Refund';
   String addEmployee = 'Add Employee';
   String updateEmployee = 'Update Employees';
@@ -2348,6 +2351,24 @@ Future<Uint8List> _buildPdfProducts(
   TempShopClass shop,
   BuildContext context,
 ) async {
+  const int productsPerPage = 70;
+
+  // Split products into chunks of 70
+  final productChunks = <List<TempProductClass>>[];
+  for (
+    var i = 0;
+    i < products.length;
+    i += productsPerPage
+  ) {
+    productChunks.add(
+      products.sublist(
+        i,
+        i + productsPerPage > products.length
+            ? products.length
+            : i + productsPerPage,
+      ),
+    );
+  }
   int inStock() {
     int tempStock = 0;
     for (var element in products) {

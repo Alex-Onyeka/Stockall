@@ -1050,30 +1050,38 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                         BoxConstraints(),
                                   ),
                                 ),
-                                Expanded(
-                                  child: MainButtonTransparent(
-                                    themeProvider: theme,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return EditReceipt();
-                                          },
-                                        ),
-                                      ).then((_) {
-                                        setState(() {
-                                          shopFuture =
-                                              getShop();
+                                Visibility(
+                                  visible: authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .editReceiptTemplate,
+                                    context: context,
+                                  ),
+                                  child: Expanded(
+                                    child: MainButtonTransparent(
+                                      themeProvider: theme,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return EditReceipt();
+                                            },
+                                          ),
+                                        ).then((_) {
+                                          setState(() {
+                                            shopFuture =
+                                                getShop();
+                                          });
                                         });
-                                      });
-                                    },
-                                    text:
-                                        'Printer Settings',
-                                    constraints:
-                                        BoxConstraints(),
+                                      },
+                                      text:
+                                          'Receipt Settings',
+                                      constraints:
+                                          BoxConstraints(),
+                                    ),
                                   ),
                                 ),
                               ],

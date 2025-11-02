@@ -131,7 +131,8 @@ class SettingsPageDesktop extends StatelessWidget {
                   Visibility(
                     visible: authorization(
                       authorized:
-                          Authorizations().manageShop,
+                          Authorizations()
+                              .editReceiptTemplate,
                       context: context,
                     ),
                     child: NavListTileDesktopAlt(

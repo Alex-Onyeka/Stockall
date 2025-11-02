@@ -100,8 +100,8 @@ class UserProvider extends ChangeNotifier {
                 .select()
                 .eq('user_id', authUser)
                 .single();
-
         _currentUser = TempUserClass.fromJson(data);
+        print('User Found: ${_currentUser?.name}');
         await UserFunc().insertUser(_currentUser!);
       }
     } else {
@@ -109,6 +109,7 @@ class UserProvider extends ChangeNotifier {
           LoggedInUserFunc()
               .getLoggedInUser()
               ?.loggedInUser;
+      print('Current User ${_currentUser?.name}');
     }
 
     notifyListeners();

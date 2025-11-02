@@ -31,6 +31,7 @@ class _HomeState extends State<Home> {
       context,
       listen: false,
     ).fetchCurrentUser(context);
+    print(user?.email);
     return user;
   }
 
@@ -45,6 +46,14 @@ class _HomeState extends State<Home> {
       context,
       listen: false,
     ).getUserShop(AuthService().currentUser!);
+    shop != null
+        ? returnShopProvider(
+          // ignore: use_build_context_synchronously
+          context,
+          listen: false,
+          // ignore: use_build_context_synchronously
+        ).getLogoImage(context)
+        : {};
     return shop;
   }
 

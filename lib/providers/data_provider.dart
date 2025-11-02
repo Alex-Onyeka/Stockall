@@ -480,6 +480,18 @@ class DataProvider extends ChangeNotifier {
               );
               setSyncProgress(11);
             }
+            if (DeletedReceiptsFunc()
+                    .getReceiptIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnReceiptProvider(
+                context,
+                listen: false,
+              ).deleteReceiptsSync(context);
+              print('Finished Syncing Created Receipts');
+              setSyncProgress(12);
+            }
 
             if (CreatedReceiptsFunc()
                     .getReceipts()
@@ -493,7 +505,7 @@ class DataProvider extends ChangeNotifier {
               print(
                 'Finished Syncing Created Records Customers',
               );
-              setSyncProgress(12);
+              setSyncProgress(13);
             }
             if (CreatedReceiptsFunc()
                     .getReceipts()
@@ -505,20 +517,9 @@ class DataProvider extends ChangeNotifier {
                 listen: false,
               ).createReceiptsSync(context);
               print('Finished Syncing Created Receipts');
-              setSyncProgress(13);
-            }
-            if (DeletedReceiptsFunc()
-                    .getReceiptIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnReceiptProvider(
-                context,
-                listen: false,
-              ).deleteReceiptsSync(context);
-              print('Finished Syncing Created Receipts');
               setSyncProgress(14);
             }
+
             if (UpdatedReceiptsFunc()
                     .getReceiptIds()
                     .isNotEmpty &&
@@ -722,18 +723,43 @@ class DataProvider extends ChangeNotifier {
           .from('products')
           .select()
           .eq('shop_id', shopId)
-          .order('name', ascending: true);
-      print('Items gotten');
+          .order('name', ascending: true)
+          .range(0, 1000);
+
+      print('Items gotten: ${data.length}');
       productList =
           (data as List)
               .map(
                 (json) => TempProductClass.fromJson(json),
               )
               .toList();
+      print('Product List Set: ${productList.length}');
+      if (data.length > 999) {
+        final data2 = await supabase
+            .from('products')
+            .select()
+            .eq('shop_id', shopId)
+            .order('name', ascending: true)
+            .range(1001, 2000);
+        print('Items 2 gotten: ${data2.length}');
+        productList.addAll(
+          (data2 as List)
+              .map(
+                (stuff) => TempProductClass.fromJson(stuff),
+              )
+              .toList(),
+        );
+        print('Product List 2 Set: ${productList.length}');
+        notifyListeners();
+      }
+
       await ProductsFunc().insertAllProducts(productList);
     } else {
-      productList = ProductsFunc().getProducts();
+      var offlineData = ProductsFunc().getProducts();
+      print("Offline Data Gotten: ${offlineData.length}");
+      productList = offlineData;
     }
+
     notifyListeners();
     return productList;
   }

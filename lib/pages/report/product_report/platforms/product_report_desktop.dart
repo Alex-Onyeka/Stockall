@@ -185,11 +185,13 @@ class ProductReportDesktopState
                 Column(
                   children: [
                     Visibility(
-                      visible: products.isEmpty,
+                      visible: false,
+                      // products.isEmpty,
                       child: SizedBox(height: 20),
                     ),
                     Visibility(
-                      visible: products.isNotEmpty,
+                      visible: false,
+                      // products.isNotEmpty,
                       child: Padding(
                         padding: const EdgeInsets.only(
                           right: 10.0,

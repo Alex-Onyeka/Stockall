@@ -359,3 +359,47 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class TestPage extends StatefulWidget {
+  const TestPage({super.key});
+
+  @override
+  State<TestPage> createState() => _TestPageState();
+}
+
+class _TestPageState extends State<TestPage> {
+  late Future<bool> connectFuture;
+  Future<bool> connect() async {
+    return returnConnectivityProvider(
+      context,
+      listen: false,
+    ).isOnline();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    connectFuture = connect();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: FutureBuilder(
+          future: connectFuture,
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator.adaptive(),
+              );
+            } else {
+              return Text(asyncSnapshot.data.toString());
+            }
+          },
+        ),
+      ),
+    );
+  }
+}

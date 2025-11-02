@@ -491,13 +491,21 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                     BoxConstraints(),
                               ),
                             ),
-                            Expanded(
-                              child: MainButtonTransparent(
-                                themeProvider: theme,
-                                action: () {},
-                                text: 'Printer Settings',
-                                constraints:
-                                    BoxConstraints(),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .editReceiptTemplate,
+                                context: context,
+                              ),
+                              child: Expanded(
+                                child: MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {},
+                                  text: 'Receipt Settings',
+                                  constraints:
+                                      BoxConstraints(),
+                                ),
                               ),
                             ),
                           ],

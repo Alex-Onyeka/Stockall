@@ -503,10 +503,16 @@ class _ReceiptDetailsContainerState
                             Builder(
                               builder: (context) {
                                 if (returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    ).userShop!.logoUrl !=
-                                    null) {
+                                              context,
+                                              listen: false,
+                                            )
+                                            .userShop!
+                                            .logoUrl !=
+                                        null &&
+                                    returnShopProvider(
+                                          context,
+                                        ).selectedLogo !=
+                                        null) {
                                   return Container(
                                     height:
                                         returnShopProvider(

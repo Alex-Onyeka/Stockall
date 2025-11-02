@@ -10,7 +10,6 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
-import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -179,6 +178,9 @@ class SalesProvider extends ChangeNotifier {
   }) async {
     bool isOnline = await connectivity.isOnline();
     if (currentCart().receiptUuidEdit != null) {
+      print(
+        'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
+      );
       await returnReceiptProvider(
         // ignore: use_build_context_synchronously
         context,
@@ -188,6 +190,8 @@ class SalesProvider extends ChangeNotifier {
         // ignore: use_build_context_synchronously
         context,
       );
+    } else {
+      print('Receipt Uuid is null');
     }
     final createdAt =
         currentCart().createdDate?.toUtc() ??
@@ -846,28 +850,20 @@ class SalesProvider extends ChangeNotifier {
           title: 'Cancel Edit?',
           action: () {
             if (currentCart().isReceiptEdit) {
-              var recId =
-                  returnSalesProvider(
-                    context,
-                    listen: false,
-                  ).currentCart().receiptUuidEdit;
+              // var recId =
+              //     returnSalesProvider(
+              //       context,
+              //       listen: false,
+              //     ).currentCart().receiptUuidEdit;
               if (cartQueue.length == 1) {
                 addNewCart();
               }
 
               deleteCart(cartIndex);
               selectCart(0);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ReceiptPage(
-                      receiptUuid: recId!,
-                      isMain: true,
-                    );
-                  },
-                ),
-              );
+              notifyListeners();
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
             } else {
               Navigator.of(context).pop();
             }

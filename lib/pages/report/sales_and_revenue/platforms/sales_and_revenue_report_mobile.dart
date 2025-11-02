@@ -333,7 +333,8 @@ class _SalesAndRevenueReportMobileState
                           ],
                         ),
                         Visibility(
-                          visible: salesRecords.isNotEmpty,
+                          visible: false,
+                          //  salesRecords.isNotEmpty,
                           child: Row(
                             mainAxisAlignment:
                                 MainAxisAlignment.end,
