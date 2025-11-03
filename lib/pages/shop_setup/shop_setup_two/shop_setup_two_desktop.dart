@@ -194,7 +194,7 @@ class _ShopSetupTwoDesktopState
                     employees: [AuthService().currentUser!],
                     createdAt: DateTime.now(),
                     userId: AuthService().currentUser!,
-                    email: shopProvider.email!,
+                    email: shopProvider.email,
                     name: shopProvider.name,
                     state: selectedStateName,
                     country: selectedCountryName,

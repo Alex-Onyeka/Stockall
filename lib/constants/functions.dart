@@ -568,7 +568,8 @@ Future<Uint8List> _buildPdf(
                             builder: (
                               pw.Context pdfContext,
                             ) {
-                              if (shop.showEmail!) {
+                              if (shop.showEmail! &&
+                                  shop.email != null) {
                                 return pw.Column(
                                   children: [
                                     pw.SizedBox(height: 4),
@@ -583,7 +584,7 @@ Future<Uint8List> _buildPdf(
                                               .Alignment
                                               .center,
                                       child: pw.Text(
-                                        shop.email,
+                                        shop.email ?? '',
                                         textAlign:
                                             pw
                                                 .TextAlign
@@ -1472,14 +1473,15 @@ Future<Uint8List> _buildPdfRoll(
                         ),
                         pw.Builder(
                           builder: (pw.Context pdfContext) {
-                            if (shop.showEmail!) {
+                            if (shop.showEmail! &&
+                                shop.email != null) {
                               return pw.Column(
                                 children: [
                                   pw.SizedBox(height: 1),
                                   pw.Text(
                                     textAlign:
                                         pw.TextAlign.center,
-                                    shop.email,
+                                    shop.email ?? '',
                                     style: pw.TextStyle(
                                       font: fontRegular,
                                       fontSize: parText,
@@ -2491,7 +2493,7 @@ Future<Uint8List> _buildPdfProducts(
                       pw.SizedBox(height: 5),
                       pw.Text(
                         textAlign: pw.TextAlign.center,
-                        shop.email,
+                        shop.email ?? 'Email not Set',
                         style: pw.TextStyle(
                           font: fontRegular,
                           fontSize: 9,
@@ -3311,7 +3313,7 @@ Future<Uint8List> _buildPdfSales(
                       pw.SizedBox(height: 5),
                       pw.Text(
                         textAlign: pw.TextAlign.center,
-                        shop.email,
+                        shop.email ?? 'Email Not Set',
                         style: pw.TextStyle(
                           font: fontRegular,
                           fontSize: 9,
@@ -3955,7 +3957,7 @@ Future<Uint8List> _buildPdfSalesSummary(
                       pw.SizedBox(height: 5),
                       pw.Text(
                         textAlign: pw.TextAlign.center,
-                        shop.email,
+                        shop.email ?? 'Email not Set',
                         style: pw.TextStyle(
                           font: fontRegular,
                           fontSize: 9,

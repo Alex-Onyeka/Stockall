@@ -748,7 +748,7 @@ Uint8List generateStyledReceipt({
   final builder = ReceiptBuilder();
   builder.addBlank();
   builder.addTitle(shop.name);
-  builder.addTextMiddle(shop.email);
+  builder.addTextMiddle(shop.email ?? 'Email Not Set');
   if (shop.phoneNumber != null) {
     builder.addTextMiddle(shop.phoneNumber!);
   }

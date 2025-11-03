@@ -14,7 +14,7 @@ class TempShopClass {
   final String userId;
 
   @HiveField(3)
-  String email;
+  String? email;
 
   @HiveField(4)
   String name;
@@ -128,7 +128,7 @@ class TempShopClass {
     this.shopId,
     required this.createdAt,
     required this.userId,
-    required this.email,
+    this.email,
     required this.name,
     this.state,
     this.city,
@@ -177,7 +177,7 @@ class TempShopClass {
         json['created_at'] as String,
       ),
       userId: json['user_id'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String?,
       name: json['name'] as String,
       state: json['state'] as String?,
       city: json['city'] as String?,

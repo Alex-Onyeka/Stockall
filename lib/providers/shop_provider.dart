@@ -151,7 +151,7 @@ class ShopProvider extends ChangeNotifier {
   Future<void> updateShopContactDetails({
     required int shopId,
     required String name,
-    required String email,
+    String? email,
     required String? phoneNumber,
   }) async {
     bool isOnline = await connectivity.isOnline();

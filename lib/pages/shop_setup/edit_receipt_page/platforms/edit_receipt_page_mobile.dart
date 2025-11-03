@@ -273,6 +273,24 @@ class _ReceiptEditContainerState
         context,
         listen: false,
       ).switchLogoPicked(false);
+      if (returnShopProvider(
+            context,
+            listen: false,
+          ).userShop!.phoneNumber ==
+          null) {
+        returnShopProvider(context, listen: false)
+            .userShop!
+            .showPhone = false;
+      }
+      if (returnShopProvider(
+            context,
+            listen: false,
+          ).userShop!.email ==
+          null) {
+        returnShopProvider(context, listen: false)
+            .userShop!
+            .showEmail = false;
+      }
       setState(() {});
     });
   }
@@ -529,7 +547,12 @@ class _ReceiptEditContainerState
                                       ToggleElement(
                                         action: () {
                                           receiptPFalse
-                                              .showEmailAction();
+                                                      .userShop!
+                                                      .email ==
+                                                  null
+                                              ? {}
+                                              : receiptPFalse
+                                                  .showEmailAction();
                                         },
                                         element: Text(
                                           textAlign:
@@ -550,11 +573,17 @@ class _ReceiptEditContainerState
                                                     .grey
                                                     .shade700,
                                           ),
-                                          widget.shop.email,
+                                          widget
+                                                  .shop
+                                                  .email ??
+                                              'Email Not Set',
                                         ),
                                         value:
-                                            receipP
-                                                .showEmail!,
+                                            receipP.email ==
+                                                    null
+                                                ? false
+                                                : receipP
+                                                    .showEmail!,
                                       ),
                                       ToggleElement(
                                         action: () {
@@ -593,7 +622,12 @@ class _ReceiptEditContainerState
                                       ToggleElement(
                                         action: () {
                                           receiptPFalse
-                                              .showPhoneAction();
+                                                      .userShop!
+                                                      .phoneNumber ==
+                                                  null
+                                              ? {}
+                                              : receiptPFalse
+                                                  .showPhoneAction();
                                         },
                                         element: Text(
                                           textAlign:
@@ -620,8 +654,11 @@ class _ReceiptEditContainerState
                                               'Phone Not Set',
                                         ),
                                         value:
-                                            receipP
-                                                .showPhone!,
+                                            receipP.phoneNumber ==
+                                                    null
+                                                ? false
+                                                : receipP
+                                                    .showPhone!,
                                       ),
                                       ToggleElement(
                                         value:

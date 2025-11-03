@@ -589,7 +589,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                       .lightModeColor
                                       .secColor200,
                             ),
-                            shop.email,
+                            shop.email ?? 'Email Not Set',
                           ),
                           SizedBox(height: 10),
                           Padding(

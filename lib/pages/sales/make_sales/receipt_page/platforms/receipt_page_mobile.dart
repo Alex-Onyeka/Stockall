@@ -487,7 +487,9 @@ class _ReceiptDetailsContainerState
                                   visible:
                                       widget
                                           .shop
-                                          .showEmail!,
+                                          .showEmail! &&
+                                      widget.shop.email !=
+                                          null,
                                   child: Column(
                                     children: [
                                       SizedBox(height: 2),
@@ -507,7 +509,8 @@ class _ReceiptDetailsContainerState
                                                   .grey
                                                   .shade700,
                                         ),
-                                        widget.shop.email,
+                                        widget.shop.email ??
+                                            'Email Not Set',
                                       ),
                                     ],
                                   ),
@@ -541,7 +544,11 @@ class _ReceiptDetailsContainerState
                                   visible:
                                       widget
                                           .shop
-                                          .showPhone!,
+                                          .showPhone! &&
+                                      widget
+                                              .shop
+                                              .phoneNumber !=
+                                          null,
                                   child: Column(
                                     children: [
                                       SizedBox(height: 2),

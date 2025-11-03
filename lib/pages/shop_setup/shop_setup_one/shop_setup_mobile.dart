@@ -12,7 +12,6 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_two/shop_setup_two.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/pages/shop_setup/components/text_field.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class ShopSetupMobile extends StatefulWidget {
   final TempShopClass? shop;
@@ -51,7 +50,7 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
             nameController.text.trim();
         returnShopProvider(context, listen: false).email =
             emailController.text.isEmpty
-                ? AuthService().currentUserAuth!.email!
+                ? null
                 : emailController.text;
         returnShopProvider(context, listen: false).phone =
             numberController.text.isEmpty
@@ -106,9 +105,7 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
                   email:
                       emailController.text.isNotEmpty
                           ? emailController.text
-                          : AuthService()
-                              .currentUserAuth!
-                              .email!,
+                          : null,
                   phoneNumber:
                       numberController.text.isEmpty
                           ? null
@@ -144,7 +141,7 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
     super.initState();
     if (widget.shop != null) {
       nameController.text = widget.shop!.name;
-      emailController.text = widget.shop!.email;
+      emailController.text = widget.shop!.email ?? '';
       numberController.text =
           widget.shop!.phoneNumber ?? '';
     }
@@ -214,8 +211,8 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
                             theme: theme,
                             hintText: 'Shop Email',
                             title: 'Enter Email',
-                            message:
-                                'Uses your Personal Email if you don\'t set',
+                            // message:
+                            //     'Uses your Personal Email if you don\'t set',
                             isEmail: true,
                             controller: emailController,
                           ),
@@ -232,20 +229,20 @@ class _ShopSetupMobileState extends State<ShopSetupMobile> {
                                 controller:
                                     numberController,
                               ),
-                              Text(
-                                style: TextStyle(
-                                  color:
-                                      Colors.grey.shade600,
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Uses your Personal Number if you don\'t set',
-                              ),
+                              // Text(
+                              //   style: TextStyle(
+                              //     color:
+                              //         Colors.grey.shade600,
+                              //     fontSize:
+                              //         theme
+                              //             .mobileTexts
+                              //             .b3
+                              //             .fontSize,
+                              //     fontWeight:
+                              //         FontWeight.bold,
+                              //   ),
+                              //   'Uses your Personal Number if you don\'t set',
+                              // ),
                             ],
                           ),
                           Column(
