@@ -8,7 +8,7 @@ class TempProductSaleRecord {
   int? productRecordId;
 
   @HiveField(1)
-  final DateTime createdAt;
+  DateTime createdAt;
 
   @HiveField(2)
   final int productId;

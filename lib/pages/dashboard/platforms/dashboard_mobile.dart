@@ -210,57 +210,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     return users;
   }
 
-  // Future<void> refreshAll() async {
-  //   var safeContext = context;
-  //   int isSynced =
-  //       returnData(context, listen: false).isSynced();
-  //   bool isOnline = await ConnectivityProvider().isOnline();
-  //   if (isSynced == 0 && context.mounted && isOnline) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return ConfirmationAlert(
-  //           theme: returnTheme(context, listen: false),
-  //           message:
-  //               'You have unsynced Records, are you sure you want to proceed?',
-  //           title: 'Unsynced Records Detected',
-  //           action: () async {
-  //             Navigator.of(context).pop();
-  //             await returnData(
-  //               context,
-  //               listen: false,
-  //             ).syncData(safeContext);
-
-  //             getMainReceipts();
-  //             getProductSalesRecord();
-  //             getExpenses();
-  //             getEmployees();
-  //             returnUserProvider(
-  //               context,
-  //               listen: false,
-  //             ).fetchCurrentUser(safeContext);
-  //             getProducts();
-  //             clearDate();
-  //             fetchNotifications();
-  //           },
-  //         );
-  //       },
-  //     );
-  //   } else {
-  //     getMainReceipts();
-  //     getProductSalesRecord();
-  //     getExpenses();
-  //     getEmployees();
-  //     returnUserProvider(
-  //       context,
-  //       listen: false,
-  //     ).fetchCurrentUser(safeContext);
-  //     getProducts();
-  //     clearDate();
-  //     fetchNotifications();
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);

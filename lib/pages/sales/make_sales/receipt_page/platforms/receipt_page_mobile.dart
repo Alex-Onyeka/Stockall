@@ -323,8 +323,8 @@ class _ReceiptDetailsContainerState
   @override
   initState() {
     super.initState();
-    getLogoFuture = getLogo();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getLogo();
       returnShopProvider(
         context,
         listen: false,
@@ -333,7 +333,7 @@ class _ReceiptDetailsContainerState
     });
   }
 
-  late Future<void> getLogoFuture;
+  // late Future<void> getLogoFuture;
   Future<void> getLogo() async {
     returnShopProvider(
       context,
@@ -426,70 +426,30 @@ class _ReceiptDetailsContainerState
                             Builder(
                               builder: (context) {
                                 if (returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            )
-                                            .userShop!
-                                            .logoUrl !=
-                                        null &&
-                                    returnShopProvider(
-                                          context,
-                                        ).selectedLogo !=
-                                        null) {
+                                      context,
+                                    ).selectedLogo !=
+                                    null) {
                                   return Container(
                                     height:
-                                        returnShopProvider(
+                                        (returnShopProvider(
                                                       context,
-                                                    )
-                                                    .userShop!
-                                                    .logoUrl ==
-                                                null
-                                            ? 0
-                                            : returnShopProvider(
-                                                      context,
-                                                    )
-                                                    .userShop!
-                                                    .imageWidth! >
+                                                    ).imageWidth ??
+                                                    0) >
                                                 (2 *
-                                                    returnShopProvider(
-                                                      context,
-                                                    ).userShop!.imageHeight!)
+                                                    (returnShopProvider(
+                                                          context,
+                                                        ).imageHeight ??
+                                                        0))
                                             ? 25
                                             : 45,
                                     width: double.infinity,
                                     decoration:
                                         BoxDecoration(),
-                                    child: FutureBuilder(
-                                      future: getLogoFuture,
-                                      builder: (
+                                    child: Image.memory(
+                                      returnShopProvider(
                                         context,
-                                        snapshot,
-                                      ) {
-                                        if (snapshot
-                                                .connectionState ==
-                                            ConnectionState
-                                                .waiting) {
-                                          return Center(
-                                            child: SizedBox(
-                                              height: 35,
-                                              width: 35,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth:
-                                                    1.2,
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          return Image.memory(
-                                            returnShopProvider(
-                                              context,
-                                            ).selectedLogo!,
-                                            fit:
-                                                BoxFit
-                                                    .contain,
-                                          );
-                                        }
-                                      },
+                                      ).selectedLogo!,
+                                      fit: BoxFit.contain,
                                     ),
                                   );
                                 } else {

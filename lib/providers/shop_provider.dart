@@ -628,6 +628,88 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  //
+  //
+  //
+
+  Future<void> uploadShopLogoSync(
+    BuildContext context,
+  ) async {
+    try {
+      bool isOnline = await connectivity.isOnline();
+      print(
+        CreatedShopLogosFunc().getCreatedLogo().toString(),
+      );
+
+      if (CreatedShopLogosFunc().getCreatedLogo() != null &&
+          isOnline) {
+        final createdLogo =
+            CreatedShopLogosFunc().getCreatedLogo();
+        var filePath = createdLogo!.imageName;
+        var imageBytes = base64Decode(createdLogo.logoPath);
+        var mimeType = "image/${filePath.split('.').last}";
+
+        try {
+          await supabase.storage
+              .from('logos')
+              .uploadBinary(
+                filePath,
+                imageBytes,
+                fileOptions: FileOptions(
+                  contentType: mimeType,
+                ),
+              );
+
+          final String publicUrl = supabase.storage
+              .from('logos')
+              .getPublicUrl(filePath);
+
+          await supabase
+              .from('shops')
+              .update({
+                'logo_url': publicUrl,
+                'image_height': imageHeight,
+                'image_width': imageWidth,
+              })
+              .eq('shop_id', userShop!.shopId!);
+          userShop?.logoUrl = publicUrl;
+          userShop?.imageHeight = imageHeight;
+          userShop?.imageWidth = imageWidth;
+          notifyListeners();
+          print(
+            '✅  Online Logo uploaded and saved successfully!',
+          );
+          await ShopLogosFunc().createLogo(
+            TempShopLogos(
+              logoPath: base64Encode(imageBytes),
+              imageName: filePath,
+              imageHeight: imageHeight!,
+              imageWidth: imageWidth!,
+            ),
+            // ignore: use_build_context_synchronously
+            context,
+          );
+        } catch (e) {
+          print('❌ Error Syncing logo: $e');
+        }
+
+        await CreatedShopLogosFunc().clearCreatedLogos();
+        print('Unsynced updated Shop Logo cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Shop ✅');
+          await getUserShop(AuthService().currentUser!);
+        }
+      }
+    } catch (e) {
+      print('Logo Sync failed ❌: $e');
+    }
+  }
+
+  //
+  //
+  //
+  //
+
   void setBottomText(String newText) {
     userShop!.bottomText = newText;
     notifyListeners();
@@ -712,6 +794,9 @@ class ShopProvider extends ChangeNotifier {
       userShop?.logoUrl = null;
       userShop?.imageHeight = null;
       userShop?.imageWidth = null;
+      await ShopLogosFunc().clearLogos();
+      await CreatedShopLogosFunc().clearCreatedLogos();
+      notifyListeners();
     }
     if (isOnline) {
       userShop!.updatedAt = DateTime.now();
@@ -908,19 +993,13 @@ class ShopProvider extends ChangeNotifier {
 
     if (isOnline) {
       try {
-        // final response =
-        //     await Supabase.instance.client
-        //         .from('shops')
-        //         .select()
-        //         .eq('shop_id', userShop!.shopId!)
-        //         .maybeSingle();
         await getUserShop(AuthService().currentUser!);
         notifyListeners();
         final logoUrl = userShop?.logoUrl;
         if (logoUrl == null ||
             userShop?.imageHeight == null ||
             userShop?.imageWidth == null) {
-          clearImage();
+          // clearImage();
           return null;
         }
 
@@ -946,7 +1025,7 @@ class ShopProvider extends ChangeNotifier {
         return onlineBytes;
       } catch (e) {
         print('Error: ${e.toString()}');
-        clearImage();
+        // clearImage();
         return null;
       }
     } else {
@@ -954,7 +1033,7 @@ class ShopProvider extends ChangeNotifier {
         await getUserShop(AuthService().currentUser!);
         var logo = ShopLogosFunc().getLogo();
         if (logo == null) {
-          clearImage();
+          // clearImage();
           notifyListeners();
           return null;
         } else {
@@ -967,7 +1046,7 @@ class ShopProvider extends ChangeNotifier {
         }
       } catch (e) {
         print('Error: ${e.toString()}');
-        clearImage();
+        // clearImage();
         return null;
       }
     }
@@ -1021,6 +1100,16 @@ class ShopProvider extends ChangeNotifier {
         notifyListeners();
         print(
           '✅  Online Logo uploaded and saved successfully!',
+        );
+        await ShopLogosFunc().createLogo(
+          TempShopLogos(
+            logoPath: base64Encode(imageBytes),
+            imageName: filePath,
+            imageHeight: imageHeight!,
+            imageWidth: imageWidth!,
+          ),
+          // ignore: use_build_context_synchronously
+          context,
         );
         return 1;
       } catch (e) {

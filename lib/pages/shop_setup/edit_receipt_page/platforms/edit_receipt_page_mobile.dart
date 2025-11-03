@@ -277,9 +277,9 @@ class _ReceiptEditContainerState
     });
   }
 
-  late Future<void> getLogoFuture;
-  Future<void> getLogo() async {
-    returnShopProvider(
+  late Future<Uint8List?> getLogoFuture;
+  Future<Uint8List?> getLogo() async {
+    return returnShopProvider(
       context,
       listen: false,
     ).getLogoImage(context);
@@ -316,1019 +316,332 @@ class _ReceiptEditContainerState
                   ),
                 ],
               ),
-              child: SizedBox(
-                height:
-                    MediaQuery.of(context).size.height -
-                    200,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // SizedBox(height: 5),
-                            Column(
-                              spacing: 3,
-                              children: [
-                                Visibility(
-                                  visible:
-                                      returnShopProvider(
-                                        context,
-                                      ).selectedLogo !=
-                                      null,
-                                  child: SizedBox(
-                                    height: 10,
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () async {
-                                    await returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    ).pickLogoImage();
-                                  },
-                                  child: Container(
-                                    height:
-                                        returnShopProvider(
-                                                  context,
-                                                ).imageWidth ==
-                                                null
-                                            ? 50
-                                            : returnShopProvider(
-                                                  context,
-                                                ).imageWidth! >
-                                                (2 *
-                                                    returnShopProvider(
-                                                      context,
-                                                    ).imageHeight!)
-                                            ? 25
-                                            : 50,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            10,
-                                          ),
-                                      border: Border.all(
-                                        color:
+              child: FutureBuilder(
+                future: getLogoFuture,
+                builder: (context, asyncSnapshot) {
+                  if (asyncSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(
+                      child: returnCompProvider(
+                        context,
+                      ).showLoader(message: 'Loading...'),
+                    );
+                  } else {
+                    return SizedBox(
+                      height:
+                          MediaQuery.of(
+                            context,
+                          ).size.height -
+                          200,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  // SizedBox(height: 5),
+                                  Column(
+                                    spacing: 3,
+                                    children: [
+                                      Visibility(
+                                        visible:
                                             returnShopProvider(
-                                                      context,
-                                                    ).selectedLogo ==
-                                                    null
-                                                ? Colors
-                                                    .grey
-                                                    .shade400
-                                                : Colors
-                                                    .transparent,
-                                      ),
-                                    ),
-                                    child: FutureBuilder(
-                                      future: getLogoFuture,
-                                      builder: (
-                                        context,
-                                        snapshot,
-                                      ) {
-                                        if (snapshot
-                                                .connectionState ==
-                                            ConnectionState
-                                                .waiting) {
-                                          return Center(
-                                            child: SizedBox(
-                                              height: 35,
-                                              width: 35,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth:
-                                                    1.2,
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          return returnShopProvider(
-                                                    context,
-                                                  ).selectedLogo ==
-                                                  null
-                                              ? Stack(
-                                                alignment:
-                                                    Alignment(
-                                                      0,
-                                                      0,
-                                                    ),
-                                                children: [
-                                                  Icon(
-                                                    size:
-                                                        40,
-                                                    Icons
-                                                        .image_outlined,
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment(
-                                                          0.1,
-                                                          1,
-                                                        ),
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(
-                                                            2,
-                                                          ),
-                                                      decoration: BoxDecoration(
-                                                        shape:
-                                                            BoxShape.circle,
-                                                        color:
-                                                            widget.theme.lightModeColor.secColor200,
-                                                      ),
-                                                      child: Icon(
-                                                        size:
-                                                            15,
-                                                        Icons.add,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                              : Stack(
-                                                alignment:
-                                                    Alignment(
-                                                      0,
-                                                      0,
-                                                    ),
-                                                children: [
-                                                  Image.memory(
-                                                    returnShopProvider(
-                                                      context,
-                                                    ).selectedLogo!,
-                                                    fit:
-                                                        BoxFit.contain,
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment(
-                                                          1,
-                                                          1,
-                                                        ),
-                                                    child: IconButton(
-                                                      onPressed: () {
-                                                        returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).clearImage();
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.clear,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                ToggleElement(
-                                  action: () {
-                                    receiptPFalse
-                                        .showShopNameAction();
-                                  },
-                                  element: Text(
-                                    textAlign:
-                                        TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .h3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    // ",912ms (compile: 153 ms, reload: 1934 ms, reassemble: 1268 ms).",
-                                    widget.shop.name,
-                                  ),
-                                  value:
-                                      receipP.showShopName!,
-                                ),
-                                ToggleElement(
-                                  action: () {
-                                    receiptPFalse
-                                        .showEmailAction();
-                                  },
-                                  element: Text(
-                                    textAlign:
-                                        TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
-                                    ),
-                                    widget.shop.email,
-                                  ),
-                                  value: receipP.showEmail!,
-                                ),
-                                ToggleElement(
-                                  action: () {
-                                    receiptPFalse
-                                        .showAddressAction();
-                                  },
-                                  element: Text(
-                                    textAlign:
-                                        TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
-                                    ),
-                                    widget
-                                            .shop
-                                            .shopAddress ??
-                                        'Address Not Set',
-                                  ),
-
-                                  value:
-                                      receipP.showAddress!,
-                                ),
-                                ToggleElement(
-                                  action: () {
-                                    receiptPFalse
-                                        .showPhoneAction();
-                                  },
-                                  element: Text(
-                                    textAlign:
-                                        TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
-                                    ),
-                                    widget
-                                            .shop
-                                            .phoneNumber ??
-                                        'Phone Not Set',
-                                  ),
-                                  value: receipP.showPhone!,
-                                ),
-                                ToggleElement(
-                                  value:
-                                      receipP.instaHandle ==
-                                              null
-                                          ? false
-                                          : receipP
-                                              .showInstaTop!,
-                                  element: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    spacing: 10,
-                                    children: [
-                                      // Image.asset(
-                                      //   height: 15,
-                                      //   width: 15,
-                                      //   mainLogoIcon,
-                                      // ),
-                                      Text(
-                                        textAlign:
-                                            TextAlign
-                                                .center,
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade600,
-                                          fontWeight:
-                                              FontWeight
-                                                  .normal,
+                                              context,
+                                            ).selectedLogo !=
+                                            null,
+                                        child: SizedBox(
+                                          height: 10,
                                         ),
-                                        "Instagram: ${widget.shop.instaHandle ?? 'Instagram Not Set'}",
                                       ),
-                                    ],
-                                  ),
-                                  action: () {
-                                    if (receiptPFalse
-                                            .userShop!
-                                            .instaHandle ==
-                                        null) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoAlert(
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            message:
-                                                'You can\'t turn this on because you have not set Your Instagram handle. Go to your Shop Profile to Set your Instagram Handle.',
-                                            title:
-                                                'Instagram Handle Not Set',
-                                          );
+                                      InkWell(
+                                        onTap: () async {
+                                          await returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).pickLogoImage();
                                         },
-                                      );
-                                    } else {
-                                      receiptPFalse
-                                          .showInstaTopAction();
-                                    }
-                                  },
-                                ),
-                                ToggleElement(
-                                  value:
-                                      receipP.faceBookHandle ==
-                                              null
-                                          ? false
-                                          : receipP
-                                              .showFacebookTop!,
-                                  element: Text(
-                                    textAlign:
-                                        TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
-                                      fontWeight:
-                                          FontWeight.normal,
-                                    ),
-                                    "Facebook: ${widget.shop.faceBookHandle ?? 'FaceBook Not Set'}",
-                                  ),
-                                  action: () {
-                                    if (receiptPFalse
-                                            .userShop!
-                                            .faceBookHandle ==
-                                        null) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoAlert(
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            message:
-                                                'You can\'t turn this on because you have not set Your Facebook handle. Go to your Shop Profile to Set your Facebook Handle.',
-                                            title:
-                                                'FaceBook Handle Not Set',
-                                          );
-                                        },
-                                      );
-                                    } else {
-                                      receiptPFalse
-                                          .showFacebookTopAction();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            ToggleElement(
-                              value: receipP.showFirst!,
-                              element: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    spacing: 5,
-                                    children: [
-                                      SizedBox(
-                                        width: 90,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Cashier',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              'Name',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 90,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Customer',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-
-                                              'Name',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                ],
-                              ),
-                              action: () {
-                                receiptPFalse
-                                    .showFirstSectionAction();
-                              },
-                            ),
-                            // SizedBox(height: 10),
-                            ToggleElement(
-                              value: receipP.showSecond!,
-                              element: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    spacing: 5,
-                                    children: [
-                                      SizedBox(
-                                        width: 90,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Payment',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              'Method',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 90,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Amount(s)',
-                                            ),
-                                            Column(
-                                              children: [
-                                                Row(
-                                                  spacing:
-                                                      2,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            widget.theme.mobileTexts.b3.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
-                                                      'Cash:',
-                                                    ),
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            widget.theme.mobileTexts.b3.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      formatMoneyMid(
-                                                        amount:
-                                                            10,
-                                                        context:
+                                        child: Container(
+                                          height:
+                                              returnShopProvider(
+                                                        context,
+                                                      ).imageWidth ==
+                                                      null
+                                                  ? 50
+                                                  : returnShopProvider(
+                                                        context,
+                                                      ).imageWidth! >
+                                                      (2 *
+                                                          returnShopProvider(
                                                             context,
-                                                      ),
+                                                          ).imageHeight!)
+                                                  ? 25
+                                                  : 50,
+                                          width:
+                                              double
+                                                  .infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  10,
+                                                ),
+                                            border: Border.all(
+                                              color:
+                                                  returnShopProvider(
+                                                            context,
+                                                          ).selectedLogo ==
+                                                          null
+                                                      ? Colors
+                                                          .grey
+                                                          .shade400
+                                                      : Colors
+                                                          .transparent,
+                                            ),
+                                          ),
+                                          child: FutureBuilder(
+                                            future:
+                                                getLogoFuture,
+                                            builder: (
+                                              context,
+                                              snapshot,
+                                            ) {
+                                              if (snapshot
+                                                      .connectionState ==
+                                                  ConnectionState
+                                                      .waiting) {
+                                                return Center(
+                                                  child: SizedBox(
+                                                    height:
+                                                        35,
+                                                    width:
+                                                        35,
+                                                    child: CircularProgressIndicator(
+                                                      strokeWidth:
+                                                          1.2,
                                                     ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                ],
-                              ),
-                              action: () {
-                                receiptPFalse
-                                    .showSecondSectionAction();
-                              },
-                            ),
-                            ToggleElement(
-                              value: receipP.showThird!,
-                              element: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    spacing: 5,
-                                    children: [
-                                      SizedBox(
-                                        width: 90,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Date',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              formatDateTime(
-                                                DateTime.now(),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 90,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Time',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              formatTime(
-                                                DateTime.now(),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                ],
-                              ),
-                              action: () {
-                                receiptPFalse
-                                    .showThirdSectionAction();
-                              },
-                            ),
-                            SizedBox(height: 10),
-                            Divider(),
-                            Row(
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b1
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Item Record',
-                                ),
-                              ],
-                            ),
-                            ListView.builder(
-                              physics:
-                                  NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: 3,
-                              itemBuilder: (
-                                context,
-                                index,
-                              ) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        vertical: 8.0,
-                                      ),
-                                  child: SizedBox(
-                                    child: Row(
-                                      spacing: 10,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          flex: 4,
-                                          child: Column(
-                                            spacing: 3,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                ),
-                                                'Item $index',
-                                              ),
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                ),
-                                                'Qty: 2 Item(s)',
-                                              ),
-                                            ],
+                                                  ),
+                                                );
+                                              } else {
+                                                return returnShopProvider(
+                                                          context,
+                                                        ).selectedLogo ==
+                                                        null
+                                                    ? Stack(
+                                                      alignment: Alignment(
+                                                        0,
+                                                        0,
+                                                      ),
+                                                      children: [
+                                                        Icon(
+                                                          size:
+                                                              40,
+                                                          Icons.image_outlined,
+                                                        ),
+                                                        Align(
+                                                          alignment: Alignment(
+                                                            0.1,
+                                                            1,
+                                                          ),
+                                                          child: Container(
+                                                            padding: EdgeInsets.all(
+                                                              2,
+                                                            ),
+                                                            decoration: BoxDecoration(
+                                                              shape:
+                                                                  BoxShape.circle,
+                                                              color:
+                                                                  widget.theme.lightModeColor.secColor200,
+                                                            ),
+                                                            child: Icon(
+                                                              size:
+                                                                  15,
+                                                              Icons.add,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                    : Stack(
+                                                      alignment: Alignment(
+                                                        0,
+                                                        0,
+                                                      ),
+                                                      children: [
+                                                        Image.memory(
+                                                          returnShopProvider(
+                                                            context,
+                                                          ).selectedLogo!,
+                                                          fit:
+                                                              BoxFit.contain,
+                                                        ),
+                                                        Align(
+                                                          alignment: Alignment(
+                                                            1,
+                                                            1,
+                                                          ),
+                                                          child: IconButton(
+                                                            onPressed: () {
+                                                              returnShopProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).clearImage();
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.clear,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                              }
+                                            },
                                           ),
                                         ),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                formatMoneyMid(
-                                                  amount:
-                                                      1200 *
-                                                      index,
-                                                  context:
-                                                      context,
-                                                ),
-                                              ),
-                                            ],
+                                      ),
+                                      ToggleElement(
+                                        action: () {
+                                          receiptPFalse
+                                              .showShopNameAction();
+                                        },
+                                        element: Text(
+                                          textAlign:
+                                              TextAlign
+                                                  .center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .h4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
                                           ),
+                                          // ",912ms (compile: 153 ms, reload: 1934 ms, reassemble: 1268 ms).",
+                                          widget.shop.name,
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Divider(),
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                ),
-                                'Subtotal',
-                              ),
-                            ),
-
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                formatMoneyMid(
-                                  amount: 50000,
-                                  context: context,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 0),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
+                                        value:
+                                            receipP
+                                                .showShopName!,
+                                      ),
+                                      ToggleElement(
+                                        action: () {
+                                          receiptPFalse
+                                              .showEmailAction();
+                                        },
+                                        element: Text(
+                                          textAlign:
+                                              TextAlign
+                                                  .center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
+                                          widget.shop.email,
+                                        ),
+                                        value:
+                                            receipP
+                                                .showEmail!,
+                                      ),
+                                      ToggleElement(
+                                        action: () {
+                                          receiptPFalse
+                                              .showAddressAction();
+                                        },
+                                        element: Text(
+                                          textAlign:
+                                              TextAlign
+                                                  .center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
                                           widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                    ),
-                                    'Discount',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
+                                                  .shop
+                                                  .shopAddress ??
+                                              'Address Not Set',
+                                        ),
+
+                                        value:
+                                            receipP
+                                                .showAddress!,
+                                      ),
+                                      ToggleElement(
+                                        action: () {
+                                          receiptPFalse
+                                              .showPhoneAction();
+                                        },
+                                        element: Text(
+                                          textAlign:
+                                              TextAlign
+                                                  .center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
                                           widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    '2%',
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                formatMoneyMid(
-                                  amount: 12000,
-                                  context: context,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 0),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                ),
-                                'Total',
-                              ),
-                            ),
-
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-
-                                formatMoneyMid(
-                                  amount: 48000,
-                                  context: context,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(height: 5),
-                        Divider(),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              spacing: 5,
-                              children: [
-                                SizedBox(
-                                  width: 260,
-                                  child: Stack(
-                                    alignment: Alignment(
-                                      1,
-                                      0,
-                                    ),
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                        spacing: 5,
-                                        children: [
-                                          Flexible(
-                                            child: Text(
+                                                  .shop
+                                                  .phoneNumber ??
+                                              'Phone Not Set',
+                                        ),
+                                        value:
+                                            receipP
+                                                .showPhone!,
+                                      ),
+                                      ToggleElement(
+                                        value:
+                                            receipP.instaHandle ==
+                                                    null
+                                                ? false
+                                                : receipP
+                                                    .showInstaTop!,
+                                        element: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          spacing: 10,
+                                          children: [
+                                            // Image.asset(
+                                            //   height: 15,
+                                            //   width: 15,
+                                            //   mainLogoIcon,
+                                            // ),
+                                            Text(
                                               textAlign:
                                                   TextAlign
                                                       .center,
@@ -1337,104 +650,757 @@ class _ReceiptEditContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b3
                                                         .fontSize,
                                                 color:
                                                     Colors
                                                         .grey
-                                                        .shade700,
+                                                        .shade600,
                                                 fontWeight:
                                                     FontWeight
-                                                        .bold,
+                                                        .normal,
                                               ),
-                                              '${receipP.bottomText?.toUpperCase() ?? 'Thank You For Shopping With Us'.toUpperCase()}.',
+                                              "Instagram: ${widget.shop.instaHandle ?? 'Instagram Not Set'}",
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade400,
-                                          ),
-                                          shape:
-                                              BoxShape
-                                                  .circle,
-                                          color:
-                                              const Color.fromARGB(
-                                                17,
-                                                255,
-                                                193,
-                                                7,
-                                              ),
+                                          ],
                                         ),
-                                        child: IconButton(
-                                          onPressed: () {
+                                        action: () {
+                                          if (receiptPFalse
+                                                  .userShop!
+                                                  .instaHandle ==
+                                              null) {
                                             showDialog(
                                               context:
                                                   context,
                                               builder: (
                                                 context,
                                               ) {
-                                                return DialogTemplate(
-                                                  action: () {
-                                                    if (_formState
-                                                        .currentState!
-                                                        .validate()) {
-                                                      receiptPFalse.setBottomText(
-                                                        bottomTextController.text,
-                                                      );
-                                                      bottomTextController
-                                                          .clear();
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    }
-                                                  },
-                                                  message:
-                                                      '',
+                                                return InfoAlert(
                                                   theme:
                                                       widget
                                                           .theme,
+                                                  message:
+                                                      'You can\'t turn this on because you have not set Your Instagram handle. Go to your Shop Profile to Set your Instagram Handle.',
                                                   title:
-                                                      'Enter Bottom Text',
-                                                  widget: GeneralTextfieldOnly(
-                                                    initialValue:
-                                                        receiptPFalse.userShop!.bottomText,
-                                                    formState:
-                                                        _formState,
-                                                    controller:
-                                                        bottomTextController,
-                                                    hint:
-                                                        'Enter Text',
-                                                    lines:
-                                                        2,
-                                                    theme:
-                                                        widget.theme,
-                                                  ),
+                                                      'Instagram Handle Not Set',
                                                 );
                                               },
                                             );
-                                          },
-                                          icon: Icon(
-                                            Icons.edit,
+                                          } else {
+                                            receiptPFalse
+                                                .showInstaTopAction();
+                                          }
+                                        },
+                                      ),
+                                      ToggleElement(
+                                        value:
+                                            receipP.faceBookHandle ==
+                                                    null
+                                                ? false
+                                                : receipP
+                                                    .showFacebookTop!,
+                                        element: Text(
+                                          textAlign:
+                                              TextAlign
+                                                  .center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade600,
+                                            fontWeight:
+                                                FontWeight
+                                                    .normal,
                                           ),
+                                          "Facebook: ${widget.shop.faceBookHandle ?? 'FaceBook Not Set'}",
+                                        ),
+                                        action: () {
+                                          if (receiptPFalse
+                                                  .userShop!
+                                                  .faceBookHandle ==
+                                              null) {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return InfoAlert(
+                                                  theme:
+                                                      widget
+                                                          .theme,
+                                                  message:
+                                                      'You can\'t turn this on because you have not set Your Facebook handle. Go to your Shop Profile to Set your Facebook Handle.',
+                                                  title:
+                                                      'FaceBook Handle Not Set',
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            receiptPFalse
+                                                .showFacebookTopAction();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15),
+                                  ToggleElement(
+                                    value:
+                                        receipP.showFirst!,
+                                    element: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          spacing: 5,
+                                          children: [
+                                            SizedBox(
+                                              width: 90,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Cashier',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+                                                    'Name',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 90,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Customer',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+
+                                                    'Name',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                      ],
+                                    ),
+                                    action: () {
+                                      receiptPFalse
+                                          .showFirstSectionAction();
+                                    },
+                                  ),
+                                  // SizedBox(height: 10),
+                                  ToggleElement(
+                                    value:
+                                        receipP.showSecond!,
+                                    element: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          spacing: 5,
+                                          children: [
+                                            SizedBox(
+                                              width: 90,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Payment',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+                                                    'Method',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 90,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Amount(s)',
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      Row(
+                                                        spacing:
+                                                            2,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  widget.theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.normal,
+                                                            ),
+                                                            'Cash:',
+                                                          ),
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  widget.theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            formatMoneyMid(
+                                                              amount:
+                                                                  10,
+                                                              context:
+                                                                  context,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                      ],
+                                    ),
+                                    action: () {
+                                      receiptPFalse
+                                          .showSecondSectionAction();
+                                    },
+                                  ),
+                                  ToggleElement(
+                                    value:
+                                        receipP.showThird!,
+                                    element: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          spacing: 5,
+                                          children: [
+                                            SizedBox(
+                                              width: 90,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Date',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+                                                    formatDateTime(
+                                                      DateTime.now(),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 90,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Time',
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+                                                    formatTime(
+                                                      DateTime.now(),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                      ],
+                                    ),
+                                    action: () {
+                                      receiptPFalse
+                                          .showThirdSectionAction();
+                                    },
+                                  ),
+                                  SizedBox(height: 10),
+                                  Divider(),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Item Record',
+                                      ),
+                                    ],
+                                  ),
+                                  ListView.builder(
+                                    physics:
+                                        NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: 3,
+                                    itemBuilder: (
+                                      context,
+                                      index,
+                                    ) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              vertical: 8.0,
+                                            ),
+                                        child: SizedBox(
+                                          child: Row(
+                                            spacing: 10,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                flex: 4,
+                                                child: Column(
+                                                  spacing:
+                                                      3,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            widget.theme.mobileTexts.b1.fontSize,
+                                                      ),
+                                                      'Item $index',
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            widget.theme.mobileTexts.b3.fontSize,
+                                                      ),
+                                                      'Qty: 2 Item(s)',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 3,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            widget.theme.mobileTexts.b1.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      formatMoneyMid(
+                                                        amount:
+                                                            1200 *
+                                                            index,
+                                                        context:
+                                                            context,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Divider(),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                      ),
+                                      'Subtotal',
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      formatMoneyMid(
+                                        amount: 50000,
+                                        context: context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                          ),
+                                          'Discount',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          '2%',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      formatMoneyMid(
+                                        amount: 12000,
+                                        context: context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                      ),
+                                      'Total',
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+
+                                      formatMoneyMid(
+                                        amount: 48000,
+                                        context: context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(height: 5),
+                              Divider(),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                children: [
+                                  Column(
+                                    spacing: 5,
+                                    children: [
+                                      SizedBox(
+                                        width: 260,
+                                        child: Stack(
+                                          alignment:
+                                              Alignment(
+                                                1,
+                                                0,
+                                              ),
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              spacing: 5,
+                                              children: [
+                                                Flexible(
+                                                  child: Text(
+                                                    textAlign:
+                                                        TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b1.fontSize,
+                                                      color:
+                                                          Colors.grey.shade700,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    '${receipP.bottomText?.toUpperCase() ?? 'Thank You For Shopping With Us'.toUpperCase()}.',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade400,
+                                                ),
+                                                shape:
+                                                    BoxShape
+                                                        .circle,
+                                                color:
+                                                    const Color.fromARGB(
+                                                      17,
+                                                      255,
+                                                      193,
+                                                      7,
+                                                    ),
+                                              ),
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return DialogTemplate(
+                                                        action: () {
+                                                          if (_formState.currentState!.validate()) {
+                                                            receiptPFalse.setBottomText(
+                                                              bottomTextController.text,
+                                                            );
+                                                            bottomTextController.clear();
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop();
+                                                          }
+                                                        },
+                                                        message:
+                                                            '',
+                                                        theme:
+                                                            widget.theme,
+                                                        title:
+                                                            'Enter Bottom Text',
+                                                        widget: GeneralTextfieldOnly(
+                                                          initialValue:
+                                                              receiptPFalse.userShop!.bottomText,
+                                                          formState:
+                                                              _formState,
+                                                          controller:
+                                                              bottomTextController,
+                                                          hint:
+                                                              'Enter Text',
+                                                          lines:
+                                                              2,
+                                                          theme:
+                                                              widget.theme,
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon: Icon(
+                                                  Icons
+                                                      .edit,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
               ),
             ),
             SizedBox(height: 5),
@@ -1444,55 +1410,66 @@ class _ReceiptEditContainerState
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 10,
                 children: [
-                  Visibility(
-                    visible: authorization(
-                      authorized:
-                          Authorizations().updateSale,
-                      context: context,
-                    ),
-                    child: ReceiptUpdateButton(
-                      text: 'Save Template',
-                      color: Colors.grey,
-                      iconSize: 20,
-                      theme: widget.theme,
-                      icon: Icons.edit,
-                      action: () async {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        var int = await receiptPFalse
-                            .updateShopPrintDetails(
-                              context,
-                            );
-                        if (int == 1) {
-                          setState(() {
-                            isLoading = false;
-                            showSuccess = true;
-                          });
-                          await Future.delayed(
-                            Duration(seconds: 2),
-                          );
-                          // ignore: use_build_context_synchronously
-                          Navigator.of(context).pop();
-                        } else {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          showDialog(
-                            // ignore: use_build_context_synchronously
+                  FutureBuilder(
+                    future: getLogoFuture,
+                    builder: (context, asyncSnapshot) {
+                      if (asyncSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Container();
+                      } else {
+                        return Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations().updateSale,
                             context: context,
-                            builder: (context) {
-                              return InfoAlert(
-                                theme: widget.theme,
-                                message:
-                                    'An Error Occoured when updating Your printer details. Please try again',
-                                title: 'Update Failed',
-                              );
+                          ),
+                          child: ReceiptUpdateButton(
+                            text: 'Save Template',
+                            color: Colors.grey,
+                            iconSize: 20,
+                            theme: widget.theme,
+                            icon: Icons.edit,
+                            action: () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              var int = await receiptPFalse
+                                  .updateShopPrintDetails(
+                                    context,
+                                  );
+                              if (int == 1) {
+                                setState(() {
+                                  isLoading = false;
+                                  showSuccess = true;
+                                });
+                                await Future.delayed(
+                                  Duration(seconds: 2),
+                                );
+                                // ignore: use_build_context_synchronously
+                                Navigator.of(context).pop();
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                showDialog(
+                                  // ignore: use_build_context_synchronously
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: widget.theme,
+                                      message:
+                                          'An Error Occoured when updating Your printer details. Please try again',
+                                      title:
+                                          'Update Failed',
+                                    );
+                                  },
+                                );
+                              }
                             },
-                          );
-                        }
-                      },
-                    ),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),

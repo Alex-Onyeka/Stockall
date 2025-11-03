@@ -89,6 +89,7 @@ class ReceiptsProvider extends ChangeNotifier {
         return null;
       }
     } else {
+      receipt.createdAt = DateTime.now();
       await MainReceiptFunc().createReceipt(receipt);
       await CreatedReceiptsFunc().createReceipts(
         CreatedReceipts(receipt: receipt),
@@ -372,8 +373,13 @@ class ReceiptsProvider extends ChangeNotifier {
           isOnline) {
         final tempReceipts =
             CreatedReceiptsFunc().getReceipts().toList();
+        var newReceipts = tempReceipts.map((rec) {
+          rec.receipt.createdAt =
+              rec.receipt.createdAt.toUtc();
+          return rec;
+        });
         final payload =
-            tempReceipts
+            newReceipts
                 .map((p) => p.receipt.toJson())
                 .toList();
 
@@ -548,11 +554,17 @@ class ReceiptsProvider extends ChangeNotifier {
         print('Finished Creating Product Sales Online');
       } else {
         print('About to Create Product Sales Offline');
+        var newRecords =
+            records.map((rec) {
+              rec.createdAt = DateTime.now();
+
+              return rec;
+            }).toList();
         await ProductRecordFunc().insertSalesProductRecords(
-          records,
+          newRecords,
         );
         List<CreatedRecords> cRecords =
-            records.map((r) {
+            newRecords.map((r) {
               return CreatedRecords(record: r);
             }).toList();
         await CreatedRecordsFunc().insertAllRecords(
@@ -673,8 +685,13 @@ class ReceiptsProvider extends ChangeNotifier {
           isOnline) {
         final tempRecords =
             CreatedRecordsFunc().getRecords().toList();
+        var newRecords = tempRecords.map((rec) {
+          rec.record.createdAt =
+              rec.record.createdAt.toUtc();
+          return rec;
+        });
         final payload =
-            tempRecords
+            newRecords
                 .map((p) => p.record.toJson())
                 .toList();
 
@@ -699,134 +716,6 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
   //
-
-  // List<TempProductSaleRecord> productSaleRecords = [
-  //   TempProductSaleRecord(
-  //     customPriceSet: false,
-  //     discount: 10,
-  //     discountedAmount: 3000,
-  //     originalCost: 5000,
-  //     productRecordId: 1,
-  //     createdAt: DateTime(2025, 5, 1, 10, 30),
-  //     productId: 1,
-  //     productName: '',
-  //     shopId: 1,
-  //     staffId: 'staff001',
-  //     customerId: 1,
-  //     staffName: 'Alice Johnson',
-  //     recepitId: 2,
-  //     quantity: 3,
-  //     revenue: 4500.0,
-  //     isProductManaged: true,
-  //   ),
-  //   TempProductSaleRecord(
-  //     customPriceSet: false,
-  //     discount: 10,
-  //     discountedAmount: 2100,
-  //     originalCost: 4000,
-  //     productRecordId: 2,
-  //     createdAt: DateTime(2025, 5, 3, 14, 15),
-  //     productId: 2,
-  //     productName: '',
-  //     shopId: 1,
-  //     staffId: 'staff002',
-  //     customerId: 1,
-  //     staffName: 'Bob Smith',
-  //     recepitId: 1,
-  //     quantity: 2,
-  //     revenue: 3000.0,
-  //     isProductManaged: true,
-  //   ),
-  //   TempProductSaleRecord(
-  //     customPriceSet: false,
-  //     discount: 10,
-  //     discountedAmount: 5000,
-  //     originalCost: 2500,
-  //     productRecordId: 3,
-  //     createdAt: DateTime(2025, 5, 5, 9, 0),
-  //     productId: 3,
-  //     productName: '',
-  //     shopId: 2,
-  //     staffId: 'staff003',
-  //     customerId: 2,
-  //     staffName: 'Chinwe Okafor',
-  //     recepitId: 3,
-  //     quantity: 5,
-  //     revenue: 7500.0,
-  //     isProductManaged: true,
-  //   ),
-  // ];
-
-  // List<TempProductSaleRecord> getOwnProductSalesRecord(
-  //   BuildContext context,
-  // ) {
-  //   return returnProductSalesRecordsByDate(context)
-  //       .where(
-  //         (record) =>
-  //             record.shopId ==
-  //             returnShopProvider(
-  //               context,
-  //               listen: false,
-  //             ).returnShop(userId()).shopId,
-  //       )
-  //       .toList();
-  // }
-
-  // List<TempProductSaleRecord>
-  // returnProductSalesRecordsByDate(BuildContext context) {
-  //   final sortedList =
-  //       productSaleRecords.toList()..sort(
-  //         (a, b) => b.createdAt.compareTo(a.createdAt),
-  //       );
-  //   return sortedList;
-  // }
-
-  // List<TempProductSaleRecord> getProductRecordsByReceiptId(
-  //   int receiptId,
-  //   BuildContext context,
-  // ) {
-  //   return getOwnProductSalesRecord(context)
-  //       .where((product) => product.recepitId == receiptId)
-  //       .toList();
-  // }
-
-  // void createProductSalesRecord(
-  //   BuildContext context,
-  //   int newReceiptId,
-  //   String newReceiptUuid,
-  //   String? customerUuid,
-  // ) {
-  //   for (var item
-  //       in returnSalesProvider(
-  //         context,
-  //         listen: false,
-  //       ).cartItems) {
-  //     productSaleRecords.add(
-  //       TempProductSaleRecord(
-  //         customPriceSet: item.item.setCustomPrice,
-  //         productName: '',
-  //         discount: item.discount,
-  //         originalCost: item.totalCost(),
-  //         customerUuid: customerUuid,
-  //         discountedAmount: item.discountCost(),
-  //         productRecordId: productSaleRecords.length + 1,
-  //         createdAt: DateTime.now(),
-  //         productId: item.item.id!,
-  //         productUuid: item.item.uuid!,
-  //         receiptUuid: newReceiptUuid,
-  //         shopId: item.item.shopId,
-  //         staffId: 'staffId',
-  //         staffName: 'staffName',
-  //         recepitId: newReceiptId,
-  //         quantity: item.quantity,
-  //         revenue: item.revenue(),
-  //         isProductManaged: true,
-  //       ),
-  //     );
-  //   }
-
-  //   notifyListeners();
-  // }
 
   bool returnInvoice = false;
 

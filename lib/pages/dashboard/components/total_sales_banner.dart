@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -219,16 +220,6 @@ class _DashboardTotalSalesBannerState
                         CrossAxisAlignment.start,
                     spacing: 5,
                     children: [
-                      // Container(
-                      //   padding: EdgeInsets.all(3),
-                      //   decoration: BoxDecoration(
-                      //     shape: BoxShape.circle,
-                      //     color:
-                      //         theme
-                      //             .lightModeColor
-                      //             .secColor200,
-                      //   ),
-                      // ),
                       Column(
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
@@ -294,6 +285,168 @@ class _DashboardTotalSalesBannerState
                 ],
               ),
             ],
+          ),
+        ),
+        Visibility(
+          visible: screenWidth(context) <= mobileScreen,
+          child: Positioned(
+            top: 7,
+            right: 15,
+            child: Row(
+              spacing: 2,
+              children: [
+                Icon(
+                  size: 15,
+                  color:
+                      returnConnectivityProvider(
+                        context,
+                      ).connectedColor(),
+                  returnConnectivityProvider(
+                        context,
+                      ).isConnected
+                      ? Icons.wifi
+                      : Icons.wifi_off_sharp,
+                ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
+                    onTap: () async {
+                      await returnData(
+                        context,
+                        listen: false,
+                      ).syncData(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        5,
+                        2,
+                        5,
+                        2,
+                      ),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            returnData(
+                                      context,
+                                    ).isSynced() ==
+                                    2
+                                ? 'Syncing'
+                                : '',
+                          ),
+                          Stack(
+                            children: [
+                              Visibility(
+                                visible:
+                                    returnData(
+                                      context,
+                                    ).isSynced() !=
+                                    2,
+                                child: Icon(
+                                  color:
+                                      returnData(
+                                                context,
+                                              ).isSynced() ==
+                                              1
+                                          ? const Color.fromARGB(
+                                            255,
+                                            87,
+                                            160,
+                                            89,
+                                          )
+                                          : Colors.grey,
+                                  size: 17,
+                                  returnData(
+                                            context,
+                                          ).isSynced() ==
+                                          1
+                                      ? Icons
+                                          .cloud_done_outlined
+                                      : Icons
+                                          .cloud_sync_outlined,
+                                ),
+                              ),
+                              Visibility(
+                                visible:
+                                    returnData(
+                                      context,
+                                    ).isSynced() ==
+                                    2,
+                                child: Stack(
+                                  alignment: Alignment(
+                                    0,
+                                    0,
+                                  ),
+                                  children: [
+                                    SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child:
+                                          CircularProgressIndicator(
+                                            color:
+                                                Colors
+                                                    .amber,
+                                            strokeWidth:
+                                                1.2,
+                                          ),
+                                    ),
+                                    Center(
+                                      child: Row(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize: 6,
+                                            ),
+                                            returnData(
+                                                  context,
+                                                )
+                                                .syncProgress
+                                                .toStringAsFixed(
+                                                  0,
+                                                ),
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize: 5,
+                                            ),
+                                            '%',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         Positioned(

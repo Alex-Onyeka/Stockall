@@ -22,6 +22,7 @@ import 'package:stockall/local_database/products/unsync_funcs/created_products/c
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
+import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -544,6 +545,17 @@ class DataProvider extends ChangeNotifier {
               print('Finished Syncing Created Receipts');
               setSyncProgress(16);
             }
+            if (CreatedShopLogosFunc().getCreatedLogo() !=
+                    null &&
+                context.mounted &&
+                isOnline) {
+              await returnShopProvider(
+                context,
+                listen: false,
+              ).uploadShopLogoSync(context);
+              print('Finished Syncing Created Logo');
+              setSyncProgress(17);
+            }
             await clearTotalCache();
             toggleSyncing(false);
           }
@@ -590,7 +602,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 16) * 100;
+    syncProgress = (value / 17) * 100;
     notifyListeners();
   }
 
@@ -617,7 +629,8 @@ class DataProvider extends ChangeNotifier {
           CreatedRecordsFunc().getRecords().isEmpty &&
           DeletedReceiptsFunc().getReceiptIds().isEmpty &&
           UpdatedReceiptsFunc().getReceiptIds().isEmpty &&
-          UpdatedShopFunc().getUpdatedShop().isEmpty
+          UpdatedShopFunc().getUpdatedShop().isEmpty &&
+          CreatedShopLogosFunc().getCreatedLogo() == null
       // && DeletedRecordsFunc().getRecordIds().isEmpty &&
       // IncrementedProductsFunc()
       //     .getIncrementedProducts()
@@ -648,6 +661,7 @@ class DataProvider extends ChangeNotifier {
     await UpdatedReceiptsFunc().clearUpdatedReceipts();
     await UpdatedShopFunc().clearUpdatedShop();
     await SalesProductFunc().clearProducts();
+    await CreatedShopLogosFunc().clearCreatedLogos();
   }
 
   DateTime? expiryDate;
