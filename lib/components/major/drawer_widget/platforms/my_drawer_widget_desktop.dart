@@ -34,7 +34,7 @@ class MyDrawerWidgetDesktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (screenWidth(context) <= tabletScreen) {
+    if (screenWidth(context) <= 1090) {
       return MyDrawerWidgetTablet(
         theme: theme,
         notifications: notifications,
@@ -78,7 +78,7 @@ class _MyDrawerWidgetDesktopMainState
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 250,
+        width: 230,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
@@ -519,9 +519,8 @@ class _MyDrawerWidgetDesktopMainState
                                     height: 40,
                                     child: Padding(
                                       padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal:
-                                                10.0,
+                                          const EdgeInsets.only(
+                                            left: 10.0,
                                           ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -575,7 +574,7 @@ class _MyDrawerWidgetDesktopMainState
                                             ],
                                           ),
                                           Row(
-                                            spacing: 15,
+                                            // spacing: 15,
                                             children: [
                                               Stack(
                                                 clipBehavior:
@@ -680,12 +679,24 @@ class _MyDrawerWidgetDesktopMainState
                                                       context,
                                                     ).currentIndex ==
                                                     8,
+                                                child:
+                                                    SizedBox(
+                                                      width:
+                                                          15,
+                                                    ),
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    returnNavProvider(
+                                                      context,
+                                                    ).currentIndex ==
+                                                    8,
                                                 child: Padding(
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                         0,
                                                         5,
-                                                        3,
+                                                        0,
                                                         5,
                                                       ),
                                                   child: Container(
@@ -750,7 +761,13 @@ class _MyDrawerWidgetDesktopMainState
                                         return SettingsPage();
                                       },
                                     ),
-                                  );
+                                  ).then((_) {
+                                    if (context.mounted) {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    }
+                                  });
                                 },
                                 title: 'General Settings',
                                 icon: Icons.settings,
@@ -767,7 +784,7 @@ class _MyDrawerWidgetDesktopMainState
                                         screenWidth(
                                               context,
                                             ) >
-                                            tabletScreen,
+                                            tabletScreenSmall,
                                 child: NavListTileDesktopAlt(
                                   height: 18,
                                   action: () {
@@ -802,8 +819,8 @@ class _MyDrawerWidgetDesktopMainState
                                   title:
                                       screenWidth(context) >
                                               tabletScreen
-                                          ? 'Download Desktop App'
-                                          : 'Download Mobile App',
+                                          ? 'Download App'
+                                          : 'Download App',
                                   icon:
                                       Icons
                                           .download_outlined,

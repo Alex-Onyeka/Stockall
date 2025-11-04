@@ -14,6 +14,7 @@ import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
+import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -601,52 +602,52 @@ class _MyDrawerWidgetTabletState
                                   ),
                                 ),
                               ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .contactStockall,
-                                  context: context,
-                                ),
-                                child:
-                                    NavListTileDesktopAlt(
-                                      height: 18,
-                                      action: () async {
-                                        phoneCall();
-                                      },
-                                      title: 'Contact Us',
-                                      icon: Icons.phone,
-                                    ),
-                              ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .contactStockall,
-                                  context: context,
-                                ),
-                                child:
-                                    NavListTileDesktopAlt(
-                                      height: 14,
-                                      action: () async {
-                                        openWhatsApp();
-                                      },
-                                      title: 'Chat With Us',
-                                      svg: whatsappIconSvg,
-                                    ),
-                              ),
-                              Visibility(
-                                visible: false,
-                                child: NavListTileDesktopAlt(
-                                  height: 18,
-                                  action: () {},
-                                  title:
-                                      'Privacy P. & Terms/C.',
-                                  icon:
-                                      Icons
-                                          .menu_book_rounded,
-                                ),
-                              ),
+                              // Visibility(
+                              //   visible: authorization(
+                              //     authorized:
+                              //         Authorizations()
+                              //             .contactStockall,
+                              //     context: context,
+                              //   ),
+                              //   child:
+                              //       NavListTileDesktopAlt(
+                              //         height: 18,
+                              //         action: () async {
+                              //           phoneCall();
+                              //         },
+                              //         title: 'Contact Us',
+                              //         icon: Icons.phone,
+                              //       ),
+                              // ),
+                              // Visibility(
+                              //   visible: authorization(
+                              //     authorized:
+                              //         Authorizations()
+                              //             .contactStockall,
+                              //     context: context,
+                              //   ),
+                              //   child:
+                              //       NavListTileDesktopAlt(
+                              //         height: 14,
+                              //         action: () async {
+                              //           openWhatsApp();
+                              //         },
+                              //         title: 'Chat With Us',
+                              //         svg: whatsappIconSvg,
+                              //       ),
+                              // ),
+                              // Visibility(
+                              //   visible: false,
+                              //   child: NavListTileDesktopAlt(
+                              //     height: 18,
+                              //     action: () {},
+                              //     title:
+                              //         'Privacy P. & Terms/C.',
+                              //     icon:
+                              //         Icons
+                              //             .menu_book_rounded,
+                              //   ),
+                              // ),
                               NavListTileDesktopAlt(
                                 itemIndex: 9,
                                 height: 18,
@@ -665,6 +666,21 @@ class _MyDrawerWidgetTabletState
                                     Icons
                                         .calculate_outlined,
                               ),
+                              NavListTileDesktopAlt(
+                                height: 18,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SettingsPage();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'General Settings',
+                                icon: Icons.settings,
+                              ),
                               Visibility(
                                 visible:
                                     kIsWeb &&
@@ -674,7 +690,7 @@ class _MyDrawerWidgetTabletState
                                             TargetPlatform
                                                 .android ||
                                     screenWidth(context) >
-                                        tabletScreen,
+                                        tabletScreenSmall,
                                 child: NavListTileDesktopAlt(
                                   height: 18,
                                   action: () {
@@ -685,9 +701,9 @@ class _MyDrawerWidgetTabletState
                                           theme:
                                               widget.theme,
                                           message:
-                                              'You are about to download and install our official mobile application, for better experience.',
+                                              'You are about to download and install our official application, for better experience.',
                                           title:
-                                              'Proceed to Download Mobile App',
+                                              'Proceed to Download App',
                                           action: () async {
                                             Navigator.of(
                                               context,
@@ -701,8 +717,7 @@ class _MyDrawerWidgetTabletState
                                       },
                                     );
                                   },
-                                  title:
-                                      'Download Mobile App',
+                                  title: 'Download App',
                                   icon:
                                       Icons
                                           .download_outlined,

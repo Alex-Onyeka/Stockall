@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -149,6 +150,41 @@ class SettingsPageDesktop extends StatelessWidget {
                       },
                       title: 'Edit Receipt Template',
                       icon: Icons.receipt,
+                    ),
+                  ),
+                  Visibility(
+                    visible: authorization(
+                      authorized:
+                          Authorizations().contactStockall,
+                      context: context,
+                    ),
+                    child: NavListTileDesktopAlt(
+                      height: 18,
+                      action: () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ConfirmationAlert(
+                              theme: theme,
+                              message:
+                                  'You are about to download and install our official Native application, for better experience.',
+                              title:
+                                  screenWidth(context) >
+                                          tabletScreenSmall
+                                      ? 'Proceed to Download Desktop App'
+                                      : 'Proceed to Download Mobile App',
+                              action: () async {
+                                Navigator.of(context).pop();
+                                await downloadApkFromApp(
+                                  context: context,
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                      title: 'Download Desktop App',
+                      icon: Icons.download_outlined,
                     ),
                   ),
                   Visibility(

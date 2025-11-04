@@ -4415,7 +4415,7 @@ Future<void> downloadApkFromApp({
   required BuildContext context,
 }) async {
   final url =
-      screenWidth(context) > tabletScreen
+      screenWidth(context) > tabletScreenSmall
           ? Uri.parse(
             'https://github.com/Alex-Onyeka/Stockall/releases/download/desktop-v1.0.1/StockallDesktop.exe',
           )

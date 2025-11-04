@@ -192,9 +192,7 @@ class _TopNavBarState extends State<TopNavBar> {
           ),
           Row(
             spacing:
-                screenWidth(context) > tabletScreen
-                    ? 10
-                    : 2,
+                screenWidth(context) > tabletScreen ? 3 : 2,
             children: [
               Visibility(
                 visible:
@@ -228,26 +226,32 @@ class _TopNavBarState extends State<TopNavBar> {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
-                        spacing: 5,
+                        // spacing: 5,
                         children: [
                           Visibility(
                             visible:
                                 screenWidth(context) >
                                 tabletScreen,
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
 
-                              returnConnectivityProvider(
-                                context,
-                              ).connectedText(),
+                                  returnConnectivityProvider(
+                                    context,
+                                  ).connectedText(),
+                                ),
+                                SizedBox(width: 5),
+                              ],
                             ),
                           ),
                           Icon(
@@ -290,33 +294,39 @@ class _TopNavBarState extends State<TopNavBar> {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
-                        spacing: 5,
+                        // spacing: 5,
                         children: [
                           Visibility(
                             visible:
                                 screenWidth(context) >
                                 tabletScreen,
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              returnData(
-                                        context,
-                                      ).isSynced() ==
-                                      1
-                                  ? 'Synced'
-                                  : returnData(
-                                        context,
-                                      ).isSynced() ==
-                                      0
-                                  ? 'Unsynced'
-                                  : 'Syncing',
+                            child: Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  returnData(
+                                            context,
+                                          ).isSynced() ==
+                                          1
+                                      ? 'Synced'
+                                      : returnData(
+                                            context,
+                                          ).isSynced() ==
+                                          0
+                                      ? 'Unsynced'
+                                      : 'Syncing',
+                                ),
+                                SizedBox(width: 5),
+                              ],
                             ),
                           ),
                           Stack(
@@ -348,7 +358,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                       ? Icons
                                           .cloud_done_outlined
                                       : Icons
-                                            .cloud_off_rounded,
+                                          .cloud_off_rounded,
                                 ),
                               ),
                               Visibility(
@@ -435,19 +445,30 @@ class _TopNavBarState extends State<TopNavBar> {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
-                        spacing: 5,
+                        // spacing: 5,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
+                          Visibility(
+                            visible:
+                                screenWidth(context) >
+                                tabletScreenSmall,
+                            child: Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Refresh',
+                                ),
+                                SizedBox(width: 5),
+                              ],
                             ),
-                            'Refresh',
                           ),
                           Icon(
                             size: 18,

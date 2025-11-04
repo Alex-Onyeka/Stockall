@@ -28,7 +28,7 @@ class RightSideBar extends StatelessWidget {
       child: Container(
         width:
             screenWidth(context) > tabletScreenSmall
-                ? 240
+                ? 230
                 : 90,
         padding: EdgeInsets.symmetric(
           vertical: 20,
