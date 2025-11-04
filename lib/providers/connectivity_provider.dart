@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+// import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
@@ -29,30 +29,28 @@ class ConnectivityProvider extends ChangeNotifier {
   }
 
   void init() {
-    if (!Platform.isWindows) {
-      bool hasRun = false;
+    // if (platforms(context) != TargetPlatform.windows) {
+    bool hasRun = false;
 
-      subscription = connectivityStream.listen((
-        value,
-      ) async {
-        final isNowConnected = value.isNotEmpty;
+    subscription = connectivityStream.listen((value) async {
+      final isNowConnected = value.isNotEmpty;
 
-        if (isNowConnected && !hasRun) {
-          hasRun = true;
-          isConnected = true;
-          notifyListeners();
-        } else if (!isNowConnected) {
-          hasRun = false;
-          isConnected = false;
-          notifyListeners();
-        }
+      if (isNowConnected && !hasRun) {
+        hasRun = true;
+        isConnected = true;
+        notifyListeners();
+      } else if (!isNowConnected) {
+        hasRun = false;
+        isConnected = false;
+        notifyListeners();
+      }
 
-        print('Connected: $isConnected');
-      });
-    } else {
-      // Fallback for Windows
-      isOnline();
-    }
+      print('Connected: $isConnected');
+    });
+    // } else {
+    //   // Fallback for Windows
+    isOnline();
+    // }
   }
 
   Stream<List<ConnectivityResult>>

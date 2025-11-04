@@ -5,7 +5,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
@@ -277,16 +276,16 @@ class _TopNavBarState extends State<TopNavBar> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: () async {
-                      print(
-                        UpdatedProductsFunc()
-                            .getProducts()
-                            .length
-                            .toString(),
-                      );
-                      await returnData(
-                        context,
-                        listen: false,
-                      ).syncData(context);
+                      if (returnData(
+                            context,
+                            listen: false,
+                          ).isSynced() ==
+                          0) {
+                        await returnData(
+                          context,
+                          listen: false,
+                        ).syncData(context);
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10),
@@ -349,7 +348,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                       ? Icons
                                           .cloud_done_outlined
                                       : Icons
-                                          .cloud_sync_outlined,
+                                            .cloud_off_rounded,
                                 ),
                               ),
                               Visibility(

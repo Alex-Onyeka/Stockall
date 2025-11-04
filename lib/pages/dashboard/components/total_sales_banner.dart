@@ -291,161 +291,189 @@ class _DashboardTotalSalesBannerState
           visible: screenWidth(context) <= mobileScreen,
           child: Positioned(
             top: 7,
-            right: 15,
-            child: Row(
-              spacing: 2,
-              children: [
-                Icon(
-                  size: 15,
-                  color:
-                      returnConnectivityProvider(
-                        context,
-                      ).connectedColor(),
-                  returnConnectivityProvider(
-                        context,
-                      ).isConnected
-                      ? Icons.wifi
-                      : Icons.wifi_off_sharp,
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(4),
-                    onTap: () async {
-                      await returnData(
+            right: 20,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(5),
+                onTap: () async {
+                  if (returnData(
                         context,
                         listen: false,
-                      ).syncData(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        5,
-                        2,
-                        5,
-                        2,
+                      ).isSynced() ==
+                      0) {
+                    await returnData(
+                      context,
+                      listen: false,
+                    ).syncData(context);
+                  } else {
+                    print('Data is in sync');
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 2,
+                    horizontal: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromARGB(
+                      33,
+                      255,
+                      255,
+                      255,
+                    ),
+                  ),
+                  child: Row(
+                    spacing: 5,
+                    children: [
+                      Icon(
+                        size: 13,
+                        color:
+                            returnConnectivityProvider(
+                              context,
+                            ).connectedColor(),
+                        returnConnectivityProvider(
+                              context,
+                            ).isConnected
+                            ? Icons.wifi
+                            : Icons.wifi_off_sharp,
                       ),
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            returnData(
-                                      context,
-                                    ).isSynced() ==
-                                    2
-                                ? 'Syncing'
-                                : '',
-                          ),
-                          Stack(
-                            children: [
-                              Visibility(
-                                visible:
-                                    returnData(
-                                      context,
-                                    ).isSynced() !=
-                                    2,
-                                child: Icon(
-                                  color:
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          2,
+                          2,
+                          2,
+                          2,
+                        ),
+                        child: Row(
+                          // spacing: 5,
+                          children: [
+                            Stack(
+                              children: [
+                                Visibility(
+                                  visible:
                                       returnData(
-                                                context,
-                                              ).isSynced() ==
-                                              1
-                                          ? const Color.fromARGB(
-                                            255,
-                                            87,
-                                            160,
-                                            89,
-                                          )
-                                          : Colors.grey,
-                                  size: 17,
-                                  returnData(
-                                            context,
-                                          ).isSynced() ==
-                                          1
-                                      ? Icons
-                                          .cloud_done_outlined
-                                      : Icons
-                                          .cloud_sync_outlined,
-                                ),
-                              ),
-                              Visibility(
-                                visible:
+                                        context,
+                                      ).isSynced() !=
+                                      2,
+                                  child: Icon(
+                                    color:
+                                        returnData(
+                                                  context,
+                                                ).isSynced() ==
+                                                1
+                                            ? const Color.fromARGB(
+                                              255,
+                                              87,
+                                              160,
+                                              89,
+                                            )
+                                            : Colors.grey,
+                                    size: 14,
                                     returnData(
-                                      context,
-                                    ).isSynced() ==
-                                    2,
-                                child: Stack(
-                                  alignment: Alignment(
-                                    0,
-                                    0,
+                                              context,
+                                            ).isSynced() ==
+                                            1
+                                        ? Icons
+                                            .cloud_done_outlined
+                                        : Icons
+                                            .cloud_off_rounded,
                                   ),
-                                  children: [
-                                    SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child:
-                                          CircularProgressIndicator(
-                                            color:
-                                                Colors
-                                                    .amber,
-                                            strokeWidth:
-                                                1.2,
-                                          ),
-                                    ),
-                                    Center(
-                                      child: Row(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
+                                ),
+                                Visibility(
+                                  visible:
+                                      returnData(
+                                        context,
+                                      ).isSynced() ==
+                                      2,
+                                  child: Row(
+                                    children: [
+                                      Row(
                                         children: [
                                           Text(
                                             style: TextStyle(
                                               color:
                                                   Colors
                                                       .white,
+                                              fontSize: 8,
                                               fontWeight:
                                                   FontWeight
                                                       .bold,
-                                              fontSize: 6,
                                             ),
-                                            returnData(
-                                                  context,
-                                                )
-                                                .syncProgress
-                                                .toStringAsFixed(
-                                                  0,
-                                                ),
+
+                                            'Syncing',
                                           ),
-                                          Text(
-                                            style: TextStyle(
-                                              color:
-                                                  Colors
-                                                      .white,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              fontSize: 5,
-                                            ),
-                                            '%',
+                                          SizedBox(
+                                            width: 5,
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                      Stack(
+                                        alignment:
+                                            Alignment(0, 0),
+                                        children: [
+                                          SizedBox(
+                                            height: 15,
+                                            width: 15,
+                                            child: CircularProgressIndicator(
+                                              color:
+                                                  Colors
+                                                      .amber,
+                                              strokeWidth:
+                                                  1.2,
+                                            ),
+                                          ),
+                                          Center(
+                                            child: Row(
+                                              mainAxisSize:
+                                                  MainAxisSize
+                                                      .min,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    fontSize:
+                                                        6,
+                                                  ),
+                                                  returnData(
+                                                    context,
+                                                  ).syncProgress.toStringAsFixed(
+                                                    0,
+                                                  ),
+                                                  // '100',
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    fontSize:
+                                                        5,
+                                                  ),
+                                                  '%',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

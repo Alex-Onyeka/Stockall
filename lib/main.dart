@@ -32,20 +32,20 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.white, // or any color
-      statusBarIconBrightness:
-          Brightness.dark, // for Android
-      systemNavigationBarContrastEnforced: true,
-      statusBarBrightness: Brightness.light,
-    ),
-  );
-  // Lock to portrait only
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   SystemUiOverlayStyle(
+  //     statusBarColor: Colors.white, // or any color
+  //     statusBarIconBrightness:
+  //         Brightness.dark, // for Android
+  //     systemNavigationBarContrastEnforced: true,
+  //     statusBarBrightness: Brightness.light,
+  //   ),
+  // );
+  // // Lock to portrait only
+  // await SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
 
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
@@ -395,7 +395,19 @@ class _TestPageState extends State<TestPage> {
                 child: CircularProgressIndicator.adaptive(),
               );
             } else {
-              return Text(asyncSnapshot.data.toString());
+              return InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return TestPage();
+                      },
+                    ),
+                  );
+                },
+                child: Text(asyncSnapshot.data.toString()),
+              );
             }
           },
         ),
