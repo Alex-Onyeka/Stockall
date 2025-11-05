@@ -580,7 +580,7 @@ class SalesProvider extends ChangeNotifier {
               theme: returnTheme(context, listen: false),
             ),
       );
-      return "Quantity Limit Exceeded!❌";
+      return "Quantity Limit Exceeded";
     }
   }
 

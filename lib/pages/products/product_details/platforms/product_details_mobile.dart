@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -11,6 +12,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
+import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductDetailsMobile extends StatefulWidget {
@@ -87,7 +89,7 @@ class _ProductDetailsMobileState
           Scaffold(
             appBar: appBar(
               context: context,
-              title: 'Item Details',
+              title: 'Details',
               widget: Visibility(
                 visible: authorization(
                   authorized:
@@ -96,15 +98,50 @@ class _ProductDetailsMobileState
                 ),
                 child: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return AddProduct(
-                            product: product,
-                          );
-                        },
-                      ),
+                    var safeContext = context;
+                    showDialog(
+                      context: safeContext,
+                      builder: (context) {
+                        return ConfirmationAlert(
+                          theme: widget.theme,
+                          message:
+                              'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
+                          title: 'Add Item to Cart',
+                          action: () {
+                            Navigator.of(safeContext).pop();
+                            var res = returnSalesProvider(
+                              context,
+                              listen: false,
+                            ).addItemToCart(
+                              context: context,
+                              newItem: TempCartItem(
+                                setCustomPrice: false,
+                                item: product,
+                                quantity: 1,
+                                discount: null,
+                                addToStock: false,
+                                setTotalPrice: false,
+                              ),
+                              isCustomEdit: false,
+                            );
+                            if (res ==
+                                "Quantity Limit Exceeded") {
+                              return;
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return MakeSalesPage(
+                                    isMain: true,
+                                    // product: product,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
                     );
                   },
                   child: Container(
@@ -126,12 +163,15 @@ class _ProductDetailsMobileState
                                 widget
                                     .theme
                                     .mobileTexts
-                                    .b1
+                                    .b2
                                     .fontSize,
                           ),
-                          'Edit',
+                          'Sell Item',
                         ),
-                        Icon(Icons.edit_note_rounded),
+                        Icon(
+                          size: 16,
+                          Icons.shopping_cart_outlined,
+                        ),
                       ],
                     ),
                   ),

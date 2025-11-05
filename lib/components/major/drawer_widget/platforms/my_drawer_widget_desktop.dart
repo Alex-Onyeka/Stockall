@@ -761,13 +761,17 @@ class _MyDrawerWidgetDesktopMainState
                                         return SettingsPage();
                                       },
                                     ),
-                                  ).then((_) {
-                                    if (context.mounted) {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                    }
-                                  });
+                                  );
+                                  // .then((_) {
+                                  //   if (screenWidth(
+                                  //         context,
+                                  //       ) <
+                                  //       2000) {
+                                  //     Navigator.of(
+                                  //       context,
+                                  //     ).pop();
+                                  //   }
+                                  // });
                                 },
                                 title: 'General Settings',
                                 icon: Icons.settings,

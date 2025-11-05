@@ -21,7 +21,7 @@ class ConnectivityProvider extends ChangeNotifier {
   }
 
   String connectedText() {
-    return isConnected ? 'Connected' : 'Not Connected';
+    return isConnected ? 'Connected' : 'No Internet';
   }
 
   Color connectedColor() {
