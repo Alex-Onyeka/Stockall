@@ -50,7 +50,7 @@ class _ReceiptPageMobileState
           returnShopProvider(
             context,
             listen: false,
-          ).userShop!.shopId!,
+          ).userShop()!.shopId!,
           context,
         );
       });
@@ -60,7 +60,7 @@ class _ReceiptPageMobileState
 
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(context).userShop;
+    var shop = returnShopProvider(context).userShop();
     var theme = returnTheme(context);
     TempMainReceipt mainReceipt = returnReceiptProvider(
       context,
@@ -133,13 +133,13 @@ class _ReceiptPageMobileState
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!.printType !=
+                                                  ).userShop()!.printType !=
                                                   null &&
                                               returnShopProvider(
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!.printType ==
+                                                  ).userShop()!.printType ==
                                                   1
                                           ? FontWeight.bold
                                           : null,
@@ -171,13 +171,13 @@ class _ReceiptPageMobileState
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!.printType !=
+                                                  ).userShop()!.printType !=
                                                   null &&
                                               returnShopProvider(
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!.printType ==
+                                                  ).userShop()!.printType ==
                                                   2
                                           ? FontWeight.bold
                                           : null,
@@ -227,7 +227,7 @@ class _ReceiptPageMobileState
                                                     listen:
                                                         false,
                                                   )
-                                                  .userShop!
+                                                  .userShop()!
                                                   .printType !=
                                               null &&
                                           returnShopProvider(
@@ -235,7 +235,7 @@ class _ReceiptPageMobileState
                                                     listen:
                                                         false,
                                                   )
-                                                  .userShop!
+                                                  .userShop()!
                                                   .printType ==
                                               2
                                       ? (kIsWeb
@@ -246,7 +246,7 @@ class _ReceiptPageMobileState
                                                     listen:
                                                         false,
                                                   )
-                                                  .userShop!
+                                                  .userShop()!
                                                   .printType !=
                                               null &&
                                           returnShopProvider(
@@ -254,7 +254,7 @@ class _ReceiptPageMobileState
                                                     listen:
                                                         false,
                                                   )
-                                                  .userShop!
+                                                  .userShop()!
                                                   .printType ==
                                               1
                                       ? (kIsWeb
@@ -1410,7 +1410,7 @@ class _ReceiptDetailsContainerState
                             returnShopProvider(
                               context,
                               listen: false,
-                            ).userShop!.shopId!;
+                            ).userShop()!.shopId!;
                         var safeContext = context;
                         if (!widget.mainReceipt.isInvoice) {
                           showDialog(
@@ -1569,7 +1569,7 @@ class _ReceiptDetailsContainerState
                               returnShopProvider(
                                 safeContext,
                                 listen: false,
-                              ).userShop!,
+                              ).userShop()!,
                         );
                       } else {
                         showDialog(
@@ -1603,7 +1603,7 @@ class _ReceiptDetailsContainerState
                                         returnShopProvider(
                                           safeContext,
                                           listen: false,
-                                        ).userShop!,
+                                        ).userShop()!,
                                   );
                                 }
                               },
@@ -1654,7 +1654,7 @@ class _ReceiptDetailsContainerState
                       if (returnShopProvider(
                             context,
                             listen: false,
-                          ).userShop!.printType ==
+                          ).userShop()!.printType ==
                           null) {
                         showDialog(
                           context: context,
@@ -1733,7 +1733,7 @@ class _ReceiptDetailsContainerState
                                           color:
                                               returnShopProvider(
                                                         safeContext,
-                                                      ).userShop!.printType ==
+                                                      ).userShop()!.printType ==
                                                       1
                                                   ? Colors
                                                       .grey
@@ -1743,7 +1743,7 @@ class _ReceiptDetailsContainerState
                                         color:
                                             returnShopProvider(
                                                       safeContext,
-                                                    ).userShop!.printType ==
+                                                    ).userShop()!.printType ==
                                                     1
                                                 ? widget
                                                     .theme
@@ -1756,7 +1756,7 @@ class _ReceiptDetailsContainerState
                                         opacity:
                                             returnShopProvider(
                                                       safeContext,
-                                                    ).userShop!.printType ==
+                                                    ).userShop()!.printType ==
                                                     1
                                                 ? 1
                                                 : 0,
@@ -1829,7 +1829,7 @@ class _ReceiptDetailsContainerState
                                           color:
                                               returnShopProvider(
                                                         safeContext,
-                                                      ).userShop!.printType ==
+                                                      ).userShop()!.printType ==
                                                       2
                                                   ? Colors
                                                       .grey
@@ -1839,7 +1839,7 @@ class _ReceiptDetailsContainerState
                                         color:
                                             returnShopProvider(
                                                       safeContext,
-                                                    ).userShop!.printType ==
+                                                    ).userShop()!.printType ==
                                                     2
                                                 ? widget
                                                     .theme
@@ -1852,7 +1852,7 @@ class _ReceiptDetailsContainerState
                                         opacity:
                                             returnShopProvider(
                                                       safeContext,
-                                                    ).userShop!.printType ==
+                                                    ).userShop()!.printType ==
                                                     2
                                                 ? 1
                                                 : 0,
@@ -1902,7 +1902,7 @@ class _ReceiptDetailsContainerState
                                         returnShopProvider(
                                           safeContext,
                                           listen: false,
-                                        ).userShop!,
+                                        ).userShop()!,
                                     printType:
                                         shop(
                                           context,
@@ -1922,21 +1922,21 @@ class _ReceiptDetailsContainerState
                                   //             context,
                                   //             listen: false,
                                   //           )
-                                  //           .userShop!
+                                  //           . userShop()!
                                   //           .printType ??
                                   //       1,
                                   //   shop:
                                   //       returnShopProvider(
                                   //         safeContext,
                                   //         listen: false,
-                                  //       ).userShop!,
+                                  //       ). userShop()!,
                                   // );
 
                                   if (returnShopProvider(
                                             context,
                                             listen: false,
                                           )
-                                          .userShop!
+                                          .userShop()!
                                           .printType! ==
                                       1) {
                                     await connectToUsbDevice(
@@ -1949,7 +1949,7 @@ class _ReceiptDetailsContainerState
                                           returnShopProvider(
                                             context,
                                             listen: false,
-                                          ).userShop!,
+                                          ).userShop()!,
                                     );
                                   } else {
                                     print(
@@ -1965,7 +1965,7 @@ class _ReceiptDetailsContainerState
                                           returnShopProvider(
                                             context,
                                             listen: false,
-                                          ).userShop!,
+                                          ).userShop()!,
                                     );
                                   }
                                 }

@@ -30,8 +30,11 @@ import 'package:stockall/providers/validate_input_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+Stopwatch stopwatch = Stopwatch();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  stopwatch.start();
   // SystemChrome.setSystemUIOverlayStyle(
   //   SystemUiOverlayStyle(
   //     statusBarColor: Colors.white, // or any color
@@ -78,7 +81,7 @@ int shopId(BuildContext context) {
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!;
+      ).userShop()!.shopId!;
 
   return tempId;
 }
@@ -134,7 +137,7 @@ TempShopClass? shop(BuildContext context) {
   return returnShopProvider(
     context,
     listen: false,
-  ).userShop;
+  ).userShop();
 }
 
 UserProvider returnUserProvider(
@@ -268,6 +271,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    stopwatch.stop();
+    print(
+      "Milliseconds Load time: ${stopwatch.elapsedMilliseconds}",
+    );
+    print(
+      "Seconds Load time: ${stopwatch.elapsed.inSeconds}",
+    );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

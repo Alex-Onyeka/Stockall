@@ -84,7 +84,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
 
@@ -127,7 +127,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
 
@@ -177,7 +177,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
 
@@ -282,7 +282,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
 
@@ -337,7 +337,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
 
@@ -354,13 +354,13 @@ class DataProvider extends ChangeNotifier {
   Future<void> syncData(BuildContext context) async {
     int isSynced =
         returnData(context, listen: false).isSynced();
-    TempShopClass? shop = await returnShopProvider(
+    List<TempShopClass> shop = await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!);
+    ).getUserShops(AuthService().currentUser!);
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      if (shop != null) {
+      if (shop.isNotEmpty) {
         if (context.mounted) {
           if (isSynced == 0) {
             toggleSyncing(true);
@@ -848,7 +848,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     } else {
       print('Context Not Mounted');
@@ -875,7 +875,7 @@ class DataProvider extends ChangeNotifier {
   //       returnShopProvider(
   //         context,
   //         listen: false,
-  //       ).userShop!.shopId!,
+  //       ). userShop()!.shopId!,
   //     );
   //   }
   //   notifyListeners();
@@ -914,7 +914,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
     notifyListeners();
@@ -943,7 +943,7 @@ class DataProvider extends ChangeNotifier {
   //       returnShopProvider(
   //         context,
   //         listen: false,
-  //       ).userShop!.shopId!,
+  //       ). userShop()!.shopId!,
   //     );
   //   }
   //   notifyListeners();
@@ -1008,7 +1008,7 @@ class DataProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
     notifyListeners();

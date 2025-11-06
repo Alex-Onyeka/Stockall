@@ -74,7 +74,7 @@ class NavProvider extends ChangeNotifier {
       listen: false,
     );
 
-    final userShop = await shopProvider.getUserShop(
+    final userShop = await shopProvider.getUserShops(
       AuthService().currentUser!,
     );
 
@@ -100,7 +100,7 @@ class NavProvider extends ChangeNotifier {
       return;
     }
 
-    if (userShop == null) {
+    if (userShop.isEmpty) {
       // ignore: use_build_context_synchronously
       NavProvider().nullShop(
         logoutAction: () {
@@ -108,18 +108,19 @@ class NavProvider extends ChangeNotifier {
         },
       );
       return;
-    } else if (userShop.nextPayment == null) {
+    } else if (shopProvider.userShop()!.nextPayment ==
+        null) {
       await shopProvider.makePayment(
         DateTime.now().add(Duration(days: 30)),
         3,
       );
-    } else if (userShop.plan != 0 &&
-        (userShop.nextPayment != null &&
+    } else if (shopProvider.userShop()!.plan != 0 &&
+        (shopProvider.userShop()!.nextPayment != null &&
             (DateTime.now().isAfter(
-                  userShop.nextPayment!,
+                  shopProvider.userShop()!.nextPayment!,
                 ) ||
                 DateTime.now().isAtSameMomentAs(
-                  userShop.nextPayment!,
+                  shopProvider.userShop()!.nextPayment!,
                 )))) {
       Navigator.pushAndRemoveUntil(
         context,

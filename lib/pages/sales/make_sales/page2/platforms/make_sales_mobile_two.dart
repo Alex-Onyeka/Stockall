@@ -806,7 +806,7 @@ class _MakeSalesMobileTwoState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .shopId!,
                                       bank:
                                           returnSalesProvider(

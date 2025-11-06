@@ -213,7 +213,7 @@ class _ProductReportMobileState
                                                   safeContext,
                                                   listen:
                                                       false,
-                                                ).userShop!,
+                                                ).userShop()!,
                                             context:
                                                 safeContext,
                                             filename:
@@ -229,7 +229,7 @@ class _ProductReportMobileState
                                             returnShopProvider(
                                               context,
                                               listen: false,
-                                            ).userShop!,
+                                            ).userShop()!,
                                       );
 
                                       if (safeContext

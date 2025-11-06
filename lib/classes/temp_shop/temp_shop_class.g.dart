@@ -20,7 +20,7 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       shopId: fields[0] as int?,
       createdAt: fields[1] as DateTime,
       userId: fields[2] as String,
-      email: fields[3] as String,
+      email: fields[3] as String?,
       name: fields[4] as String,
       state: fields[5] as String?,
       city: fields[7] as String?,

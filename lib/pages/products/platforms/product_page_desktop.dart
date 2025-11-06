@@ -75,7 +75,7 @@ class _ProductPageDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempGet;

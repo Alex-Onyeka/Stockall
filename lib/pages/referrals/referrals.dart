@@ -20,8 +20,8 @@ class _ReferralsState extends State<Referrals> {
       final userShop = await returnShopProvider(
         context,
         listen: false,
-      ).getUserShop(AuthService().currentUser!);
-      if (context.mounted && userShop == null) {
+      ).getUserShops(AuthService().currentUser!);
+      if (context.mounted && userShop.isEmpty) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

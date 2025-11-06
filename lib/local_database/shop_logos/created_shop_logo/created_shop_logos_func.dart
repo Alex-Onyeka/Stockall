@@ -66,7 +66,7 @@ class CreatedShopLogosFunc {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
         createdLogo,
       );
       print('Offline Created Logo inserted successfully ✅');

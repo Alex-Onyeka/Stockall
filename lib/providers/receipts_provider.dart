@@ -136,14 +136,14 @@ class ReceiptsProvider extends ChangeNotifier {
             returnShopProvider(
               context,
               listen: false,
-            ).userShop!.shopId!,
+            ).userShop()!.shopId!,
           );
           if (context.mounted) {
             await loadProductSalesRecord(
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!,
+              ).userShop()!.shopId!,
             );
           }
         }
@@ -162,14 +162,14 @@ class ReceiptsProvider extends ChangeNotifier {
           returnShopProvider(
             context,
             listen: false,
-          ).userShop!.shopId!,
+          ).userShop()!.shopId!,
         );
         if (context.mounted) {
           await loadProductSalesRecord(
             returnShopProvider(
               context,
               listen: false,
-            ).userShop!.shopId!,
+            ).userShop()!.shopId!,
           );
         }
       }
@@ -308,7 +308,7 @@ class ReceiptsProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
         context,
       );
     }
@@ -377,7 +377,7 @@ class ReceiptsProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
         context,
       );
     }
@@ -468,7 +468,7 @@ class ReceiptsProvider extends ChangeNotifier {
             returnShopProvider(
               context,
               listen: false,
-            ).userShop!.shopId!,
+            ).userShop()!.shopId!,
             context,
           );
         }
@@ -525,7 +525,7 @@ class ReceiptsProvider extends ChangeNotifier {
             returnShopProvider(
               context,
               listen: false,
-            ).userShop!.shopId!,
+            ).userShop()!.shopId!,
             context,
           );
         }
@@ -574,7 +574,7 @@ class ReceiptsProvider extends ChangeNotifier {
             returnShopProvider(
               context,
               listen: false,
-            ).userShop!.shopId!,
+            ).userShop()!.shopId!,
             context,
           );
         }
@@ -701,7 +701,7 @@ class ReceiptsProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
     notifyListeners();
@@ -725,7 +725,7 @@ class ReceiptsProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
     notifyListeners();

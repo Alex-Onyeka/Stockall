@@ -24,7 +24,7 @@ class _EditReceiptPageDesktopState
     extends State<EditReceiptPageDesktop> {
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(context).userShop;
+    var shop = returnShopProvider(context).userShop();
     var theme = returnTheme(context);
 
     return SafeArea(
@@ -68,7 +68,7 @@ class _EditReceiptPageDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .printType !=
                                           1
                                       ? returnShopProvider(
@@ -99,13 +99,13 @@ class _EditReceiptPageDesktopState
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).userShop!.printType !=
+                                                        ).userShop()!.printType !=
                                                         null &&
                                                     returnShopProvider(
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).userShop!.printType ==
+                                                        ).userShop()!.printType ==
                                                         1
                                                 ? FontWeight
                                                     .bold
@@ -122,7 +122,7 @@ class _EditReceiptPageDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .printType ==
                                           1,
                                       child: Icon(
@@ -151,7 +151,7 @@ class _EditReceiptPageDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .printType !=
                                           2
                                       ? returnShopProvider(
@@ -182,13 +182,13 @@ class _EditReceiptPageDesktopState
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).userShop!.printType !=
+                                                        ).userShop()!.printType !=
                                                         null &&
                                                     returnShopProvider(
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).userShop!.printType ==
+                                                        ).userShop()!.printType ==
                                                         2
                                                 ? FontWeight
                                                     .bold
@@ -205,7 +205,7 @@ class _EditReceiptPageDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .printType ==
                                           2,
                                       child: Icon(
@@ -260,13 +260,13 @@ class _EditReceiptPageDesktopState
                                                   context,
                                                   listen:
                                                       false,
-                                                ).userShop!.printType !=
+                                                ).userShop()!.printType !=
                                                 null &&
                                             returnShopProvider(
                                                   context,
                                                   listen:
                                                       false,
-                                                ).userShop!.printType ==
+                                                ).userShop()!.printType ==
                                                 2
                                         ? (kIsWeb
                                             ? '80mm'
@@ -275,13 +275,13 @@ class _EditReceiptPageDesktopState
                                                   context,
                                                   listen:
                                                       false,
-                                                ).userShop!.printType !=
+                                                ).userShop()!.printType !=
                                                 null &&
                                             returnShopProvider(
                                                   context,
                                                   listen:
                                                       false,
-                                                ).userShop!.printType ==
+                                                ).userShop()!.printType ==
                                                 1
                                         ? (kIsWeb
                                             ? '58mm'
@@ -361,19 +361,19 @@ class _ReceiptEditContainerState
       if (returnShopProvider(
             context,
             listen: false,
-          ).userShop!.phoneNumber ==
+          ).userShop()!.phoneNumber ==
           null) {
         returnShopProvider(context, listen: false)
-            .userShop!
+            .userShop()!
             .showPhone = false;
       }
       if (returnShopProvider(
             context,
             listen: false,
-          ).userShop!.email ==
+          ).userShop()!.email ==
           null) {
         returnShopProvider(context, listen: false)
-            .userShop!
+            .userShop()!
             .showEmail = false;
       }
       setState(() {});
@@ -390,7 +390,7 @@ class _ReceiptEditContainerState
 
   @override
   Widget build(BuildContext context) {
-    var receipP = returnShopProvider(context).userShop!;
+    var receipP = returnShopProvider(context).userShop()!;
     var receiptPFalse = returnShopProvider(
       context,
       listen: false,
@@ -631,7 +631,7 @@ class _ReceiptEditContainerState
                                       ToggleElement(
                                         action: () {
                                           receiptPFalse
-                                                      .userShop!
+                                                      .userShop()!
                                                       .email ==
                                                   null
                                               ? {}
@@ -706,7 +706,7 @@ class _ReceiptEditContainerState
                                       ToggleElement(
                                         action: () {
                                           receiptPFalse
-                                                      .userShop!
+                                                      .userShop()!
                                                       .phoneNumber ==
                                                   null
                                               ? {}
@@ -787,7 +787,7 @@ class _ReceiptEditContainerState
                                         ),
                                         action: () {
                                           if (receiptPFalse
-                                                  .userShop!
+                                                  .userShop()!
                                                   .instaHandle ==
                                               null) {
                                             showDialog(
@@ -856,7 +856,7 @@ class _ReceiptEditContainerState
                                         ),
                                         action: () {
                                           if (receiptPFalse
-                                                  .userShop!
+                                                  .userShop()!
                                                   .faceBookHandle ==
                                               null) {
                                             showDialog(
@@ -1498,7 +1498,7 @@ class _ReceiptEditContainerState
                                                             'Enter Bottom Text',
                                                         widget: GeneralTextfieldOnly(
                                                           initialValue:
-                                                              receiptPFalse.userShop!.bottomText,
+                                                              receiptPFalse.userShop()!.bottomText,
                                                           formState:
                                                               _formState,
                                                           controller:

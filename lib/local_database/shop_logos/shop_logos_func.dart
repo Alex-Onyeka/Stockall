@@ -38,7 +38,7 @@ class ShopLogosFunc {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
         logo,
       );
       print('Offline Logo inserted Successfully');

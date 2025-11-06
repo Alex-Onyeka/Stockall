@@ -76,7 +76,7 @@ class _CreateCategoryMobileState
                                       returnShopProvider(
                                         context,
                                         listen: false,
-                                      ).userShop!.shopId!,
+                                      ).userShop()!.shopId!,
                                   newCategories: [
                                     controller.text.trim(),
                                   ],

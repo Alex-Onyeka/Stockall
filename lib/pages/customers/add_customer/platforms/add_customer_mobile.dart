@@ -1938,7 +1938,7 @@ class _AddCustomerMobileState
                                   returnShopProvider(
                                     context,
                                     listen: false,
-                                  ).userShop!.shopId!,
+                                  ).userShop()!.shopId!,
                               country:
                                   selectedCountryName ==
                                           'Select Your Country'
@@ -1987,7 +1987,7 @@ class _AddCustomerMobileState
                                   returnShopProvider(
                                     context,
                                     listen: false,
-                                  ).userShop!.shopId!,
+                                  ).userShop()!.shopId!,
                               name:
                                   widget
                                       .nameController

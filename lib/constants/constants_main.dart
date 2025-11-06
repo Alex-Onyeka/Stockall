@@ -123,7 +123,7 @@ String currencySymbol({
       returnShopProvider(
         context,
         listen: false,
-      ).userShop?.currency;
+      ).userShop()?.currency;
   var iR = isR != null ? true : false;
   if (shopC == '₦' && iR) {
     return 'N';
@@ -135,7 +135,7 @@ String currencySymbol({
     return returnShopProvider(
           context,
           listen: false,
-        ).userShop?.currency ??
+        ).userShop()?.currency ??
         '';
   }
 }

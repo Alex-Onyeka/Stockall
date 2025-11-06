@@ -32,7 +32,7 @@ class _CustomerReportDesktopState
   //     returnShopProvider(
   //       context,
   //       listen: false,
-  //     ).userShop!.shopId!,
+  //     ). userShop()!.shopId!,
   //   );
 
   //   return tempEx;

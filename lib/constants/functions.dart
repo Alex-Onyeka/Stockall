@@ -2216,7 +2216,10 @@ void downloadPdfWeb({
       receipt,
       staffName,
       records,
-      returnShopProvider(context, listen: false).userShop!,
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes], 'application/pdf');
@@ -2259,7 +2262,10 @@ void downloadPdfWebRoll({
       receipt,
       records,
       staffName,
-      returnShopProvider(context, listen: false).userShop!,
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop()!,
       context,
       printType,
     );
@@ -3141,7 +3147,10 @@ void downloadPdfWebProducts({
     print('Begin Download');
     final pdfBytes = await _buildPdfProducts(
       products,
-      returnShopProvider(context, listen: false).userShop!,
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes]);
@@ -3815,7 +3824,10 @@ void downloadPdfWebSales({
     print('Begin Download');
     final pdfBytes = await _buildPdfSales(
       records,
-      returnShopProvider(context, listen: false).userShop!,
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes]);
@@ -4371,7 +4383,10 @@ void downloadPdfWebSalesSummary({
     print('Begin Download');
     final pdfBytes = await _buildPdfSalesSummary(
       summary,
-      returnShopProvider(context, listen: false).userShop!,
+      returnShopProvider(
+        context,
+        listen: false,
+      ).userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes]);

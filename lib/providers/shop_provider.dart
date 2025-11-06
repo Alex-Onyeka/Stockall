@@ -3,13 +3,17 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
+import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -27,41 +31,15 @@ class ShopProvider extends ChangeNotifier {
     // Insert the shop
     await supabase.from('shops').insert(shop.toJson());
 
-    // Fetch the newly created shop
-    final response = await getUserShop(shop.userId);
+    // Fetch All Shops
+    final response = await getUserShops(shop.userId);
 
-    if (response != null) {
-      setShop(response);
+    if (response.isNotEmpty) {
+      setShops(response);
     }
   }
 
-  Future<TempShopClass?> getUserShop(String userId) async {
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      final response =
-          await supabase.from('shops').select().contains(
-            'employees',
-            [userId],
-          ).maybeSingle();
-
-      if (response == null) {
-        // await ShopFunc().clearShop();
-        print('User Shop not found');
-        return null;
-      }
-      setShop(TempShopClass.fromJson(response));
-      print('User Shop found ${userShop?.name}');
-      notifyListeners();
-      await ShopFunc().insertShop(userShop!);
-    } else {
-      setShop(ShopFunc().getShop());
-    }
-    notifyListeners();
-
-    return userShop;
-  }
-
-  Future<List<TempShopClass>> getAllUserShops(
+  Future<List<TempShopClass>> getUserShops(
     String userId,
   ) async {
     bool isOnline = await connectivity.isOnline();
@@ -69,31 +47,31 @@ class ShopProvider extends ChangeNotifier {
       final response = await supabase
           .from('shops')
           .select()
-          .eq('user_id', userId);
+          .contains('employees', [userId]);
 
-      // if (response == null) {
-      //   // await ShopFunc().clearShop();
-      //   print('User Shop not found');
-      //   return null;
-      // }
-      print('User Shop Branches found ${response.length}');
-      addShopBranch(
+      if (response.isEmpty) {
+        // await ShopFunc().clearShop();
+        print('User Shops not found');
+        return [];
+      }
+      setShops(
         response
             .map((res) => TempShopClass.fromJson(res))
             .toList(),
       );
+      print('User Shops found ${response.length}');
       notifyListeners();
-      await ShopFunc().insertAllShopBranches(
+      await ShopFunc().insertShops(
         response
             .map((res) => TempShopClass.fromJson(res))
             .toList(),
       );
     } else {
-      addShopBranch(ShopFunc().getAllShopBranches());
+      setShops(ShopFunc().getShops());
     }
     notifyListeners();
 
-    return shopBranches;
+    return userShops;
   }
 
   Future<void> makePayment(DateTime date, int plan) async {
@@ -105,17 +83,17 @@ class ShopProvider extends ChangeNotifier {
             'next_payment': date.toIso8601String(),
             'plan': plan,
           })
-          .eq('shop_id', userShop!.shopId!)
+          .eq('shop_id', userShop()!.shopId!)
           .maybeSingle();
       print(
         'Shop Next Payment date Set: ${date.toString()} and Plan Set: $plan',
       );
 
-      final response = await getUserShop(
+      final response = await getUserShops(
         AuthService().currentUser!,
       );
-      if (response != null) {
-        setShop(response);
+      if (response.isNotEmpty) {
+        setShops(response);
         notifyListeners();
       }
     } else {
@@ -129,7 +107,7 @@ class ShopProvider extends ChangeNotifier {
   //     await supabase
   //         .from('shops')
   //         .update({'plan': plan})
-  //         .eq('shop_id', userShop!.shopId!)
+  //         .eq('shop_id',  userShop()!.shopId!)
   //         .maybeSingle();
   //     print('Shop Payment Plan Set: $plan');
 
@@ -158,25 +136,23 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .maybeSingle();
 
-        final response = await getUserShop(
+        final response = await getUserShops(
           AuthService().currentUser!,
         );
-        if (response != null) {
-          setShop(response);
+        if (response.isNotEmpty) {
+          setShops(response);
           notifyListeners();
         }
       } else {
-        TempShopClass? shop = ShopFunc().getShop();
-        if (shop != null) {
-          shop.printType = type;
-          shop.updatedAt = DateTime.now();
-          ShopFunc().updateShop(shop);
-          UpdatedShopFunc().createUpdatedShop(
-            UpdatedShop(shop: shop),
-          );
-          setShop(shop);
-          notifyListeners();
-        }
+        // TempShopClass? shop = ShopFunc().getShops()[currentIndex];
+        userShop()!.printType = type;
+        userShop()!.updatedAt = DateTime.now();
+        ShopFunc().updateShop(userShop()!);
+        UpdatedShopFunc().createUpdatedShop(
+          UpdatedShop(shop: userShop()!),
+        );
+        // setShops(shop);
+        notifyListeners();
       }
     } catch (e) {
       print("❌ Failed to update print type: $e");
@@ -205,27 +181,27 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .maybeSingle();
 
-        final response = await getUserShop(
+        final response = await getUserShops(
           AuthService().currentUser!,
         );
 
-        if (response != null) {
-          setShop(response);
+        if (response.isNotEmpty) {
+          setShops(response);
           notifyListeners();
         }
       } catch (e) {
         print("❌ Failed to update contact details: $e");
       }
     } else {
-      TempShopClass? shop = ShopFunc().getShop();
-      shop?.updatedAt = DateTime.now();
-      shop?.email = email;
-      shop?.phoneNumber = phoneNumber;
-      shop?.name = name;
-      await ShopFunc().updateShop(shop);
-      shop != null
+      // TempShopClass? shop = ShopFunc().getShop();
+      userShop()!.updatedAt = DateTime.now();
+      userShop()!.email = email;
+      userShop()!.phoneNumber = phoneNumber;
+      userShop()!.name = name;
+      await ShopFunc().updateShop(userShop()!);
+      userShop() != null
           ? await UpdatedShopFunc().createUpdatedShop(
-            UpdatedShop(shop: shop),
+            UpdatedShop(shop: userShop()!),
           )
           : {};
     }
@@ -248,28 +224,28 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .maybeSingle();
 
-        final response = await getUserShop(
+        final response = await getUserShops(
           AuthService().currentUser!,
         );
 
-        if (response != null) {
-          setShop(response);
+        if (response.isNotEmpty) {
+          setShops(response);
           notifyListeners();
         }
       } catch (e) {
         print("❌ Failed to update contact details: $e");
       }
     } else {
-      TempShopClass? shop = ShopFunc().getShop();
-      shop?.updatedAt = DateTime.now();
-      shop?.currency = currency;
-      await ShopFunc().updateShop(shop);
+      // TempShopClass? shop = ShopFunc().getShop();
+      userShop()!.updatedAt = DateTime.now();
+      userShop()!.currency = currency;
+      await ShopFunc().updateShop(userShop()!);
 
-      if (shop != null) {
+      if (userShop() != null) {
         await UpdatedShopFunc().createUpdatedShop(
-          UpdatedShop(shop: shop),
+          UpdatedShop(shop: userShop()!),
         );
-        setShop(shop);
+        // setShop(shop);
         notifyListeners();
       }
     }
@@ -298,30 +274,30 @@ class ShopProvider extends ChangeNotifier {
                 })
                 .eq('shop_id', shopId)
                 .maybeSingle();
-        final shop = await getUserShop(
+        final shop = await getUserShops(
           AuthService().currentUser!,
         );
 
-        if (response != null) {
-          setShop(shop!);
+        if (response!.isNotEmpty) {
+          setShops(shop);
           notifyListeners();
         }
       } catch (e) {
         print("❌ Failed to update location: $e");
       }
     } else {
-      TempShopClass? shop = ShopFunc().getShop();
-      shop?.updatedAt = DateTime.now();
-      shop?.country = country;
-      shop?.state = state;
-      shop?.city = city;
-      shop?.shopAddress = address;
-      await ShopFunc().updateShop(shop);
-      if (shop != null) {
+      // TempShopClass? shop = ShopFunc().getShop();
+      userShop()!.updatedAt = DateTime.now();
+      userShop()!.country = country;
+      userShop()!.state = state;
+      userShop()!.city = city;
+      userShop()!.shopAddress = address;
+      await ShopFunc().updateShop(userShop()!);
+      if (userShop() != null) {
         await UpdatedShopFunc().createUpdatedShop(
-          UpdatedShop(shop: shop),
+          UpdatedShop(shop: userShop()!),
         );
-        setShop(shop);
+        // setShop(shop);
         notifyListeners();
       }
     }
@@ -344,9 +320,10 @@ class ShopProvider extends ChangeNotifier {
       notifyListeners();
       return categories.cast<String>();
     } else {
-      TempShopClass? shop = ShopFunc().getShop();
-      if (shop != null) {
-        final List<String>? categories = shop.categories;
+      // TempShopClass? shop = ShopFunc().getShop();
+      if (userShop() != null) {
+        final List<String>? categories =
+            userShop()!.categories;
         return categories ?? [];
       } else {
         return [];
@@ -389,7 +366,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .select();
 
-        await getUserShop(AuthService().currentUser!);
+        await getUserShops(AuthService().currentUser!);
         notifyListeners();
 
         // print('Updated categories: $updateResult');
@@ -398,19 +375,19 @@ class ShopProvider extends ChangeNotifier {
         rethrow;
       }
     } else {
-      TempShopClass? shop = ShopFunc().getShop();
-      if (shop != null) {
-        shop.updatedAt = DateTime.now();
-        shop.categories =
+      // TempShopClass? shop = ShopFunc().getShop();
+      if (userShop() != null) {
+        userShop()!.updatedAt = DateTime.now();
+        userShop()!.categories =
             {
-              ...shop.categories ?? [],
+              ...userShop()!.categories ?? [],
               ...newCategories,
             }.toList();
-        await ShopFunc().updateShop(shop);
+        await ShopFunc().updateShop(userShop()!);
         await UpdatedShopFunc().createUpdatedShop(
-          UpdatedShop(shop: shop),
+          UpdatedShop(shop: userShop()!),
         );
-        setShop(shop);
+        // setShop(shop);
         notifyListeners();
       }
     }
@@ -536,38 +513,115 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TempShopClass? userShop;
+  // int currentIndex = 0;
+  List<TempShopClass> userShops = [];
 
-  List<TempShopClass> shopBranches = [];
-
-  void addShopBranch(List<TempShopClass> shop) {
-    shopBranches.addAll(shop);
-    notifyListeners();
+  void selectShop(
+    BuildContext context,
+    TempShopClass shopC,
+  ) async {
+    try {
+      var safeContext = context;
+      print('Shop Selection Started');
+      await returnData(
+        context,
+        listen: false,
+      ).clearTotalCache();
+      print('Total Cache Cleared');
+      var res = await CurrentShopFunc().createCurrentShop(
+        TempCurrentShop(currentShop: shopC),
+      );
+      if (res == 1) {
+        print(
+          'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShop.name}',
+        );
+        clearAll(safeContext);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return BasePage();
+            },
+          ),
+        );
+        print('Navigated');
+        notifyListeners();
+      } else {
+        print('Shop Selection Failed');
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error: ${e.toString()}');
+    }
   }
 
-  int currentIndex = 0;
+  void clearAll(BuildContext context) {
+    returnCustomers(
+      context,
+      listen: false,
+    ).clearCustomers();
+    returnData(context, listen: false).clearProducts();
+    returnExpensesProvider(
+      context,
+      listen: false,
+    ).clearExpenses();
+    returnNotificationProvider(
+      context,
+      listen: false,
+    ).clearNotifications();
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).clearReceipts();
+    returnReceiptProvider(
+      context,
+      listen: false,
+    ).load(false);
+    returnSalesProvider(context, listen: false).clearCart();
+    returnShopProvider(context, listen: false).clearShop();
+    returnUserProvider(context, listen: false).clearUsers();
+  }
 
-  TempShopClass? currentShop() {
-    return shopBranches.isEmpty
-        ? null
-        : shopBranches[currentIndex];
+  TempShopClass? userShop() {
+    var shop =
+        CurrentShopFunc().getCurrentShop()?.currentShop;
+    if (shop != null) {
+      return shop;
+    } else {
+      if (userShops.isNotEmpty) {
+        CurrentShopFunc().createCurrentShop(
+          TempCurrentShop(currentShop: userShops.first),
+        );
+        // return userShops.first;
+        notifyListeners();
+        return shop;
+      } else {
+        return null;
+      }
+    }
   }
 
   void clearShop() {
-    // userShop = null;
-    shopBranches.clear();
+    userShops.clear();
     notifyListeners();
   }
 
-  void setCurrentShop(int index) {
-    currentIndex = index;
+  void setShops(List<TempShopClass> shops) {
+    userShops = shops;
+    var localShop = CurrentShopFunc().getCurrentShop();
+    if (shops
+        .where(
+          (sh) =>
+              sh.shopId == localShop?.currentShop.shopId,
+        )
+        .toList()
+        .isEmpty) {
+      CurrentShopFunc().createCurrentShop(
+        TempCurrentShop(currentShop: shops.first),
+      );
+    }
     notifyListeners();
   }
-
-  // void setShop(TempShopClass? shop) {
-  //   shop != null ? shopBranches.add(shop) : {};
-  //   notifyListeners();
-  // }
 
   String name = '';
   String country = '';
@@ -676,7 +730,7 @@ class ShopProvider extends ChangeNotifier {
         print('Unsynced updated Shop cleared');
         if (context.mounted) {
           print('Mounted, refreshing Shop ✅');
-          await getUserShop(AuthService().currentUser!);
+          await getUserShops(AuthService().currentUser!);
         }
       }
     } catch (e) {
@@ -727,10 +781,10 @@ class ShopProvider extends ChangeNotifier {
                 'image_height': imageHeight,
                 'image_width': imageWidth,
               })
-              .eq('shop_id', userShop!.shopId!);
-          userShop?.logoUrl = publicUrl;
-          userShop?.imageHeight = imageHeight;
-          userShop?.imageWidth = imageWidth;
+              .eq('shop_id', userShop()!.shopId!);
+          userShop()!.logoUrl = publicUrl;
+          userShop()!.imageHeight = imageHeight;
+          userShop()!.imageWidth = imageWidth;
           notifyListeners();
           print(
             '✅  Online Logo uploaded and saved successfully!',
@@ -753,7 +807,7 @@ class ShopProvider extends ChangeNotifier {
         print('Unsynced updated Shop Logo cleared');
         if (context.mounted) {
           print('Mounted, refreshing Shop ✅');
-          await getUserShop(AuthService().currentUser!);
+          await getUserShops(AuthService().currentUser!);
         }
       }
     } catch (e) {
@@ -767,68 +821,69 @@ class ShopProvider extends ChangeNotifier {
   //
 
   void setBottomText(String newText) {
-    userShop!.bottomText = newText;
+    userShop()!.bottomText = newText;
     notifyListeners();
   }
 
   void resetBottomText() {
-    userShop!.bottomText = null;
+    userShop()!.bottomText = null;
     notifyListeners();
   }
 
   void showEmailAction() {
-    userShop!.showEmail = !userShop!.showEmail!;
+    userShop()!.showEmail = !userShop()!.showEmail!;
     notifyListeners();
   }
 
   void showShopNameAction() {
-    userShop!.showShopName = !userShop!.showShopName!;
+    userShop()!.showShopName = !userShop()!.showShopName!;
     notifyListeners();
   }
 
   void showAddressAction() {
-    userShop!.showAddress = !userShop!.showAddress!;
+    userShop()!.showAddress = !userShop()!.showAddress!;
     notifyListeners();
   }
 
   void showPhoneAction() {
-    userShop!.showPhone = !userShop!.showPhone!;
+    userShop()!.showPhone = !userShop()!.showPhone!;
     notifyListeners();
   }
 
   void showFirstSectionAction() {
-    userShop!.showFirst = !userShop!.showFirst!;
+    userShop()!.showFirst = !userShop()!.showFirst!;
     notifyListeners();
   }
 
   void showSecondSectionAction() {
-    userShop!.showSecond = !userShop!.showSecond!;
+    userShop()!.showSecond = !userShop()!.showSecond!;
     notifyListeners();
   }
 
   void showThirdSectionAction() {
-    userShop!.showThird = !userShop!.showThird!;
+    userShop()!.showThird = !userShop()!.showThird!;
     notifyListeners();
   }
 
   void showInstaDownAction() {
-    userShop!.showInstaDown = !userShop!.showInstaDown!;
+    userShop()!.showInstaDown = !userShop()!.showInstaDown!;
     notifyListeners();
   }
 
   void showInstaTopAction() {
-    userShop!.showInstaTop = !userShop!.showInstaTop!;
+    userShop()!.showInstaTop = !userShop()!.showInstaTop!;
     notifyListeners();
   }
 
   void showFacebookDownAction() {
-    userShop!.showFacebookDown =
-        !userShop!.showFacebookDown!;
+    userShop()!.showFacebookDown =
+        !userShop()!.showFacebookDown!;
     notifyListeners();
   }
 
   void showFacebookTopAction() {
-    userShop!.showFacebookTop = !userShop!.showFacebookTop!;
+    userShop()!.showFacebookTop =
+        !userShop()!.showFacebookTop!;
     notifyListeners();
   }
 
@@ -847,28 +902,28 @@ class ShopProvider extends ChangeNotifier {
       }
     }
     if (selectedLogo == null) {
-      userShop?.logoUrl = null;
-      userShop?.imageHeight = null;
-      userShop?.imageWidth = null;
+      userShop()!.logoUrl = null;
+      userShop()!.imageHeight = null;
+      userShop()!.imageWidth = null;
       await ShopLogosFunc().clearLogos();
       await CreatedShopLogosFunc().clearCreatedLogos();
       notifyListeners();
     }
     if (isOnline) {
-      userShop!.updatedAt = DateTime.now();
+      userShop()!.updatedAt = DateTime.now();
       try {
         await supabase
             .from('shops')
-            .update(userShop!.toJson())
-            .eq('shop_id', userShop!.shopId!)
+            .update(userShop()!.toJson())
+            .eq('shop_id', userShop()!.shopId!)
             .maybeSingle();
 
-        final response = await getUserShop(
+        final response = await getUserShops(
           AuthService().currentUser!,
         );
 
-        if (response != null) {
-          setShop(response);
+        if (response.isNotEmpty) {
+          setShops(response);
           notifyListeners();
         }
         return 1;
@@ -880,14 +935,14 @@ class ShopProvider extends ChangeNotifier {
       }
     } else {
       try {
-        TempShopClass? shop = ShopFunc().getShop();
-        if (shop != null) {
-          userShop?.updatedAt = DateTime.now();
-          await ShopFunc().updateShop(userShop);
+        // TempShopClass? shop = ShopFunc().getShops();
+        if (userShop() != null) {
+          userShop()!.updatedAt = DateTime.now();
+          await ShopFunc().updateShop(userShop()!);
         }
-        shop != null
+        userShop() != null
             ? await UpdatedShopFunc().createUpdatedShop(
-              UpdatedShop(shop: shop),
+              UpdatedShop(shop: userShop()!),
             )
             : {};
         return 1;
@@ -916,14 +971,14 @@ class ShopProvider extends ChangeNotifier {
                   'updated_at':
                       DateTime.now().toIso8601String(),
                 })
-                .eq('shop_id', userShop!.shopId!)
+                .eq('shop_id', userShop()!.shopId!)
                 .maybeSingle();
-        final shop = await getUserShop(
+        final shop = await getUserShops(
           AuthService().currentUser!,
         );
 
         if (response != null) {
-          setShop(shop!);
+          setShops(shop);
           notifyListeners();
         }
         return 1;
@@ -933,16 +988,16 @@ class ShopProvider extends ChangeNotifier {
       }
     } else {
       try {
-        TempShopClass? shop = ShopFunc().getShop();
-        shop?.updatedAt = DateTime.now();
-        shop?.instaHandle = insta;
-        shop?.faceBookHandle = face;
-        await ShopFunc().updateShop(shop);
-        if (shop != null) {
+        // TempShopClass? shop = ShopFunc().getShop();
+        userShop()!.updatedAt = DateTime.now();
+        userShop()!.instaHandle = insta;
+        userShop()!.faceBookHandle = face;
+        await ShopFunc().updateShop(userShop()!);
+        if (userShop() != null) {
           await UpdatedShopFunc().createUpdatedShop(
-            UpdatedShop(shop: shop),
+            UpdatedShop(shop: userShop()!),
           );
-          setShop(shop);
+          // setShops(shop);
           notifyListeners();
         }
         return 1;
@@ -1049,12 +1104,12 @@ class ShopProvider extends ChangeNotifier {
 
     if (isOnline) {
       try {
-        await getUserShop(AuthService().currentUser!);
+        await getUserShops(AuthService().currentUser!);
         notifyListeners();
-        final logoUrl = userShop?.logoUrl;
+        final logoUrl = userShop()!.logoUrl;
         if (logoUrl == null ||
-            userShop?.imageHeight == null ||
-            userShop?.imageWidth == null) {
+            userShop()!.imageHeight == null ||
+            userShop()!.imageWidth == null) {
           // clearImage();
           return null;
         }
@@ -1066,16 +1121,16 @@ class ShopProvider extends ChangeNotifier {
             TempShopLogos(
               logoPath: base64Encode(onlineBytes),
               imageName: logoUrl,
-              imageHeight: userShop!.imageHeight!,
-              imageWidth: userShop!.imageWidth!,
+              imageHeight: userShop()!.imageHeight!,
+              imageWidth: userShop()!.imageWidth!,
             ),
             // ignore: use_build_context_synchronously
             context,
           );
         }
         selectedLogo = onlineBytes;
-        imageHeight = userShop?.imageHeight;
-        imageWidth = userShop?.imageWidth;
+        imageHeight = userShop()!.imageHeight;
+        imageWidth = userShop()!.imageWidth;
         // imag
         notifyListeners();
         return onlineBytes;
@@ -1086,7 +1141,7 @@ class ShopProvider extends ChangeNotifier {
       }
     } else {
       try {
-        await getUserShop(AuthService().currentUser!);
+        await getUserShops(AuthService().currentUser!);
         var logo = ShopLogosFunc().getLogo();
         if (logo == null) {
           // clearImage();
@@ -1095,8 +1150,8 @@ class ShopProvider extends ChangeNotifier {
         } else {
           var imageBytes = base64Decode(logo.logoPath);
           selectedLogo = imageBytes;
-          imageHeight = userShop?.imageHeight;
-          imageWidth = userShop?.imageWidth;
+          imageHeight = userShop()!.imageHeight;
+          imageWidth = userShop()!.imageWidth;
           notifyListeners();
           return imageBytes;
         }
@@ -1125,7 +1180,7 @@ class ShopProvider extends ChangeNotifier {
     };
 
     final String filePath =
-        'logos/${userShop!.shopId!}-${DateTime.now().millisecondsSinceEpoch}.$ext';
+        'logos/${userShop()!.shopId!}-${DateTime.now().millisecondsSinceEpoch}.$ext';
     if (isOnline) {
       try {
         await supabase.storage
@@ -1149,10 +1204,10 @@ class ShopProvider extends ChangeNotifier {
               'image_height': imageHeight,
               'image_width': imageWidth,
             })
-            .eq('shop_id', userShop!.shopId!);
-        userShop?.logoUrl = publicUrl;
-        userShop?.imageHeight = imageHeight;
-        userShop?.imageWidth = imageWidth;
+            .eq('shop_id', userShop()!.shopId!);
+        userShop()!.logoUrl = publicUrl;
+        userShop()!.imageHeight = imageHeight;
+        userShop()!.imageWidth = imageWidth;
         notifyListeners();
         print(
           '✅  Online Logo uploaded and saved successfully!',
@@ -1193,9 +1248,9 @@ class ShopProvider extends ChangeNotifier {
           ),
           context,
         );
-        // userShop?.logoUrl = publicUrl;
-        userShop?.imageHeight = imageHeight;
-        userShop?.imageWidth = imageWidth;
+        // userShop()!.logoUrl = publicUrl;
+        userShop()!.imageHeight = imageHeight;
+        userShop()!.imageWidth = imageWidth;
         notifyListeners();
         print(
           '✅  Offline Logo uploaded and saved successfully!',

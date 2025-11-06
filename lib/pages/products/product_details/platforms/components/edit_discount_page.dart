@@ -59,7 +59,7 @@ class _EditDiscountPageState
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!;
+        ).userShop()!.shopId!;
     return Stack(
       children: [
         Material(

@@ -49,7 +49,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
   //     returnShopProvider(
   //       context,
   //       listen: false,
-  //     ).userShop!.shopId!,
+  //     ). userShop()!.shopId!,
   //   );
   // }
 
@@ -138,7 +138,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!,
+              ).userShop()!.shopId!,
         )
         .toList();
   }
@@ -163,7 +163,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return customers;

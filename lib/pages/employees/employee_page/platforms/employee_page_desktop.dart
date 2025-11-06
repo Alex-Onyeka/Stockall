@@ -143,7 +143,7 @@ class _EmployeePageDesktopState
                                                     listen:
                                                         false,
                                                   )
-                                                  .userShop!
+                                                  .userShop()!
                                                   .shopId!,
                                         );
                                         await userProvider

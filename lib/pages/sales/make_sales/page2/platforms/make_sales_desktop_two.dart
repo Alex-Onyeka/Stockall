@@ -978,7 +978,7 @@ class _MakeSalesDesktopTwoState
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!.shopId!,
+                                                  ).userShop()!.shopId!,
                                               bank:
                                                   returnSalesProvider(
                                                             context,

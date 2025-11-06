@@ -141,7 +141,7 @@ class _EmployeePageMobileState
                                                     listen:
                                                         false,
                                                   )
-                                                  .userShop!
+                                                  .userShop()!
                                                   .shopId!,
                                         );
                                         await userProvider

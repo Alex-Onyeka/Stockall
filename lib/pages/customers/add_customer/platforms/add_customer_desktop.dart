@@ -1944,7 +1944,7 @@ class _AddCustomerDesktopState
                                     returnShopProvider(
                                       context,
                                       listen: false,
-                                    ).userShop!.shopId!,
+                                    ).userShop()!.shopId!,
                                 country:
                                     selectedCountryName ==
                                             'Select Your Country'
@@ -1993,7 +1993,7 @@ class _AddCustomerDesktopState
                                     returnShopProvider(
                                       context,
                                       listen: false,
-                                    ).userShop!.shopId!,
+                                    ).userShop()!.shopId!,
                                 name:
                                     widget
                                         .nameController

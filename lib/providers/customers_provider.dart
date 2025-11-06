@@ -8,7 +8,6 @@ import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
-import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -90,7 +89,7 @@ class CustomersProvider extends ChangeNotifier {
       );
     }
     // _customers.insert(0, newCustomer);
-    await fetchCustomers(shopProvider.userShop!.shopId!);
+    await fetchCustomers(shopProvider.userShop()!.shopId!);
     notifyListeners();
   }
 
@@ -129,7 +128,7 @@ class CustomersProvider extends ChangeNotifier {
         );
       }
     }
-    await fetchCustomers(shopProvider.userShop!.shopId!);
+    await fetchCustomers(shopProvider.userShop()!.shopId!);
     notifyListeners();
   }
 
@@ -172,7 +171,11 @@ class CustomersProvider extends ChangeNotifier {
         await DeletedCustomersFunc().createDeletedCustomer(
           DeletedCustomers(
             customerUuid: uuid,
-            shopId: ShopFunc().getShop()!.shopId!,
+            shopId:
+                returnShopProvider(
+                  context,
+                  listen: false,
+                ).userShop()!.shopId!,
           ),
         );
       }
@@ -183,7 +186,7 @@ class CustomersProvider extends ChangeNotifier {
       }
     }
 
-    await fetchCustomers(shopProvider.userShop!.shopId!);
+    await fetchCustomers(shopProvider.userShop()!.shopId!);
     notifyListeners();
   }
 
@@ -290,7 +293,7 @@ class CustomersProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Customers ✅');
           await fetchCustomers(
-            shopProvider.userShop!.shopId!,
+            shopProvider.userShop()!.shopId!,
           );
         }
       }
@@ -402,7 +405,7 @@ class CustomersProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Customers ✅');
           await fetchCustomers(
-            shopProvider.userShop!.shopId!,
+            shopProvider.userShop()!.shopId!,
           );
         }
       }
@@ -456,7 +459,7 @@ class CustomersProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Customers ✅');
           await fetchCustomers(
-            shopProvider.userShop!.shopId!,
+            shopProvider.userShop()!.shopId!,
           );
         }
       }

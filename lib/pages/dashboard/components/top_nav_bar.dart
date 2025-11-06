@@ -3,11 +3,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:popover/popover.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
+import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -104,7 +107,7 @@ class _TopNavBarState extends State<TopNavBar> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          isOpen = !isOpen;
+                          isOpen = true;
                         });
                         showPopover(
                           barrierColor:
@@ -120,10 +123,47 @@ class _TopNavBarState extends State<TopNavBar> {
                                 milliseconds: 150,
                               ),
                           bodyBuilder:
-                              (context) =>
-                                  const PopoverMenu(),
-                          onPop:
-                              () => print('Popover closed'),
+                              (context) => PopoverMenu(
+                                action: () async {
+                                  bool isOnline =
+                                      await returnConnectivityProvider(
+                                        context,
+                                        listen: false,
+                                      ).isOnline();
+                                  if (isOnline) {
+                                    Navigator.push(
+                                      // ignore: use_build_context_synchronously
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ShopSetupPage();
+                                        },
+                                      ),
+                                    );
+                                  } else {
+                                    showDialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme:
+                                              widget.theme,
+                                          message:
+                                              'You need to be connected to the internet before you can create a new Shop.',
+                                          title:
+                                              'No Internet Connection',
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                          onPop: () {
+                            setState(() {
+                              isOpen = false;
+                            });
+                            print('Popover closed');
+                          },
                           direction:
                               PopoverDirection.bottom,
                           // contentDxOffset:
@@ -133,7 +173,7 @@ class _TopNavBarState extends State<TopNavBar> {
                           //         : 0,
                           contentDyOffset: -20,
                           width: 300,
-                          height: 150,
+                          height: 300,
                           arrowHeight: 10,
                           arrowWidth: 20,
                         );
@@ -187,7 +227,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                           returnShopProvider(
                                                 context,
                                               )
-                                              .userShop
+                                              .userShop()
                                               ?.name ??
                                           '',
                                       15,
@@ -222,8 +262,8 @@ class _TopNavBarState extends State<TopNavBar> {
                                   widget.subText ??
                                       returnShopProvider(
                                         context,
-                                      ).userShop?.email ??
-                                      '',
+                                      ).userShop()?.email ??
+                                      'Email Not Set',
                                   18,
                                 ),
                               ),
@@ -694,33 +734,126 @@ class _TopNavBarState extends State<TopNavBar> {
 }
 
 class PopoverMenu extends StatelessWidget {
-  const PopoverMenu({super.key});
+  final Function()? action;
+  const PopoverMenu({super.key, required this.action});
 
   @override
   Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(8),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          ListTile(
-            title: const Text('Option 1'),
-            onTap: () {
-              Navigator.of(
-                context,
-              ).pop(); // closes the popover
-              print('Option 1 selected');
-            },
-          ),
-          ListTile(
-            title: const Text('Option 2'),
-            onTap: () {
-              Navigator.of(context).pop();
-              print('Option 2 selected');
-            },
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+            Text(
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b1.fontSize,
+                fontWeight: FontWeight.bold,
+              ),
+              'Select Shop',
+            ),
+            SizedBox(height: 10),
+            Container(
+              height: 3,
+              width: 100,
+              decoration: BoxDecoration(
+                color: theme.lightModeColor.secColor200,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            SizedBox(height: 5),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children:
+                    returnShopProvider(context).userShops
+                        .map(
+                          (shop) => ListTile(
+                            shape: Border(
+                              bottom: BorderSide(
+                                color: Colors.grey.shade100,
+                              ),
+                            ),
+                            title: Row(
+                              spacing: 10,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    shop.name,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .userShop()!
+                                          .shopId! ==
+                                      shop.shopId!,
+                                  child: Icon(
+                                    size: 18,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                    Icons.check,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              if (returnShopProvider(
+                                    context,
+                                    listen: false,
+                                  ).userShop()!.shopId! !=
+                                  shop.shopId!) {
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).selectShop(context, shop);
+                                Navigator.of(
+                                  context,
+                                ).pop(); // closes the popover
+                                print(
+                                  returnShopProvider(
+                                    context,
+                                    listen: false,
+                                  ).userShops.length,
+                                );
+                              }
+                            },
+                          ),
+                        )
+                        .toList(),
+              ),
+            ),
+            SizedBox(height: 5),
+            Material(
+              color: Colors.white,
+              child: MainButtonP(
+                themeProvider: theme,
+                action: () {
+                  Navigator.of(context).pop();
+                  action!();
+                },
+                text: 'Create New Shop',
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

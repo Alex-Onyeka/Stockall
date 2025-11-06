@@ -1848,7 +1848,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     returnShopProvider(
                                       context,
                                       listen: false,
-                                    ).userShop!.shopId!,
+                                    ).userShop()!.shopId!,
                                 setCustomPrice: true,
                               ),
                               addToStock: false,
@@ -1930,7 +1930,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .shopId!,
                                       setCustomPrice: true,
                                     ),
@@ -2077,7 +2077,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                   context,
                                                                   listen:
                                                                       false,
-                                                                ).userShop!.shopId!,
+                                                                ).userShop()!.shopId!,
                                                             setCustomPrice:
                                                                 true,
                                                           ),
@@ -2551,7 +2551,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                   context,
                                                                   listen:
                                                                       false,
-                                                                ).userShop!.shopId!,
+                                                                ).userShop()!.shopId!,
                                                             setCustomPrice:
                                                                 true,
                                                           ),

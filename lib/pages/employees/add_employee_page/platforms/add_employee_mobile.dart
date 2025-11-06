@@ -439,7 +439,7 @@ class _AddEmployeeMobileState
                                             .addEmployeeToShop(
                                               shopId:
                                                   shopProvider
-                                                      .userShop!
+                                                      .userShop()!
                                                       .shopId!,
                                               newEmployeeId:
                                                   widget

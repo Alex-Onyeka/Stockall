@@ -8,7 +8,6 @@ import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
-import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -298,7 +297,11 @@ class ExpensesProvider extends ChangeNotifier {
         await DeletedExpensesFunc().createDeletedExpense(
           DeletedExpenses(
             expensesUuid: uuid,
-            shopId: ShopFunc().getShop()!.shopId!,
+            shopId:
+                returnShopProvider(
+                  context,
+                  listen: false,
+                ).userShop()!.shopId!,
           ),
         );
       }
@@ -360,7 +363,7 @@ class ExpensesProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
   }
@@ -414,7 +417,7 @@ class ExpensesProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
   }
@@ -521,7 +524,7 @@ class ExpensesProvider extends ChangeNotifier {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
     }
   }

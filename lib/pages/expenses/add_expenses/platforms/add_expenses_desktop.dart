@@ -75,7 +75,7 @@ class _AddExpensesDesktopState
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!;
+              ).userShop()!.shopId!;
 
           var dataProvider = returnData(
             context,

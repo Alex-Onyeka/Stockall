@@ -227,7 +227,7 @@ class ProductReportDesktopState
                                                     safeContext,
                                                     listen:
                                                         false,
-                                                  ).userShop!,
+                                                  ).userShop()!,
                                               context:
                                                   safeContext,
                                               filename:
@@ -245,7 +245,7 @@ class ProductReportDesktopState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).userShop!,
+                                              ).userShop()!,
                                         );
 
                                         if (safeContext

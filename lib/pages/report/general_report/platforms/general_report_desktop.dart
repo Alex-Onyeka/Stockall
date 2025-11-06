@@ -33,7 +33,7 @@ class _GeneralReportDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
       context,
     );
     return tempRece;
@@ -48,7 +48,7 @@ class _GeneralReportDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnReportProvider(
@@ -70,7 +70,7 @@ class _GeneralReportDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempEx;
@@ -85,7 +85,7 @@ class _GeneralReportDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempEx;

@@ -220,7 +220,7 @@ void categoriesBottomSheet(
   //     returnShopProvider(
   //       context,
   //       listen: false,
-  //     ).userShop!.shopId!,
+  //     ). userShop()!.shopId!,
   //   );
   //   categoriesFuture = tempCat;
   //   return tempCat;
@@ -230,7 +230,7 @@ void categoriesBottomSheet(
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.categories ??
+      ).userShop()!.categories ??
       [];
 
   // getCategories();
@@ -2233,7 +2233,7 @@ class _CustomBottomPanelState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .shopId!,
                                         );
                                         setState(() {});
@@ -2482,7 +2482,7 @@ class _CustomBottomPanelState
                                                 listen:
                                                     false,
                                               )
-                                              .userShop!
+                                              .userShop()!
                                               .shopId!,
                                         );
                                         setState(() {});

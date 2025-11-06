@@ -27,12 +27,16 @@ class ShopPageMobile extends StatefulWidget {
 class _ShopPageMobileState extends State<ShopPageMobile> {
   late Future<TempShopClass> shopFuture;
   Future<TempShopClass> getShop() async {
-    var tempShp = await returnShopProvider(
+    await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!);
+    ).getUserShops(AuthService().currentUser!);
 
-    return tempShp!;
+    return returnShopProvider(
+      // ignore: use_build_context_synchronously
+      context,
+      listen: false,
+    ).userShop()!;
   }
 
   TextEditingController currencyController =
@@ -52,14 +56,14 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
             returnShopProvider(
                   context,
                   listen: false,
-                ).userShop!.currency.isEmpty
+                ).userShop()!.currency.isEmpty
                 ? 'Currency Not Set'
-                : '${currencies.firstWhere((currency) => currency.symbol == returnShopProvider(context, listen: false).userShop!.currency).currency} (${currencies.firstWhere((currency) => currency.symbol == returnShopProvider(context, listen: false).userShop!.currency).symbol})';
+                : '${currencies.firstWhere((currency) => currency.symbol == returnShopProvider(context, listen: false).userShop()!.currency).currency} (${currencies.firstWhere((currency) => currency.symbol == returnShopProvider(context, listen: false).userShop()!.currency).symbol})';
         selectedCurrency =
             returnShopProvider(
                   context,
                   listen: false,
-                ).userShop!.currency.isEmpty
+                ).userShop()!.currency.isEmpty
                 ? null
                 : currencies
                     .firstWhere(
@@ -68,7 +72,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                           returnShopProvider(
                             context,
                             listen: false,
-                          ).userShop!.currency,
+                          ).userShop()!.currency,
                     )
                     .symbol;
       });

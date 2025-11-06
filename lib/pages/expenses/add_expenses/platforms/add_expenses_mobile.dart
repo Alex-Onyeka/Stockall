@@ -74,7 +74,7 @@ class _AddExpensesMobileState
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!;
+              ).userShop()!.shopId!;
 
           var dataProvider = returnData(
             context,

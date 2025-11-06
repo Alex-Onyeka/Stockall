@@ -1664,7 +1664,7 @@ class _MakeSalesDesktopState
                                                       context,
                                                       listen:
                                                           false,
-                                                    ).userShop!.shopId!,
+                                                    ).userShop()!.shopId!,
                                                 setCustomPrice:
                                                     true,
                                               ),
@@ -1768,7 +1768,7 @@ class _MakeSalesDesktopState
                                                             context,
                                                             listen:
                                                                 false,
-                                                          ).userShop!.shopId!,
+                                                          ).userShop()!.shopId!,
                                                       setCustomPrice:
                                                           true,
                                                     ),
@@ -1920,7 +1920,7 @@ class _MakeSalesDesktopState
                                                                                   context,
                                                                                   listen:
                                                                                       false,
-                                                                                ).userShop!.shopId!,
+                                                                                ).userShop()!.shopId!,
                                                                             setCustomPrice:
                                                                                 true,
                                                                           ),
@@ -2511,7 +2511,7 @@ class _MakeSalesDesktopState
                                                             context,
                                                             listen:
                                                                 false,
-                                                          ).userShop!.shopId!,
+                                                          ).userShop()!.shopId!,
                                                       setCustomPrice:
                                                           true,
                                                     ),

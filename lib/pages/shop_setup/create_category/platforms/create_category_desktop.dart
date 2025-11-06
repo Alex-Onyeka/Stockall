@@ -80,9 +80,11 @@ class _CreateCategoryDesktopState
                                   ).appendShopCategories(
                                     shopId:
                                         returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).userShop!.shopId!,
+                                              context,
+                                              listen: false,
+                                            )
+                                            .userShop()!
+                                            .shopId!,
                                     newCategories: [
                                       controller.text
                                           .trim(),

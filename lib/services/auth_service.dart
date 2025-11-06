@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
+import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
@@ -254,6 +255,7 @@ class AuthService extends ChangeNotifier {
       context,
       listen: false,
     ).load(false);
+    await CurrentShopFunc().clearCurrentShop();
     returnSalesProvider(context, listen: false).clearCart();
     bool isOnline = await connectivity.isOnline();
 

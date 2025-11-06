@@ -435,7 +435,7 @@ class _SalesAndRevenueReportMobileState
                                                         safeContext,
                                                         listen:
                                                             false,
-                                                      ).userShop!,
+                                                      ).userShop()!,
                                                   context:
                                                       safeContext,
                                                   filename:
@@ -450,7 +450,7 @@ class _SalesAndRevenueReportMobileState
                                                         safeContext,
                                                         listen:
                                                             false,
-                                                      ).userShop!,
+                                                      ).userShop()!,
                                                   context:
                                                       safeContext,
                                                   filename:
@@ -468,7 +468,7 @@ class _SalesAndRevenueReportMobileState
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!,
+                                                  ).userShop()!,
                                               summary:
                                                   summary,
                                             );
@@ -483,7 +483,7 @@ class _SalesAndRevenueReportMobileState
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).userShop!,
+                                                  ).userShop()!,
                                             );
                                           }
 

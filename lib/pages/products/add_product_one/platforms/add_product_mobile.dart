@@ -129,7 +129,7 @@ class _AddProductMobileState
                   returnShopProvider(
                     context,
                     listen: false,
-                  ).userShop!.shopId;
+                  ).userShop()!.shopId;
 
               await dataProvider.createProduct(
                 TempProductClass(
@@ -315,7 +315,7 @@ class _AddProductMobileState
               ),
             );
             await provider.getProducts(
-              shopProvider.userShop!.shopId!,
+              shopProvider.userShop()!.shopId!,
             );
 
             setState(() {
@@ -445,13 +445,17 @@ class _AddProductMobileState
 
   TempShopClass? userShop;
   void setShop() async {
-    var shop = await returnShopProvider(
+    await returnShopProvider(
       context,
       listen: false,
-    ).getUserShop(AuthService().currentUser!);
+    ).getUserShops(AuthService().currentUser!);
 
     setState(() {
-      userShop = shop;
+      userShop =
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop();
     });
   }
 

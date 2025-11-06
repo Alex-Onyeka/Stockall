@@ -78,7 +78,7 @@ class _MainReceiptTileMobileState
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
       return tempCustomer.firstWhere(
         (customer) =>
@@ -431,7 +431,7 @@ class _MainReceiptTileDesktopState
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!,
+        ).userShop()!.shopId!,
       );
       return tempCustomer.firstWhere(
         (customer) =>

@@ -8,6 +8,7 @@ import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
+import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
@@ -32,8 +33,9 @@ class MainDatabase extends ChangeNotifier {
     await MainReceiptFunc().init();
     await LoggedInUserFunc().init();
     await ShopLogosFunc().init();
+    await CurrentShopFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 29;
+int highestHiveClassIndex = 30;

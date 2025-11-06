@@ -67,7 +67,7 @@ class _ProductDetailsMobileState
         returnShopProvider(
           context,
           listen: false,
-        ).userShop!.shopId!;
+        ).userShop()!.shopId!;
     List<TempProductClass>? productList =
         returnData(context).productList
             .where(
@@ -1634,7 +1634,7 @@ class _ProductDetailsMobileState
                                       returnShopProvider(
                                         context,
                                         listen: false,
-                                      ).userShop!.shopId!;
+                                      ).userShop()!.shopId!;
                                   return ConfirmationAlert(
                                     theme: returnTheme(
                                       context,

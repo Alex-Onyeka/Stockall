@@ -52,7 +52,7 @@ class _DashboardDesktopState
   //     returnShopProvider(
   //       context,
   //       listen: false,
-  //     ).userShop!.shopId!,
+  //     ). userShop()!.shopId!,
   //   );
   // }
 
@@ -139,7 +139,7 @@ class _DashboardDesktopState
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!,
+              ).userShop()!.shopId!,
         )
         .toList();
   }
@@ -176,7 +176,7 @@ class _DashboardDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return customers;
@@ -231,14 +231,14 @@ class _DashboardDesktopState
   //   BuildContext context,
   // ) async {
   //   var tempReceipts = await receiptsProvider.loadReceipts(
-  //     shopProvider.userShop!.shopId!,
+  //     shopProvider. userShop()!.shopId!,
   //     context,
   //   );
   //   return tempReceipts;
   // }
 
   // Future getUserShop() async {
-  //   return await shopProvider.getUserShop(
+  //   return await shopProvider.getUserShops(
   //     AuthService().currentUser!,
   //   );
   // }

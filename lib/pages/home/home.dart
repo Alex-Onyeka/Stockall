@@ -42,19 +42,39 @@ class _HomeState extends State<Home> {
 
   late Future<TempShopClass?> shopFuture;
   Future<TempShopClass?> getUserShop() async {
-    var shop = await returnShopProvider(
-      context,
-      listen: false,
-    ).getUserShop(AuthService().currentUser!);
-    shop != null
-        ? returnShopProvider(
-          // ignore: use_build_context_synchronously
-          context,
-          listen: false,
-          // ignore: use_build_context_synchronously
-        ).getLogoImage(context)
-        : {};
-    return shop;
+    try {
+      print('About to get Stores');
+      var shop = await returnShopProvider(
+        context,
+        listen: false,
+      ).getUserShops(AuthService().currentUser!);
+      print('Stores Gotten: ${shop.length}');
+      shop.isNotEmpty
+          ? returnShopProvider(
+            // ignore: use_build_context_synchronously
+            context,
+            listen: false,
+            // ignore: use_build_context_synchronously
+          ).getLogoImage(context)
+          : {};
+      print('About to return Store');
+
+      if (context.mounted) {
+        var mainShop =
+            returnShopProvider(
+              context,
+              listen: false,
+            ).userShop();
+        print('Current Shop: ${mainShop?.name}');
+        return mainShop;
+      } else {
+        print('Context not mounted');
+        return null;
+      }
+    } catch (e) {
+      print("Error With Shop: ${e.toString()}");
+      return null;
+    }
   }
 
   @override

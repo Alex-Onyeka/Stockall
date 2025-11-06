@@ -71,7 +71,7 @@ class _ProductPageMobileState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempGet;

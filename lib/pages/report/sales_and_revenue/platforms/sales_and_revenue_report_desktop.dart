@@ -470,7 +470,7 @@ class _SalesAndRevenueReportDesktopState
                                                           safeContext,
                                                           listen:
                                                               false,
-                                                        ).userShop!,
+                                                        ).userShop()!,
                                                     context:
                                                         safeContext,
                                                     filename:
@@ -485,7 +485,7 @@ class _SalesAndRevenueReportDesktopState
                                                           safeContext,
                                                           listen:
                                                               false,
-                                                        ).userShop!,
+                                                        ).userShop()!,
                                                     context:
                                                         safeContext,
                                                     filename:
@@ -503,7 +503,7 @@ class _SalesAndRevenueReportDesktopState
                                                       context,
                                                       listen:
                                                           false,
-                                                    ).userShop!,
+                                                    ).userShop()!,
                                                 summary:
                                                     summary,
                                               );
@@ -518,7 +518,7 @@ class _SalesAndRevenueReportDesktopState
                                                       context,
                                                       listen:
                                                           false,
-                                                    ).userShop!,
+                                                    ).userShop()!,
                                               );
                                             }
 

@@ -31,7 +31,7 @@
 //       returnShopProvider(
 //         context,
 //         listen: false,
-//       ).userShop!.shopId!,
+//       ). userShop()!.shopId!,
 //     );
 //     return temp
 //         .where(

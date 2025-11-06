@@ -445,7 +445,7 @@ class _AddEmployeeDesktopState
                                             .addEmployeeToShop(
                                               shopId:
                                                   shopProvider
-                                                      .userShop!
+                                                      .userShop()!
                                                       .shopId!,
                                               newEmployeeId:
                                                   widget

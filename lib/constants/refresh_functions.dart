@@ -68,7 +68,7 @@ class RefreshFunctions {
 
   // Future<void> loadSuggestions() async {
   //   await suggestionProvider.loadSuggestions(
-  //     shopProvider.userShop!.shopId!,
+  //     shopProvider. userShop()!.shopId!,
   //   );
   // }
 
@@ -80,7 +80,7 @@ class RefreshFunctions {
   //   BuildContext context,
   // ) async {
   //   var tempReceipts = await receiptsProvider.loadReceipts(
-  //     shopProvider.userShop!.shopId!,
+  //     shopProvider. userShop()!.shopId!,
   //     context,
   //   );
   //   return tempReceipts;
@@ -95,7 +95,7 @@ class RefreshFunctions {
   Future<void> getMainReceipts(BuildContext context) async {
     print('Starting to get receipts');
     await receiptsProvider.loadReceipts(
-      shopProvider.userShop!.shopId!,
+      shopProvider.userShop()!.shopId!,
       context,
     );
   }
@@ -133,8 +133,8 @@ class RefreshFunctions {
   //
   //
 
-  Future getUserShop() async {
-    return await shopProvider.getUserShop(
+  Future<List<TempShopClass>> getUserShop() async {
+    return await shopProvider.getUserShops(
       AuthService().currentUser!,
     );
   }
@@ -177,7 +177,7 @@ class RefreshFunctions {
 
   Future<List<TempProductClass>> getProducts() async {
     var tempP = await dataProvider.getProducts(
-      shopProvider.userShop!.shopId!,
+      shopProvider.userShop()!.shopId!,
     );
     return tempP;
   }
@@ -225,7 +225,7 @@ class RefreshFunctions {
   fetchNotifications() async {
     var tempGet = await notificationProvider
         .fetchRecentNotifications(
-          shopProvider.userShop!.shopId!,
+          shopProvider.userShop()!.shopId!,
         );
 
     return tempGet;
@@ -278,14 +278,14 @@ class RefreshFunctions {
   getProductSalesRecord() async {
     var tempRecords = await receiptsProvider
         .loadProductSalesRecord(
-          shopProvider.userShop!.shopId!,
+          shopProvider.userShop()!.shopId!,
         );
 
     return tempRecords
         .where(
           (beans) =>
               beans.shopId ==
-              shopProvider.userShop!.shopId!,
+              shopProvider.userShop()!.shopId!,
         )
         .toList();
   }
@@ -330,7 +330,7 @@ class RefreshFunctions {
 
   Future<List<TempExpensesClass>> getExpenses() async {
     var tempExp = await expensesProvider.getExpenses(
-      shopProvider.userShop!.shopId ?? 0,
+      shopProvider.userShop()!.shopId ?? 0,
     );
 
     return tempExp;
@@ -427,7 +427,7 @@ class RefreshFunctions {
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return customers;
@@ -480,7 +480,7 @@ class RefreshFunctions {
   //     returnShopProvider(
   //       context,
   //       listen: false,
-  //     ).userShop!.shopId!,
+  //     ). userShop()!.shopId!,
   //   );
   // }
 
@@ -524,8 +524,8 @@ class RefreshFunctions {
     var safeContext = context;
     var navPro = returnNavProvider(context, listen: false);
 
-    TempShopClass? shop = await getUserShop();
-    if (shop == null) {
+    List<TempShopClass> shop = await getUserShop();
+    if (shop.isEmpty) {
       navPro.nullShop(
         logoutAction: () {
           navPro.navPush(context);

@@ -57,7 +57,7 @@ class _SalesPageDesktopState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempGet;
@@ -77,7 +77,7 @@ class _SalesPageDesktopState
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!,
+              ).userShop()!.shopId!,
         )
         .toList();
   }

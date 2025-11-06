@@ -31,7 +31,7 @@ class _CustomerReportMobileState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempEx;
@@ -48,7 +48,7 @@ class _CustomerReportMobileState
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempEx;

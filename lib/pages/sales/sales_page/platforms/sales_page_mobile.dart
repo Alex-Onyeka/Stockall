@@ -53,7 +53,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
     );
 
     return tempGet;
@@ -73,7 +73,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
               returnShopProvider(
                 context,
                 listen: false,
-              ).userShop!.shopId!,
+              ).userShop()!.shopId!,
         )
         .toList();
   }

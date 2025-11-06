@@ -33,13 +33,13 @@ class _DashboardState extends State<Dashboard> {
         returnShopProvider(
           context,
           listen: false,
-        ).userShop?.name,
+        ).userShop()?.name,
       );
       print('$currentUpdate');
       if (returnShopProvider(
             context,
             listen: false,
-          ).userShop?.updateNumber !=
+          ).userShop()?.updateNumber !=
           currentUpdate) {
         returnShopProvider(
           context,
@@ -75,7 +75,7 @@ class _DashboardState extends State<Dashboard> {
       returnShopProvider(
         context,
         listen: false,
-      ).userShop!.shopId!,
+      ).userShop()!.shopId!,
       context,
     );
     setState(() {});
