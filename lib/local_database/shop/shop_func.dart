@@ -34,6 +34,37 @@ class ShopFunc {
     }
   }
 
+  List<TempShopClass> getAllShopBranches() {
+    if (shopBox.values.isEmpty) return [];
+    try {
+      return shopBox.values
+          .where(
+            (shop) =>
+                shop.userId == AuthService().currentUser,
+          )
+          .toList();
+    } catch (e) {
+      print('No Shop Match ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<int> insertAllShopBranches(
+    List<TempShopClass> shops,
+  ) async {
+    await clearShop();
+    try {
+      for (final shop in shops) {
+        await shopBox.put(shop.shopId, shop);
+      }
+      print('All Shop Branches Inserted Successfully');
+      return 1;
+    } catch (e) {
+      print('Shop Branches Insert Failed: ${e.toString()}');
+      return 0;
+    }
+  }
+
   Future<int> insertShop(TempShopClass? shop) async {
     await clearShop();
     try {

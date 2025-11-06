@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:popover/popover.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -7,7 +8,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
-import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -37,6 +37,9 @@ class TopNavBar extends StatefulWidget {
 }
 
 class _TopNavBarState extends State<TopNavBar> {
+  bool isOpen = false;
+  String? selectedValue;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,31 +62,22 @@ class _TopNavBarState extends State<TopNavBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          InkWell(
-            onTap: () {
-              screenWidth(context) < mobileScreen
-                  ? widget.openSideBar!()
-                  : Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ShopPage();
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 5,
+            children: [
+              SizedBox(
+                height: 70,
+                child: Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 15),
+                    InkWell(
+                      onTap: () {
+                        widget.openSideBar!();
                       },
-                    ),
-                  );
-            },
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 5,
-              children: [
-                SizedBox(
-                  height: 70,
-                  child: Row(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 15),
-                      Visibility(
+                      child: Visibility(
                         visible:
                             screenWidth(context) <
                             mobileScreen,
@@ -93,102 +87,163 @@ class _TopNavBarState extends State<TopNavBar> {
                           Icons.menu_rounded,
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Container(
-                        padding: EdgeInsets.all(3),
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Image.asset(
-                          shopIconImage,
-                          height: 35,
-                          width: 35,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  spacing: 3,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                    ),
+                    // Builder(
+                    //   builder: (context) {
+                    //     return ElevatedButton(
+                    //       onPressed: () {
 
-                  children: [
-                    Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                            fontWeight:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontWeightBold,
-                            color: Colors.black,
+                    //       },
+                    //       child: const Text(
+                    //         'Show Popover Menu',
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+                    SizedBox(width: 10),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          isOpen = !isOpen;
+                        });
+                        showPopover(
+                          barrierColor:
+                              const Color.fromARGB(
+                                15,
+                                0,
+                                0,
+                                0,
+                              ),
+                          context: context,
+                          transitionDuration:
+                              const Duration(
+                                milliseconds: 150,
+                              ),
+                          bodyBuilder:
+                              (context) =>
+                                  const PopoverMenu(),
+                          onPop:
+                              () => print('Popover closed'),
+                          direction:
+                              PopoverDirection.bottom,
+                          // contentDxOffset:
+                          //     screenWidth(context) >
+                          //             tabletScreen
+                          //         ? -600
+                          //         : 0,
+                          contentDyOffset: -20,
+                          width: 300,
+                          height: 150,
+                          arrowHeight: 10,
+                          arrowWidth: 20,
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(3),
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Image.asset(
+                              shopIconImage,
+                              height: 35,
+                              width: 35,
+                            ),
                           ),
-                          cutLongText(
-                            widget.title ??
-                                returnShopProvider(
-                                  context,
-                                ).userShop?.name ??
-                                '',
-                            17,
+                          SizedBox(width: 10),
+                          Column(
+                            spacing: 3,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .center,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontWeightBold,
+                                      color: Colors.black,
+                                    ),
+                                    cutLongText(
+                                      widget.title ??
+                                          returnShopProvider(
+                                                context,
+                                              )
+                                              .userShop
+                                              ?.name ??
+                                          '',
+                                      15,
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                  SvgPicture.asset(
+                                    checkIconSvg,
+                                    height: 18,
+                                    width: 18,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor250,
+                                  fontWeight:
+                                      FontWeight.w500,
+                                ),
+                                cutLongText(
+                                  widget.subText ??
+                                      returnShopProvider(
+                                        context,
+                                      ).userShop?.email ??
+                                      '',
+                                  18,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: 5),
-                        SvgPicture.asset(
-                          checkIconSvg,
-                          height: 18,
-                          width: 18,
-                          fit: BoxFit.contain,
-                        ),
-                      ],
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            widget
-                                .theme
-                                .mobileTexts
-                                .b3
-                                .fontSize,
-                        color:
-                            widget
-                                .theme
-                                .lightModeColor
-                                .prColor250,
-                        fontWeight: FontWeight.w500,
+                          SizedBox(width: 0),
+                          Icon(
+                            isOpen
+                                ? Icons
+                                    .keyboard_arrow_up_rounded
+                                : Icons
+                                    .keyboard_arrow_down_rounded,
+                          ),
+                        ],
                       ),
-                      cutLongText(
-                        widget.subText ??
-                            returnShopProvider(
-                              context,
-                            ).userShop?.email ??
-                            '',
-                        22,
-                      ),
-                    ),
-                    SizedBox(height: 0),
-                    Row(
-                      spacing: 6,
-                      mainAxisAlignment:
-                          MainAxisAlignment.end,
-                      children: [],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Row(
             spacing:
@@ -631,6 +686,39 @@ class _TopNavBarState extends State<TopNavBar> {
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PopoverMenu extends StatelessWidget {
+  const PopoverMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          ListTile(
+            title: const Text('Option 1'),
+            onTap: () {
+              Navigator.of(
+                context,
+              ).pop(); // closes the popover
+              print('Option 1 selected');
+            },
+          ),
+          ListTile(
+            title: const Text('Option 2'),
+            onTap: () {
+              Navigator.of(context).pop();
+              print('Option 2 selected');
+            },
           ),
         ],
       ),

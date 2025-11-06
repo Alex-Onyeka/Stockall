@@ -317,6 +317,75 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // DELETE a receipt
+  Future<void> deleteReceiptWithoutUpdatingInventory(
+    String uuid,
+    BuildContext context,
+  ) async {
+    print('Deleting Receipt 2');
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      print('Deleting Receipt 2 Online');
+      await supabase.rpc(
+        'delete_receipt_without_updating_inventory',
+        params: {'target_receipt_uuid': uuid},
+      );
+      print('Finished Deleting Receipt 2 Online');
+      var containsUpdate = UpdatedReceiptsFunc()
+          .getReceiptIds()
+          .where((rec) => rec.receiptUuid == uuid);
+      if (containsUpdate.isNotEmpty) {
+        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+          uuid,
+        );
+      }
+    } else {
+      print('Deleting Receipt Offline');
+      await MainReceiptFunc().deleteReceipt(uuid);
+      var containsCreated =
+          CreatedReceiptsFunc()
+              .getReceipts()
+              .where((rec) => rec.receipt.uuid == uuid)
+              .toList();
+      var containsUpdate = UpdatedReceiptsFunc()
+          .getReceiptIds()
+          .where((rec) => rec.receiptUuid == uuid);
+      if (containsCreated.isNotEmpty) {
+        await CreatedReceiptsFunc().deleteReceipt(uuid);
+      } else {
+        await DeletedReceiptsFunc().createDeletedReceipt(
+          DeletedReceipts(receiptUuid: uuid),
+        );
+      }
+      if (containsUpdate.isNotEmpty) {
+        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+          uuid,
+        );
+      }
+      await ProductRecordFunc()
+          .deleteRecordsInReceiptWithoutUpdatingInventory(
+            uuid,
+          );
+    }
+
+    print(
+      '✅ Receipt and inventory successfully Delete and Updated.',
+    );
+
+    if (context.mounted) {
+      await loadReceipts(
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop!.shopId!,
+        context,
+      );
+    }
+
+    print('Totally Finished Deleting Receipt');
+    notifyListeners();
+  }
+
   // UPDATE a receipt
   Future<void> payCredit(String uuid) async {
     try {

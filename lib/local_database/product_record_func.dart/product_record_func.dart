@@ -128,6 +128,50 @@ class ProductRecordFunc {
     }
   }
 
+  Future<int>
+  deleteRecordsInReceiptWithoutUpdatingInventory(
+    String receiptUuid,
+  ) async {
+    print('Deleting Records in Receipt 2');
+    try {
+      List<TempProductSaleRecord> records =
+          getProductRecords()
+              .where(
+                (record) =>
+                    record.receiptUuid == receiptUuid,
+              )
+              .toList();
+      print('Records Gotten: ${records.length}');
+      for (var record in records) {
+        // if (record.isProductManaged!) {
+        //   await ProductsFunc().incrementQuantity(
+        //     quantity: record.quantity,
+        //     uuid: record.productUuid!,
+        //   );
+        // }
+        await productRecordBox.delete(record.uuid);
+        var containsCreated = CreatedRecordsFunc()
+            .getRecords()
+            .where(
+              (sales) => sales.record.uuid == record.uuid,
+            );
+        if (containsCreated.isNotEmpty) {
+          await CreatedRecordsFunc().deleteRecords(
+            record.uuid!,
+          );
+        }
+        print('Records Deleted: ${record.productName}');
+      }
+      print(
+        '${records.length}} Offline Records Deleted Successful',
+      );
+      return 1;
+    } catch (e) {
+      print('Record Delete Error: ${e.toString()}');
+      return 0;
+    }
+  }
+
   Future<int> clearRecords() async {
     try {
       await productRecordBox.clear();

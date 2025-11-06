@@ -163,7 +163,7 @@ class SalesProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  Future<TempMainReceipt> checkoutMain({
+  Future<TempMainReceipt?> checkoutMain({
     required BuildContext context,
     required TempCart salesCartItem,
     required String staffId,
@@ -181,15 +181,20 @@ class SalesProvider extends ChangeNotifier {
       print(
         'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
       );
-      await returnReceiptProvider(
-        // ignore: use_build_context_synchronously
-        context,
-        listen: false,
-      ).deleteReceipt(
-        currentCart().receiptUuidEdit!,
-        // ignore: use_build_context_synchronously
-        context,
-      );
+      try {
+        await returnReceiptProvider(
+          // ignore: use_build_context_synchronously
+          context,
+          listen: false,
+        ).deleteReceipt(
+          currentCart().receiptUuidEdit!,
+          // ignore: use_build_context_synchronously
+          context,
+        );
+      } catch (e) {
+        print('Error Deleting Receipt: ${e.toString()}');
+        return null;
+      }
     } else {
       print('Receipt Uuid is null');
     }
@@ -200,192 +205,240 @@ class SalesProvider extends ChangeNotifier {
 
     print('Checkout Started');
 
-    TempMainReceipt receipt = TempMainReceipt(
-      createdAt: createdAt,
-      shopId: shopId,
-      staffId: staffId,
-      staffName: staffName,
-      paymentMethod: paymentMethod,
-      bank: bank,
-      cashAlt: cashAlt,
-      isInvoice: salesCartItem.isInvoice,
-      customerName: customerName,
-      customerUuid: customerUuid,
-      uuid: uuid,
-      generalDiscount: currentCart().discount,
-      fixedDiscount: currentCart().fixedDiscount,
-    );
-    final receiptRes = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).createReceipt(
-      receipt,
-      // ignore: use_build_context_synchronously
-      context,
-    );
-    print('Receipt Created');
-
-    final receiptId = receiptRes!.id;
-    final receiptUuid = receiptRes.uuid;
-    print(receiptId);
-    print(receiptUuid);
-
-    // Step 2: Create product sale records
-    final productSaleRecords =
-        salesCartItem.cartItems.map((cartItem) {
-          final product = cartItem.item;
-          print('Sales Record about to be Created');
-          return TempProductSaleRecord(
-            customPriceSet: cartItem.setCustomPrice,
-            createdAt: createdAt,
-            productId: product.id ?? 0,
-            productUuid: product.uuid,
-            productName: product.name,
-            shopId: product.shopId,
-            staffId: staffId,
-            // customerId: customerId,
-            customerUuid: customerUuid,
-            customerName: customerName,
-            staffName: staffName,
-            recepitId: receiptId ?? 0,
-            receiptUuid: receiptUuid,
-            quantity: cartItem.quantity,
-            revenue: cartItem.revenue(),
-            discountedAmount: cartItem.discountCost(),
-            originalCost: cartItem.totalCost(),
-            discount: cartItem.discount,
-            costPrice: cartItem.costPrice(),
-            addToStock: cartItem.addToStock,
-            departmentName: cartItem.item.departmentName,
-            departmentId: cartItem.item.departmentId,
-            uuid: cartItem.salesRecordId ?? uuidGen(),
-            isProductManaged: cartItem.item.isManaged,
-            setTotalPrice: cartItem.setTotalPrice,
-          );
-        }).toList();
-
-    if (context.mounted) {
-      print('Creating Record Sales About to Start');
-      await returnReceiptProvider(
+    try {
+      TempMainReceipt receipt = TempMainReceipt(
+        createdAt: createdAt,
+        shopId: shopId,
+        staffId: staffId,
+        staffName: staffName,
+        paymentMethod: paymentMethod,
+        bank: bank,
+        cashAlt: cashAlt,
+        isInvoice: salesCartItem.isInvoice,
+        customerName: customerName,
+        customerUuid: customerUuid,
+        uuid: uuid,
+        generalDiscount: currentCart().discount,
+        fixedDiscount: currentCart().fixedDiscount,
+      );
+      final receiptRes = await returnReceiptProvider(
+        // ignore: use_build_context_synchronously
         context,
         listen: false,
-      ).createProductSaleRecord(
-        productSaleRecords,
+      ).createReceipt(
+        receipt,
+        // ignore: use_build_context_synchronously
         context,
       );
-    }
-    print('Sales Record Inserted');
+      print('Receipt Created');
 
-    // Step 3: Decrement quantity via RPC
-    for (final cartItem in salesCartItem.cartItems) {
-      if (((cartItem.item.quantity ?? 0) > 0) &&
-          cartItem.item.isManaged) {
-        if (isOnline) {
-          await supabase.rpc(
-            'decrement_product_quantity_new',
-            params: {
-              'p_product_uuid': cartItem.item.uuid,
-              'p_quantity': cartItem.quantity.toInt(),
-            },
-          );
-        } else {
-          await ProductsFunc().deductQuantity(
-            isOnline: isOnline,
-            quantity: cartItem.quantity,
-            uuid: cartItem.item.uuid!,
-          );
-        }
-      }
-    }
+      final receiptId = receiptRes!.id;
+      final receiptUuid = receiptRes.uuid;
+      print(receiptId);
+      print(receiptUuid);
 
-    print('Products Decrementation Done');
+      try {
+        // Step 2: Create product sale records
+        final productSaleRecords =
+            salesCartItem.cartItems.map((cartItem) {
+              final product = cartItem.item;
 
-    // Step 4: Create new product for items with addToStock == true
-    for (final record in productSaleRecords) {
-      // ignore: use_build_context_synchronously
-      if (record.addToStock == true &&
-          returnData(context, listen: false).productList
-              .where(
-                (pro) => pro.name == record.productName,
-              )
-              .isEmpty) {
-        final double costPrice =
-            (record.costPrice == null ||
-                    record.costPrice == 0)
-                ? 0
-                : record.costPrice!;
+              print('Sales Record about to be Created');
 
-        final double sellingPrice =
-            record.discount == null
-                ? record.revenue / record.quantity
-                : (record.originalCost ?? 0) /
-                    record.quantity;
+              return TempProductSaleRecord(
+                customPriceSet: cartItem.setCustomPrice,
+                createdAt: createdAt,
+                productId: product.id ?? 0,
+                productUuid: product.uuid,
+                productName: product.name,
+                shopId: product.shopId,
+                staffId: staffId,
+                // customerId: customerId,
+                customerUuid: customerUuid,
+                customerName: customerName,
+                staffName: staffName,
+                recepitId: receiptId ?? 0,
+                receiptUuid: receiptUuid,
+                quantity: cartItem.quantity,
+                revenue: cartItem.revenue(),
+                discountedAmount: cartItem.discountCost(),
+                originalCost: cartItem.totalCost(),
+                discount: cartItem.discount,
+                costPrice: cartItem.costPrice(),
+                addToStock: cartItem.addToStock,
+                departmentName:
+                    cartItem.item.departmentName,
+                departmentId: cartItem.item.departmentId,
+                uuid: cartItem.salesRecordId ?? uuidGen(),
+                isProductManaged: cartItem.item.isManaged,
+                setTotalPrice: cartItem.setTotalPrice,
+              );
+            }).toList();
 
-        TempProductClass product = TempProductClass(
-          name: record.productName,
-          unit: 'Others',
-          isRefundable: false,
-          costPrice: costPrice,
-          shopId: record.shopId,
-          setCustomPrice: true,
-          isManaged: false,
-          barcode: null,
-          brand: null,
-          category: null,
-          color: null,
-          createdAt: DateTime.now(),
-          departmentId: record.departmentId,
-          departmentName: record.departmentName,
-          discount: null,
-          endDate: null,
-          expiryDate: null,
-          lowQtty: 10,
-          quantity: null,
-          sellingPrice: sellingPrice,
-          size: null,
-          sizeType: null,
-          startDate: null,
-          updatedAt: DateTime.now(),
-          uuid: uuidGen(),
-        );
         if (context.mounted) {
-          await returnData(
+          print('Creating Record Sales About to Start');
+          await returnReceiptProvider(
             context,
             listen: false,
-          ).createProduct(product, context);
-        } else {
-          print(
-            'Context Not Mounted to Created New Product',
+          ).createProductSaleRecord(
+            productSaleRecords,
+            context,
           );
         }
-      }
-    }
+        print('Sales Record Inserted');
 
-    // Step 5: Reset state
-    // resetPaymentMethod();
-    cartQueue.length > 1
-        ? deleteCart(cartIndex)
-        : clearCart();
+        try {
+          // Step 3: Decrement quantity via RPC
+          for (final cartItem in salesCartItem.cartItems) {
+            if (((cartItem.item.quantity ?? 0) > 0) &&
+                cartItem.item.isManaged) {
+              if (isOnline) {
+                await supabase.rpc(
+                  'decrement_product_quantity_new',
+                  params: {
+                    'p_product_uuid': cartItem.item.uuid,
+                    'p_quantity': cartItem.quantity.toInt(),
+                  },
+                );
+              } else {
+                await ProductsFunc().deductQuantity(
+                  isOnline: isOnline,
+                  quantity: cartItem.quantity,
+                  uuid: cartItem.item.uuid!,
+                );
+              }
+            }
+          }
 
-    if (context.mounted) {
-      returnCustomers(
-        context,
-        listen: false,
-      ).clearSelectedCustomer(context);
-      await returnReceiptProvider(
-        context,
-        listen: false,
-      ).loadReceipts(shopId, context);
-      if (context.mounted) {
-        returnNavProvider(
+          try {
+            print('Products Decrementation Done');
+
+            // Step 4: Create new product for items with addToStock == true
+            for (final record in productSaleRecords) {
+              // ignore: use_build_context_synchronously
+              if (record.addToStock == true &&
+                  // ignore: use_build_context_synchronously
+                  returnData(context, listen: false)
+                      .productList
+                      .where(
+                        (pro) =>
+                            pro.name == record.productName,
+                      )
+                      .isEmpty) {
+                final double costPrice =
+                    (record.costPrice == null ||
+                            record.costPrice == 0)
+                        ? 0
+                        : record.costPrice!;
+
+                final double sellingPrice =
+                    record.discount == null
+                        ? record.revenue / record.quantity
+                        : (record.originalCost ?? 0) /
+                            record.quantity;
+
+                TempProductClass product = TempProductClass(
+                  name: record.productName,
+                  unit: 'Others',
+                  isRefundable: false,
+                  costPrice: costPrice,
+                  shopId: record.shopId,
+                  setCustomPrice: true,
+                  isManaged: false,
+                  barcode: null,
+                  brand: null,
+                  category: null,
+                  color: null,
+                  createdAt: DateTime.now(),
+                  departmentId: record.departmentId,
+                  departmentName: record.departmentName,
+                  discount: null,
+                  endDate: null,
+                  expiryDate: null,
+                  lowQtty: 10,
+                  quantity: null,
+                  sellingPrice: sellingPrice,
+                  size: null,
+                  sizeType: null,
+                  startDate: null,
+                  updatedAt: DateTime.now(),
+                  uuid: uuidGen(),
+                );
+                if (context.mounted) {
+                  await returnData(
+                    context,
+                    listen: false,
+                  ).createProduct(product, context);
+                } else {
+                  print(
+                    'Context Not Mounted to Created New Product',
+                  );
+                }
+              }
+            }
+
+            // Step 5: Reset state
+            // resetPaymentMethod();
+            cartQueue.length > 1
+                ? deleteCart(cartIndex)
+                : clearCart();
+
+            if (context.mounted) {
+              returnCustomers(
+                context,
+                listen: false,
+              ).clearSelectedCustomer(context);
+              await returnReceiptProvider(
+                context,
+                listen: false,
+              ).loadReceipts(shopId, context);
+              if (context.mounted) {
+                returnNavProvider(
+                  context,
+                  listen: false,
+                ).navigate(0);
+              }
+            }
+
+            notifyListeners();
+            return receipt;
+          } catch (e) {
+            print('Error Step 4: ${e.toString()}');
+            await returnReceiptProvider(
+              // ignore: use_build_context_synchronously
+              context,
+              listen: false,
+              // ignore: use_build_context_synchronously
+            ).deleteReceipt(receiptUuid!, context);
+            return null;
+          }
+        } catch (e) {
+          print('Error Step 3: ${e.toString()}');
+          await returnReceiptProvider(
+            // ignore: use_build_context_synchronously
+            context,
+            listen: false,
+            // ignore: use_build_context_synchronously
+          ).deleteReceiptWithoutUpdatingInventory(
+            receiptUuid!,
+            context,
+          );
+          return null;
+        }
+      } catch (e) {
+        print('Error Step 2: ${e.toString()}');
+        await returnReceiptProvider(
+          // ignore: use_build_context_synchronously
           context,
           listen: false,
-        ).navigate(0);
+          // ignore: use_build_context_synchronously
+        ).deleteReceipt(receiptUuid!, context);
+        return null;
       }
+    } catch (e) {
+      print('Error Step 1: ${e.toString()}');
+      return null;
     }
-
-    notifyListeners();
-    return receipt;
   }
 
   void clearCart() {

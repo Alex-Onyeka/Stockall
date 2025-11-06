@@ -61,6 +61,41 @@ class ShopProvider extends ChangeNotifier {
     return userShop;
   }
 
+  Future<List<TempShopClass>> getAllUserShops(
+    String userId,
+  ) async {
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      final response = await supabase
+          .from('shops')
+          .select()
+          .eq('user_id', userId);
+
+      // if (response == null) {
+      //   // await ShopFunc().clearShop();
+      //   print('User Shop not found');
+      //   return null;
+      // }
+      print('User Shop Branches found ${response.length}');
+      addShopBranch(
+        response
+            .map((res) => TempShopClass.fromJson(res))
+            .toList(),
+      );
+      notifyListeners();
+      await ShopFunc().insertAllShopBranches(
+        response
+            .map((res) => TempShopClass.fromJson(res))
+            .toList(),
+      );
+    } else {
+      addShopBranch(ShopFunc().getAllShopBranches());
+    }
+    notifyListeners();
+
+    return shopBranches;
+  }
+
   Future<void> makePayment(DateTime date, int plan) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
@@ -501,17 +536,38 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  TempShopClass? userShop;
+  // TempShopClass? userShop;
+
+  List<TempShopClass> shopBranches = [];
+
+  void addShopBranch(List<TempShopClass> shop) {
+    shopBranches.addAll(shop);
+    notifyListeners();
+  }
+
+  int currentIndex = 0;
+
+  TempShopClass? currentShop() {
+    return shopBranches.isEmpty
+        ? null
+        : shopBranches[currentIndex];
+  }
 
   void clearShop() {
-    userShop = null;
+    // userShop = null;
+    shopBranches.clear();
     notifyListeners();
   }
 
-  void setShop(TempShopClass? shop) {
-    userShop = shop;
+  void setCurrentShop(int index) {
+    currentIndex = index;
     notifyListeners();
   }
+
+  // void setShop(TempShopClass? shop) {
+  //   shop != null ? shopBranches.add(shop) : {};
+  //   notifyListeners();
+  // }
 
   String name = '';
   String country = '';

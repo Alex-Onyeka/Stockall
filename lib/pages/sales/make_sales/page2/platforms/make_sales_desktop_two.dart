@@ -1065,23 +1065,43 @@ class _MakeSalesDesktopTwoState
                                             );
                                             if (context
                                                 .mounted) {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
+                                              if (receipt ==
+                                                  null) {
+                                                showDialog(
+                                                  context:
+                                                      context,
                                                   builder: (
                                                     context,
                                                   ) {
-                                                    return ReceiptPage(
-                                                      receiptUuid:
-                                                          receipt.uuid!,
-                                                      isMain:
-                                                          true,
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'An Error occoured while processing this sale. Please try again later.',
+                                                      title:
+                                                          'Failed Sale!',
                                                     );
                                                   },
-                                                ),
-                                                (route) =>
-                                                    false,
-                                              );
+                                                );
+                                              } else {
+                                                Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return ReceiptPage(
+                                                        receiptUuid:
+                                                            receipt.uuid!,
+                                                        isMain:
+                                                            true,
+                                                      );
+                                                    },
+                                                  ),
+                                                  (route) =>
+                                                      false,
+                                                );
+                                              }
                                             }
                                             setState(() {
                                               showSuccess =
