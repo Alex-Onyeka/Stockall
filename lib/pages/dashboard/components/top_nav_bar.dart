@@ -123,7 +123,10 @@ class _TopNavBarState extends State<TopNavBar> {
                                 milliseconds: 150,
                               ),
                           bodyBuilder:
-                              (context) => PopoverMenu(
+                              (
+                                popoverContext,
+                              ) => PopoverMenu(
+                                parentContext: context,
                                 action: () async {
                                   bool isOnline =
                                       await returnConnectivityProvider(
@@ -735,7 +738,12 @@ class _TopNavBarState extends State<TopNavBar> {
 
 class PopoverMenu extends StatelessWidget {
   final Function()? action;
-  const PopoverMenu({super.key, required this.action});
+  final BuildContext parentContext;
+  const PopoverMenu({
+    super.key,
+    required this.action,
+    required this.parentContext,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -753,7 +761,7 @@ class PopoverMenu extends StatelessWidget {
                 fontSize: theme.mobileTexts.b1.fontSize,
                 fontWeight: FontWeight.bold,
               ),
-              'Select Shop',
+              'SELECT SHOP',
             ),
             SizedBox(height: 10),
             Container(
@@ -814,22 +822,26 @@ class PopoverMenu extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            onTap: () {
+                            onTap: () async {
+                              var safeContext =
+                                  parentContext;
                               if (returnShopProvider(
-                                    context,
+                                    safeContext,
                                     listen: false,
                                   ).userShop()!.shopId! !=
                                   shop.shopId!) {
-                                returnShopProvider(
-                                  context,
+                                Navigator.of(context).pop();
+                                await returnShopProvider(
+                                  safeContext,
                                   listen: false,
-                                ).selectShop(context, shop);
-                                Navigator.of(
-                                  context,
-                                ).pop(); // closes the popover
+                                ).selectShop(
+                                  safeContext,
+                                  shop,
+                                );
+
                                 print(
                                   returnShopProvider(
-                                    context,
+                                    safeContext,
                                     listen: false,
                                   ).userShops.length,
                                 );

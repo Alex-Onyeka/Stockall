@@ -516,7 +516,7 @@ class ShopProvider extends ChangeNotifier {
   // int currentIndex = 0;
   List<TempShopClass> userShops = [];
 
-  void selectShop(
+  Future<int> selectShop(
     BuildContext context,
     TempShopClass shopC,
   ) async {
@@ -537,7 +537,7 @@ class ShopProvider extends ChangeNotifier {
         );
         clearAll(safeContext);
         Navigator.pushReplacement(
-          context,
+          safeContext,
           MaterialPageRoute(
             builder: (context) {
               return BasePage();
@@ -546,12 +546,15 @@ class ShopProvider extends ChangeNotifier {
         );
         print('Navigated');
         notifyListeners();
+        return 1;
       } else {
         print('Shop Selection Failed');
         notifyListeners();
+        return 0;
       }
     } catch (e) {
       print('Error: ${e.toString()}');
+      return 0;
     }
   }
 
