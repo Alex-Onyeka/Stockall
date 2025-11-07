@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -520,41 +521,61 @@ class ShopProvider extends ChangeNotifier {
     BuildContext context,
     TempShopClass shopC,
   ) async {
-    try {
-      var safeContext = context;
-      print('Shop Selection Started');
-      await returnData(
-        context,
-        listen: false,
-      ).clearTotalCache();
-      print('Total Cache Cleared');
-      var res = await CurrentShopFunc().createCurrentShop(
-        TempCurrentShop(currentShop: shopC),
+    var isOnline = await connectivity.isOnline();
+    if (returnData(context, listen: false).isSynced() ==
+            0 &&
+        isOnline) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You have unsynced data. Synchronize data to proceed.',
+            title: 'Unsynced Records Detected.',
+          );
+        },
       );
-      if (res == 1) {
-        print(
-          'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShop.name}',
+      returnData(context, listen: false).syncData(context);
+      return 0;
+    } else {
+      try {
+        var safeContext = context;
+        print('Shop Selection Started');
+        await returnData(
+          context,
+          listen: false,
+        ).clearTotalCache();
+        print('Total Cache Cleared');
+        var res = await CurrentShopFunc().createCurrentShop(
+          TempCurrentShop(currentShop: shopC),
         );
-        clearAll(safeContext);
-        Navigator.pushReplacement(
-          safeContext,
-          MaterialPageRoute(
-            builder: (context) {
-              return BasePage();
-            },
-          ),
-        );
-        print('Navigated');
-        notifyListeners();
-        return 1;
-      } else {
-        print('Shop Selection Failed');
-        notifyListeners();
+        if (res == 1) {
+          print(
+            'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShop.name}',
+          );
+          clearAll(safeContext);
+          Navigator.pushReplacement(
+            safeContext,
+            MaterialPageRoute(
+              builder: (context) {
+                return BasePage();
+              },
+            ),
+          );
+          print('Navigated');
+          notifyListeners();
+          return 1;
+        } else {
+          print('Shop Selection Failed');
+          notifyListeners();
+          return 0;
+        }
+      } catch (e) {
+        print('Error: ${e.toString()}');
         return 0;
       }
-    } catch (e) {
-      print('Error: ${e.toString()}');
-      return 0;
     }
   }
 

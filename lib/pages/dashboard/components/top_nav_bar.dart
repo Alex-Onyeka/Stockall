@@ -75,7 +75,7 @@ class _TopNavBarState extends State<TopNavBar> {
                   crossAxisAlignment:
                       CrossAxisAlignment.center,
                   children: [
-                    SizedBox(width: 15),
+                    SizedBox(width: 12),
                     InkWell(
                       onTap: () {
                         widget.openSideBar!();
@@ -103,9 +103,27 @@ class _TopNavBarState extends State<TopNavBar> {
                     //     );
                     //   },
                     // ),
-                    SizedBox(width: 10),
+                    SizedBox(
+                      width:
+                          screenWidth(context) <
+                                  mobileScreen
+                              ? 0
+                              : 10,
+                    ),
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        if (!authorization(
+                          authorized:
+                              Authorizations().switchStores,
+                          context: context,
+                        )) {
+                          return;
+                        }
+                        var isOnline =
+                            await returnConnectivityProvider(
+                              context,
+                              listen: false,
+                            ).isOnline();
                         setState(() {
                           isOpen = true;
                         });
@@ -128,11 +146,6 @@ class _TopNavBarState extends State<TopNavBar> {
                               ) => PopoverMenu(
                                 parentContext: context,
                                 action: () async {
-                                  bool isOnline =
-                                      await returnConnectivityProvider(
-                                        context,
-                                        listen: false,
-                                      ).isOnline();
                                   if (isOnline) {
                                     Navigator.push(
                                       // ignore: use_build_context_synchronously
@@ -169,14 +182,41 @@ class _TopNavBarState extends State<TopNavBar> {
                           },
                           direction:
                               PopoverDirection.bottom,
-                          // contentDxOffset:
-                          //     screenWidth(context) >
-                          //             tabletScreen
-                          //         ? -600
-                          //         : 0,
                           contentDyOffset: -20,
-                          width: 300,
-                          height: 300,
+                          width:
+                              // ignore: use_build_context_synchronously
+                              screenWidth(context) >
+                                      tabletScreenSmall
+                                  ? 300
+                                  : 270,
+                          height:
+                              returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).userShops.length <
+                                      2
+                                  ? 190
+                                  : returnShopProvider(
+                                        context,
+                                        listen: false,
+                                      ).userShops.length >
+                                      4
+                                  ? 400
+                                  : (returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShops
+                                              .length *
+                                          (68 -
+                                              returnShopProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).userShops.length *
+                                                  2)) +
+                                      100,
                           arrowHeight: 10,
                           arrowWidth: 20,
                         );
@@ -192,13 +232,23 @@ class _TopNavBarState extends State<TopNavBar> {
                             ),
                             child: Image.asset(
                               shopIconImage,
-                              height: 35,
+                              height:
+                                  screenWidth(context) <
+                                          mobileScreen
+                                      ? 25
+                                      : 35,
                               width: 35,
                             ),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(
+                            width:
+                                screenWidth(context) <
+                                        mobileScreen
+                                    ? 2
+                                    : 10,
+                          ),
                           Column(
-                            spacing: 3,
+                            spacing: 1,
                             crossAxisAlignment:
                                 CrossAxisAlignment.start,
                             mainAxisAlignment:
@@ -212,11 +262,20 @@ class _TopNavBarState extends State<TopNavBar> {
                                   Text(
                                     style: TextStyle(
                                       fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
+                                          screenWidth(
+                                                    context,
+                                                  ) <
+                                                  mobileScreen
+                                              ? widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize
+                                              : widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
                                       fontWeight:
                                           widget
                                               .theme
@@ -232,15 +291,15 @@ class _TopNavBarState extends State<TopNavBar> {
                                               )
                                               .userShop()
                                               ?.name ??
-                                          '',
+                                          'Name Not Set',
                                       15,
                                     ),
                                   ),
                                   SizedBox(width: 5),
                                   SvgPicture.asset(
                                     checkIconSvg,
-                                    height: 18,
-                                    width: 18,
+                                    height: 16,
+                                    width: 16,
                                     fit: BoxFit.contain,
                                   ),
                                 ],
@@ -251,7 +310,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b3
+                                          .b4
                                           .fontSize,
                                   color:
                                       widget
@@ -273,12 +332,20 @@ class _TopNavBarState extends State<TopNavBar> {
                             ],
                           ),
                           SizedBox(width: 0),
-                          Icon(
-                            isOpen
-                                ? Icons
-                                    .keyboard_arrow_up_rounded
-                                : Icons
-                                    .keyboard_arrow_down_rounded,
+                          Visibility(
+                            visible: authorization(
+                              authorized:
+                                  Authorizations()
+                                      .switchStores,
+                              context: context,
+                            ),
+                            child: Icon(
+                              isOpen
+                                  ? Icons
+                                      .keyboard_arrow_up_rounded
+                                  : Icons
+                                      .keyboard_arrow_down_rounded,
+                            ),
                           ),
                         ],
                       ),
@@ -825,11 +892,33 @@ class PopoverMenu extends StatelessWidget {
                             onTap: () async {
                               var safeContext =
                                   parentContext;
+                              var isOnline =
+                                  await returnConnectivityProvider(
+                                    context,
+                                    listen: false,
+                                  ).isOnline();
+
                               if (returnShopProvider(
                                     safeContext,
                                     listen: false,
                                   ).userShop()!.shopId! !=
                                   shop.shopId!) {
+                                if (!isOnline) {
+                                  showDialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: theme,
+                                        message:
+                                            'You need to be connected to the internet before you switch to another Shop.',
+                                        title:
+                                            'No Internet Connection',
+                                      );
+                                    },
+                                  );
+                                  return;
+                                }
                                 Navigator.of(context).pop();
                                 await returnShopProvider(
                                   safeContext,

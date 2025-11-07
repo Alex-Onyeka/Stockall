@@ -38,13 +38,14 @@ class ReceiptsProvider extends ChangeNotifier {
 
   void clearReceipts() {
     _receipts.clear();
+    clearRecords();
     print('Receipts Cleared');
     notifyListeners();
   }
 
   void clearRecords() {
     produtRecordSalesMain.clear();
-    notifyListeners();
+    // notifyListeners();
   }
 
   bool isLoaded = false;

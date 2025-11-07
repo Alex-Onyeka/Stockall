@@ -125,8 +125,8 @@ class MainBottomNav extends StatelessWidget {
                                 returnNavProvider(
                                       context,
                                     ).settingNow
-                                    ? 13
-                                    : 12,
+                                    ? 10.5
+                                    : 9.5,
                             fontWeight:
                                 returnNavProvider(
                                       context,
@@ -232,7 +232,7 @@ class MainBottomNav extends StatelessWidget {
                           49,
                           199,
                         ),
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
                       ),
                       'Add Item',
@@ -266,7 +266,7 @@ class MainBottomNav extends StatelessWidget {
                           49,
                           199,
                         ),
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
                       ),
                       'Make Sale',

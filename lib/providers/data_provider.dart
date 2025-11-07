@@ -644,6 +644,9 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<void> clearTotalCache() async {
+    await CreatedCustomersFunc().clearCustomers();
+    await UpdatedCustomersFunc().clearupdatedCustomers();
+    await DeletedCustomersFunc().clearDeletedCustomers();
     await CreatedExpensesFunc().clearExpenses();
     await UpdatedExpensesFunc().clearupdatedExpenses();
     await DeletedExpensesFunc().clearDeletedExpenses();
@@ -655,9 +658,6 @@ class DataProvider extends ChangeNotifier {
     await DeletedReceiptsFunc().clearDeletedReceipts();
     await SalesProductFunc().clearProducts();
     await SalesProductFunc().clearProducts();
-    await CreatedCustomersFunc().clearCustomers();
-    await UpdatedCustomersFunc().clearupdatedCustomers();
-    await DeletedCustomersFunc().clearDeletedCustomers();
     await UpdatedReceiptsFunc().clearUpdatedReceipts();
     await UpdatedShopFunc().clearUpdatedShop();
     await SalesProductFunc().clearProducts();

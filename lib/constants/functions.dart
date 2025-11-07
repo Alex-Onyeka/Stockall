@@ -114,6 +114,7 @@ List<Map<String, dynamic>> employees = [
       'Delete Notification',
       'Contact Stockall',
       'View Date',
+      'Switch Stores',
     ],
   },
   {
@@ -211,6 +212,7 @@ class Authorizations {
   String notificationsPage = 'Notifications Page';
   String contactStockall = 'Contact Stockall';
   String viewDate = 'View Date';
+  String switchStores = 'Switch Stores';
 }
 
 bool authorization({
