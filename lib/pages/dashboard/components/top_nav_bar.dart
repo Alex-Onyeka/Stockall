@@ -10,6 +10,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
+import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -930,9 +931,22 @@ class PopoverMenu extends StatelessWidget {
 
                                 print(
                                   returnShopProvider(
+                                    // ignore: use_build_context_synchronously
                                     safeContext,
                                     listen: false,
                                   ).userShops.length,
+                                );
+                              } else {
+                                // ignore: use_build_context_synchronously
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  // ignore: use_build_context_synchronously
+                                  safeContext,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return ShopPage();
+                                    },
+                                  ),
                                 );
                               }
                             },

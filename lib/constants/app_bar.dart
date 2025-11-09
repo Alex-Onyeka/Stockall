@@ -56,7 +56,10 @@ PreferredSizeWidget appBar({
             left: 10.0,
             right: 5,
           ),
-          child: Icon(Icons.arrow_back_ios_new_rounded),
+          child: Icon(
+            size: 20,
+            Icons.arrow_back_ios_new_rounded,
+          ),
         ),
       ),
     ),

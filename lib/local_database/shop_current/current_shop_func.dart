@@ -12,17 +12,24 @@ class CurrentShopFunc {
 
   Future<void> init() async {
     // await Hive.deleteBoxFromDisk(currentShopBoxName);
-    Hive.registerAdapter(TempCurrentShopAdapter());
-    currentShopBox = await Hive.openBox(currentShopBoxName);
-    print('Current Shop Box Initialized ✅');
+    try {
+      Hive.registerAdapter(TempCurrentShopAdapter());
+      currentShopBox = await Hive.openBox(
+        currentShopBoxName,
+      );
+      print('Current Shop Box Initialized ✅');
+    } catch (e) {
+      print('Error New: ${e.toString()}');
+      // await Hive.deleteBoxFromDisk(currentShopBoxName);
+    }
   }
 
   TempCurrentShop? getCurrentShop() {
-    TempCurrentShop? shop =
+    TempCurrentShop? shopId =
         currentShopBox.values.isNotEmpty
             ? currentShopBox.values.first
             : null;
-    return shop;
+    return shopId;
   }
 
   Future<int> createCurrentShop(
@@ -30,10 +37,7 @@ class CurrentShopFunc {
   ) async {
     try {
       await clearCurrentShop();
-      await currentShopBox.put(
-        shop.currentShop.shopId!,
-        shop,
-      );
+      await currentShopBox.put(shop.currentShopId, shop);
       print('Offline CurrentShop inserted Successfully');
 
       return 1;

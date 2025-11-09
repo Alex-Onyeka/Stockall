@@ -15,6 +15,7 @@ import 'package:stockall/local_database/shop_logos/created_shop_logo/created_sho
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -40,6 +41,80 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  Future<int> deleteShop({
+    required BuildContext context,
+  }) async {
+    if (userShops.length < 2) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You have only one store. You cannot delete the only store you have.',
+            title: 'Action Not Allowed',
+          );
+        },
+      );
+      return 0;
+    }
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        var res =
+            await supabase
+                .from('shops')
+                .delete()
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res != null) {
+          // ignore: use_build_context_synchronously
+          clearAll(context);
+          returnNavProvider(
+            context,
+            listen: false,
+          ).navigate(0);
+          // var shops = await getUserShops(
+          //   AuthService().currentUser!,
+          // );
+          // setShops(shops);
+          // notifyListeners();
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return Home();
+              },
+            ),
+          );
+          return 1;
+        } else {
+          return 0;
+        }
+      } catch (e) {
+        print("Error Deleting Shop: ${e.toString()}");
+        return 0;
+      }
+    } else {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You must be connected to the internet to be able to delete a shop.',
+            title: 'No internet Connection',
+          );
+        },
+      );
+      return 0;
+    }
+  }
+
   Future<List<TempShopClass>> getUserShops(
     String userId,
   ) async {
@@ -55,6 +130,12 @@ class ShopProvider extends ChangeNotifier {
         print('User Shops not found');
         return [];
       }
+      await ShopFunc().insertShops(
+        response
+            .map((res) => TempShopClass.fromJson(res))
+            .toList(),
+      );
+      notifyListeners();
       setShops(
         response
             .map((res) => TempShopClass.fromJson(res))
@@ -62,11 +143,6 @@ class ShopProvider extends ChangeNotifier {
       );
       print('User Shops found ${response.length}');
       notifyListeners();
-      await ShopFunc().insertShops(
-        response
-            .map((res) => TempShopClass.fromJson(res))
-            .toList(),
-      );
     } else {
       setShops(ShopFunc().getShops());
     }
@@ -253,7 +329,7 @@ class ShopProvider extends ChangeNotifier {
   }
 
   Future<void> updateShopLocation({
-    required int shopId,
+    // required int shopId,
     required String country,
     required String state,
     required String city,
@@ -261,6 +337,8 @@ class ShopProvider extends ChangeNotifier {
   }) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
+      print("userShop(): ${userShop()?.name}");
+      print("shopId: ${userShop()?.shopId}");
       try {
         final response =
             await supabase
@@ -273,18 +351,24 @@ class ShopProvider extends ChangeNotifier {
                   'updated_at':
                       DateTime.now().toIso8601String(),
                 })
-                .eq('shop_id', shopId)
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
                 .maybeSingle();
+        print("✅ Updated response: $response");
         final shop = await getUserShops(
           AuthService().currentUser!,
         );
 
-        if (response!.isNotEmpty) {
+        if (response != null && response.isNotEmpty) {
           setShops(shop);
+          // userShops[ind] = TempShopClass.fromJson(response);
           notifyListeners();
+        } else {
+          print('No Shop Found');
         }
-      } catch (e) {
+      } catch (e, stack) {
         print("❌ Failed to update location: $e");
+        print(stack);
       }
     } else {
       // TempShopClass? shop = ShopFunc().getShop();
@@ -549,13 +633,13 @@ class ShopProvider extends ChangeNotifier {
         //   context,
         //   listen: false,
         // ).clearTotalCache();
-        print('Total Cache Cleared');
+        // print('Total Cache Cleared');
         var res = await CurrentShopFunc().createCurrentShop(
-          TempCurrentShop(currentShop: shopC),
+          TempCurrentShop(currentShopId: shopC.shopId!),
         );
         if (res == 1) {
           print(
-            'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShop.name}',
+            'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShopId}',
           );
           // ignore: use_build_context_synchronously
           clearAll(safeContext);
@@ -611,18 +695,25 @@ class ShopProvider extends ChangeNotifier {
   }
 
   TempShopClass? userShop() {
-    var shop =
-        CurrentShopFunc().getCurrentShop()?.currentShop;
-    if (shop != null) {
-      return shop;
+    var shopId = CurrentShopFunc().getCurrentShop();
+    if (shopId != null) {
+      var shops = userShops.where(
+        (shop) => shop.shopId == shopId.currentShopId,
+      );
+      return shops.isEmpty ? null : shops.first;
     } else {
       if (userShops.isNotEmpty) {
         CurrentShopFunc().createCurrentShop(
-          TempCurrentShop(currentShop: userShops.first),
+          TempCurrentShop(
+            currentShopId: userShops.first.shopId!,
+          ),
         );
         // return userShops.first;
         notifyListeners();
-        return shop;
+        var shops = userShops.where(
+          (shop) => shop.shopId == shopId!.currentShopId,
+        );
+        return shops.isEmpty ? null : shops.first;
       } else {
         return null;
       }
@@ -639,13 +730,12 @@ class ShopProvider extends ChangeNotifier {
     var localShop = CurrentShopFunc().getCurrentShop();
     if (shops
         .where(
-          (sh) =>
-              sh.shopId == localShop?.currentShop.shopId,
+          (sh) => sh.shopId == localShop?.currentShopId,
         )
         .toList()
         .isEmpty) {
       CurrentShopFunc().createCurrentShop(
-        TempCurrentShop(currentShop: shops.first),
+        TempCurrentShop(currentShopId: shops.first.shopId!),
       );
     }
     notifyListeners();

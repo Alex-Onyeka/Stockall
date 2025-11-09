@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -7,6 +6,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/phone_number_text_field.dart';
+import 'package:stockall/components/text_fields/pin_code.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
@@ -58,8 +58,10 @@ class _EditMobileState extends State<EditMobile> {
     }
   }
 
-  String value1 = '0';
-  String value2 = '0';
+  // String value1 = '0';
+  // String value2 = '0';
+  final pin2Controller = TextEditingController();
+  final pin1Controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -193,45 +195,9 @@ class _EditMobileState extends State<EditMobile> {
                             ],
                           ),
                           SizedBox(height: 10),
-                          PinCodeTextField(
-                            appContext: context,
-                            length: 4,
-                            onChanged: (value) {
-                              setState(() {
-                                value1 = value;
-                              });
-                            },
-                            onCompleted: (value) {},
-                            pinTheme: PinTheme(
-                              shape: PinCodeFieldShape.box,
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              fieldHeight: 50,
-                              fieldWidth: 40,
-                              activeFillColor: Colors.white,
-                              selectedFillColor:
-                                  Colors.grey.shade100,
-                              inactiveFillColor:
-                                  Colors.grey.shade100,
-                              activeColor:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                              selectedColor:
-                                  theme
-                                      .lightModeColor
-                                      .prColor300,
-                              inactiveColor: Colors.grey,
-                            ),
-                            cursorColor:
-                                theme
-                                    .lightModeColor
-                                    .prColor300,
-                            keyboardType:
-                                TextInputType.number,
-                            animationType:
-                                AnimationType.fade,
-                            enableActiveFill: true,
+                          PinCodeWidget(
+                            hideText: false,
+                            controller: pin1Controller,
                           ),
                           SizedBox(height: 10),
                           Row(
@@ -246,61 +212,10 @@ class _EditMobileState extends State<EditMobile> {
                             ],
                           ),
                           SizedBox(height: 10),
-                          PinCodeTextField(
-                            appContext: context,
-                            length: 4,
-                            onChanged: (value) {
-                              setState(() {
-                                value2 = value;
-                              });
-                            },
-                            onCompleted: (value) {
-                              if (value1 != value) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'PIN Does not match. Please Check the two PIN\'s, and Try again.',
-                                      title: 'PIN Mismatch',
-                                    );
-                                  },
-                                );
-                              } else {
-                                return;
-                              }
-                            },
-                            pinTheme: PinTheme(
-                              shape: PinCodeFieldShape.box,
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              fieldHeight: 50,
-                              fieldWidth: 40,
-                              activeFillColor: Colors.white,
-                              selectedFillColor:
-                                  Colors.grey.shade100,
-                              inactiveFillColor:
-                                  Colors.grey.shade100,
-                              activeColor:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                              selectedColor:
-                                  theme
-                                      .lightModeColor
-                                      .prColor300,
-                              inactiveColor: Colors.grey,
-                            ),
-                            cursorColor:
-                                theme
-                                    .lightModeColor
-                                    .prColor300,
-                            keyboardType:
-                                TextInputType.number,
-                            animationType:
-                                AnimationType.fade,
-                            enableActiveFill: true,
+                          PinCodeWidget(
+                            hideText: true,
+                            controller: pin2Controller,
+                            text: pin1Controller.text,
                           ),
                         ],
                       ),
@@ -410,7 +325,8 @@ class _EditMobileState extends State<EditMobile> {
                           );
                         }
                       } else if (widget.action == 'PIN') {
-                        if (value1 != value2) {
+                        if (pin1Controller.text !=
+                            pin2Controller.text) {
                           showDialog(
                             context: context,
                             builder: (context) {
@@ -422,8 +338,12 @@ class _EditMobileState extends State<EditMobile> {
                               );
                             },
                           );
-                        } else if (value1.length != 4 ||
-                            value2.length != 4) {
+                        } else if (pin1Controller
+                                    .text
+                                    .length !=
+                                4 ||
+                            pin2Controller.text.length !=
+                                4) {
                           showDialog(
                             context: context,
                             builder: (context) {
@@ -464,7 +384,9 @@ class _EditMobileState extends State<EditMobile> {
 
                                   await userProvider
                                       .updatePinInSupabase(
-                                        newPin: value2,
+                                        newPin:
+                                            pin2Controller
+                                                .text,
                                         userId:
                                             AuthService()
                                                 .currentUser!,

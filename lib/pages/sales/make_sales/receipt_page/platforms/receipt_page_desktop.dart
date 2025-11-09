@@ -1456,8 +1456,8 @@ class _ReceiptDetailsContainerState
                     child: BottomActionButton(
                       text:
                           widget.mainReceipt.isInvoice
-                              ? 'Pay Credit'
-                              : 'Delete',
+                              ? 'Pay'
+                              : null,
                       color:
                           widget.mainReceipt.isInvoice
                               ? widget
@@ -1609,7 +1609,6 @@ class _ReceiptDetailsContainerState
                       context: context,
                     ),
                     child: BottomActionButton(
-                      text: 'Edit',
                       color: Colors.grey,
                       iconSize: 20,
                       theme: widget.theme,
@@ -1693,7 +1692,6 @@ class _ReceiptDetailsContainerState
                         },
                       );
                     },
-                    text: 'Download',
                     color: Colors.grey,
                     icon: Icons.download_outlined,
                     iconSize: 20,
@@ -2051,7 +2049,6 @@ class _ReceiptDetailsContainerState
                         );
                       }
                     },
-                    text: 'Print',
                     color: Colors.grey,
                     icon: Icons.print,
                     iconSize: 20,
@@ -2104,7 +2101,7 @@ class _ReceiptDetailsContainerState
 }
 
 class BottomActionButton extends StatelessWidget {
-  final String text;
+  final String? text;
   final Function()? action;
   final IconData? icon;
   final Color color;
@@ -2114,7 +2111,7 @@ class BottomActionButton extends StatelessWidget {
 
   const BottomActionButton({
     super.key,
-    required this.text,
+    this.text,
     this.action,
     this.icon,
     required this.color,
@@ -2148,32 +2145,44 @@ class BottomActionButton extends StatelessWidget {
                 // spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Text(
-                  //   style: TextStyle(
-                  //     fontSize:
-                  //         theme.mobileTexts.b3.fontSize,
-                  //   ),
-                  //   text,
-                  // ),
-                  Stack(
-                    children: [
-                      Visibility(
-                        visible: icon != null,
-                        child: Icon(
-                          size: iconSize,
-                          color: color,
-                          icon ??
-                              Icons.delete_outline_rounded,
-                        ),
+                  Visibility(
+                    visible: text != null,
+                    child: Text(
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            theme
+                                .lightModeColor
+                                .secColor100,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                       ),
-                      Visibility(
-                        visible: svg != null,
-                        child: SvgPicture.asset(
-                          svg ?? '',
-                          height: iconSize,
+                      text ?? '',
+                    ),
+                  ),
+                  Visibility(
+                    visible: text == null,
+                    child: Stack(
+                      children: [
+                        Visibility(
+                          visible: icon != null,
+                          child: Icon(
+                            size: iconSize,
+                            color: color,
+                            icon ??
+                                Icons
+                                    .delete_outline_rounded,
+                          ),
                         ),
-                      ),
-                    ],
+                        Visibility(
+                          visible: svg != null,
+                          child: SvgPicture.asset(
+                            svg ?? '',
+                            height: iconSize,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

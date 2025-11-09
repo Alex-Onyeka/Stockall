@@ -133,6 +133,9 @@ class _ShopSetupTwoMobileState
     );
     var theme = returnTheme(context, listen: false);
     var safeContext = context;
+    if (selectedCityName == 'Loading...') {
+      return;
+    }
     if (selectedCountryName == null ||
         selectedStateName == null ||
         selectedCityName == null) {
@@ -236,7 +239,7 @@ class _ShopSetupTwoMobileState
                 });
 
                 await shopProvider.updateShopLocation(
-                  shopId: widget.shop!.shopId!,
+                  // shopId: widget.shop!.shopId!,
                   country: selectedCountryName!,
                   state: selectedStateName!,
                   city: selectedCityName!,

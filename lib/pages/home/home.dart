@@ -196,7 +196,10 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                         );
-                      } else if (shopSnapshot.data ==
+                      } else if (returnShopProvider(
+                            context,
+                            listen: false,
+                          ).userShop() ==
                           null) {
                         if (!_handledNoShop) {
                           _handledNoShop = true;

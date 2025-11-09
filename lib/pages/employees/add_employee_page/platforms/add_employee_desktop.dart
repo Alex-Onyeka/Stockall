@@ -9,7 +9,6 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:uuid/uuid.dart';
@@ -375,37 +374,12 @@ class _AddEmployeeDesktopState
                                                       'Employee Id is invalid.',
                                                   title:
                                                       'Invalid Employee Id.',
+                                                  action: () {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  },
                                                 ),
-                                          ).then((_) {
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
-                                          });
-                                          return;
-                                        }
-                                        var isOnline =
-                                            await ConnectivityProvider()
-                                                .isOnline();
-                                        if (!isOnline) {
-                                          showDialog(
-                                            // ignore: use_build_context_synchronously
-                                            context:
-                                                context,
-                                            builder: (_) {
-                                              return InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Internet connection is not detected. You need to be connected to internet before you can add a Staff.',
-                                                title:
-                                                    'No Internet Connection.',
-                                                // action: () {
-                                                //   Navigator.of(
-                                                //     context,
-                                                //   ).pop();
-                                                // },
-                                              );
-                                            },
                                           );
                                           return;
                                         }
@@ -456,18 +430,13 @@ class _AddEmployeeDesktopState
                                                                 '121'
                                                             ? 'Invalid Employee Id.'
                                                             : 'User not Found.',
-                                                    // action: () {
-                                                    //   Navigator.of(
-                                                    //     context,
-                                                    //   ).pop();
-                                                    // },
+                                                    action: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
                                                   ),
-                                            ).then((_) {
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
-                                            });
-                                            ;
+                                            );
                                             return;
                                           }
                                         }
@@ -507,11 +476,11 @@ class _AddEmployeeDesktopState
                                                     'Staff added successfully.',
                                                 title:
                                                     'Success',
-                                                // action: () {
-                                                //   Navigator.of(
-                                                //     context,
-                                                //   ).pop();
-                                                // },
+                                                action: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
                                               ),
                                         );
                                       },
@@ -535,30 +504,6 @@ class _AddEmployeeDesktopState
                                         Navigator.of(
                                           safeContext,
                                         ).pop();
-                                      }
-                                      var isOnline =
-                                          await ConnectivityProvider()
-                                              .isOnline();
-                                      if (!isOnline) {
-                                        showDialog(
-                                          // ignore: use_build_context_synchronously
-                                          context: context,
-                                          builder: (_) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'Internet connection is not detected. You need to be connected to internet before you can add a Staff.',
-                                              title:
-                                                  'No Internet Connection.',
-                                              // action: () {
-                                              //   Navigator.of(
-                                              //     context,
-                                              //   ).pop();
-                                              // },
-                                            );
-                                          },
-                                        );
-                                        return;
                                       }
                                       setState(() {
                                         isLoading = true;

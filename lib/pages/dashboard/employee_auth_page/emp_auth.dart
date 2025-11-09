@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -32,7 +33,9 @@ class _EmpAuthState extends State<EmpAuth> {
   bool isLoading = false;
   bool showSuccess = false;
   bool isPassword = false;
-  String value = '0';
+  // String value = '0';
+
+  String value2 = '0';
 
   Future<TempUserClass?> fetchUserFromDatabase(
     String email,
@@ -44,6 +47,20 @@ class _EmpAuthState extends State<EmpAuth> {
     ).fetchUserByEmailAndAuthId(email, authId);
     return tempUser;
   }
+
+  // TextEditingController? pinController;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   pinController = TextEditingController();
+  // }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   pinController = TextEditingController();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -373,6 +390,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 setState(() {
                                                   isPassword =
                                                       false;
+                                                  // pinController =
+                                                  //     TextEditingController();
                                                 });
                                               },
                                               child: Container(
@@ -697,24 +716,20 @@ class _EmpAuthState extends State<EmpAuth> {
                                               height: 10,
                                             ),
                                             PinCodeTextField(
-                                              autoFocus:
-                                                  true,
                                               appContext:
                                                   context,
                                               length: 4,
                                               onChanged: (
                                                 value,
                                               ) {
-                                                // print("OTP: $value");
+                                                setState(() {
+                                                  value2 =
+                                                      value;
+                                                });
+                                                print(
+                                                  "Pin Code Now: $value2",
+                                                );
                                               },
-                                              hintCharacter:
-                                                  '0',
-                                              hintStyle: TextStyle(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                              ),
                                               onCompleted: (
                                                 value,
                                               ) async {
@@ -738,8 +753,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     setState(() {
                                                       isLoading =
                                                           false;
-                                                      value =
-                                                          '';
+                                                      // value =
+                                                      //     '';
                                                     });
 
                                                     showDialog(
@@ -758,6 +773,16 @@ class _EmpAuthState extends State<EmpAuth> {
                                                         );
                                                       },
                                                     );
+                                                    print(
+                                                      "Pin Code Now: $value2",
+                                                    );
+                                                    // print(
+                                                    //   "Pin Code Now: ${pinController?.text}",
+                                                    // );
+                                                    // setState(() {
+                                                    //   pinController!
+                                                    //       .clear();
+                                                    // });
                                                   } else {
                                                     setState(() {
                                                       isLoading =
@@ -798,6 +823,14 @@ class _EmpAuthState extends State<EmpAuth> {
                                                         title:
                                                             'User not found',
                                                       );
+                                                    },
+                                                  );
+                                                  // pinController!
+                                                  //     .clear();
+                                                  setState(
+                                                    () {
+                                                      value =
+                                                          '';
                                                     },
                                                   );
                                                 }
@@ -844,12 +877,143 @@ class _EmpAuthState extends State<EmpAuth> {
                                               keyboardType:
                                                   TextInputType
                                                       .number,
+                                              blinkWhenObscuring:
+                                                  true,
+                                              obscureText:
+                                                  true,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                              ],
+                                              obscuringWidget: Container(
+                                                height: 11,
+                                                width: 11,
+                                                decoration: BoxDecoration(
+                                                  shape:
+                                                      BoxShape
+                                                          .circle,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade800,
+                                                ),
+                                              ),
                                               animationType:
                                                   AnimationType
                                                       .fade,
                                               enableActiveFill:
                                                   true,
                                             ),
+                                            // PinCodeWidget(
+                                            //   // onChanged: (
+                                            //   //   value,
+                                            //   // ) {
+                                            //   //   print(
+                                            //   //     pinController!
+                                            //   //         .text,
+                                            //   //   );
+                                            //   // },
+                                            //   hideText:
+                                            //       true,
+                                            //   controller:
+                                            //       pinController!,
+                                            //   action: () async {
+                                            //     setState(() {
+                                            //       isLoading =
+                                            //           true;
+                                            //     });
+                                            //     TempUserClass?
+                                            //     user = await fetchUserFromDatabase(
+                                            //       AuthService()
+                                            //           .currentUserEmail!,
+                                            //       AuthService()
+                                            //           .currentUser!,
+                                            //     );
+                                            //     if (user !=
+                                            //             null &&
+                                            //         context
+                                            //             .mounted) {
+                                            //       if (pinController!
+                                            //               .text !=
+                                            //           user.pin) {
+                                            //         setState(() {
+                                            //           isLoading =
+                                            //               false;
+                                            //           // value =
+                                            //           //     '';
+                                            //         });
+
+                                            //         showDialog(
+                                            //           context:
+                                            //               context,
+                                            //           builder: (
+                                            //             context,
+                                            //           ) {
+                                            //             return InfoAlert(
+                                            //               theme:
+                                            //                   theme,
+                                            //               message:
+                                            //                   'Pin is Incorrect. Please Try again, or try logging in with your password.',
+                                            //               title:
+                                            //                   'Incorrect PIN',
+                                            //             );
+                                            //           },
+                                            //         );
+                                            //         print(
+                                            //           "Pin Code Now: ${pinController?.text}",
+                                            //         );
+                                            //         setState(() {
+                                            //           pinController!
+                                            //               .clear();
+                                            //         });
+                                            //       } else {
+                                            //         setState(() {
+                                            //           isLoading =
+                                            //               false;
+                                            //           showSuccess =
+                                            //               true;
+                                            //         });
+                                            //         await Future.delayed(
+                                            //           Duration(
+                                            //             seconds:
+                                            //                 2,
+                                            //           ),
+                                            //         );
+                                            //         if (context
+                                            //             .mounted) {
+                                            //           widget
+                                            //               .action!();
+                                            //         }
+
+                                            //         setState(() {
+                                            //           showSuccess =
+                                            //               false;
+                                            //         });
+                                            //       }
+                                            //     } else {
+                                            //       showDialog(
+                                            //         // ignore: use_build_context_synchronously
+                                            //         context:
+                                            //             context,
+                                            //         builder: (
+                                            //           context,
+                                            //         ) {
+                                            //           return InfoAlert(
+                                            //             theme:
+                                            //                 theme,
+                                            //             message:
+                                            //                 'User is Not found. Please check your details, and network and try again.',
+                                            //             title:
+                                            //                 'User not found',
+                                            //           );
+                                            //         },
+                                            //       );
+                                            //       pinController!
+                                            //           .clear();
+                                            //     }
+                                            //   },
+                                            //   // text: pin1Controller.text,
+                                            // ),
                                             SizedBox(
                                               height: 15,
                                             ),
@@ -857,9 +1021,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                               themeProvider:
                                                   theme,
                                               action: () {
-                                                if (value
+                                                if (value2
                                                         .isEmpty ||
-                                                    value.length !=
+                                                    value2.length !=
                                                         4) {
                                                   showDialog(
                                                     context:

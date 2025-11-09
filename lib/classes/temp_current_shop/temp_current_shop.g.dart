@@ -17,7 +17,7 @@ class TempCurrentShopAdapter extends TypeAdapter<TempCurrentShop> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempCurrentShop(
-      currentShop: fields[0] as TempShopClass,
+      currentShopId: fields[0] as int,
     );
   }
 
@@ -26,7 +26,7 @@ class TempCurrentShopAdapter extends TypeAdapter<TempCurrentShop> {
     writer
       ..writeByte(1)
       ..writeByte(0)
-      ..write(obj.currentShop);
+      ..write(obj.currentShopId);
   }
 
   @override

@@ -14,6 +14,7 @@ import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
+import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -107,7 +108,7 @@ class _MyDrawerWidgetMobileState
                           children: [
                             Visibility(
                               child: NavListTileAlt(
-                                height: 20,
+                                height: 17,
                                 action: () {
                                   Navigator.push(
                                     context,
@@ -130,7 +131,7 @@ class _MyDrawerWidgetMobileState
                                 context: context,
                               ),
                               child: NavListTileAlt(
-                                height: 20,
+                                height: 17,
                                 action: () {
                                   Navigator.push(
                                     context,
@@ -165,7 +166,7 @@ class _MyDrawerWidgetMobileState
                             //   height: 16,
                             // ),
                             NavListTileAlt(
-                              height: 16,
+                              height: 14,
                               action: () {
                                 Navigator.push(
                                   context,
@@ -187,7 +188,7 @@ class _MyDrawerWidgetMobileState
                                 context: context,
                               ),
                               child: NavListTileAlt(
-                                height: 16,
+                                height: 14,
                                 action: () {
                                   Navigator.push(
                                     context,
@@ -207,7 +208,7 @@ class _MyDrawerWidgetMobileState
                               ),
                             ),
                             NavListTileAlt(
-                              height: 16,
+                              height: 14,
                               action: () {
                                 Navigator.push(
                                   context,
@@ -246,7 +247,7 @@ class _MyDrawerWidgetMobileState
                                   Icons.all_inclusive_sharp,
                             ),
                             NavListTileAlt(
-                              height: 16,
+                              height: 14,
                               action: () {
                                 Navigator.push(
                                   context,
@@ -289,8 +290,9 @@ class _MyDrawerWidgetMobileState
                                   height: 50,
                                   child: Padding(
                                     padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 20.0,
+                                        const EdgeInsets.only(
+                                          left: 20.0,
+                                          right: 5,
                                         ),
                                     child: Row(
                                       mainAxisAlignment:
@@ -310,7 +312,7 @@ class _MyDrawerWidgetMobileState
                                                       Colors
                                                           .grey
                                                           .shade400,
-                                                  size: 22,
+                                                  size: 20,
                                                   Icons
                                                       .notifications_on_outlined,
                                                 ),
@@ -328,7 +330,7 @@ class _MyDrawerWidgetMobileState
                                                       context,
                                                       listen:
                                                           false,
-                                                    ).mobileTexts.b1.fontSize,
+                                                    ).mobileTexts.b2.fontSize,
                                                 fontWeight:
                                                     FontWeight
                                                         .normal,
@@ -364,7 +366,7 @@ class _MyDrawerWidgetMobileState
                                               child: Container(
                                                 padding:
                                                     EdgeInsets.all(
-                                                      10,
+                                                      8,
                                                     ),
                                                 decoration: BoxDecoration(
                                                   color:
@@ -380,8 +382,8 @@ class _MyDrawerWidgetMobileState
                                                 ),
                                                 child: SvgPicture.asset(
                                                   height:
-                                                      25,
-                                                  width: 25,
+                                                      22,
+                                                  width: 22,
                                                   notifIconSvg,
                                                   color:
                                                       widget.notifications
@@ -414,7 +416,7 @@ class _MyDrawerWidgetMobileState
                                                 child: Container(
                                                   padding:
                                                       EdgeInsets.all(
-                                                        6,
+                                                        4,
                                                       ),
                                                   decoration: BoxDecoration(
                                                     shape:
@@ -428,7 +430,7 @@ class _MyDrawerWidgetMobileState
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         fontSize:
-                                                            14,
+                                                            12,
                                                         color:
                                                             Colors.white,
                                                       ),
@@ -446,51 +448,51 @@ class _MyDrawerWidgetMobileState
                                 ),
                               ),
                             ),
-                            Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .contactStockall,
-                                context: context,
-                              ),
-                              child: NavListTileAlt(
-                                height: 20,
-                                action: () async {
-                                  phoneCall();
-                                },
-                                title: 'Contact Us',
-                                icon: Icons.phone,
-                              ),
-                            ),
-                            Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .contactStockall,
-                                context: context,
-                              ),
-                              child: NavListTileAlt(
-                                height: 16,
-                                action: () async {
-                                  openWhatsApp();
-                                },
-                                title: 'Chat With Us',
-                                svg: whatsappIconSvg,
-                              ),
-                            ),
-                            Visibility(
-                              visible: false,
-                              child: NavListTileAlt(
-                                height: 20,
-                                action: () {},
-                                title:
-                                    'Privacy P. & Terms/C.',
-                                icon:
-                                    Icons.menu_book_rounded,
-                              ),
-                            ),
+                            // Visibility(
+                            //   visible: authorization(
+                            //     authorized:
+                            //         Authorizations()
+                            //             .contactStockall,
+                            //     context: context,
+                            //   ),
+                            //   child: NavListTileAlt(
+                            //     height: 20,
+                            //     action: () async {
+                            //       phoneCall();
+                            //     },
+                            //     title: 'Contact Us',
+                            //     icon: Icons.phone,
+                            //   ),
+                            // ),
+                            // Visibility(
+                            //   visible: authorization(
+                            //     authorized:
+                            //         Authorizations()
+                            //             .contactStockall,
+                            //     context: context,
+                            //   ),
+                            //   child: NavListTileAlt(
+                            //     height: 16,
+                            //     action: () async {
+                            //       openWhatsApp();
+                            //     },
+                            //     title: 'Chat With Us',
+                            //     svg: whatsappIconSvg,
+                            //   ),
+                            // ),
+                            // Visibility(
+                            //   visible: false,
+                            //   child: NavListTileAlt(
+                            //     height: 20,
+                            //     action: () {},
+                            //     title:
+                            //         'Privacy P. & Terms/C.',
+                            //     icon:
+                            //         Icons.menu_book_rounded,
+                            //   ),
+                            // ),
                             NavListTileAlt(
-                              height: 20,
+                              height: 16,
                               action: () {
                                 showGeneralDialog(
                                   context: context,
@@ -516,7 +518,7 @@ class _MyDrawerWidgetMobileState
                                       TargetPlatform
                                           .android,
                               child: NavListTileAlt(
-                                height: 20,
+                                height: 18,
                                 action: () {
                                   showDialog(
                                     context: context,
@@ -563,6 +565,21 @@ class _MyDrawerWidgetMobileState
                             //       Icons
                             //           .card_giftcard_rounded,
                             // ),
+                            NavListTileAlt(
+                              height: 17,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SettingsPage();
+                                    },
+                                  ),
+                                );
+                              },
+                              title: 'General Settings',
+                              icon: Icons.settings,
+                            ),
                             SizedBox(height: 30),
                           ],
                         ),
@@ -588,7 +605,7 @@ class _MyDrawerWidgetMobileState
                                 bottom: 20.0,
                               ),
                       child: NavListTileAlt(
-                        height: 20,
+                        height: 18,
                         action: widget.action,
                         title: 'Logout',
                         // svg: reportIconSvg,
@@ -607,153 +624,153 @@ class _MyDrawerWidgetMobileState
   }
 }
 
-class NavListTile extends StatelessWidget {
-  final String title;
-  final int thisIndex;
-  final IconData? icon;
-  final String? svg;
-  final double? height;
-  const NavListTile({
-    super.key,
-    required this.thisIndex,
-    required this.title,
-    this.icon,
-    this.svg,
-    this.height,
-  });
+// class NavListTile extends StatelessWidget {
+//   final String title;
+//   final int thisIndex;
+//   final IconData? icon;
+//   final String? svg;
+//   final double? height;
+//   const NavListTile({
+//     super.key,
+//     required this.thisIndex,
+//     required this.title,
+//     this.icon,
+//     this.svg,
+//     this.height,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    var theme = returnTheme(context);
-    return InkWell(
-      onTap: () {
-        returnNavProvider(
-          context,
-          listen: false,
-        ).navigate(thisIndex);
-        Navigator.of(context).pop();
-      },
-      child: SizedBox(
-        height: 50,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-          ),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      Visibility(
-                        visible: icon != null,
-                        child: Icon(
-                          color:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor200
-                                  : Colors.grey.shade600,
-                          size:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? 22
-                                  : 18,
-                          icon ?? Icons.home,
-                        ),
-                      ),
-                      Visibility(
-                        visible: svg != null,
-                        child: SvgPicture.asset(
-                          color:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? theme
-                                      .lightModeColor
-                                      .secColor200
-                                  : Colors.grey.shade600,
-                          svg ?? '',
-                          height:
-                              returnNavProvider(
-                                        context,
-                                      ).currentPage ==
-                                      thisIndex
-                                  ? 20
-                                  : height,
-                        ),
-                      ),
-                    ],
-                  ),
-                  // ),
-                  Text(
-                    style: TextStyle(
-                      color:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  thisIndex
-                              ? theme
-                                  .lightModeColor
-                                  .secColor200
-                              : Colors.grey.shade900,
-                      fontSize:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  thisIndex
-                              ? 15
-                              : 14,
-                      fontWeight:
-                          returnNavProvider(
-                                    context,
-                                  ).currentPage ==
-                                  thisIndex
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                    ),
-                    title,
-                  ),
-                ],
-              ),
+//   @override
+//   Widget build(BuildContext context) {
+//     var theme = returnTheme(context);
+//     return InkWell(
+//       onTap: () {
+//         returnNavProvider(
+//           context,
+//           listen: false,
+//         ).navigate(thisIndex);
+//         Navigator.of(context).pop();
+//       },
+//       child: SizedBox(
+//         height: 50,
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(
+//             horizontal: 20.0,
+//           ),
+//           child: Row(
+//             mainAxisAlignment:
+//                 MainAxisAlignment.spaceBetween,
+//             children: [
+//               Row(
+//                 spacing: 10,
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 children: [
+//                   Stack(
+//                     children: [
+//                       Visibility(
+//                         visible: icon != null,
+//                         child: Icon(
+//                           color:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? theme
+//                                       .lightModeColor
+//                                       .secColor200
+//                                   : Colors.grey.shade600,
+//                           size:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? 22
+//                                   : 18,
+//                           icon ?? Icons.home,
+//                         ),
+//                       ),
+//                       Visibility(
+//                         visible: svg != null,
+//                         child: SvgPicture.asset(
+//                           color:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? theme
+//                                       .lightModeColor
+//                                       .secColor200
+//                                   : Colors.grey.shade600,
+//                           svg ?? '',
+//                           height:
+//                               returnNavProvider(
+//                                         context,
+//                                       ).currentPage ==
+//                                       thisIndex
+//                                   ? 20
+//                                   : height,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                   // ),
+//                   Text(
+//                     style: TextStyle(
+//                       color:
+//                           returnNavProvider(
+//                                     context,
+//                                   ).currentPage ==
+//                                   thisIndex
+//                               ? theme
+//                                   .lightModeColor
+//                                   .secColor200
+//                               : Colors.grey.shade900,
+//                       fontSize:
+//                           returnNavProvider(
+//                                     context,
+//                                   ).currentPage ==
+//                                   thisIndex
+//                               ? 15
+//                               : 14,
+//                       fontWeight:
+//                           returnNavProvider(
+//                                     context,
+//                                   ).currentPage ==
+//                                   thisIndex
+//                               ? FontWeight.bold
+//                               : FontWeight.normal,
+//                     ),
+//                     title,
+//                   ),
+//                 ],
+//               ),
 
-              Icon(
-                color:
-                    returnNavProvider(
-                              context,
-                            ).currentPage ==
-                            thisIndex
-                        ? theme.lightModeColor.secColor200
-                        : Colors.grey.shade900,
-                size:
-                    returnNavProvider(
-                              context,
-                            ).currentPage ==
-                            thisIndex
-                        ? 30
-                        : 18,
-                returnNavProvider(context).currentPage ==
-                        thisIndex
-                    ? Icons.arrow_drop_down
-                    : Icons.arrow_forward_ios_rounded,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//               Icon(
+//                 color:
+//                     returnNavProvider(
+//                               context,
+//                             ).currentPage ==
+//                             thisIndex
+//                         ? theme.lightModeColor.secColor200
+//                         : Colors.grey.shade900,
+//                 size:
+//                     returnNavProvider(
+//                               context,
+//                             ).currentPage ==
+//                             thisIndex
+//                         ? 30
+//                         : 18,
+//                 returnNavProvider(context).currentPage ==
+//                         thisIndex
+//                     ? Icons.arrow_drop_down
+//                     : Icons.arrow_forward_ios_rounded,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class NavListTileAlt extends StatelessWidget {
   final String title;
@@ -781,7 +798,7 @@ class NavListTileAlt extends StatelessWidget {
         action!();
       },
       child: SizedBox(
-        height: 45,
+        height: 42,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 20.0,
@@ -830,7 +847,7 @@ class NavListTileAlt extends StatelessWidget {
                     style: TextStyle(
                       color: color ?? Colors.grey.shade900,
                       fontSize:
-                          theme.mobileTexts.b1.fontSize,
+                          theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.w500,
                     ),
                     title,

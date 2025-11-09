@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -116,6 +117,10 @@ class _PhoneNumberTextFieldState
             ),
           ),
           initialCountryCode: 'NG',
+          keyboardType: TextInputType.phone,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
         ),
       ],
     );
