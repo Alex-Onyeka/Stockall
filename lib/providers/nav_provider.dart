@@ -74,9 +74,17 @@ class NavProvider extends ChangeNotifier {
       listen: false,
     );
 
+    final subPro = returnSubcsription(
+      // ignore: use_build_context_synchronously
+      context,
+      listen: false,
+    );
+
     final userShop = await shopProvider.getUserShops(
       AuthService().currentUser!,
     );
+
+    final subsription = await subPro.getSubscription();
 
     if (isOnline) {
       var userOffline = AuthService().currentUserOffline;
@@ -108,19 +116,15 @@ class NavProvider extends ChangeNotifier {
         },
       );
       return;
-    } else if (shopProvider.userShop()!.nextPayment ==
-        null) {
-      await shopProvider.makePayment(
-        DateTime.now().add(Duration(days: 30)),
-        3,
-      );
-    } else if (shopProvider.userShop()!.plan != 0 &&
-        (shopProvider.userShop()!.nextPayment != null &&
+    }
+    if (subsription != null &&
+        subsription.plan != 0 &&
+        (subsription.nextPayment != null &&
             (DateTime.now().isAfter(
-                  shopProvider.userShop()!.nextPayment!,
+                  subsription.nextPayment!,
                 ) ||
                 DateTime.now().isAtSameMomentAs(
-                  shopProvider.userShop()!.nextPayment!,
+                  subsription.nextPayment!,
                 )))) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -130,7 +134,31 @@ class NavProvider extends ChangeNotifier {
         (route) => false,
       );
       return;
-    } else {
+    }
+    // else if (shopProvider.userShop()!.nextPayment ==
+    //     null) {
+    //   await shopProvider.makePayment(
+    //     DateTime.now().add(Duration(days: 30)),
+    //     3,
+    //   );
+    // } else if (shopProvider.userShop()!.plan != 0 &&
+    //     (shopProvider.userShop()!.nextPayment != null &&
+    //         (DateTime.now().isAfter(
+    //               shopProvider.userShop()!.nextPayment!,
+    //             ) ||
+    //             DateTime.now().isAtSameMomentAs(
+    //               shopProvider.userShop()!.nextPayment!,
+    //             )))) {
+    //   Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => RestrictedPage(),
+    //     ),
+    //     (route) => false,
+    //   );
+    //   return;
+    // }
+    else {
       await userProvider.fetchCurrentUser(context);
       if (dataProvider.isSynced() == 0 && isOnline) {
         if (!dataProvider.isSyncing) {

@@ -7,6 +7,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
+import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
@@ -380,89 +381,155 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                   text: 'Subscribe',
                                 ),
                                 SizedBox(height: 15),
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () async {
-                                      final safceContext =
-                                          context;
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return ConfirmationAlert(
-                                            theme: theme,
-                                            message:
-                                                'Are you sure you want to proceed to logout from your account?',
-                                            title:
-                                                'Are You Sure?',
-                                            action: () async {
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
-                                              if (safceContext
-                                                  .mounted) {
-                                                Navigator.pushReplacement(
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
                                                   safceContext,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      safceContext,
-                                                    ) {
-                                                      return AuthScreensPage();
-                                                    },
+                                                ) {
+                                                  return BasePage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                                  vertical:
+                                                      8,
+                                                ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              spacing: 5,
+                                              children: [
+                                                Icon(
+                                                  size: 20,
+                                                  color:
+                                                      Colors
+                                                          .blue,
+                                                  Icons
+                                                      .refresh,
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.grey.shade700,
+                                                    fontSize:
+                                                        12,
                                                   ),
-                                                );
-                                                returnNavProvider(
-                                                  safceContext,
-                                                  listen:
-                                                      false,
-                                                ).navigate(
-                                                  0,
-                                                );
-                                              }
-                                              if (safceContext
-                                                  .mounted) {
-                                                await AuthService()
-                                                    .signOut(
-                                                      safceContext,
-                                                    );
-                                              }
-                                            },
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                        spacing: 5,
-                                        children: [
-                                          Icon(
-                                            size: 20,
-                                            color:
-                                                Colors
-                                                    .redAccent,
-                                            Icons.logout,
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade700,
-                                              fontSize: 12,
+                                                  'Reload',
+                                                ),
+                                              ],
                                             ),
-                                            'Logout',
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            final safceContext =
+                                                context;
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'Are you sure you want to proceed to logout from your account?',
+                                                  title:
+                                                      'Are You Sure?',
+                                                  action: () async {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                    if (safceContext
+                                                        .mounted) {
+                                                      Navigator.pushReplacement(
+                                                        safceContext,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            safceContext,
+                                                          ) {
+                                                            return AuthScreensPage();
+                                                          },
+                                                        ),
+                                                      );
+                                                      returnNavProvider(
+                                                        safceContext,
+                                                        listen:
+                                                            false,
+                                                      ).navigate(
+                                                        0,
+                                                      );
+                                                    }
+                                                    if (safceContext
+                                                        .mounted) {
+                                                      await AuthService().signOut(
+                                                        safceContext,
+                                                      );
+                                                    }
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                                  vertical:
+                                                      8,
+                                                ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              spacing: 5,
+                                              children: [
+                                                Icon(
+                                                  size: 20,
+                                                  color:
+                                                      Colors
+                                                          .redAccent,
+                                                  Icons
+                                                      .logout,
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.grey.shade700,
+                                                    fontSize:
+                                                        12,
+                                                  ),
+                                                  'Logout',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(height: 10),
                                 Container(),

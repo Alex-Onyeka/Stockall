@@ -67,11 +67,11 @@ class TempShopClass {
   @HiveField(20)
   DateTime? updatedAt;
 
-  @HiveField(21)
-  int? plan;
+  // @HiveField(21)
+  // int? plan;
 
-  @HiveField(22)
-  DateTime? nextPayment;
+  // @HiveField(22)
+  // DateTime? nextPayment;
 
   @HiveField(23)
   String? instaHandle;
@@ -146,8 +146,8 @@ class TempShopClass {
     this.printType,
     this.language,
     this.updatedAt,
-    this.plan,
-    this.nextPayment,
+    // this.plan,
+    // this.nextPayment,
     this.instaHandle,
     this.faceBookHandle,
     this.showEmail = false,
@@ -199,13 +199,13 @@ class TempShopClass {
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'] as String)
               : null,
-      plan: json['plan'],
-      nextPayment:
-          json['next_payment'] != null
-              ? DateTime.parse(
-                json['next_payment'] as String,
-              )
-              : null,
+      // plan: json['plan'],
+      // nextPayment:
+      //     json['next_payment'] != null
+      //         ? DateTime.parse(
+      //           json['next_payment'] as String,
+      //         )
+      //         : null,
       instaHandle: json['insta_handle'] as String?,
       faceBookHandle: json['facebook_handle'] as String?,
       showAddress: json['show_address'] as bool?,
@@ -248,8 +248,8 @@ class TempShopClass {
       'print_type': printType,
       'language': language,
       'updated_at': updatedAt?.toIso8601String(),
-      'plan': plan,
-      'next_payment': nextPayment?.toIso8601String(),
+      // 'plan': plan,
+      // 'next_payment': nextPayment?.toIso8601String(),
       'insta_handle': instaHandle,
       'facebook_handle': faceBookHandle,
       'show_shop_name': showShopName,

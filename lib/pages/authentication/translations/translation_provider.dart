@@ -5,8 +5,9 @@ import 'package:stockall/pages/authentication/translations/general.dart';
 class TranslationProvider extends ChangeNotifier {
   String shopLanguage(BuildContext context) {
     return returnShopProvider(
-      context,
-    ).userShop()!.language!;
+          context,
+        ).userShop()!.language ??
+        'en';
   }
 
   String cancelText(BuildContext context) {

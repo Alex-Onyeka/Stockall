@@ -9,6 +9,7 @@ class UserFunc {
   final String userBoxName = 'userBoxStockall';
 
   Future<void> init() async {
+    // await Hive.deleteBoxFromDisk(userBoxName);
     Hive.registerAdapter(TempUserClassAdapter());
     userBox = await Hive.openBox(userBoxName);
     print('User Box Initialized');

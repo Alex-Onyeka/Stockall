@@ -24,6 +24,7 @@ import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
+import 'package:stockall/providers/subscription_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
@@ -191,6 +192,16 @@ CustomersProvider returnCustomers(
   );
 }
 
+SubscriptionProvider returnSubcsription(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<SubscriptionProvider>(
+    context,
+    listen: listen,
+  );
+}
+
 NavProvider returnNavProvider(
   BuildContext context, {
   bool listen = true,
@@ -330,6 +341,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ConnectivityProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SubscriptionProvider(),
         ),
       ],
       child: MaterialApp(

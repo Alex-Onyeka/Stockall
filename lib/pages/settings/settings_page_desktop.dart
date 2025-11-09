@@ -223,6 +223,12 @@ class SettingsPageDesktop extends StatelessWidget {
                     title: 'Privacy P. & Terms/C.',
                     icon: Icons.menu_book_rounded,
                   ),
+                  NavListTileDesktopAlt(
+                    height: 18,
+                    action: () {},
+                    title: 'Go to Wesbite.',
+                    icon: Icons.language_rounded,
+                  ),
                 ],
               ),
               SizedBox(height: screenHeight(context) * 0.2),

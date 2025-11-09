@@ -82,7 +82,7 @@ double screenHeight(BuildContext context) {
   return MediaQuery.of(context).size.height;
 }
 
-List empSetup =
+List<Map<String, dynamic>> empSetup =
     employees
         .where((emp) => emp['position'] != 'Owner')
         .toList();

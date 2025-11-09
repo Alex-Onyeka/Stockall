@@ -472,7 +472,7 @@ class _MyDrawerWidgetDesktopMainState
                                       ),
                                     );
                                   },
-                                  title: 'Empolyees',
+                                  title: 'Employees',
                                   svg: employeesIconSvg,
                                 ),
                               ),

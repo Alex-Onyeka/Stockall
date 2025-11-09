@@ -195,6 +195,7 @@ class _ShopSetupTwoMobileState
                     city: selectedCityName,
                     phoneNumber: shopProvider.phone,
                     refCode: referralController.text.trim(),
+                    language: 'en',
                   ),
                 );
                 await Future.delayed(Duration(seconds: 1));

@@ -75,32 +75,32 @@ class ShopProvider extends ChangeNotifier {
     return userShops;
   }
 
-  Future<void> makePayment(DateTime date, int plan) async {
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      await supabase
-          .from('shops')
-          .update({
-            'next_payment': date.toIso8601String(),
-            'plan': plan,
-          })
-          .eq('shop_id', userShop()!.shopId!)
-          .maybeSingle();
-      print(
-        'Shop Next Payment date Set: ${date.toString()} and Plan Set: $plan',
-      );
+  // Future<void> makePayment(DateTime date, int plan) async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   if (isOnline) {
+  //     await supabase
+  //         .from('shops')
+  //         .update({
+  //           'next_payment': date.toIso8601String(),
+  //           'plan': plan,
+  //         })
+  //         .eq('shop_id', userShop()!.shopId!)
+  //         .maybeSingle();
+  //     print(
+  //       'Shop Next Payment date Set: ${date.toString()} and Plan Set: $plan',
+  //     );
 
-      final response = await getUserShops(
-        AuthService().currentUser!,
-      );
-      if (response.isNotEmpty) {
-        setShops(response);
-        notifyListeners();
-      }
-    } else {
-      print('Next Payment cant be set offline');
-    }
-  }
+  //     final response = await getUserShops(
+  //       AuthService().currentUser!,
+  //     );
+  //     if (response.isNotEmpty) {
+  //       setShops(response);
+  //       notifyListeners();
+  //     }
+  //   } else {
+  //     print('Next Payment cant be set offline');
+  //   }
+  // }
 
   // Future<void> setShopPaymentPlan(int plan) async {
   //   bool isOnline = await connectivity.isOnline();
@@ -522,6 +522,7 @@ class ShopProvider extends ChangeNotifier {
     TempShopClass shopC,
   ) async {
     var isOnline = await connectivity.isOnline();
+    // ignore: use_build_context_synchronously
     if (returnData(context, listen: false).isSynced() ==
             0 &&
         isOnline) {
@@ -537,16 +538,17 @@ class ShopProvider extends ChangeNotifier {
           );
         },
       );
+      // ignore: use_build_context_synchronously
       returnData(context, listen: false).syncData(context);
       return 0;
     } else {
       try {
         var safeContext = context;
         print('Shop Selection Started');
-        await returnData(
-          context,
-          listen: false,
-        ).clearTotalCache();
+        // await returnData(
+        //   context,
+        //   listen: false,
+        // ).clearTotalCache();
         print('Total Cache Cleared');
         var res = await CurrentShopFunc().createCurrentShop(
           TempCurrentShop(currentShop: shopC),
@@ -555,8 +557,10 @@ class ShopProvider extends ChangeNotifier {
           print(
             'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShop.name}',
           );
+          // ignore: use_build_context_synchronously
           clearAll(safeContext);
           Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
             safeContext,
             MaterialPageRoute(
               builder: (context) {

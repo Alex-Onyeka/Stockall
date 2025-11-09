@@ -38,8 +38,6 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       printType: fields[18] as int?,
       language: fields[19] as String?,
       updatedAt: fields[20] as DateTime?,
-      plan: fields[21] as int?,
-      nextPayment: fields[22] as DateTime?,
       instaHandle: fields[23] as String?,
       faceBookHandle: fields[24] as String?,
       showEmail: fields[25] as bool?,
@@ -63,7 +61,7 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(40)
+      ..writeByte(38)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -106,10 +104,6 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..write(obj.language)
       ..writeByte(20)
       ..write(obj.updatedAt)
-      ..writeByte(21)
-      ..write(obj.plan)
-      ..writeByte(22)
-      ..write(obj.nextPayment)
       ..writeByte(23)
       ..write(obj.instaHandle)
       ..writeByte(24)

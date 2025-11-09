@@ -92,7 +92,9 @@ class CustomerFunc {
 
   Future<int> clearCustomers() async {
     try {
-      await customerBox.clear();
+      await customerBox.clear().timeout(
+        Duration(seconds: 2),
+      );
       print('Offline Customers Cleared');
       return 1;
     } catch (e) {

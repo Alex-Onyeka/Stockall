@@ -202,7 +202,7 @@ class _MyDrawerWidgetMobileState
                                     ),
                                   );
                                 },
-                                title: 'Empolyees',
+                                title: 'Employees',
                                 svg: employeesIconSvg,
                               ),
                             ),
