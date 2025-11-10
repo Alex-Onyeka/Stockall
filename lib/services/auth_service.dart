@@ -83,7 +83,7 @@ class AuthService extends ChangeNotifier {
 
       return signUpRes;
     } catch (e) {
-      throw Exception('User creation error: $e');
+      throw Exception('❌❌ User creation error: $e');
     }
   }
 
@@ -163,7 +163,7 @@ class AuthService extends ChangeNotifier {
           return 0;
         }
       } catch (e) {
-        print('Offline Login Error: ${e.toString()}');
+        print('❌❌Offline Login Error: ${e.toString()}');
         return 0;
       }
     }

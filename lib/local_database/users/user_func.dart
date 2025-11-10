@@ -108,7 +108,9 @@ class UserFunc {
       print('User inserted Success');
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print(
+        '❌❌ Insert User Offline Error: ${e.toString()}',
+      );
       return 0;
     }
   }

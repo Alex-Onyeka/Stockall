@@ -34,7 +34,7 @@ class LoggedInUserFunc {
       print('Logged In User inserted Success');
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print('❌❌ Logged In User Error: ${e.toString()}');
       return 0;
     }
   }
@@ -45,7 +45,7 @@ class LoggedInUserFunc {
       print('Offline Logout Success');
       return 1;
     } catch (e) {
-      print('Offline Logout Error: ${e.toString()}');
+      print('❌❌ Offline Logout Error: ${e.toString()}');
       return 0;
     }
   }

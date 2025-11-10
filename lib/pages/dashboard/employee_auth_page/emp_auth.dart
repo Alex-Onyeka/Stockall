@@ -1,12 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/text_fields/pin_code.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -35,7 +34,7 @@ class _EmpAuthState extends State<EmpAuth> {
   bool isPassword = false;
   // String value = '0';
 
-  String value2 = '0';
+  // String value2 = '0';
 
   Future<TempUserClass?> fetchUserFromDatabase(
     String email,
@@ -48,7 +47,8 @@ class _EmpAuthState extends State<EmpAuth> {
     return tempUser;
   }
 
-  // TextEditingController? pinController;
+  TextEditingController pinController =
+      TextEditingController();
 
   // @override
   // void initState() {
@@ -390,8 +390,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 setState(() {
                                                   isPassword =
                                                       false;
-                                                  // pinController =
-                                                  //     TextEditingController();
+                                                  pinController =
+                                                      TextEditingController();
                                                 });
                                               },
                                               child: Container(
@@ -715,209 +715,24 @@ class _EmpAuthState extends State<EmpAuth> {
                                             SizedBox(
                                               height: 10,
                                             ),
-                                            PinCodeTextField(
-                                              appContext:
-                                                  context,
-                                              length: 4,
-                                              onChanged: (
-                                                value,
-                                              ) {
-                                                setState(() {
-                                                  value2 =
-                                                      value;
-                                                });
-                                                print(
-                                                  "Pin Code Now: $value2",
-                                                );
-                                              },
-                                              onCompleted: (
-                                                value,
-                                              ) async {
-                                                setState(() {
-                                                  isLoading =
-                                                      true;
-                                                });
-                                                TempUserClass?
-                                                user = await fetchUserFromDatabase(
-                                                  AuthService()
-                                                      .currentUserEmail!,
-                                                  AuthService()
-                                                      .currentUser!,
-                                                );
-                                                if (user !=
-                                                        null &&
-                                                    context
-                                                        .mounted) {
-                                                  if (value !=
-                                                      user.pin) {
-                                                    setState(() {
-                                                      isLoading =
-                                                          false;
-                                                      // value =
-                                                      //     '';
-                                                    });
-
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return InfoAlert(
-                                                          theme:
-                                                              theme,
-                                                          message:
-                                                              'Pin is Incorrect. Please Try again, or try logging in with your password.',
-                                                          title:
-                                                              'Incorrect PIN',
-                                                        );
-                                                      },
-                                                    );
-                                                    print(
-                                                      "Pin Code Now: $value2",
-                                                    );
-                                                    // print(
-                                                    //   "Pin Code Now: ${pinController?.text}",
-                                                    // );
-                                                    // setState(() {
-                                                    //   pinController!
-                                                    //       .clear();
-                                                    // });
-                                                  } else {
-                                                    setState(() {
-                                                      isLoading =
-                                                          false;
-                                                      showSuccess =
-                                                          true;
-                                                    });
-                                                    await Future.delayed(
-                                                      Duration(
-                                                        seconds:
-                                                            2,
-                                                      ),
-                                                    );
-                                                    if (context
-                                                        .mounted) {
-                                                      widget
-                                                          .action!();
-                                                    }
-
-                                                    setState(() {
-                                                      showSuccess =
-                                                          false;
-                                                    });
-                                                  }
-                                                } else {
-                                                  showDialog(
-                                                    // ignore: use_build_context_synchronously
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'User is Not found. Please check your details, and network and try again.',
-                                                        title:
-                                                            'User not found',
-                                                      );
-                                                    },
-                                                  );
-                                                  // pinController!
-                                                  //     .clear();
-                                                  setState(
-                                                    () {
-                                                      value =
-                                                          '';
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                              pinTheme: PinTheme(
-                                                shape:
-                                                    PinCodeFieldShape
-                                                        .box,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      5,
-                                                    ),
-                                                fieldHeight:
-                                                    50,
-                                                fieldWidth:
-                                                    40,
-                                                activeFillColor:
-                                                    Colors
-                                                        .white,
-                                                selectedFillColor:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
-                                                inactiveFillColor:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
-                                                activeColor:
-                                                    theme
-                                                        .lightModeColor
-                                                        .secColor200,
-                                                selectedColor:
-                                                    theme
-                                                        .lightModeColor
-                                                        .prColor300,
-                                                inactiveColor:
-                                                    Colors
-                                                        .grey,
-                                              ),
-                                              cursorColor:
-                                                  theme
-                                                      .lightModeColor
-                                                      .prColor300,
-                                              keyboardType:
-                                                  TextInputType
-                                                      .number,
-                                              blinkWhenObscuring:
-                                                  true,
-                                              obscureText:
-                                                  true,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                              ],
-                                              obscuringWidget: Container(
-                                                height: 11,
-                                                width: 11,
-                                                decoration: BoxDecoration(
-                                                  shape:
-                                                      BoxShape
-                                                          .circle,
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade800,
-                                                ),
-                                              ),
-                                              animationType:
-                                                  AnimationType
-                                                      .fade,
-                                              enableActiveFill:
-                                                  true,
-                                            ),
-                                            // PinCodeWidget(
-                                            //   // onChanged: (
-                                            //   //   value,
-                                            //   // ) {
-                                            //   //   print(
-                                            //   //     pinController!
-                                            //   //         .text,
-                                            //   //   );
-                                            //   // },
-                                            //   hideText:
-                                            //       true,
-                                            //   controller:
-                                            //       pinController!,
-                                            //   action: () async {
+                                            // PinCodeTextField(
+                                            //   appContext:
+                                            //       context,
+                                            //   length: 4,
+                                            //   onChanged: (
+                                            //     value,
+                                            //   ) {
+                                            //     setState(() {
+                                            //       value2 =
+                                            //           value;
+                                            //     });
+                                            //     print(
+                                            //       "Pin Code Now: $value2",
+                                            //     );
+                                            //   },
+                                            //   onCompleted: (
+                                            //     value,
+                                            //   ) async {
                                             //     setState(() {
                                             //       isLoading =
                                             //           true;
@@ -933,8 +748,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             //             null &&
                                             //         context
                                             //             .mounted) {
-                                            //       if (pinController!
-                                            //               .text !=
+                                            //       if (value !=
                                             //           user.pin) {
                                             //         setState(() {
                                             //           isLoading =
@@ -958,6 +772,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                             //                   'Incorrect PIN',
                                             //             );
                                             //           },
+                                            //         );
+                                            //         print(
+                                            //           "Pin Code Now: $value2",
                                             //         );
                                             //         print(
                                             //           "Pin Code Now: ${pinController?.text}",
@@ -1010,10 +827,194 @@ class _EmpAuthState extends State<EmpAuth> {
                                             //       );
                                             //       pinController!
                                             //           .clear();
+                                            //       setState(
+                                            //         () {
+                                            //           value =
+                                            //               '';
+                                            //         },
+                                            //       );
                                             //     }
                                             //   },
-                                            //   // text: pin1Controller.text,
+                                            //   pinTheme: PinTheme(
+                                            //     shape:
+                                            //         PinCodeFieldShape
+                                            //             .box,
+                                            //     borderRadius:
+                                            //         BorderRadius.circular(
+                                            //           5,
+                                            //         ),
+                                            //     fieldHeight:
+                                            //         50,
+                                            //     fieldWidth:
+                                            //         40,
+                                            //     activeFillColor:
+                                            //         Colors
+                                            //             .white,
+                                            //     selectedFillColor:
+                                            //         Colors
+                                            //             .grey
+                                            //             .shade100,
+                                            //     inactiveFillColor:
+                                            //         Colors
+                                            //             .grey
+                                            //             .shade100,
+                                            //     activeColor:
+                                            //         theme
+                                            //             .lightModeColor
+                                            //             .secColor200,
+                                            //     selectedColor:
+                                            //         theme
+                                            //             .lightModeColor
+                                            //             .prColor300,
+                                            //     inactiveColor:
+                                            //         Colors
+                                            //             .grey,
+                                            //   ),
+                                            //   cursorColor:
+                                            //       theme
+                                            //           .lightModeColor
+                                            //           .prColor300,
+                                            //   keyboardType:
+                                            //       TextInputType
+                                            //           .number,
+                                            //   blinkWhenObscuring:
+                                            //       true,
+                                            //   obscureText:
+                                            //       true,
+                                            //   inputFormatters: [
+                                            //     FilteringTextInputFormatter
+                                            //         .digitsOnly,
+                                            //   ],
+                                            //   obscuringWidget: Container(
+                                            //     height: 11,
+                                            //     width: 11,
+                                            //     decoration: BoxDecoration(
+                                            //       shape:
+                                            //           BoxShape
+                                            //               .circle,
+                                            //       color:
+                                            //           Colors
+                                            //               .grey
+                                            //               .shade800,
+                                            //     ),
+                                            //   ),
+                                            //   animationType:
+                                            //       AnimationType
+                                            //           .fade,
+                                            //   enableActiveFill:
+                                            //       true,
                                             // ),
+                                            PinCodeWidget(
+                                              focus: true,
+                                              // onChanged: (
+                                              //   value,
+                                              // ) {
+                                              //   print(
+                                              //     pinController!
+                                              //         .text,
+                                              //   );
+                                              // },
+                                              hideText:
+                                                  true,
+                                              controller:
+                                                  pinController,
+                                              action: () async {
+                                                setState(() {
+                                                  isLoading =
+                                                      true;
+                                                });
+                                                TempUserClass?
+                                                user = await fetchUserFromDatabase(
+                                                  AuthService()
+                                                      .currentUserEmail!,
+                                                  AuthService()
+                                                      .currentUser!,
+                                                );
+                                                if (user !=
+                                                        null &&
+                                                    context
+                                                        .mounted) {
+                                                  if (pinController
+                                                          .text !=
+                                                      user.pin) {
+                                                    setState(() {
+                                                      isLoading =
+                                                          false;
+                                                      // value =
+                                                      //     '';
+                                                    });
+
+                                                    showDialog(
+                                                      context:
+                                                          context,
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return InfoAlert(
+                                                          theme:
+                                                              theme,
+                                                          message:
+                                                              'Pin is Incorrect. Please Try again, or try logging in with your password.',
+                                                          title:
+                                                              'Incorrect PIN',
+                                                        );
+                                                      },
+                                                    );
+                                                    print(
+                                                      "Pin Code Now: ${pinController.text}",
+                                                    );
+                                                    setState(() {
+                                                      pinController
+                                                          .clear();
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      isLoading =
+                                                          false;
+                                                      showSuccess =
+                                                          true;
+                                                    });
+                                                    await Future.delayed(
+                                                      Duration(
+                                                        seconds:
+                                                            2,
+                                                      ),
+                                                    );
+                                                    if (context
+                                                        .mounted) {
+                                                      widget
+                                                          .action!();
+                                                    }
+
+                                                    setState(() {
+                                                      showSuccess =
+                                                          false;
+                                                    });
+                                                  }
+                                                } else {
+                                                  showDialog(
+                                                    // ignore: use_build_context_synchronously
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'User is Not found. Please check your details, and network and try again.',
+                                                        title:
+                                                            'User not found',
+                                                      );
+                                                    },
+                                                  );
+                                                  pinController
+                                                      .clear();
+                                                }
+                                              },
+                                              // text: pin1Controller.text,
+                                            ),
                                             SizedBox(
                                               height: 15,
                                             ),
@@ -1021,9 +1022,10 @@ class _EmpAuthState extends State<EmpAuth> {
                                               themeProvider:
                                                   theme,
                                               action: () {
-                                                if (value2
+                                                if (pinController
+                                                        .text
                                                         .isEmpty ||
-                                                    value2.length !=
+                                                    pinController.text.length !=
                                                         4) {
                                                   showDialog(
                                                     context:

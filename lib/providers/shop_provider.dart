@@ -661,7 +661,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
       } catch (e) {
-        print('Error: ${e.toString()}');
+        print('❌❌ Select Shop Error: ${e.toString()}');
         return 0;
       }
     }
@@ -1253,7 +1253,7 @@ class ShopProvider extends ChangeNotifier {
         notifyListeners();
         return onlineBytes;
       } catch (e) {
-        print('Error: ${e.toString()}');
+        print('❌❌ Get Logo Error: ${e.toString()}');
         // clearImage();
         return null;
       }
@@ -1274,7 +1274,7 @@ class ShopProvider extends ChangeNotifier {
           return imageBytes;
         }
       } catch (e) {
-        print('Error: ${e.toString()}');
+        print('❌❌ Get Logo Offline Error: ${e.toString()}');
         // clearImage();
         return null;
       }
@@ -1375,7 +1375,9 @@ class ShopProvider extends ChangeNotifier {
         );
         return 1;
       } catch (e) {
-        print('Error: ${e.toString()}');
+        print(
+          '❌❌ Upload Logo Offline Error: ${e.toString()}',
+        );
         return 0;
       }
     }

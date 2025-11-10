@@ -159,7 +159,7 @@ class _BarcodeScannerMobileState
                   onDetectError: (error, stackTrace) {
                     print(error.toString());
                     print(
-                      'Error: ${stackTrace.toString()}',
+                      '❌❌ Error: ${stackTrace.toString()}',
                     );
                   },
                 ),
@@ -312,7 +312,7 @@ class _BarcodeScannerDesktopState
                     onDetectError: (error, stackTrace) {
                       print(error.toString());
                       print(
-                        'Error: ${stackTrace.toString()}',
+                        '❌❌ Error: ${stackTrace.toString()}',
                       );
                     },
                   ),

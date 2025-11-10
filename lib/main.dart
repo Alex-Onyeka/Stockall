@@ -36,20 +36,20 @@ Stopwatch stopwatch = Stopwatch();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   stopwatch.start();
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   SystemUiOverlayStyle(
-  //     statusBarColor: Colors.white, // or any color
-  //     statusBarIconBrightness:
-  //         Brightness.dark, // for Android
-  //     systemNavigationBarContrastEnforced: true,
-  //     statusBarBrightness: Brightness.light,
-  //   ),
-  // );
-  // // Lock to portrait only
-  // await SystemChrome.setPreferredOrientations([
-  //   DeviceOrientation.portraitUp,
-  //   DeviceOrientation.portraitDown,
-  // ]);
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.white, // or any color
+      statusBarIconBrightness:
+          Brightness.dark, // for Android
+      systemNavigationBarContrastEnforced: true,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
+  // Lock to portrait only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await Supabase.initialize(
     url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',

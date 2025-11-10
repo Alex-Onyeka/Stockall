@@ -1063,7 +1063,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                       });
                                     });
                                   },
-                                  text: 'Printer Settings',
+                                  text: 'Receipt Settings',
                                   constraints:
                                       BoxConstraints(),
                                 ),

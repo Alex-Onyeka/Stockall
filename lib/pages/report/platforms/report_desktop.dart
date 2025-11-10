@@ -232,7 +232,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                           );
                                         },
                                         subText:
-                                            'View a detailed summary your customers purchases.',
+                                            'View a detailed summary of your customers purchases.',
                                         title:
                                             'Customer Report',
                                       ),

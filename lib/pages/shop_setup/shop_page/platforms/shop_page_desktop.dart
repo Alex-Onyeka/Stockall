@@ -509,7 +509,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                 child: MainButtonTransparent(
                                   themeProvider: theme,
                                   action: () {},
-                                  text: 'Printer Settings',
+                                  text: 'Receipt Settings',
                                   constraints:
                                       BoxConstraints(),
                                 ),

@@ -1,23 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/subscription/subscription_class.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
-import 'package:stockall/providers/shop_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubscriptionProvider extends ChangeNotifier {
-  final ShopProvider shopProvider = ShopProvider();
+  // final ShopProvider shopProvider = ShopProvider();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   final SupabaseClient supabase = Supabase.instance.client;
   final NavProvider navProvider = NavProvider();
   SubscriptionClass? subscription;
 
-  Future<SubscriptionClass?> createSubscription() async {
+  Future<TempShopClass> userShop(
+    BuildContext context,
+  ) async {
+    var shopP = returnShopProvider(context, listen: false);
+    if (shopP.userShop() == null) {
+      await shopP.getUserShops(AuthService().currentUser!);
+      return shopP.userShop()!;
+    } else {
+      return shopP.userShop()!;
+    }
+  }
+
+  Future<SubscriptionClass?> createSubscription(
+    BuildContext context,
+  ) async {
     // bool isOnline = await connectivity.isOnline();
     // if (isOnline) {
+    var shop = await userShop(context);
     try {
       var newSub = SubscriptionClass(
         createdAt: DateTime.now().toUtc(),
@@ -25,7 +42,7 @@ class SubscriptionProvider extends ChangeNotifier {
         nextPayment: DateTime.now().add(Duration(days: 30)),
         lastPayment: DateTime.now().toUtc(),
         subscriptionId: uuidGen(),
-        userId: shopProvider.userShop()!.userId,
+        userId: shop.userId,
       );
       var subTemp =
           await supabase
@@ -50,22 +67,22 @@ class SubscriptionProvider extends ChangeNotifier {
     // }
   }
 
-  Future<SubscriptionClass?> getSubscription() async {
+  Future<SubscriptionClass?> getSubscription(
+    BuildContext context,
+  ) async {
     var isOnline = await connectivity.isOnline();
+    var shop = await userShop(context);
     if (isOnline) {
       try {
         var response =
             await supabase
                 .from('subscription')
                 .select()
-                .eq(
-                  'user_id',
-                  shopProvider.userShop()!.userId,
-                )
+                .eq('user_id', shop.userId)
                 .maybeSingle();
         if (response == null) {
           print('No Subscription Found');
-          var subs = await createSubscription();
+          var subs = await createSubscription(context);
           return subs;
         }
         subscription = SubscriptionClass.fromJson(response);
@@ -75,7 +92,7 @@ class SubscriptionProvider extends ChangeNotifier {
         notifyListeners();
         return SubscriptionClass.fromJson(response);
       } catch (e) {
-        print('Error: ${e.toString()}');
+        print('❌❌ Get Subscription Error: ${e.toString()}');
         return null;
       }
     } else {
@@ -85,13 +102,19 @@ class SubscriptionProvider extends ChangeNotifier {
         notifyListeners();
         return subscription;
       } catch (e) {
-        print('Error Offline: ${e.toString()}');
+        print(
+          '❌❌ Get Subscription Error Offline: ${e.toString()}',
+        );
         return null;
       }
     }
   }
 
-  Future<int> subscribe({required int plan}) async {
+  Future<int> subscribe({
+    required int plan,
+    required BuildContext context,
+  }) async {
+    var shop = await userShop(context);
     var nextPayment =
         plan == 0
             ? null
@@ -109,10 +132,7 @@ class SubscriptionProvider extends ChangeNotifier {
                         .toIso8601String(),
                 'plan': plan,
               })
-              .eq(
-                'user_id',
-                shopProvider.userShop()!.userId,
-              )
+              .eq('user_id', shop.userId)
               .select()
               .maybeSingle();
 
@@ -123,10 +143,10 @@ class SubscriptionProvider extends ChangeNotifier {
         );
       }
       notifyListeners();
-      print('Success');
+      print('Subscription Success');
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print('❌❌ SubScribe Error: ${e.toString()}');
       return 0;
     }
   }

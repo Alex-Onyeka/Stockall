@@ -49,7 +49,7 @@ class NotificationFunc {
       print('Notif Cleared Success');
       return 1;
     } catch (e) {
-      print('Notif Clear Error: ${e.toString()}');
+      print('❌❌ Notif Clear Error: ${e.toString()}');
       return 0;
     }
   }

@@ -732,6 +732,8 @@ class DataProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
+    productList.clear();
+    print('✅✅ Products List Cleared');
     if (isOnline) {
       final data = await supabase
           .from('products')
@@ -741,6 +743,7 @@ class DataProvider extends ChangeNotifier {
           .range(0, 1000);
 
       print('Items gotten: ${data.length}');
+
       productList =
           (data as List)
               .map(

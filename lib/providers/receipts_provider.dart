@@ -86,7 +86,7 @@ class ReceiptsProvider extends ChangeNotifier {
         notifyListeners();
         return newReceipt;
       } catch (e) {
-        print('Error: ${e.toString()}');
+        print('❌❌ Create Receipt Error: ${e.toString()}');
         return null;
       }
     } else {

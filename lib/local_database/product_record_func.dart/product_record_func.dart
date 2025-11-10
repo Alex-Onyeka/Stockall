@@ -41,7 +41,7 @@ class ProductRecordFunc {
       print('Offline Record insert Successful');
       return 1;
     } catch (e) {
-      print('Record Insert Error: ${e.toString()}');
+      print('❌❌ Record Insert Error: ${e.toString()}');
       return 0;
     }
   }
@@ -56,7 +56,7 @@ class ProductRecordFunc {
       print('Offline Record insert Successful');
       return 1;
     } catch (e) {
-      print('Record Insert Error: ${e.toString()}');
+      print('❌❌ Record Insert Error: ${e.toString()}');
       return 0;
     }
   }
@@ -69,7 +69,7 @@ class ProductRecordFunc {
       print('Offline Record insert Successful');
       return 1;
     } catch (e) {
-      print('Record Insert Error: ${e.toString()}');
+      print('❌❌ Record Insert Error: ${e.toString()}');
       return 0;
     }
   }
@@ -80,7 +80,7 @@ class ProductRecordFunc {
       print('Offline Record Deleted Successful');
       return 1;
     } catch (e) {
-      print('Record Delete Error: ${e.toString()}');
+      print('❌❌ Record Delete Error: ${e.toString()}');
       return 0;
     }
   }
@@ -123,7 +123,7 @@ class ProductRecordFunc {
       );
       return 1;
     } catch (e) {
-      print('Record Delete Error: ${e.toString()}');
+      print('❌❌ Record Delete Error: ${e.toString()}');
       return 0;
     }
   }
@@ -167,7 +167,7 @@ class ProductRecordFunc {
       );
       return 1;
     } catch (e) {
-      print('Record Delete Error: ${e.toString()}');
+      print('❌❌ Record Delete Error: ${e.toString()}');
       return 0;
     }
   }
@@ -178,7 +178,7 @@ class ProductRecordFunc {
       print('Offline Record Cleared Successful');
       return 1;
     } catch (e) {
-      print('Record Clear Error: ${e.toString()}');
+      print('❌❌ Record Clear Error: ${e.toString()}');
       return 0;
     }
   }

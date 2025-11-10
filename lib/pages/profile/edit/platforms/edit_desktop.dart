@@ -59,6 +59,8 @@ class _EditDesktopState extends State<EditDesktop> {
     }
   }
 
+  String value1 = '0';
+  String value2 = '0';
   final pin2Controller = TextEditingController();
   final pin1Controller = TextEditingController();
 
@@ -316,6 +318,11 @@ class _EditDesktopState extends State<EditDesktop> {
                                   ),
                                   SizedBox(height: 10),
                                   PinCodeWidget(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        value1 = value;
+                                      });
+                                    },
                                     hideText: false,
                                     controller:
                                         pin1Controller,
@@ -335,11 +342,15 @@ class _EditDesktopState extends State<EditDesktop> {
                                   ),
                                   SizedBox(height: 10),
                                   PinCodeWidget(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        value2 = value;
+                                      });
+                                    },
                                     hideText: true,
                                     controller:
                                         pin2Controller,
-                                    text:
-                                        pin1Controller.text,
+                                    text: value1,
                                   ),
                                 ],
                               ),
@@ -462,8 +473,7 @@ class _EditDesktopState extends State<EditDesktop> {
                                 }
                               } else if (widget.action ==
                                   'PIN') {
-                                if (pin1Controller.text !=
-                                    pin2Controller.text) {
+                                if (value1 != value2) {
                                   showDialog(
                                     context: context,
                                     builder: (context) {
@@ -476,14 +486,9 @@ class _EditDesktopState extends State<EditDesktop> {
                                       );
                                     },
                                   );
-                                } else if (pin1Controller
-                                            .text
-                                            .length !=
+                                } else if (value1.length !=
                                         4 ||
-                                    pin2Controller
-                                            .text
-                                            .length !=
-                                        4) {
+                                    value2.length != 4) {
                                   showDialog(
                                     context: context,
                                     builder: (context) {
@@ -526,14 +531,14 @@ class _EditDesktopState extends State<EditDesktop> {
                                             safeContex,
                                           ).pop();
 
-                                          await userProvider.updatePinInSupabase(
-                                            newPin:
-                                                pin2Controller
-                                                    .text,
-                                            userId:
-                                                AuthService()
-                                                    .currentUser!,
-                                          );
+                                          await userProvider
+                                              .updatePinInSupabase(
+                                                newPin:
+                                                    value2,
+                                                userId:
+                                                    AuthService()
+                                                        .currentUser!,
+                                              );
 
                                           setState(() {
                                             isLoading =
@@ -552,7 +557,7 @@ class _EditDesktopState extends State<EditDesktop> {
                                                     .main !=
                                                 null) {
                                               Navigator.push(
-                                                safeContex, // ✅ use this
+                                                safeContex,
                                                 MaterialPageRoute(
                                                   builder: (
                                                     context,
@@ -561,7 +566,6 @@ class _EditDesktopState extends State<EditDesktop> {
                                                   },
                                                 ),
                                               );
-                                              // performRestart();
                                             } else {
                                               Navigator.of(
                                                 safeContex,

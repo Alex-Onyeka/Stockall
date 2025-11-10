@@ -300,7 +300,7 @@ class UserProvider extends ChangeNotifier {
 
       return null; // success
     } catch (e) {
-      print('Error updating employee role: $e');
+      print('❌❌ Error updating employee role: $e');
       return 'Error: ${e.toString()}';
     }
   }

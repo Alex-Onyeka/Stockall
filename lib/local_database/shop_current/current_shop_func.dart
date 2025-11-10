@@ -53,11 +53,13 @@ class CurrentShopFunc {
     try {
       if (currentShopBox.values.isNotEmpty) {
         await currentShopBox.clear();
-        print('Current Shop Cleared');
+        print('Offline Current Shop Cleared');
       }
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print(
+        '❌❌ Offline Current Shop Error: ${e.toString()}',
+      );
       return 0;
     }
   }

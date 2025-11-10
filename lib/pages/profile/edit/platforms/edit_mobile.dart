@@ -58,8 +58,8 @@ class _EditMobileState extends State<EditMobile> {
     }
   }
 
-  // String value1 = '0';
-  // String value2 = '0';
+  String value1 = '0';
+  String value2 = '0';
   final pin2Controller = TextEditingController();
   final pin1Controller = TextEditingController();
 
@@ -196,6 +196,11 @@ class _EditMobileState extends State<EditMobile> {
                           ),
                           SizedBox(height: 10),
                           PinCodeWidget(
+                            onChanged: (value) {
+                              setState(() {
+                                value1 = value;
+                              });
+                            },
                             hideText: false,
                             controller: pin1Controller,
                           ),
@@ -213,9 +218,14 @@ class _EditMobileState extends State<EditMobile> {
                           ),
                           SizedBox(height: 10),
                           PinCodeWidget(
+                            onChanged: (value) {
+                              setState(() {
+                                value2 = value;
+                              });
+                            },
                             hideText: true,
                             controller: pin2Controller,
-                            text: pin1Controller.text,
+                            text: value1,
                           ),
                         ],
                       ),
@@ -325,8 +335,7 @@ class _EditMobileState extends State<EditMobile> {
                           );
                         }
                       } else if (widget.action == 'PIN') {
-                        if (pin1Controller.text !=
-                            pin2Controller.text) {
+                        if (value1 != value2) {
                           showDialog(
                             context: context,
                             builder: (context) {
@@ -338,12 +347,8 @@ class _EditMobileState extends State<EditMobile> {
                               );
                             },
                           );
-                        } else if (pin1Controller
-                                    .text
-                                    .length !=
-                                4 ||
-                            pin2Controller.text.length !=
-                                4) {
+                        } else if (value1.length != 4 ||
+                            value2.length != 4) {
                           showDialog(
                             context: context,
                             builder: (context) {
@@ -384,9 +389,7 @@ class _EditMobileState extends State<EditMobile> {
 
                                   await userProvider
                                       .updatePinInSupabase(
-                                        newPin:
-                                            pin2Controller
-                                                .text,
+                                        newPin: value2,
                                         userId:
                                             AuthService()
                                                 .currentUser!,
@@ -404,7 +407,7 @@ class _EditMobileState extends State<EditMobile> {
                                     if (widget.main !=
                                         null) {
                                       Navigator.push(
-                                        safeContex, // ✅ use this
+                                        safeContex,
                                         MaterialPageRoute(
                                           builder: (
                                             context,

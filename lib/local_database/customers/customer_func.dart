@@ -98,7 +98,7 @@ class CustomerFunc {
       print('Offline Customers Cleared');
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print('❌❌ Error: ${e.toString()}');
       return 0;
     }
   }

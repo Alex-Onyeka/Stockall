@@ -79,7 +79,7 @@ class ProductsFunc {
       print('Offline Product Update Successful');
       return 1;
     } catch (e) {
-      print('Update Error: ${e.toString()}');
+      print('❌❌ Update Error: ${e.toString()}');
       return 0;
     }
   }
@@ -216,11 +216,13 @@ class ProductsFunc {
     try {
       if (productBox.values.isNotEmpty) {
         await productBox.clear();
-        print('Products Cleared');
+        print('Offline Products Cleared');
       }
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print(
+        '❌❌ Offline Products Clear Error: ${e.toString()}',
+      );
       return 0;
     }
   }

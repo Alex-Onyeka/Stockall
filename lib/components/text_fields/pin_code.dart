@@ -9,7 +9,8 @@ class PinCodeWidget extends StatefulWidget {
   final TextEditingController controller;
   final String? text;
   final bool hideText;
-  // final Function(String value)? onChanged;
+  final Function(String value)? onChanged;
+  final bool? focus;
 
   const PinCodeWidget({
     super.key,
@@ -17,7 +18,8 @@ class PinCodeWidget extends StatefulWidget {
     this.text,
     this.action,
     required this.hideText,
-    // this.onChanged,
+    this.onChanged,
+    this.focus,
   });
 
   @override
@@ -30,29 +32,41 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     return PinCodeTextField(
+      autoFocus:
+          widget.focus != null && widget.focus == true,
       appContext: context,
       length: 4,
-      // onChanged: widget.onChanged,
+      onChanged: (value) {
+        widget.onChanged != null
+            ? widget.onChanged!(value)
+            : {};
+        print(widget.controller.text);
+        // print(value);
+        print(widget.text);
+        //   if (value.length > 2) {
+        //     widget.controller.clear();
+        //   }
+      },
       controller: widget.controller,
       onCompleted: (value) {
-        if (widget.text != null &&
-            widget.controller.text != widget.text) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return InfoAlert(
-                theme: theme,
-                message:
-                    'PIN Does not match. Please Check the two PIN\'s, and Try again.',
-                title: 'PIN Mismatch',
-              );
-            },
-          );
-          widget.controller.clear();
-        } else {
-          widget.action != null ? widget.action!() : {};
-          // return;
+        if (widget.text != null) {
+          if (value != widget.text!) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return InfoAlert(
+                  theme: theme,
+                  message:
+                      'PIN Does not match. Please Check the two PIN\'s, and Try again.',
+                  title: 'PIN Mismatch',
+                );
+              },
+            );
+            widget.controller.clear();
+          }
         }
+        widget.action != null ? widget.action!() : {};
+        // return;
       },
       pinTheme: PinTheme(
         shape: PinCodeFieldShape.box,
@@ -76,8 +90,8 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
       obscuringWidget:
           widget.hideText
               ? Container(
-                height: 15,
-                width: 15,
+                height: 12,
+                width: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey.shade800,

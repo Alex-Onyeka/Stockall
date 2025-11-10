@@ -454,7 +454,7 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                           buttonText:
                                                               'Create Expenses',
                                                           subText:
-                                                              'Click on the button below Record an Expense.',
+                                                              'Click on the button below to Record an Expense.',
                                                           title:
                                                               'No Expenses Recorded Yet',
                                                           svg:

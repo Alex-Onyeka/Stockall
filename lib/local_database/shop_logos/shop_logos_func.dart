@@ -60,7 +60,7 @@ class ShopLogosFunc {
       }
       return 1;
     } catch (e) {
-      print('Error: ${e.toString()}');
+      print('❌❌ Logo Clear Error: ${e.toString()}');
       return 0;
     }
   }

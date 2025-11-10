@@ -84,7 +84,10 @@ class NavProvider extends ChangeNotifier {
       AuthService().currentUser!,
     );
 
-    final subsription = await subPro.getSubscription();
+    final subsription = await subPro.getSubscription(
+      // ignore: use_build_context_synchronously
+      context,
+    );
 
     if (isOnline) {
       var userOffline = AuthService().currentUserOffline;
