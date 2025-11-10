@@ -915,135 +915,144 @@ class NavListTileDesktopAlt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return InkWell(
-      onTap: () {
-        action!();
-      },
-      child: Container(
-        color:
-            returnNavProvider(context).currentIndex ==
-                    itemIndex
-                ? const Color.fromARGB(36, 255, 153, 0)
-                : Colors.transparent,
-        height: 38,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10.0,
-          ),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 20,
-                    child: Center(
-                      child: Stack(
-                        children: [
-                          Visibility(
-                            visible: icon != null,
-                            child: Icon(
-                              color:
-                                  returnNavProvider(
-                                            context,
-                                          ).currentIndex ==
-                                          itemIndex
-                                      ? Colors.grey.shade900
-                                      : color ??
-                                          Colors
-                                              .grey
-                                              .shade600,
-                              size: height,
-                              icon ??
-                                  Icons
-                                      .arrow_forward_ios_rounded,
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0, bottom: 5),
+      child: InkWell(
+        onTap: () {
+          action!();
+        },
+        child: Container(
+          color:
+              returnNavProvider(context).currentIndex ==
+                      itemIndex
+                  ? const Color.fromARGB(36, 255, 153, 0)
+                  : Colors.transparent,
+          height: 38,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+            ),
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  spacing: 10,
+                  mainAxisAlignment:
+                      MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      child: Center(
+                        child: Stack(
+                          children: [
+                            Visibility(
+                              visible: icon != null,
+                              child: Icon(
+                                color:
+                                    returnNavProvider(
+                                              context,
+                                            ).currentIndex ==
+                                            itemIndex
+                                        ? Colors
+                                            .grey
+                                            .shade900
+                                        : color ??
+                                            Colors
+                                                .grey
+                                                .shade600,
+                                size: height,
+                                icon ??
+                                    Icons
+                                        .arrow_forward_ios_rounded,
+                              ),
                             ),
-                          ),
-                          Visibility(
-                            visible: svg != null,
-                            child: SvgPicture.asset(
-                              color:
-                                  returnNavProvider(
-                                            context,
-                                          ).currentIndex ==
-                                          itemIndex
-                                      ? Colors.grey.shade900
-                                      : color ??
-                                          Colors
-                                              .grey
-                                              .shade600,
-                              svg ?? '',
-                              height: height,
+                            Visibility(
+                              visible: svg != null,
+                              child: SvgPicture.asset(
+                                color:
+                                    returnNavProvider(
+                                              context,
+                                            ).currentIndex ==
+                                            itemIndex
+                                        ? Colors
+                                            .grey
+                                            .shade900
+                                        : color ??
+                                            Colors
+                                                .grey
+                                                .shade600,
+                                svg ?? '',
+                                height: height,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Text(
-                    style: TextStyle(
-                      color: color ?? Colors.grey.shade900,
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
-                      fontWeight:
-                          returnNavProvider(
-                                    context,
-                                  ).currentIndex ==
-                                  itemIndex
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                    ),
-                    title,
-                  ),
-                ],
-              ),
-              Stack(
-                children: [
-                  Visibility(
-                    visible:
-                        returnNavProvider(
-                          context,
-                        ).currentIndex !=
-                        itemIndex,
-                    child: Icon(
-                      color: Colors.grey.shade600,
-                      size: 12,
-                      Icons.arrow_forward_ios_rounded,
-                    ),
-                  ),
-                  Visibility(
-                    visible:
-                        returnNavProvider(
-                          context,
-                        ).currentIndex ==
-                        itemIndex,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        0,
-                        5,
-                        3,
-                        5,
-                      ),
-                      child: Container(
-                        width: 4,
-                        decoration: BoxDecoration(
-                          color:
-                              theme
-                                  .lightModeColor
-                                  .secColor200,
-                          borderRadius:
-                              BorderRadius.circular(20),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+
+                    Text(
+                      style: TextStyle(
+                        color:
+                            color ?? Colors.grey.shade900,
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight:
+                            returnNavProvider(
+                                      context,
+                                    ).currentIndex ==
+                                    itemIndex
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                      title,
+                    ),
+                  ],
+                ),
+                Stack(
+                  children: [
+                    Visibility(
+                      visible:
+                          returnNavProvider(
+                            context,
+                          ).currentIndex !=
+                          itemIndex,
+                      child: Icon(
+                        color: Colors.grey.shade600,
+                        size: 12,
+                        Icons.arrow_forward_ios_rounded,
+                      ),
+                    ),
+                    Visibility(
+                      visible:
+                          returnNavProvider(
+                            context,
+                          ).currentIndex ==
+                          itemIndex,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          0,
+                          5,
+                          3,
+                          5,
+                        ),
+                        child: Container(
+                          width: 4,
+                          decoration: BoxDecoration(
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .secColor200,
+                            borderRadius:
+                                BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

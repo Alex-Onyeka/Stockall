@@ -114,10 +114,16 @@ class _TopNavBarState extends State<TopNavBar> {
                     InkWell(
                       onTap: () async {
                         if (!authorization(
-                          authorized:
-                              Authorizations().switchStores,
-                          context: context,
-                        )) {
+                              authorized:
+                                  Authorizations()
+                                      .switchStores,
+                              context: context,
+                            ) &&
+                            returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).userShops.length <
+                                2) {
                           return;
                         }
                         var isOnline =
@@ -334,12 +340,17 @@ class _TopNavBarState extends State<TopNavBar> {
                           ),
                           SizedBox(width: 0),
                           Visibility(
-                            visible: authorization(
-                              authorized:
-                                  Authorizations()
-                                      .switchStores,
-                              context: context,
-                            ),
+                            visible:
+                                authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .switchStores,
+                                  context: context,
+                                ) ||
+                                returnShopProvider(
+                                      context,
+                                    ).userShops.length >
+                                    1,
                             child: Icon(
                               isOpen
                                   ? Icons
@@ -936,7 +947,13 @@ class PopoverMenu extends StatelessWidget {
                                     listen: false,
                                   ).userShops.length,
                                 );
-                              } else {
+                              } else if (authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageShop,
+                                // ignore: use_build_context_synchronously
+                                context: context,
+                              )) {
                                 // ignore: use_build_context_synchronously
                                 Navigator.of(context).pop();
                                 Navigator.push(
@@ -956,15 +973,21 @@ class PopoverMenu extends StatelessWidget {
               ),
             ),
             SizedBox(height: 5),
-            Material(
-              color: Colors.white,
-              child: MainButtonP(
-                themeProvider: theme,
-                action: () {
-                  Navigator.of(context).pop();
-                  action!();
-                },
-                text: 'Create New Shop',
+            Visibility(
+              visible: authorization(
+                authorized: Authorizations().createShop,
+                context: context,
+              ),
+              child: Material(
+                color: Colors.white,
+                child: MainButtonP(
+                  themeProvider: theme,
+                  action: () {
+                    Navigator.of(context).pop();
+                    action!();
+                  },
+                  text: 'Create New Shop',
+                ),
               ),
             ),
           ],

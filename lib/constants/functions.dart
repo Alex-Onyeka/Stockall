@@ -115,6 +115,8 @@ List<Map<String, dynamic>> employees = [
       'Contact Stockall',
       'View Date',
       'Switch Stores',
+      'Delete Shop',
+      'Create Shop',
     ],
   },
   {
@@ -213,6 +215,8 @@ class Authorizations {
   String contactStockall = 'Contact Stockall';
   String viewDate = 'View Date';
   String switchStores = 'Switch Stores';
+  String createShop = 'Create Shop';
+  String deleteShop = 'Delete Shop';
 }
 
 bool authorization({
