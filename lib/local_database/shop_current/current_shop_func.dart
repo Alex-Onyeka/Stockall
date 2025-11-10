@@ -11,16 +11,30 @@ class CurrentShopFunc {
       'currentShopBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(currentShopBoxName);
     try {
       Hive.registerAdapter(TempCurrentShopAdapter());
+
       currentShopBox = await Hive.openBox(
         currentShopBoxName,
       );
-      print('Current Shop Box Initialized ✅');
+      print('✅ Current Shop Box Initialized');
     } catch (e) {
-      print('Error New: ${e.toString()}');
-      // await Hive.deleteBoxFromDisk(currentShopBoxName);
+      print('❌ Error New: ${e.toString()}');
+      try {
+        if (Hive.isBoxOpen(currentShopBoxName)) {
+          await Hive.box(currentShopBoxName).close();
+        }
+
+        await Hive.deleteBoxFromDisk(currentShopBoxName);
+        print('🧹 Deleted Corrupted Current Shop Box');
+
+        currentShopBox = await Hive.openBox(
+          currentShopBoxName,
+        );
+        print('✅ Reinitialized Current Shop Box');
+      } catch (innerError) {
+        print('⚠️ Failed to recover Hive box: $innerError');
+      }
     }
   }
 
