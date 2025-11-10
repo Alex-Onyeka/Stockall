@@ -158,11 +158,10 @@ class _DashboardDesktopState
   late Future<List<TempUserClass>> employeesFuture;
 
   Future<List<TempUserClass>> getEmployees() async {
-    var users =
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchUsers();
+    var users = await returnUserProvider(
+      context,
+      listen: false,
+    ).fetchUsersByShop(context);
 
     return users;
   }

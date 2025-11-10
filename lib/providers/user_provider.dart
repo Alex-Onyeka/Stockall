@@ -26,16 +26,60 @@ class UserProvider extends ChangeNotifier {
 
   bool isLoading = false;
 
-  Future<List<TempUserClass>> fetchUsers() async {
-    final authUser = _supabase.currentUser;
+  // Future<List<TempUserClass>> fetchUsers() async {
+  //   final authUser = _supabase.currentUser;
+  //   isLoading = true;
+  //   bool isOnline = await ConnectivityProvider().isOnline();
+
+  //   if (isOnline) {
+  //     final data = await _supabase.client
+  //         .from('users')
+  //         .select()
+  //         .eq('auth_user_id', authUser ?? '');
+
+  //     _users =
+  //         data
+  //             .map<TempUserClass>(
+  //               (json) => TempUserClass.fromJson(json),
+  //             )
+  //             .toList();
+  //     await UserFunc().insertAllUsers(_users);
+  //   } else {
+  //     _users = UserFunc().getUsers();
+  //   }
+  //   _users.sort(
+  //     (a, b) => a.name.toLowerCase().compareTo(
+  //       b.name.toLowerCase(),
+  //     ),
+  //   );
+  //   notifyListeners();
+  //   isLoading = false;
+  //   return _users;
+  // }
+
+  Future<List<TempUserClass>> fetchUsersByShop(
+    BuildContext context,
+  ) async {
+    // final authUser = _supabase.currentUser;
+
     isLoading = true;
     bool isOnline = await ConnectivityProvider().isOnline();
 
     if (isOnline) {
+      await returnShopProvider(
+        context,
+        listen: false,
+      ).getUserShops(AuthService().currentUser!);
+      var employees =
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop()!.employees!;
       final data = await _supabase.client
           .from('users')
           .select()
-          .eq('auth_user_id', authUser ?? '');
+          .inFilter('user_id', employees);
+      print('Users Gotten from Supabase: ${data.length}');
 
       _users =
           data
@@ -43,10 +87,13 @@ class UserProvider extends ChangeNotifier {
                 (json) => TempUserClass.fromJson(json),
               )
               .toList();
+      notifyListeners();
       await UserFunc().insertAllUsers(_users);
     } else {
       _users = UserFunc().getUsers();
+      notifyListeners();
     }
+
     _users.sort(
       (a, b) => a.name.toLowerCase().compareTo(
         b.name.toLowerCase(),
@@ -65,11 +112,14 @@ class UserProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
+      // ignore: use_build_context_synchronously
       if (returnData(context, listen: false).isSynced() ==
           0) {
         await returnData(
+          // ignore: use_build_context_synchronously
           context,
           listen: false,
+          // ignore: use_build_context_synchronously
         ).syncData(context);
         final authUser = _supabase.currentUser;
         if (authUser == null) {
@@ -201,33 +251,36 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addUser(
-    TempUserClass user,
-    BuildContext context,
-  ) async {
-    try {
-      await _supabase.client
-          .from('users')
-          .insert(user.toJson(includeUserId: true));
-      await fetchUsers();
-      if (context.mounted) {
-        await fetchCurrentUser(context);
-      }
-    } catch (e, st) {
-      debugPrint('Error adding main user: $e\n$st');
-    }
-  }
+  // Future<void> addUser(
+  //   TempUserClass user,
+  //   BuildContext context,
+  // ) async {
+  //   try {
+  //     await _supabase.client
+  //         .from('users')
+  //         .insert(user.toJson(includeUserId: true));
+  //     await fetchUsersByShop(context);
+  //     if (context.mounted) {
+  //       await fetchCurrentUser(context);
+  //     }
+  //   } catch (e, st) {
+  //     debugPrint('Error adding main user: $e\n$st');
+  //   }
+  // }
 
-  Future<void> addEmployee(TempUserClass employee) async {
-    try {
-      await _supabase.client
-          .from('users')
-          .insert(employee.toJson(includeUserId: false));
-      await fetchUsers();
-    } catch (e, st) {
-      debugPrint('Error adding employee: $e\n$st');
-    }
-  }
+  // Future<void> addEmployee({
+  //   required TempUserClass employee,
+  //   required BuildContext context,
+  // }) async {
+  //   try {
+  //     await _supabase.client
+  //         .from('users')
+  //         .insert(employee.toJson(includeUserId: false));
+  //     await fetchUsersByShop(context);
+  //   } catch (e, st) {
+  //     debugPrint('Error adding employee: $e\n$st');
+  //   }
+  // }
 
   Future<TempUserClass> updateUser(
     TempUserClass user,
@@ -252,7 +305,7 @@ class UserProvider extends ChangeNotifier {
             .single();
     final updatedUser = TempUserClass.fromJson(updatedRows);
 
-    await fetchUsers();
+    await fetchUsersByShop(context);
 
     return updatedUser;
   }
@@ -272,14 +325,13 @@ class UserProvider extends ChangeNotifier {
       // Check if auth user exists
       final authUserResponse =
           await _supabase.client
-              .from(
-                'users',
-              ) // Adjust if your actual auth table is different
+              .from('users')
               .select('user_id')
               .eq('user_id', userId)
               .maybeSingle();
 
       if (authUserResponse == null) {
+        print("Auth Response is Null");
         return '131';
       }
 
@@ -292,10 +344,14 @@ class UserProvider extends ChangeNotifier {
           })
           .eq('user_id', userId);
 
-      var user = usersMain.firstWhere(
+      var user = usersMain.where(
         (user) => user.userId == userId,
       );
-      user.role = newRole;
+      if (user.isEmpty) {
+        print('User Not Found');
+      } else {
+        user.first.role = newRole;
+      }
       notifyListeners();
 
       return null; // success
@@ -305,55 +361,16 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(String userId) async {
-    await _supabase.client
-        .from('users')
-        .delete()
-        .eq('user_id', userId);
-    await fetchUsers();
-  }
+  // Future<void> deleteUser(String userId) async {
+  //   await _supabase.client
+  //       .from('users')
+  //       .delete()
+  //       .eq('user_id', userId);
+  //   await fetchUsersByShop(context);
+  // }
 
   //
   //
   //
   //
-
-  final List<TempUserClass> users = [
-    TempUserClass(
-      authUserId: '',
-      userId: 'user_001',
-      createdAt: DateTime.now(),
-      name: 'Alex Onyeka',
-      email: 'alexonyekasm@gmail.com',
-      phone: '08012345678',
-      role: 'admin',
-      password: '',
-    ),
-    TempUserClass(
-      password: '',
-      authUserId: '',
-      userId: 'user_002',
-      createdAt: DateTime.now(),
-      name: 'Chioma Eze',
-      email: 'chioma@example.com',
-      phone: '08123456789',
-      role: 'manager',
-    ),
-    TempUserClass(
-      authUserId: '',
-      userId: 'user_003',
-      createdAt: DateTime.now(),
-      name: 'Ahmed Musa',
-      email: 'ahmed@example.com',
-      phone: '09098765432',
-      role: 'staff',
-      password: '',
-    ),
-  ];
-
-  TempUserClass currentUser(String userId) {
-    return users.firstWhere(
-      (element) => element.userId == userId,
-    );
-  }
 }

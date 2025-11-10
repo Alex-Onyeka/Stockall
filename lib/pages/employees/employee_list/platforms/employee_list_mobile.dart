@@ -110,9 +110,9 @@ class _EmployeeListMobileState
         builder: (context) {
           List<TempUserClass> employees =
               returnUserProvider(context).usersMain
-                  .where(
-                    (emp) => emp.authUserId != emp.userId!,
-                  )
+                  // .where(
+                  //   (emp) => emp.authUserId != emp.userId!,
+                  // )
                   .toList();
 
           return Padding(

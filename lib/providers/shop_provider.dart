@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
@@ -31,7 +31,26 @@ class ShopProvider extends ChangeNotifier {
   Future<void> createShop(TempShopClass shop) async {
     shop.updatedAt = DateTime.now();
     // Insert the shop
-    await supabase.from('shops').insert(shop.toJson());
+    var createdShop =
+        await supabase
+            .from('shops')
+            .insert(shop.toJson())
+            .select()
+            .maybeSingle();
+
+    if (createdShop != null) {
+      print(createdShop['name']);
+      var user =
+          await supabase
+              .from('users')
+              .update({'role': 'Owner'})
+              .eq('user_id', AuthService().currentUser!)
+              .select()
+              .maybeSingle();
+      if (user != null) {
+        print(user['name']);
+      }
+    }
 
     // Fetch All Shops
     final response = await getUserShops(shop.userId);
@@ -120,28 +139,82 @@ class ShopProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      final response = await supabase
-          .from('shops')
-          .select()
-          .contains('employees', [userId]);
+      var user =
+          await supabase
+              .from('users')
+              .select()
+              .eq('user_id', AuthService().currentUser!)
+              .maybeSingle();
 
-      if (response.isEmpty) {
-        // await ShopFunc().clearShop();
-        print('User Shops not found');
-        return [];
+      // var tempUser = TempUserClass.fromJson(user!);
+      // final response = await supabase
+      //     .from('shops')
+      //     .select()
+      //     .eq('user_id', tempUser.userId!);
+
+      // if (response.isEmpty) {
+      //   print(response.length);
+      //   print('User Shops not found');
+      //   return [];
+      // } else {
+      //   print('Shops Gotten: ${response.length}');
+      // }
+
+      if (user != null) {
+        var tempUser = TempUserClass.fromJson(user);
+        print(
+          "✅❌✅👍 User Name: ${AuthService().currentUser!}",
+        );
+        if (tempUser.role == "Owner") {
+          final response = await supabase
+              .from('shops')
+              .select()
+              .eq('user_id', tempUser.userId!);
+
+          if (response.isEmpty) {
+            // await ShopFunc().clearShop();
+            print(response.length);
+            print('User Shops not found');
+            return [];
+          }
+          await ShopFunc().insertShops(
+            response
+                .map((res) => TempShopClass.fromJson(res))
+                .toList(),
+          );
+          notifyListeners();
+          setShops(
+            response
+                .map((res) => TempShopClass.fromJson(res))
+                .toList(),
+          );
+          print('User Shops found ${response.length}');
+        } else {
+          final response = await supabase
+              .from('shops')
+              .select()
+              .contains('employees', [userId]);
+
+          if (response.isEmpty) {
+            // await ShopFunc().clearShop();
+            print('User Shops not found');
+            return [];
+          }
+          await ShopFunc().insertShops(
+            response
+                .map((res) => TempShopClass.fromJson(res))
+                .toList(),
+          );
+          notifyListeners();
+          setShops(
+            response
+                .map((res) => TempShopClass.fromJson(res))
+                .toList(),
+          );
+          print('User Shops found ${response.length}');
+        }
       }
-      await ShopFunc().insertShops(
-        response
-            .map((res) => TempShopClass.fromJson(res))
-            .toList(),
-      );
-      notifyListeners();
-      setShops(
-        response
-            .map((res) => TempShopClass.fromJson(res))
-            .toList(),
-      );
-      print('User Shops found ${response.length}');
+
       notifyListeners();
     } else {
       setShops(ShopFunc().getShops());
@@ -563,10 +636,7 @@ class ShopProvider extends ChangeNotifier {
       final updateResponse = await supabase
           .from('shops')
           .update({'employees': currentEmployees})
-          .eq(
-            'shop_id',
-            shopId,
-          ); // Required to actually perform the update
+          .eq('shop_id', shopId);
 
       if (updateResponse != null) {
         print('Failed to update shop: $updateResponse');

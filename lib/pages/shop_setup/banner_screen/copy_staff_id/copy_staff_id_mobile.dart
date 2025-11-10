@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -399,6 +400,16 @@ class _CopyStaffIdMobileState
                     ),
                   ],
                 ),
+                SizedBox(height: 10),
+                MainButtonTransparent(
+                  themeProvider: theme,
+                  constraints: BoxConstraints(),
+                  text: 'Go Back',
+                  action: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                SizedBox(height: 20),
               ],
             ),
           ),

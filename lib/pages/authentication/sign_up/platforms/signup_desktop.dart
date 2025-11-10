@@ -142,7 +142,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
                     .toLowerCase()
                     .trim(),
             phone: widget.phoneNumberController.text.trim(),
-            role: 'Owner',
+            role: 'Cashier',
             password: widget.passwordController.text,
             lastName: widget.lastNameController.text,
           ),

@@ -31,11 +31,6 @@ class NavProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> navigateAction({required int index}) async {
-  //   await Future.delayed(Duration(milliseconds: 10));
-  //   navigate(index);
-  // }
-
   int currentAuth = 0;
 
   void navigateAuth(int index) {

@@ -201,11 +201,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
   late Future<List<TempUserClass>> employeesFuture;
   Future<List<TempUserClass>> getEmployees() {
-    var users =
-        returnUserProvider(
-          context,
-          listen: false,
-        ).fetchUsers();
+    var users = returnUserProvider(
+      context,
+      listen: false,
+    ).fetchUsersByShop(context);
 
     return users;
   }

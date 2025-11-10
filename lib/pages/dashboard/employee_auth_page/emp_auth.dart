@@ -533,7 +533,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                             FontWeight
                                                 .normal,
                                       ),
-                                      'Enter your ${isPassword ? 'password' : 'PIN'} to Login.',
+                                      'Enter your ${isPassword ? 'password' : 'PIN'} to Login',
                                     ),
                                   ],
                                 ),

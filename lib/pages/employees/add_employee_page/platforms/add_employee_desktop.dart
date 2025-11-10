@@ -40,11 +40,10 @@ class _AddEmployeeDesktopState
 
   late Future<List<TempUserClass>> usersFuture;
   Future<List<TempUserClass>> getUsers() {
-    var tempUsers =
-        returnUserProvider(
-          context,
-          listen: false,
-        ).fetchUsers();
+    var tempUsers = returnUserProvider(
+      context,
+      listen: false,
+    ).fetchUsersByShop(context);
     return tempUsers;
   }
 

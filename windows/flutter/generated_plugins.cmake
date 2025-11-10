@@ -8,11 +8,9 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   file_saver
   file_selector_windows
-  flutter_thermal_printer
   flutter_usb_thermal_plugin
   permission_handler_windows
   printing
-  universal_ble
   url_launcher_windows
 )
 

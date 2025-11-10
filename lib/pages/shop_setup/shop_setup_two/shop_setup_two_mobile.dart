@@ -184,7 +184,7 @@ class _ShopSetupTwoMobileState
                     updateNumber: currentUpdate,
                     isVerified: false,
                     currency: selectedCurrency!,
-                    employees: [AuthService().currentUser!],
+                    employees: [],
                     createdAt: DateTime.now(),
                     userId: AuthService().currentUser!,
                     email: shopProvider.email,
