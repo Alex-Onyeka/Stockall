@@ -336,6 +336,39 @@ class _AddEmployeeDesktopState
                                       title:
                                           'Are you Sure?',
                                       action: () async {
+                                        var isOnline =
+                                            await returnConnectivityProvider(
+                                              context,
+                                              listen: false,
+                                            ).isOnline();
+                                        if (!isOnline) {
+                                          showDialog(
+                                            // ignore: use_build_context_synchronously
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return InfoAlert(
+                                                theme: returnTheme(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ),
+                                                message:
+                                                    'Internet connection is not detected, therefore, You cannot delete a Staff.',
+                                                title:
+                                                    'No Internet Connection',
+                                                action: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                              );
+                                            },
+                                          );
+                                          return;
+                                        }
                                         setState(() {
                                           isLoading = true;
                                         });
@@ -379,6 +412,48 @@ class _AddEmployeeDesktopState
                                                     ).pop();
                                                   },
                                                 ),
+                                          );
+                                          return;
+                                        }
+
+                                        if (shopProvider
+                                            .userShop()!
+                                            .employees!
+                                            .contains(
+                                              widget
+                                                  .idC
+                                                  .text
+                                                  .trim(),
+                                            )) {
+                                          setState(
+                                            () =>
+                                                isLoading =
+                                                    false,
+                                          );
+                                          showDialog(
+                                            // ignore: use_build_context_synchronously
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return InfoAlert(
+                                                theme: returnTheme(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ),
+                                                message:
+                                                    'This staff already Exists in your Store, You cannot delete this Staff Twice.',
+                                                title:
+                                                    'Staff Already Exists',
+                                                action: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                },
+                                              );
+                                            },
                                           );
                                           return;
                                         }
@@ -498,6 +573,39 @@ class _AddEmployeeDesktopState
                                         'You are about to update details, do you want to proceed?',
                                     title: 'Procced?',
                                     action: () async {
+                                      var isOnline =
+                                          await returnConnectivityProvider(
+                                            context,
+                                            listen: false,
+                                          ).isOnline();
+                                      if (!isOnline) {
+                                        showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme:
+                                                  returnTheme(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ),
+                                              message:
+                                                  'Internet connection is not detected, therefore, You cannot delete a Staff.',
+                                              title:
+                                                  'No Internet Connection',
+                                              action: () {
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              },
+                                            );
+                                          },
+                                        );
+                                        return;
+                                      }
                                       if (safeContext
                                           .mounted) {
                                         Navigator.of(
@@ -568,10 +676,19 @@ class _AddEmployeeDesktopState
         ),
         Visibility(
           visible: isLoading,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader(message: 'Loading'),
+          child: Material(
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  isLoading = false;
+                });
+              },
+              child: returnCompProvider(
+                context,
+                listen: false,
+              ).showLoader(message: 'Loading'),
+            ),
+          ),
         ),
         Visibility(
           visible: showSuccess,

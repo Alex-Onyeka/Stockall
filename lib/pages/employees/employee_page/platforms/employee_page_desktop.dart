@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -101,13 +102,37 @@ class _EmployeePageDesktopState
                                   setState(() {});
                                 });
                               },
-                              deleteAction: () {
-                                final safeContext = context;
-                                final userProvider =
-                                    returnUserProvider(
+                              deleteAction: () async {
+                                var isOnline =
+                                    await returnConnectivityProvider(
                                       context,
                                       listen: false,
-                                    );
+                                    ).isOnline();
+                                if (!isOnline) {
+                                  showDialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    builder: (context) {
+                                      return InfoAlert(
+                                        theme: returnTheme(
+                                          context,
+                                          listen: false,
+                                        ),
+                                        message:
+                                            'Internet connection is not detected, therefore, You cannot delete a Staff.',
+                                        title:
+                                            'No Internet Connection',
+                                      );
+                                    },
+                                  );
+                                  return;
+                                }
+                                final safeContext = context;
+                                // final userProvider =
+                                //     returnUserProvider(
+                                //       context,
+                                //       listen: false,
+                                //     );
                                 final shopProvider =
                                     returnShopProvider(
                                       context,
@@ -146,16 +171,16 @@ class _EmployeePageDesktopState
                                                   .userShop()!
                                                   .shopId!,
                                         );
-                                        await userProvider
-                                            .updateEmployeeRole(
-                                              authUserId:
-                                                  widget
-                                                      .employeeId,
-                                              newRole: '',
-                                              userId:
-                                                  widget
-                                                      .employeeId,
-                                            );
+                                        // await userProvider
+                                        //     .updateEmployeeRole(
+                                        //       authUserId:
+                                        //           widget
+                                        //               .employeeId,
+                                        //       newRole: '',
+                                        //       userId:
+                                        //           widget
+                                        //               .employeeId,
+                                        //     );
                                         setState(() {
                                           isLoading = false;
                                           showSuccess =

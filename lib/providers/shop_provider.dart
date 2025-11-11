@@ -580,6 +580,8 @@ class ShopProvider extends ChangeNotifier {
       // Step 2: Add the new employee only if it's not already in the list
       if (!currentEmployees.contains(newEmployeeId)) {
         currentEmployees.add(newEmployeeId);
+      } else {
+        return;
       }
 
       // Step 3: Update the shop's employees field

@@ -222,11 +222,12 @@ class _EmployeeListDesktopState
                         List<TempUserClass> employees =
                             returnUserProvider(context)
                                 .usersMain
-                                // .where(
-                                //   (emp) =>
-                                //       emp.authUserId !=
-                                //       emp.userId!,
-                                // )
+                                .where(
+                                  (emp) =>
+                                      emp.userId !=
+                                      AuthService()
+                                          .currentUser!,
+                                )
                                 .toList();
 
                         return Padding(
