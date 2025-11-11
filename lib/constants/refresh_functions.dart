@@ -374,6 +374,9 @@ class RefreshFunctions {
   //
 
   Future<List<TempUserClass>> getEmployees() async {
+    await shopProvider.getUserShops(
+      AuthService().currentUser!,
+    );
     var users = await userProvider.fetchUsersByShop(
       context,
     );

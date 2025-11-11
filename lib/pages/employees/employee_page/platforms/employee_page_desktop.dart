@@ -140,7 +140,7 @@ class _EmployeePageDesktopState
                                     );
                                 showDialog(
                                   context: safeContext,
-                                  builder: (context) {
+                                  builder: (confirmDialg) {
                                     return ConfirmationAlert(
                                       theme: theme,
                                       message:
@@ -148,10 +148,10 @@ class _EmployeePageDesktopState
                                       title:
                                           'Are you sure?',
                                       action: () async {
-                                        if (safeContext
+                                        if (confirmDialg
                                             .mounted) {
                                           Navigator.of(
-                                            safeContext,
+                                            confirmDialg,
                                           ).pop();
                                         }
                                         setState(() {
@@ -159,6 +159,7 @@ class _EmployeePageDesktopState
                                         });
 
                                         await shopProvider.removeEmployeeFromShop(
+                                          context: context,
                                           employeeIdToRemove:
                                               widget
                                                   .employeeId,

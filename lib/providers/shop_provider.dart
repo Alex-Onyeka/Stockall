@@ -603,6 +603,7 @@ class ShopProvider extends ChangeNotifier {
   Future<void> removeEmployeeFromShop({
     required int shopId,
     required String employeeIdToRemove,
+    required BuildContext context,
   }) async {
     try {
       // Step 1: Get the current list of employees

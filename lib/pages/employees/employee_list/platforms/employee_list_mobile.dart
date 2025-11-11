@@ -9,6 +9,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockall/pages/employees/components/employee_tile_main.dart';
 import 'package:stockall/pages/employees/employee_page/employee_page.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class EmployeeListMobile extends StatefulWidget {
   const EmployeeListMobile({super.key});
@@ -64,7 +65,7 @@ class _EmployeeListMobileState
               ),
             ).then((_) {
               if (mounted) {
-                setState(() {});
+                getEmployees();
               }
             });
           },
@@ -110,9 +111,11 @@ class _EmployeeListMobileState
         builder: (context) {
           List<TempUserClass> employees =
               returnUserProvider(context).usersMain
-                  // .where(
-                  //   (emp) => emp.authUserId != emp.userId!,
-                  // )
+                  .where(
+                    (emp) =>
+                        emp.userId !=
+                        AuthService().currentUser!,
+                  )
                   .toList();
 
           return Padding(
@@ -137,7 +140,7 @@ class _EmployeeListMobileState
                           },
                         ),
                       ).then((_) {
-                        setState(() {});
+                        getEmployees();
                       });
                     },
                     altAction: () {
@@ -189,7 +192,7 @@ class _EmployeeListMobileState
                                         },
                                       ),
                                     ).then((_) {
-                                      setState(() {});
+                                      getEmployees();
                                     });
                                   },
                                   employee: employee,

@@ -152,6 +152,7 @@ class _EmployeePageMobileState
                                         });
 
                                         await shopProvider.removeEmployeeFromShop(
+                                          context: context,
                                           employeeIdToRemove:
                                               widget
                                                   .employeeId,

@@ -47,12 +47,23 @@ class _EmployeeListDesktopState
     await RefreshFunctions(
       context,
     ).refreshEmployees(context);
+    // setState(() {
+
+    // });
   }
 
   bool isLoading = false;
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     getEmployees();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +169,7 @@ class _EmployeeListDesktopState
                             ),
                           ).then((_) {
                             if (mounted) {
-                              setState(() {});
+                              getEmployees();
                             }
                           });
                         },
@@ -256,7 +267,7 @@ class _EmployeeListDesktopState
                                         },
                                       ),
                                     ).then((_) {
-                                      setState(() {});
+                                      getEmployees();
                                     });
                                   },
                                   altAction: () {
@@ -318,9 +329,7 @@ class _EmployeeListDesktopState
                                                   ).then((
                                                     _,
                                                   ) {
-                                                    setState(
-                                                      () {},
-                                                    );
+                                                    getEmployees();
                                                   });
                                                 },
                                                 employee:
