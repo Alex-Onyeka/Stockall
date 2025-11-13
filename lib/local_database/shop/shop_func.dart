@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
+import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ShopFunc {
@@ -19,15 +20,31 @@ class ShopFunc {
 
   List<TempShopClass> getShops() {
     if (shopBox.values.isEmpty) return [];
+    var user = UserFunc().getUser(
+      AuthService().currentUser!,
+    );
+    if (user == null) {
+      print('Offline User not found');
+      return [];
+    }
 
     try {
-      return shopBox.values
-          .where(
-            (shop) => shop.employees!.contains(
-              AuthService().currentUser,
-            ),
-          )
-          .toList();
+      if (user.role == 'Owner') {
+        return shopBox.values
+            .where(
+              (shop) =>
+                  shop.userId == AuthService().currentUser,
+            )
+            .toList();
+      } else {
+        return shopBox.values
+            .where(
+              (shop) => shop.employees!.contains(
+                AuthService().currentUser,
+              ),
+            )
+            .toList();
+      }
     } catch (e) {
       print('No Shop Match ${e.toString()}');
       return [];

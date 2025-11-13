@@ -775,6 +775,7 @@ class DataProvider extends ChangeNotifier {
       var offlineData = ProductsFunc().getProducts();
       print("Offline Data Gotten: ${offlineData.length}");
       productList = offlineData;
+      // productList.clear();
     }
 
     notifyListeners();

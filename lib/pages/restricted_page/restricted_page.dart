@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -13,7 +14,6 @@ import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class RestrictedPage extends StatefulWidget {
   final Function()? action;
@@ -25,18 +25,6 @@ class RestrictedPage extends StatefulWidget {
 }
 
 class _RestrictedPageState extends State<RestrictedPage> {
-  Future<void> _launchUrl() async {
-    final Uri url = Uri.parse(
-      'https://www.stockallapp.com/#/subscription',
-    );
-    if (!await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-    )) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -376,7 +364,7 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                 MainButtonP(
                                   themeProvider: theme,
                                   action: () async {
-                                    await _launchUrl();
+                                    await launchSubscriptionUrl();
                                   },
                                   text: 'Subscribe',
                                 ),

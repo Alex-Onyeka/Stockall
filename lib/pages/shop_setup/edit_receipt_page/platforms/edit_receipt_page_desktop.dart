@@ -480,7 +480,7 @@ class _ReceiptEditContainerState
                                                             context,
                                                           ).imageHeight!)
                                                   ? 30
-                                                  : 60,
+                                                  : 80,
                                           width: 400,
                                           decoration: BoxDecoration(
                                             borderRadius:

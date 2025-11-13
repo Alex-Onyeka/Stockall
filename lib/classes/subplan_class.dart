@@ -1,0 +1,29 @@
+import 'package:stockall/constants/subscription_func.dart';
+
+class SubplanClass {
+  final int plan;
+  final String planName;
+  final ItemsAuth itemsAuth;
+  final SalesAuth salesAuth;
+  final CustomerAuth customerAuth;
+  final ExpensesAuth expensesAuth;
+  final ReportAuth reportAuth;
+  final EmployeesAuth employeesAuth;
+  final CalculatorAuth calculatorAuth;
+  final GeneralSettingsAuth generalSettingsAuth;
+  final MultipleStoresAuth multipleStoresAuth;
+
+  SubplanClass({
+    required this.plan,
+    required this.planName,
+    required this.itemsAuth,
+    required this.salesAuth,
+    required this.customerAuth,
+    required this.expensesAuth,
+    required this.reportAuth,
+    required this.employeesAuth,
+    required this.calculatorAuth,
+    required this.generalSettingsAuth,
+    required this.multipleStoresAuth,
+  });
+}

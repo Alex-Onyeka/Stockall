@@ -440,8 +440,8 @@ class _ReceiptDetailsContainerState
                                                           context,
                                                         ).imageHeight ??
                                                         0))
-                                            ? 25
-                                            : 45,
+                                            ? 35
+                                            : 90,
                                     width: double.infinity,
                                     decoration:
                                         BoxDecoration(),

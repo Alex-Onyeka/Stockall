@@ -146,20 +146,6 @@ class ShopProvider extends ChangeNotifier {
               .eq('user_id', AuthService().currentUser!)
               .maybeSingle();
 
-      // var tempUser = TempUserClass.fromJson(user!);
-      // final response = await supabase
-      //     .from('shops')
-      //     .select()
-      //     .eq('user_id', tempUser.userId!);
-
-      // if (response.isEmpty) {
-      //   print(response.length);
-      //   print('User Shops not found');
-      //   return [];
-      // } else {
-      //   print('Shops Gotten: ${response.length}');
-      // }
-
       if (user != null) {
         var tempUser = TempUserClass.fromJson(user);
         print(

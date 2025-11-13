@@ -38,6 +38,8 @@ const String cctvImage =
 const String mainLoader =
     'assets/animations/main_loader.json';
 
+const String premium = 'assets/animations/premium.json';
+
 const String searchingAnim1 =
     'assets/animations/search_1.json';
 const String searchingAnim2 =

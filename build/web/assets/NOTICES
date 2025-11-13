@@ -2319,6 +2319,7 @@ SOFTWARE.
 
 --------------------------------------------------------------------------------
 barcode
+barcode_widget
 pdf
 pdf_widget_wrapper
 printing

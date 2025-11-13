@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_polygon_clipper/flutter_polygon_clipper.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ConfirmationAlert extends StatelessWidget {
@@ -7,12 +9,14 @@ class ConfirmationAlert extends StatelessWidget {
   final String message;
   final Function()? action;
   final ThemeProvider theme;
+  final String? actionButtonText;
   const ConfirmationAlert({
     super.key,
     required this.theme,
     required this.message,
     required this.title,
     required this.action,
+    this.actionButtonText,
   });
 
   @override
@@ -21,7 +25,7 @@ class ConfirmationAlert extends StatelessWidget {
       insetPadding: EdgeInsets.symmetric(
         horizontal: 10,
         vertical: 0,
-      ), // 🔧 Control outer padding
+      ),
       contentPadding: EdgeInsets.all(15), //
       backgroundColor: Colors.white,
       content: Padding(
@@ -74,32 +78,41 @@ class ConfirmationAlert extends StatelessWidget {
             ),
 
             ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 600),
+              constraints: BoxConstraints(maxWidth: 500),
               child: SizedBox(
-                child: Column(
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h3.fontSize,
-                        fontWeight:
-                            theme
-                                .mobileTexts
-                                .h3
-                                .fontWeightBold,
+                width: 500,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal:
+                        screenWidth(context) < mobileScreen
+                            ? 10
+                            : 20.0,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.h3.fontSize,
+                          fontWeight:
+                              theme
+                                  .mobileTexts
+                                  .h3
+                                  .fontWeightBold,
+                        ),
+                        title,
                       ),
-                      title,
-                    ),
-                    Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
+                      Text(
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                        ),
+                        message,
                       ),
-                      message,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -180,7 +193,7 @@ class ConfirmationAlert extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
-                              'Proceed',
+                              actionButtonText ?? 'Proceed',
                             ),
                           ),
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/subscription/subscription_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
@@ -16,6 +17,20 @@ class SubscriptionProvider extends ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
   final NavProvider navProvider = NavProvider();
   SubscriptionClass? subscription;
+
+  DateTime? lastPayment() {
+    return subscription?.lastPayment;
+  }
+
+  DateTime? nextPayment() {
+    return subscription?.nextPayment;
+  }
+
+  int? remainingDays() {
+    return subscription?.lastPayment != null
+        ? getDayDifference(subscription!.lastPayment!)
+        : null;
+  }
 
   Future<TempShopClass> userShop(
     BuildContext context,

@@ -6,6 +6,7 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
@@ -23,6 +24,7 @@ class SettingsPageMobile extends StatefulWidget {
 class _SettingsPageMobileState
     extends State<SettingsPageMobile> {
   final passwordController = TextEditingController();
+  final productSearch = TextEditingController();
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -110,6 +112,18 @@ class _SettingsPageMobileState
                                   'Edit Receipt Template',
                               icon: Icons.receipt,
                             ),
+                          ),
+                          NavListTileDesktopAlt(
+                            height: 18,
+                            action: () {
+                              settingsGenerateProductBarcode(
+                                context,
+                                productSearch,
+                              );
+                            },
+                            title:
+                                'Generate Product Barcode',
+                            icon: Icons.qr_code_rounded,
                           ),
                           Visibility(
                             visible: authorization(

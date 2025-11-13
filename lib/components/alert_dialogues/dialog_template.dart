@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class DialogTemplate extends StatelessWidget {
@@ -7,6 +9,7 @@ class DialogTemplate extends StatelessWidget {
   final ThemeProvider theme;
   final Function() action;
   final Widget widget;
+  final String? actionButtonText;
   const DialogTemplate({
     super.key,
     required this.theme,
@@ -14,6 +17,7 @@ class DialogTemplate extends StatelessWidget {
     required this.title,
     required this.action,
     required this.widget,
+    this.actionButtonText,
   });
 
   @override
@@ -34,32 +38,43 @@ class DialogTemplate extends StatelessWidget {
           spacing: 10,
           children: [
             SizedBox(height: 10),
-            SizedBox(
-              width: 320,
-              child: Column(
-                children: [
-                  Text(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.h3.fontSize,
-                      fontWeight:
-                          theme
-                              .mobileTexts
-                              .h3
-                              .fontWeightBold,
-                    ),
-                    title,
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 500),
+              child: SizedBox(
+                width: 500,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal:
+                        screenWidth(context) < mobileScreen
+                            ? 10
+                            : 20.0,
                   ),
-                  Text(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b1.fontSize,
-                    ),
-                    message,
+                  child: Column(
+                    children: [
+                      Text(
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.h3.fontSize,
+                          fontWeight:
+                              theme
+                                  .mobileTexts
+                                  .h3
+                                  .fontWeightBold,
+                        ),
+                        title,
+                      ),
+                      Text(
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b1.fontSize,
+                        ),
+                        message,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             SizedBox(height: 5),
@@ -135,7 +150,7 @@ class DialogTemplate extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
-                            'Proceed',
+                            actionButtonText ?? 'Proceed',
                           ),
                         ),
                       ),

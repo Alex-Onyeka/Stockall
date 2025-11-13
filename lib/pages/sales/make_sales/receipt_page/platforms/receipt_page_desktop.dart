@@ -517,8 +517,8 @@ class _ReceiptDetailsContainerState
                                                           context,
                                                         ).imageHeight ??
                                                         0))
-                                            ? 30
-                                            : 60,
+                                            ? 40
+                                            : 100,
                                     width: 400,
                                     decoration:
                                         BoxDecoration(),

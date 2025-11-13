@@ -393,8 +393,8 @@ class _ReceiptEditContainerState
                                                           returnShopProvider(
                                                             context,
                                                           ).imageHeight!)
-                                                  ? 25
-                                                  : 50,
+                                                  ? 30
+                                                  : 70,
                                           width:
                                               double
                                                   .infinity,

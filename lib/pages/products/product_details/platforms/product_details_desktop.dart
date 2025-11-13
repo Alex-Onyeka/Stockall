@@ -14,6 +14,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -1410,174 +1411,179 @@ class _ProductDetailsDesktopState
                                                 10.0,
                                           ),
                                       child: Column(
-                                        spacing: 10,
+                                        spacing: 0,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .normal,
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      5.0,
                                                 ),
-                                                'Manage this Item?',
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  var safeContext =
-                                                      context;
-                                                  var dataProvider = returnData(
-                                                    safeContext,
-                                                    listen:
-                                                        false,
-                                                  );
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return ConfirmationAlert(
-                                                        theme:
-                                                            widget.theme,
-                                                        message:
-                                                            product.isManaged
-                                                                ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
-                                                                : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
-                                                        title:
-                                                            'Proceed with Action?',
-                                                        action: () async {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                          setState(
-                                                            () {
-                                                              isLoading =
-                                                                  true;
-                                                            },
-                                                          );
-                                                          await dataProvider.updateProduct(
-                                                            context:
-                                                                safeContext,
-                                                            product: TempProductClass(
-                                                              updatedAt:
-                                                                  DateTime.now(),
-                                                              setCustomPrice:
-                                                                  product.setCustomPrice,
-                                                              isManaged:
-                                                                  product.isManaged
-                                                                      ? false
-                                                                      : true,
-                                                              // id:
-                                                              //     product.id,
-                                                              name:
-                                                                  product.name,
-                                                              unit:
-                                                                  product.unit,
-                                                              isRefundable:
-                                                                  product.isRefundable,
-                                                              costPrice:
-                                                                  product.costPrice,
-                                                              sellingPrice:
-                                                                  product.sellingPrice,
-                                                              quantity:
-                                                                  !product.isManaged &&
-                                                                          product.quantity ==
-                                                                              null
-                                                                      ? 0
-                                                                      : product.quantity,
-                                                              shopId:
-                                                                  product.shopId,
-                                                              barcode:
-                                                                  product.barcode,
-                                                              category:
-                                                                  product.category,
-                                                              createdAt:
-                                                                  product.createdAt,
-                                                              discount:
-                                                                  product.discount,
-                                                              endDate:
-                                                                  product.endDate,
-                                                              expiryDate:
-                                                                  product.expiryDate,
-                                                              lowQtty:
-                                                                  product.lowQtty,
-                                                              sizeType:
-                                                                  product.sizeType,
-                                                              startDate:
-                                                                  product.startDate,
-                                                              uuid:
-                                                                  product.uuid,
-                                                            ),
-                                                          );
-                                                          setState(
-                                                            () {
-                                                              isLoading =
-                                                                  false;
-                                                            },
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                  width: 50,
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        10,
-                                                    vertical:
-                                                        5,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b1.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.normal,
                                                   ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                    border: Border.all(
+                                                  'Manage this Item?',
+                                                ),
+                                                InkWell(
+                                                  onTap: () {
+                                                    var safeContext =
+                                                        context;
+                                                    var dataProvider = returnData(
+                                                      safeContext,
+                                                      listen:
+                                                          false,
+                                                    );
+                                                    showDialog(
+                                                      context:
+                                                          context,
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return ConfirmationAlert(
+                                                          theme:
+                                                              widget.theme,
+                                                          message:
+                                                              product.isManaged
+                                                                  ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
+                                                                  : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
+                                                          title:
+                                                              'Proceed with Action?',
+                                                          action: () async {
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop();
+                                                            setState(
+                                                              () {
+                                                                isLoading =
+                                                                    true;
+                                                              },
+                                                            );
+                                                            await dataProvider.updateProduct(
+                                                              context:
+                                                                  safeContext,
+                                                              product: TempProductClass(
+                                                                updatedAt:
+                                                                    DateTime.now(),
+                                                                setCustomPrice:
+                                                                    product.setCustomPrice,
+                                                                isManaged:
+                                                                    product.isManaged
+                                                                        ? false
+                                                                        : true,
+                                                                // id:
+                                                                //     product.id,
+                                                                name:
+                                                                    product.name,
+                                                                unit:
+                                                                    product.unit,
+                                                                isRefundable:
+                                                                    product.isRefundable,
+                                                                costPrice:
+                                                                    product.costPrice,
+                                                                sellingPrice:
+                                                                    product.sellingPrice,
+                                                                quantity:
+                                                                    !product.isManaged &&
+                                                                            product.quantity ==
+                                                                                null
+                                                                        ? 0
+                                                                        : product.quantity,
+                                                                shopId:
+                                                                    product.shopId,
+                                                                barcode:
+                                                                    product.barcode,
+                                                                category:
+                                                                    product.category,
+                                                                createdAt:
+                                                                    product.createdAt,
+                                                                discount:
+                                                                    product.discount,
+                                                                endDate:
+                                                                    product.endDate,
+                                                                expiryDate:
+                                                                    product.expiryDate,
+                                                                lowQtty:
+                                                                    product.lowQtty,
+                                                                sizeType:
+                                                                    product.sizeType,
+                                                                startDate:
+                                                                    product.startDate,
+                                                                uuid:
+                                                                    product.uuid,
+                                                              ),
+                                                            );
+                                                            setState(
+                                                              () {
+                                                                isLoading =
+                                                                    false;
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    width:
+                                                        50,
+                                                    padding: EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          10,
+                                                      vertical:
+                                                          5,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(
+                                                        20,
+                                                      ),
+                                                      border: Border.all(
+                                                        color:
+                                                            product.isManaged
+                                                                ? widget.theme.lightModeColor.prColor250
+                                                                : Colors.grey,
+                                                      ),
                                                       color:
                                                           product.isManaged
                                                               ? widget.theme.lightModeColor.prColor250
-                                                              : Colors.grey,
+                                                              : Colors.grey.shade200,
                                                     ),
-                                                    color:
-                                                        product.isManaged
-                                                            ? widget.theme.lightModeColor.prColor250
-                                                            : Colors.grey.shade200,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        product.isManaged
-                                                            ? MainAxisAlignment.end
-                                                            : MainAxisAlignment.start,
-                                                    children: [
-                                                      Container(
-                                                        padding: EdgeInsets.all(
-                                                          5,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          product.isManaged
+                                                              ? MainAxisAlignment.end
+                                                              : MainAxisAlignment.start,
+                                                      children: [
+                                                        Container(
+                                                          padding: EdgeInsets.all(
+                                                            5,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color:
+                                                                product.isManaged
+                                                                    ? Colors.white
+                                                                    : Colors.grey.shade600,
+                                                          ),
                                                         ),
-                                                        decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color:
-                                                              product.isManaged
-                                                                  ? Colors.white
-                                                                  : Colors.grey.shade600,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                           Visibility(
                                             visible:
@@ -1615,6 +1621,65 @@ class _ProductDetailsDesktopState
                                                     .barcode ??
                                                 'Not Set',
                                             text: 'Barcode',
+                                            onClick: () {
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder: (
+                                                  firstContext,
+                                                ) {
+                                                  return ConfirmationAlert(
+                                                    theme:
+                                                        widget.theme,
+                                                    message:
+                                                        'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
+                                                    actionButtonText:
+                                                        'Generate',
+                                                    title:
+                                                        'Regenerate and Print Barcode?',
+                                                    action: () async {
+                                                      Navigator.of(
+                                                        firstContext,
+                                                      ).pop();
+                                                      setState(() {
+                                                        isLoading =
+                                                            true;
+                                                      });
+                                                      generateBarcodeAndPrint(
+                                                        context,
+                                                        product,
+                                                      ).then((
+                                                        _,
+                                                      ) {
+                                                        setState(() {
+                                                          isLoading =
+                                                              false;
+                                                        });
+                                                      });
+
+                                                      print(
+                                                        'Generate Clicked',
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            setBarcodeAction:
+                                                product.barcode ==
+                                                        null
+                                                    ? () {
+                                                      generateBarcodeAndPrint(
+                                                        context,
+                                                        product,
+                                                      );
+                                                    }
+                                                    : null,
+                                            actionText:
+                                                product.barcode ==
+                                                        null
+                                                    ? 'Create Barcode'
+                                                    : null,
                                           ),
 
                                           // Visibility(
@@ -1879,54 +1944,141 @@ class _ProductDetailsDesktopState
         ),
       );
     }
-    // return Scaffold(
-    //   body: Center(
-    //     child: InkWell(
-    //       onTap: () {
-    //         Navigator.of(context).pop();
-    //       },
-    //       child: Padding(
-    //         padding: const EdgeInsets.all(20.0),
-    //         child: Text(productList.first.name),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }
 
-class BottomInfoSection extends StatelessWidget {
+class BottomInfoSection extends StatefulWidget {
   const BottomInfoSection({
     super.key,
     required this.theme,
     required this.text,
     required this.mainText,
+    this.setBarcodeAction,
+    this.actionText,
+    this.onClick,
   });
 
   final ThemeProvider theme;
   final String text;
   final String mainText;
+  final Function()? setBarcodeAction;
+  final String? actionText;
+  final Function()? onClick;
 
   @override
+  State<BottomInfoSection> createState() =>
+      _BottomInfoSectionState();
+}
+
+class _BottomInfoSectionState
+    extends State<BottomInfoSection> {
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          style: TextStyle(
-            fontSize: theme.mobileTexts.b1.fontSize,
-            fontWeight: FontWeight.normal,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            style: TextStyle(
+              fontSize:
+                  widget.theme.mobileTexts.b1.fontSize,
+              fontWeight: FontWeight.normal,
+            ),
+            '${widget.text}:',
           ),
-          '$text:',
-        ),
-        Text(
-          style: TextStyle(
-            fontSize: theme.mobileTexts.b2.fontSize,
-            fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              Visibility(
+                visible: widget.setBarcodeAction != null,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color:
+                          widget
+                              .theme
+                              .lightModeColor
+                              .prColor300,
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                      onTap: widget.setBarcodeAction,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        child: Center(
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            widget.actionText ?? '',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: widget.setBarcodeAction == null,
+                child: InkWell(
+                  onTap: () {
+                    widget.onClick != null
+                        ? widget.onClick!()
+                        : {};
+                    print('Clicked');
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Visibility(
+                        visible: widget.onClick != null,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              color: Colors.grey.shade600,
+                              Icons.arrow_left,
+                            ),
+                            // SizedBox(width: 2),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b2
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.mainText,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-          mainText,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

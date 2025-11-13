@@ -142,6 +142,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                 0,
                                 0,
                               ),
+                          // ignore: use_build_context_synchronously
                           context: context,
                           transitionDuration:
                               const Duration(
