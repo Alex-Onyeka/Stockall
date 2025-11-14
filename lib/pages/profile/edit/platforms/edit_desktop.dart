@@ -388,7 +388,9 @@ class _EditDesktopState extends State<EditDesktop> {
                                       );
                                   showDialog(
                                     context: safeContex,
-                                    builder: (context) {
+                                    builder: (
+                                      confirmDialog,
+                                    ) {
                                       return ConfirmationAlert(
                                         theme: theme,
                                         message:
@@ -400,7 +402,7 @@ class _EditDesktopState extends State<EditDesktop> {
                                                 true;
                                           });
                                           Navigator.of(
-                                            safeContex,
+                                            confirmDialog,
                                           ).pop();
 
                                           // TempUserClass

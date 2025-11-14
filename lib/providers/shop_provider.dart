@@ -1064,18 +1064,21 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int> updateShopPrintDetails(
+  Future<String> updateShopPrintDetails(
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (logoPicked && selectedLogo != null) {
-      var res = await uploadLogo(
-        image: rawImage!,
-        // ignore: use_build_context_synchronously
-        context: context,
-      );
-      if (res == 0) {
-        return 0;
+      try {
+        await uploadLogo(
+          image: rawImage!,
+          // ignore: use_build_context_synchronously
+          context: context,
+        );
+        return 'success';
+      } catch (e) {
+        print('Error: ${e.toString()}');
+        return 'Error: ${e.toString()}';
       }
     }
     if (selectedLogo == null) {
@@ -1103,12 +1106,12 @@ class ShopProvider extends ChangeNotifier {
           setShops(response);
           notifyListeners();
         }
-        return 1;
+        return 'success';
       } catch (e) {
         print(
-          "❌ Failed to update Print Details details Online: $e",
+          "❌ Failed to update Print Details Online: $e",
         );
-        return 0;
+        return "Failed to update Print Details Online: ${e.toString()}";
       }
     } else {
       try {
@@ -1122,12 +1125,12 @@ class ShopProvider extends ChangeNotifier {
               UpdatedShop(shop: userShop()!),
             )
             : {};
-        return 1;
+        return 'success';
       } catch (e) {
         print(
-          "❌ Failed to update Print Details details Offline: $e",
+          "❌ Failed to update Print Details Offline: $e",
         );
-        return 0;
+        return "Failed to update Print Details Offline: ${e.toString()}";
       }
     }
   }
