@@ -144,7 +144,7 @@ Future<bool> printBarcode(
                   ),
                 ],
               ),
-              pw.SizedBox(height: 80),
+              pw.SizedBox(height: 5),
               pw.Text(
                 style: pw.TextStyle(fontSize: 5),
                 '-',
@@ -205,7 +205,7 @@ Future<dynamic> generateBarcodeAndPrint(
   final safeContext = context;
 
   final productUuid =
-      '${product.name.substring(0, 3).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5)}${product.uuid!.split('-')[1]}';
+      '${product.name.substring(0, 1).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}${product.uuid!.split('-')[1].toUpperCase()}';
 
   return showDialog(
     context: safeContext,
@@ -471,6 +471,14 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                       }
                                                     },
                                                     child: Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border(
+                                                          bottom: BorderSide(
+                                                            color:
+                                                                Colors.grey.shade100,
+                                                          ),
+                                                        ),
+                                                      ),
                                                       margin: EdgeInsets.symmetric(
                                                         vertical:
                                                             5,
@@ -483,38 +491,47 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                       ),
                                                       child: Row(
                                                         spacing:
-                                                            5,
+                                                            12,
                                                         mainAxisAlignment:
                                                             MainAxisAlignment.spaceBetween,
                                                         children: [
-                                                          Row(
-                                                            spacing:
-                                                                10,
-                                                            children: [
-                                                              Icon(
-                                                                size:
-                                                                    16,
-                                                                color:
-                                                                    theme.lightModeColor.secColor200,
-                                                                Icons.inventory_2,
-                                                              ),
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b2.fontSize,
-                                                                  // fontWeight:
-                                                                  //     FontWeight.bold,
+                                                          Expanded(
+                                                            child: Row(
+                                                              spacing:
+                                                                  8,
+                                                              children: [
+                                                                Icon(
+                                                                  size:
+                                                                      16,
+                                                                  color:
+                                                                      theme.lightModeColor.secColor200,
+                                                                  Icons.inventory_2,
                                                                 ),
-                                                                product.name,
-                                                              ),
-                                                            ],
+                                                                Flexible(
+                                                                  child: Text(
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b2.fontSize,
+                                                                      // fontWeight:
+                                                                      //     FontWeight.bold,
+                                                                    ),
+                                                                    product.name,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b2.fontSize,
+                                                                  theme.mobileTexts.b3.fontSize,
                                                               fontWeight:
                                                                   FontWeight.bold,
+                                                              color:
+                                                                  product.barcode ==
+                                                                          null
+                                                                      ? Colors.redAccent
+                                                                      : null,
                                                             ),
                                                             product.barcode ??
                                                                 'Barcode Not Set',
