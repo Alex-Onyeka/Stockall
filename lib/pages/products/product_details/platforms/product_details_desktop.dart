@@ -1982,7 +1982,7 @@ class _BottomInfoSectionState
           Text(
             style: TextStyle(
               fontSize:
-                  widget.theme.mobileTexts.b1.fontSize,
+                  widget.theme.mobileTexts.b2.fontSize,
               fontWeight: FontWeight.normal,
             ),
             '${widget.text}:',

@@ -166,22 +166,30 @@ Future<bool> printBarcode(
   );
 
   if (kIsWeb) {
-    final blob = html.Blob([
-      await pdf.save(),
-    ], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
+    if (platforms(context) == TargetPlatform.iOS) {
+      var res = await Printing.layoutPdf(
+        onLayout:
+            (PdfPageFormat format) async => pdf.save(),
+      );
+      return res;
+    } else {
+      final blob = html.Blob([
+        await pdf.save(),
+      ], 'application/pdf');
+      final url = html.Url.createObjectUrlFromBlob(blob);
 
-    final anchor =
-        html.AnchorElement(href: url)
-          ..download = data
-          ..style.display = 'none';
+      final anchor =
+          html.AnchorElement(href: url)
+            ..download = data
+            ..style.display = 'none';
 
-    html.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
+      html.document.body?.append(anchor);
+      anchor.click();
+      anchor.remove();
 
-    html.Url.revokeObjectUrl(url);
-    return true;
+      html.Url.revokeObjectUrl(url);
+      return true;
+    }
   } else {
     if (screenWidth(context) > tabletScreenSmall) {
       var res = await Printing.layoutPdf(

@@ -1329,7 +1329,7 @@ class _ProductDetailsMobileState
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b2
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
