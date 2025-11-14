@@ -469,13 +469,6 @@ Future<Uint8List> _buildPdf(
     ),
   );
 
-  var logoBytes = await getGrayscaleLogoFromBytes(
-    returnShopProvider(
-      context,
-      listen: false,
-    ).selectedLogo!,
-  );
-
   pdf.addPage(
     pw.MultiPage(
       pageFormat: PdfPageFormat.a5,
@@ -510,22 +503,30 @@ Future<Uint8List> _buildPdf(
                                   null) {
                                 return pw.Container(
                                   height:
-                                      returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).imageWidth! >
-                                              (2 *
-                                                  returnShopProvider(
+                                      (returnShopProvider(
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).imageHeight!)
-                                          ? 40
-                                          : 75,
+                                                  ).imageWidth ??
+                                                  0) >
+                                              (2 *
+                                                  (returnShopProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).imageHeight ??
+                                                      0))
+                                          ? 35
+                                          : 80,
                                   width: 200,
                                   child: pw.Image(
-                                    logoBytes,
+                                    pw.MemoryImage(
+                                      returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          ).selectedLogo ??
+                                          Uint8List(12),
+                                    ),
                                     fit: pw.BoxFit.contain,
                                   ),
                                 );
@@ -1361,48 +1362,6 @@ Future<Uint8List> _buildPdf(
 //   ); // Optional: See what app handled it
 // }
 
-// Future<pw.MemoryImage> getGrayscaleLogoFromBytes(
-//   Uint8List logoBytes,
-// ) async {
-//   try {
-//     // Decode the image from bytes
-//     final originalImage = img.decodeImage(logoBytes);
-//     if (originalImage == null) {
-//       throw Exception("❌ Failed to decode image");
-//     }
-
-//     // Convert to grayscale
-//     img.Image processed = img.grayscale(originalImage);
-
-//     // Adjust contrast and brightness together
-//     processed = img.adjustColor(
-//       processed,
-//       contrast:
-//           -3, // >1.0 = higher contrast (makes blacks darker)
-//       brightness:
-//           0.9, // <0 = darker overall (range: -1.0 to +1.0)
-//       // gamma: 1, // <1 = darker mid-tones
-//     );
-
-//     // Encode it back to PNG format
-//     final darkerBytes = Uint8List.fromList(
-//       img.encodePng(processed),
-//     );
-
-//     // Return as a pw.MemoryImage for PDF use
-//     return pw.MemoryImage(darkerBytes);
-//   } catch (e) {
-//     print('❌ Error preparing thermal logo: $e');
-//     rethrow;
-//   }
-// }
-
-Future<pw.MemoryImage> getGrayscaleLogoFromBytes(
-  Uint8List logoBytes,
-) async {
-  return pw.MemoryImage(logoBytes);
-}
-
 Future<Uint8List> _buildPdfRoll(
   TempMainReceipt receipt,
   List<TempProductSaleRecord> records,
@@ -1428,12 +1387,6 @@ Future<Uint8List> _buildPdfRoll(
       'assets/fonts/PlusJakartaSans-Bold.ttf',
     ),
   );
-  var logoBytes = await getGrayscaleLogoFromBytes(
-    returnShopProvider(
-      context,
-      listen: false,
-    ).selectedLogo!,
-  );
 
   pdf.addPage(
     pw.Page(
@@ -1441,7 +1394,7 @@ Future<Uint8List> _buildPdfRoll(
           printerType == 1
               ? PdfPageFormat.roll57
               : PdfPageFormat.roll80,
-      margin: pw.EdgeInsets.only(
+      margin: const pw.EdgeInsets.only(
         left: 0,
         top: 15,
         right: 25,
@@ -1472,20 +1425,29 @@ Future<Uint8List> _buildPdfRoll(
                             null)
                           pw.Container(
                             height:
-                                returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).imageWidth! >
-                                        (2 *
-                                            returnShopProvider(
+                                (returnShopProvider(
                                               context,
                                               listen: false,
-                                            ).imageHeight!)
-                                    ? 40
+                                            ).imageWidth ??
+                                            0) >
+                                        (2 *
+                                            (returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).imageHeight ??
+                                                0))
+                                    ? 25
                                     : 75,
                             width: 200,
                             child: pw.Image(
-                              logoBytes,
+                              pw.MemoryImage(
+                                returnShopProvider(
+                                      context,
+                                      listen: false,
+                                    ).selectedLogo ??
+                                    Uint8List(12),
+                              ),
                               fit: pw.BoxFit.contain,
                             ),
                           ),

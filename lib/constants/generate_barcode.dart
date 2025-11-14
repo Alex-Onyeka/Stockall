@@ -12,6 +12,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:flutter/foundation.dart';
+import 'package:universal_html/html.dart' as html;
 
 class GenerateBarcodeScreen extends StatelessWidget {
   final String data;
@@ -88,7 +89,11 @@ Future<bool> printBarcode(
     pw.Page(
       pageFormat: PdfPageFormat.roll57,
       margin: pw.EdgeInsets.only(
-        left: 0,
+        left:
+            kIsWeb ||
+                    screenWidth(context) < tabletScreenSmall
+                ? 25
+                : 0,
         top: 15,
         right: 30,
         bottom: 20,
@@ -157,10 +162,22 @@ Future<bool> printBarcode(
   );
 
   if (kIsWeb) {
-    var res = await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => pdf.save(),
-    );
-    return res;
+    final blob = html.Blob([
+      await pdf.save(),
+    ], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    final anchor =
+        html.AnchorElement(href: url)
+          ..download = data
+          ..style.display = 'none';
+
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+
+    html.Url.revokeObjectUrl(url);
+    return true;
   } else {
     if (screenWidth(context) > tabletScreenSmall) {
       var res = await Printing.layoutPdf(
