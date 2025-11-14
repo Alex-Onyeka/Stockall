@@ -5,7 +5,6 @@ import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/de
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
@@ -48,7 +47,7 @@ class DataProvider extends ChangeNotifier {
     // var data =
     bool isOnline = await connectivity.isOnline();
 
-    product.uuid = uuidGen();
+    // product.uuid = uuidGen();
     product.updatedAt = DateTime.now();
 
     if (isOnline) {

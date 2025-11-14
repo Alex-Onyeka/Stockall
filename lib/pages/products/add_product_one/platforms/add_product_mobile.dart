@@ -14,6 +14,7 @@ import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 // import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
@@ -193,6 +194,7 @@ class _AddProductMobileState
                   endDate: dataProvider.endDate,
                   expiryDate: dataProvider.expiryDate,
                   category: dataProvider.selectedCategory,
+                  uuid: createdProductUuid,
                 ),
                 context,
               );
@@ -338,6 +340,8 @@ class _AddProductMobileState
     );
   }
 
+  String? createdProductUuid;
+
   //
   @override
   void initState() {
@@ -346,7 +350,11 @@ class _AddProductMobileState
     WidgetsBinding.instance.addPostFrameCallback((context) {
       clearFields();
     });
-
+    if (widget.product == null) {
+      setState(() {
+        createdProductUuid = uuidGen();
+      });
+    }
     setShop();
   }
 
@@ -864,26 +872,160 @@ class _AddProductMobileState
                                 visible: expand,
                                 child: Column(
                                   children: [
-                                    BarcodeScanner(
-                                      valueSet: barCodeSet,
-                                      onTap: () async {
-                                        String? info =
-                                            await scanCode(
-                                              context,
-                                              'Not Saved',
-                                            );
+                                    Column(
+                                      children: [
+                                        BarcodeScanner(
+                                          valueSet:
+                                              barCodeSet,
+                                          onTap: () async {
+                                            String? info =
+                                                await scanCode(
+                                                  context,
+                                                  'Not Saved',
+                                                );
 
-                                        setState(() {
-                                          barcode = info;
-                                          barCodeSet = true;
-                                        });
-                                      },
-                                      title:
-                                          'Item Barcode (Optional)',
-                                      hint:
-                                          barcode ??
-                                          'Click to Scan Item Barcode',
-                                      theme: theme,
+                                            setState(() {
+                                              barcode =
+                                                  info;
+                                              barCodeSet =
+                                                  true;
+                                            });
+                                          },
+                                          title:
+                                              'Item Barcode (Optional)',
+                                          hint:
+                                              barcode ??
+                                              'Click to Scan Item Barcode',
+                                          theme: theme,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .end,
+                                          children: [
+                                            InkWell(
+                                              onTap: () async {
+                                                String
+                                                sellingPrice() {
+                                                  if (widget
+                                                      .sellingController
+                                                      .text
+                                                      .isEmpty) {
+                                                    return '';
+                                                  } else {
+                                                    if (widget.sellingController.text.split(',').length >
+                                                        1) {
+                                                      return widget.sellingController.text.split(',').first +
+                                                          widget.sellingController.text.split(',').last;
+                                                    } else {
+                                                      return widget
+                                                          .sellingController
+                                                          .text;
+                                                    }
+                                                  }
+                                                }
+
+                                                var tempProduct = TempProductClass(
+                                                  name:
+                                                      widget.product ==
+                                                              null
+                                                          ? widget.nameController.text
+                                                          : widget.product?.name ??
+                                                              'Product Name',
+                                                  unit:
+                                                      'Others',
+                                                  isRefundable:
+                                                      false,
+                                                  costPrice:
+                                                      0,
+                                                  shopId: 1,
+                                                  setCustomPrice:
+                                                      false,
+                                                  isManaged:
+                                                      false,
+                                                  uuid:
+                                                      widget.product ==
+                                                              null
+                                                          ? createdProductUuid
+                                                          : widget.product?.uuid,
+                                                  sellingPrice:
+                                                      widget.product ==
+                                                              null
+                                                          ? double.tryParse(
+                                                            sellingPrice(),
+                                                          )
+                                                          : widget.product!.sellingPrice!,
+                                                );
+
+                                                if (widget
+                                                    .nameController
+                                                    .text
+                                                    .isNotEmpty) {
+                                                  var res = await generateBarcodeAndPrint(
+                                                    context,
+                                                    tempProduct,
+                                                  );
+                                                  if (res) {
+                                                    setState(() {
+                                                      barcode =
+                                                          '${tempProduct.name.isEmpty ? 'P' : tempProduct.name.substring(0, 1).toUpperCase()}-${tempProduct.uuid!.split('-').first.substring(0, 5).toUpperCase()}${tempProduct.uuid!.split('-')[1].toUpperCase()}';
+                                                      // barcodeController.text =
+                                                      //     barcode ??
+                                                      //     '';
+                                                      barCodeSet =
+                                                          true;
+                                                    });
+                                                  }
+                                                } else {
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Product Name must be set before barcode can be generated.',
+                                                        title:
+                                                            'Product Name Not Set',
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(
+                                                      5.0,
+                                                    ),
+                                                child: Row(
+                                                  spacing:
+                                                      5,
+                                                  children: [
+                                                    Icon(
+                                                      size:
+                                                          15,
+                                                      color:
+                                                          theme.lightModeColor.secColor200,
+                                                      Icons
+                                                          .qr_code_rounded,
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b3.fontSize,
+                                                      ),
+                                                      'Generate Barcode',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(height: 10),
                                     EditCartTextField(

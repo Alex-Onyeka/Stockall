@@ -38,7 +38,9 @@ class GenerateBarcodeScreen extends StatelessWidget {
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-            product.name,
+            product.name.isEmpty
+                ? 'Name Not Set'
+                : product.name,
           ),
         ),
         SizedBox(height: 5),
@@ -115,7 +117,9 @@ Future<bool> printBarcode(
                   fontSize: 11,
                   fontWeight: pw.FontWeight.bold,
                 ),
-                product.name,
+                product.name.isEmpty
+                    ? 'Name Not Set'
+                    : product.name,
               ),
               pw.SizedBox(height: 5),
               pw.SvgImage(svg: svg),
@@ -197,17 +201,17 @@ Future<bool> printBarcode(
   }
 }
 
-Future<dynamic> generateBarcodeAndPrint(
+Future<bool> generateBarcodeAndPrint(
   BuildContext context,
   TempProductClass product,
-) {
+) async {
   print('Starting Generation');
   final safeContext = context;
 
   final productUuid =
-      '${product.name.substring(0, 1).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}${product.uuid!.split('-')[1].toUpperCase()}';
+      '${product.name.isEmpty ? 'P' : product.name.substring(0, 1).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}${product.uuid!.split('-')[1].toUpperCase()}';
 
-  return showDialog(
+  final result = await showDialog<bool>(
     context: safeContext,
     builder: (confirmAlert) {
       return DialogTemplate(
@@ -217,34 +221,47 @@ Future<dynamic> generateBarcodeAndPrint(
         title: 'Generated Barcode',
         action: () async {
           print('Starting Printing');
-          Navigator.of(confirmAlert).pop();
 
-          bool res = await printBarcode(
+          // Navigator.pop(confirmAlert);
+
+          bool printingSuccess = await printBarcode(
             productUuid,
             safeContext,
             product,
           );
 
-          if (res) {
-            var newP = product;
-            newP.barcode = productUuid;
-
-            if (safeContext.mounted) {
-              await returnData(
-                safeContext,
-                listen: false,
-              ).updateProduct(
-                product: newP,
-                context: safeContext,
-              );
-              print(
-                'Finished Printing and Starting Updating Product Barcode',
-              );
-            } else {
-              print('safeContext not mounted');
-            }
-          } else {
+          if (!printingSuccess) {
             print('Printing Cancelled');
+            Navigator.pop(
+              // ignore: use_build_context_synchronously
+              safeContext,
+              false,
+            ); // return false
+            return;
+          }
+
+          var newP = product;
+          newP.barcode = productUuid;
+
+          if (safeContext.mounted) {
+            await returnData(
+              safeContext,
+              listen: false,
+            ).updateProduct(
+              product: newP,
+              context: safeContext,
+            );
+
+            print(
+              'Finished Printing and Updating Product Barcode',
+            );
+
+            // ignore: use_build_context_synchronously
+            Navigator.pop(safeContext, true); // return true
+          } else {
+            print('Context not mounted');
+            // ignore: use_build_context_synchronously
+            Navigator.pop(safeContext, false);
           }
         },
         actionButtonText: buttonDislayText(safeContext),
@@ -255,6 +272,8 @@ Future<dynamic> generateBarcodeAndPrint(
       );
     },
   );
+
+  return result ?? false;
 }
 
 String buttonDislayText(BuildContext context) {

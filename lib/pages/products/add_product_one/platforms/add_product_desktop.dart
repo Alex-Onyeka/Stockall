@@ -16,6 +16,7 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -197,6 +198,7 @@ class _AddProductDesktopState
                   endDate: dataProvider.endDate,
                   expiryDate: dataProvider.expiryDate,
                   category: dataProvider.selectedCategory,
+                  uuid: createdProductUuid,
                 ),
                 context,
               );
@@ -341,6 +343,7 @@ class _AddProductDesktopState
     );
   }
 
+  String? createdProductUuid;
   //
   @override
   void initState() {
@@ -349,7 +352,11 @@ class _AddProductDesktopState
     WidgetsBinding.instance.addPostFrameCallback((context) {
       clearFields();
     });
-
+    if (widget.product == null) {
+      setState(() {
+        createdProductUuid = uuidGen();
+      });
+    }
     setShop();
   }
 
@@ -890,156 +897,295 @@ class _AddProductDesktopState
                                     visible: expand,
                                     child: Column(
                                       children: [
-                                        Stack(
+                                        Column(
                                           children: [
-                                            Visibility(
-                                              visible:
-                                                  kIsWeb ||
-                                                  platforms(
+                                            Stack(
+                                              children: [
+                                                Visibility(
+                                                  visible:
+                                                      kIsWeb ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.android ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.iOS,
+                                                  child: BarcodeScanner(
+                                                    valueSet:
+                                                        barCodeSet,
+                                                    onTap: () async {
+                                                      String?
+                                                      info = await scanCode(
                                                         context,
-                                                      ) ==
-                                                      TargetPlatform
-                                                          .android ||
-                                                  platforms(
-                                                        context,
-                                                      ) ==
-                                                      TargetPlatform
-                                                          .iOS,
-                                              child: BarcodeScanner(
-                                                valueSet:
-                                                    barCodeSet,
-                                                onTap: () async {
-                                                  String?
-                                                  info = await scanCode(
-                                                    context,
-                                                    'Not Saved',
-                                                  );
+                                                        'Not Saved',
+                                                      );
 
-                                                  setState(() {
-                                                    barcode =
-                                                        info;
-                                                    barCodeSet =
-                                                        true;
-                                                  });
-                                                },
-                                                title:
-                                                    'Item Barcode (Optional)',
-                                                hint:
-                                                    barcode ??
-                                                    'Click to Scan Item Barcode',
-                                                theme:
-                                                    theme,
-                                              ),
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  platforms(
-                                                        context,
-                                                      ) ==
-                                                      TargetPlatform
-                                                          .windows ||
-                                                  platforms(
-                                                        context,
-                                                      ) ==
-                                                      TargetPlatform
-                                                          .linux ||
-                                                  platforms(
-                                                        context,
-                                                      ) ==
-                                                      TargetPlatform
-                                                          .macOS,
-                                              child: Column(
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style:
-                                                        theme.mobileTexts.b3.textStyleBold,
-                                                    'Item Barcode (Optional)',
-                                                  ),
-                                                  TextFormField(
-                                                    controller:
-                                                        barcodeController,
-                                                    onChanged: (
-                                                      value,
-                                                    ) {
                                                       setState(() {
                                                         barcode =
-                                                            value;
-                                                        if (value.isEmpty) {
-                                                          barCodeSet =
-                                                              false;
+                                                            info;
+                                                        barCodeSet =
+                                                            true;
+                                                      });
+                                                    },
+                                                    title:
+                                                        'Item Barcode (Optional)',
+                                                    hint:
+                                                        barcode ??
+                                                        'Click to Scan Item Barcode',
+                                                    theme:
+                                                        theme,
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.windows ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.linux ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.macOS,
+                                                  child: Column(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style:
+                                                            theme.mobileTexts.b3.textStyleBold,
+                                                        'Item Barcode (Optional)',
+                                                      ),
+                                                      TextFormField(
+                                                        controller:
+                                                            barcodeController,
+                                                        onChanged: (
+                                                          value,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              barcode =
+                                                                  value;
+                                                              if (value.isEmpty) {
+                                                                barCodeSet =
+                                                                    false;
+                                                              } else {
+                                                                barCodeSet =
+                                                                    true;
+                                                              }
+                                                            },
+                                                          );
+                                                          print(
+                                                            barcode,
+                                                          );
+                                                          print(
+                                                            barCodeSet.toString(),
+                                                          );
+                                                        },
+                                                        enabled:
+                                                            true,
+                                                        decoration: InputDecoration(
+                                                          isCollapsed:
+                                                              true,
+                                                          suffixIcon: Padding(
+                                                            padding: const EdgeInsets.only(
+                                                              right:
+                                                                  50.0,
+                                                            ),
+                                                            child: Icon(
+                                                              size:
+                                                                  20,
+                                                              color:
+                                                                  Colors.grey,
+                                                              Icons.qr_code_scanner_sharp,
+                                                            ),
+                                                          ),
+                                                          suffixIconConstraints: BoxConstraints(
+                                                            maxHeight:
+                                                                20,
+                                                            maxWidth:
+                                                                35,
+                                                          ),
+                                                          contentPadding: EdgeInsets.symmetric(
+                                                            horizontal:
+                                                                20,
+                                                            vertical:
+                                                                8,
+                                                          ),
+                                                          hintText:
+                                                              barcode ??
+                                                              'Click to Scan Item Barcode',
+                                                          hintStyle: TextStyle(
+                                                            color:
+                                                                barCodeSet
+                                                                    ? Colors.grey.shade700
+                                                                    : Colors.grey.shade500,
+                                                            fontSize:
+                                                                theme.mobileTexts.b2.fontSize,
+                                                            fontWeight:
+                                                                barCodeSet
+                                                                    ? FontWeight.bold
+                                                                    : FontWeight.normal,
+                                                          ),
+                                                          border: OutlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                              color:
+                                                                  Colors.grey,
+                                                              width:
+                                                                  1,
+                                                            ),
+                                                            borderRadius: BorderRadius.circular(
+                                                              5,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .end,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () async {
+                                                    String
+                                                    sellingPrice() {
+                                                      if (widget
+                                                          .sellingController
+                                                          .text
+                                                          .isEmpty) {
+                                                        return '';
+                                                      } else {
+                                                        if (widget.sellingController.text
+                                                                .split(
+                                                                  ',',
+                                                                )
+                                                                .length >
+                                                            1) {
+                                                          return widget.sellingController.text
+                                                                  .split(
+                                                                    ',',
+                                                                  )
+                                                                  .first +
+                                                              widget.sellingController.text
+                                                                  .split(
+                                                                    ',',
+                                                                  )
+                                                                  .last;
                                                         } else {
+                                                          return widget.sellingController.text;
+                                                        }
+                                                      }
+                                                    }
+
+                                                    var tempProduct = TempProductClass(
+                                                      name:
+                                                          widget.product ==
+                                                                  null
+                                                              ? widget.nameController.text
+                                                              : widget.product?.name ??
+                                                                  'Product Name',
+                                                      unit:
+                                                          'Others',
+                                                      isRefundable:
+                                                          false,
+                                                      costPrice:
+                                                          0,
+                                                      shopId:
+                                                          1,
+                                                      setCustomPrice:
+                                                          false,
+                                                      isManaged:
+                                                          false,
+                                                      uuid:
+                                                          widget.product ==
+                                                                  null
+                                                              ? createdProductUuid
+                                                              : widget.product?.uuid,
+                                                      sellingPrice:
+                                                          widget.product ==
+                                                                  null
+                                                              ? double.tryParse(
+                                                                sellingPrice(),
+                                                              )
+                                                              : widget.product!.sellingPrice!,
+                                                    );
+
+                                                    if (widget
+                                                        .nameController
+                                                        .text
+                                                        .isNotEmpty) {
+                                                      var res = await generateBarcodeAndPrint(
+                                                        context,
+                                                        tempProduct,
+                                                      );
+                                                      if (res) {
+                                                        setState(() {
+                                                          barcode =
+                                                              '${tempProduct.name.isEmpty ? 'P' : tempProduct.name.substring(0, 1).toUpperCase()}-${tempProduct.uuid!.split('-').first.substring(0, 5).toUpperCase()}${tempProduct.uuid!.split('-')[1].toUpperCase()}';
+                                                          // barcodeController.text =
+                                                          //     barcode ??
+                                                          //     '';
                                                           barCodeSet =
                                                               true;
-                                                        }
-                                                      });
-                                                      print(
-                                                        barcode,
+                                                        });
+                                                      }
+                                                    } else {
+                                                      showDialog(
+                                                        context:
+                                                            context,
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return InfoAlert(
+                                                            theme:
+                                                                theme,
+                                                            message:
+                                                                'Product Name must be set before barcode can be generated.',
+                                                            title:
+                                                                'Product Name Not Set',
+                                                          );
+                                                        },
                                                       );
-                                                      print(
-                                                        barCodeSet.toString(),
-                                                      );
-                                                    },
-                                                    enabled:
-                                                        true,
-                                                    decoration: InputDecoration(
-                                                      isCollapsed:
-                                                          true,
-                                                      suffixIcon: Padding(
-                                                        padding: const EdgeInsets.only(
-                                                          right:
-                                                              50.0,
+                                                    }
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          5.0,
                                                         ),
-                                                        child: Icon(
-                                                          size:
-                                                              20,
-                                                          color:
-                                                              Colors.grey,
-                                                          Icons.qr_code_scanner_sharp,
-                                                        ),
-                                                      ),
-                                                      suffixIconConstraints: BoxConstraints(
-                                                        maxHeight:
-                                                            20,
-                                                        maxWidth:
-                                                            35,
-                                                      ),
-                                                      contentPadding: EdgeInsets.symmetric(
-                                                        horizontal:
-                                                            20,
-                                                        vertical:
-                                                            8,
-                                                      ),
-                                                      hintText:
-                                                          barcode ??
-                                                          'Click to Scan Item Barcode',
-                                                      hintStyle: TextStyle(
-                                                        color:
-                                                            barCodeSet
-                                                                ? Colors.grey.shade700
-                                                                : Colors.grey.shade500,
-                                                        fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
-                                                        fontWeight:
-                                                            barCodeSet
-                                                                ? FontWeight.bold
-                                                                : FontWeight.normal,
-                                                      ),
-                                                      border: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              Colors.grey,
-                                                          width:
-                                                              1,
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(
+                                                    child: Row(
+                                                      spacing:
                                                           5,
+                                                      children: [
+                                                        Icon(
+                                                          size:
+                                                              15,
+                                                          color:
+                                                              theme.lightModeColor.secColor200,
+                                                          Icons.qr_code_rounded,
                                                         ),
-                                                      ),
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b3.fontSize,
+                                                          ),
+                                                          'Generate Barcode',
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
