@@ -1116,6 +1116,7 @@ class ShopProvider extends ChangeNotifier {
         print(
           "❌ Failed to update Print Details Online: $e",
         );
+        clearImage();
         return e.toString();
       }
     } else {
@@ -1135,6 +1136,7 @@ class ShopProvider extends ChangeNotifier {
         print(
           "❌ Failed to update Print Details Offline: $e",
         );
+        clearImage();
         return e.toString();
       }
     }
@@ -1410,6 +1412,7 @@ class ShopProvider extends ChangeNotifier {
         return 'success';
       } catch (e) {
         print('❌ Error uploading logo: $e');
+        clearImage();
         return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
     } else {
@@ -1445,6 +1448,7 @@ class ShopProvider extends ChangeNotifier {
         print(
           '❌❌ Upload Logo Offline Error: ${e.toString()}',
         );
+        clearImage();
         return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
     }
