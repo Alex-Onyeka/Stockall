@@ -1590,8 +1590,7 @@ class _ReceiptEditContainerState
                                   builder: (context) {
                                     return InfoAlert(
                                       theme: widget.theme,
-                                      message:
-                                          'An Error Occoured. $res',
+                                      message: res,
                                       title:
                                           'Update Failed',
                                     );

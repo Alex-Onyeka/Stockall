@@ -1470,11 +1470,11 @@ class _ReceiptEditContainerState
                               setState(() {
                                 isLoading = true;
                               });
-                              var int = await receiptPFalse
+                              var res = await receiptPFalse
                                   .updateShopPrintDetails(
                                     context,
                                   );
-                              if (int == 1) {
+                              if (res == 'success') {
                                 setState(() {
                                   isLoading = false;
                                   showSuccess = true;
@@ -1494,8 +1494,7 @@ class _ReceiptEditContainerState
                                   builder: (context) {
                                     return InfoAlert(
                                       theme: widget.theme,
-                                      message:
-                                          'An Error Occoured when updating Your printer details. Please try again',
+                                      message: res,
                                       title:
                                           'Update Failed',
                                     );

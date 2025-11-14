@@ -1070,15 +1070,18 @@ class ShopProvider extends ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
     if (logoPicked && selectedLogo != null) {
       try {
-        await uploadLogo(
+        var res = await uploadLogo(
           image: rawImage!,
           // ignore: use_build_context_synchronously
           context: context,
         );
-        return 'success';
+        if (res != 'success') {
+          print(res);
+          return res;
+        }
       } catch (e) {
         print('Error: ${e.toString()}');
-        return 'Error: ${e.toString()}';
+        return e.toString();
       }
     }
     if (selectedLogo == null) {
@@ -1092,11 +1095,13 @@ class ShopProvider extends ChangeNotifier {
     if (isOnline) {
       userShop()!.updatedAt = DateTime.now();
       try {
-        await supabase
-            .from('shops')
-            .update(userShop()!.toJson())
-            .eq('shop_id', userShop()!.shopId!)
-            .maybeSingle();
+        var resp =
+            await supabase
+                .from('shops')
+                .update(userShop()!.toJson())
+                .eq('shop_id', userShop()!.shopId!)
+                .maybeSingle();
+        if (resp == null) {}
 
         final response = await getUserShops(
           AuthService().currentUser!,
@@ -1111,7 +1116,7 @@ class ShopProvider extends ChangeNotifier {
         print(
           "❌ Failed to update Print Details Online: $e",
         );
-        return "Failed to update Print Details Online: ${e.toString()}";
+        return e.toString();
       }
     } else {
       try {
@@ -1130,7 +1135,7 @@ class ShopProvider extends ChangeNotifier {
         print(
           "❌ Failed to update Print Details Offline: $e",
         );
-        return "Failed to update Print Details Offline: ${e.toString()}";
+        return e.toString();
       }
     }
   }
@@ -1343,7 +1348,7 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  Future<int> uploadLogo({
+  Future<String> uploadLogo({
     required XFile image,
     required BuildContext context,
   }) async {
@@ -1402,10 +1407,10 @@ class ShopProvider extends ChangeNotifier {
           // ignore: use_build_context_synchronously
           context,
         );
-        return 1;
+        return 'success';
       } catch (e) {
         print('❌ Error uploading logo: $e');
-        return 0;
+        return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
     } else {
       try {
@@ -1435,12 +1440,12 @@ class ShopProvider extends ChangeNotifier {
         print(
           '✅  Offline Logo uploaded and saved successfully!',
         );
-        return 1;
+        return 'success';
       } catch (e) {
         print(
           '❌❌ Upload Logo Offline Error: ${e.toString()}',
         );
-        return 0;
+        return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
     }
   }
