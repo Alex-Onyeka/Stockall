@@ -152046,7 +152046,7 @@ case 1:return A.n(q,r)}})
 return A.o($async$$1,r)},
 $S:137}
 A.ca9.prototype={
-$1(a){var s=this.a,r=A.c(s,!1,t.A),q=this.b,p=this.c,o=A.U(s,null,t.l).w.a.a>950?"Print":"Download"
+$1(a){var s=this.a,r=A.c(s,!1,t.A),q=this.b,p=this.c,o=A.U(s,null,t.l).w.a.a>950?"Save and Print":"Download"
 return A.H1(new A.ca8(q,s,p),o,"Generated for this Product. This action automatically sets the product barcode to the new generated barcode once you print it.",r,"Generated Barcode",new A.a7G(q,p,null))},
 $S:112}
 A.ca8.prototype={

@@ -287,11 +287,11 @@ Future<bool> generateBarcodeAndPrint(
 String buttonDislayText(BuildContext context) {
   if (kIsWeb) {
     return screenWidth(context) > tabletScreenSmall
-        ? 'Print'
+        ? 'Save and Print'
         : 'Download';
   } else {
     return screenWidth(context) > tabletScreenSmall
-        ? 'Print'
+        ? 'Save and Print'
         : 'share';
   }
 }
